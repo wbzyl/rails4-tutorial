@@ -1,6 +1,6 @@
 require 'rubygems'
 
-require 'wb-rails3'
+require 'rails4-tutorial'
 
 require 'rack/codehighlighter'
 require 'uv'
@@ -10,4 +10,4 @@ require 'uv'
 
 use Rack::Codehighlighter, :ultraviolet, :markdown => true, :element => "pre>code"
 
-run WB::Rails3.new
+run WB::Rails4.new

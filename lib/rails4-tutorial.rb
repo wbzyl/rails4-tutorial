@@ -8,7 +8,7 @@ require 'sinatra/url_for'
 require 'sinatra/static_assets'
 
 module WB
-  class Rails3 < Sinatra::Base
+  class Rails4 < Sinatra::Base
     helpers Sinatra::UrlForHelper
     register Sinatra::StaticAssets
 
