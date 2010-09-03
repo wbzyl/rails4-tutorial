@@ -1,0 +1,958 @@
+#### {% title "Zaczynamy" %}
+
+# Zaczynamy
+
+Pierwszą aplikacją Rails, którą utworzymy będzie Fortunka
+z możliwością dopisywania komentarzy.
+
+Czym jest Ruby on Rails:
+„Ruby on Rails is an **MVC** framework for web application development.”
+
+
+## MVC ≡ Model / Widok / Kontroler
+
+„MVC is sometimes called a design pattern, but thats not technically
+accurate. It is in fact an amalgamation of design patterns (sometimes
+referred to as an architecture pattern).”
+
+**Użycie MVC w aplikacji webowej**
+[(źródło)](http://betterexplained.com/articles/intermediate-rails-understanding-models-views-and-controllers/)
+
+{%= image_tag "/images/mvc-rails.png", :alt => "[MVC w Rails]" %}
+
+E. Gamma, R. Helm, R. Johnson, J. Vlissides.
+[Wzorce Projektowe](http://www.wnt.com.pl/product.php?action=0&prod_id=986):
+„Model jest obiektem aplikacji. Widok jego ekranową reprezentacją,
+zaś Koordynator definiuje sposób, w jaki interfejs użytkownika
+reaguje na operacje wykonywane przez użytkownika. Przed MVC
+w projektach interfejsu użytkownika te trzy obiekty były na ogół
+łączone. **MVC rozdziela je, aby zwiększyć elastyczność i możliwość
+wielokrotnego wykorzystywania.**”
+
+I jeszcze jeden cytat:
+„MVC rozdziela widoki i model, ustanawiając między nimi protokół
+powiadamiania. Widok musi gwarantować, że jego wygląd odzwierciedla
+stan modelu. Gdy tylko dane modelu się zmieniają, model powiadamia
+zależące od niego widoki. Dzięki temu każdy widok ma okazję do
+uaktualnienia się. To podejście umożliwia podłączenie wielu widoków do
+jednego modelu w celu zapewnienia różnych prezentacji tych danych.
+Można także tworzyć nowe widoki dla modelu bez potrzeby modyfikowania
+go.”
+
+
+# Fortunka
+
+<blockquote>
+ {%= image_tag "/images/frederick-brooks.jpg", :alt => "[Frederick P. Brooks, Jr.]" %}
+ <p>To see what rate of progress one can expect in software technology,
+  let us examine the difficulties of that technology. Following
+  Aristotle, I divide them into <b>essence</b>, the difficulties inherent in
+  the nature of software, and <b>accidents</b>, those difficulties that today
+  attend its production but are not inherent.</p>
+ <p>I believe the hard part of building software to be the specification,
+   design, and testing of this conceptual construct, not the labor of
+   representing it and testing the fidelity of the representation. We
+   still make syntax errors, to be sure; but they are fuzz compared with
+   the conceptual errors in most systems.
+ </p>
+ <p class="author">— Frederick P. Brooks, Jr.</p>
+</blockquote>
+
+Fortune (Unix) to program „which will display quotes or
+witticisms. Fun-loving system administrators can add fortune to users'
+.login files, so that the users get their dose of wisdom each time
+they log in.”
+
+Opis funkcjonalności aplikacji webowej *Fortunka*:
+
+* **CRUD** na fortunkach
+* do każdej fortunki będzie można dopisać komentarz
+
+Na razie tyle. Później dodamy jeszcze kilka funkcji.
+
+Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
+katalogu z wygenerowanym rusztowaniem:
+
+    rails new fortunka
+    cd fortunka
+
+Z czego składa się wygenerowane rusztowanie?
+
+Poniżej umieszczę kompletny kod działającej aplikacji. 
+
+Na wykładzie zamierzam szczegółowo omówić kod Fortunki. Objaśnione
+zostaną też konwencje używane w kodzie aplikacji Rails.
+
+
+### Bundler
+
+Będziemy korzystać z gotowych gemów (bibliotek) języka Ruby.
+Gemami użytymi w Fortunce zarządzamy za pomocą programu
+*bundler*. Instrukcje dla tego programu umieszczamy
+w pliku *Gemfile*.
+
+Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
+
+    :::ruby Gemfile
+    source 'http://rubygems.org'
+    gem 'rails', '3.0.0.beta4'
+    # Bundle edge Rails instead:
+    # gem 'rails', :git => 'git://github.com/rails/rails.git'
+    gem 'sqlite3-ruby', :require => 'sqlite3'
+    # Use unicorn or thin as the web servers
+    gem 'unicorn'
+    gem 'thin'
+    # Configure irb, see ~/.irbrc
+    gem 'wirble'
+    gem 'hirb'
+
+Teraz pora na instalację tych gemów oraz sprawdzenie gdzie zostały
+zainstalowane w systemie:
+
+    bundle install
+    bundle show rails
+
+
+### Web server
+
+Uruchamiamy, w trybie *development*, wygenerowaną szkieletową
+aplikację, tak:
+
+    unicorn config.ru -p 3000
+
+albo tak:
+
+    thin --rackup config.ru start -p 8080
+
+albo tak:
+
+    rails server thin -p 3000
+
+
+### REST
+
+Korzystając z generatora *resource* tworzymy zasób (ang. *resource*)
+o nazwie *fortune*:
+
+    rails generate resource fortune body:text
+
+Generator utworzył model oraz migrację.
+
+Wykonujemy polecenie:
+
+    rake db:migrate
+
+Powoduje ono utworzenie bazy danych zdefiniowanej w pliku
+*config/database.yml* oraz utworzenie tabelki zdefiniowanej w pliku
+migracji *db/migrate/20100624132312_create_fortunes.rb*.
+
+W bazie nie ma jeszcze fortunek. Teraz możemy dodać kilka
+fortunek do bazy na dwa sposoby:
+
+* wpisując je w pliku *db/seed.rb* i wykonując polecenie `rake seed`
+* dodając je z konsoli
+
+Oczywiście, w aplikacji www rekordy do bazy dodajemy
+korzystając z formularzy.
+ 
+Generator dopisał do pliku z routingiem *config/routes.rb*:
+
+    resources :fortunes
+
+Aby obejrzeć routing aplikacji wykonujemy polecenie:
+
+    rake routes
+
+Jak należy odczytywać, to co zostało wypisane przez to polecenie?
+
+Jeszcze jeden rzut oka na MVC w kontekście zasobów, na przykładzie
+zasobu *User*.
+
+{%= image_tag "/images/mvc_detailed.png", :alt => "[MVC w Rails]" %}
+
+[Źródło](http://www.railstutorial.org/images/figures/mvc_detailed-full.png)
+
+
+### Kontroler
+
+Generator utworzył plik *app/controllers/fortunes_controller.rb*.
+zawierający pusty kontroler *FortunesController*.
+
+*FortunesController* jest podklasą klasy *ApplicationController*.
+Ponieważ tworzymy *resource controller* (albo krótko kontroler REST)
+to powinniśmy napisać 7 metod o nazwach:
+
+* *index*, *show* 
+* *new*, *create* 
+* *edit*, *update*
+* *destroy*
+
+Zaczniemy od napisania metody *index* kontrolera *FortunesController*.
+Zwyczajowo *index* oznacza kompletną listę zasobów. 
+W naszym przypadku są to wszystkie fortunki.
+
+    :::ruby app/controllers/fortunes_controller.rb
+    class FortunesController < ApplicationController
+      respond_to :html
+      def index
+        @fortunes = Fortune.order("created_at desc")
+        respond_with @fortunes
+      end
+    end
+
+Zob. też API dla klasy *ActionController::Responder*.
+
+
+### Szablony i Widoki
+
+Uruchamiamy serwer www i wchodzimy na stronę:
+
+    http://localhost:3000/fortunes
+
+Co powinno się wydarzyć? 
+
+A oto odpowiedź (*response*) serwera:
+
+    HTTP/1.1 500 Internal Server Error
+
+i komunikat o błędzie:
+
+    Template is missing
+    Missing template fortunes/index with 
+      {:locale=>[:en, :en], :handlers=>[:builder, :rjs, :erb, :rhtml, :rxml], 
+      :formats=>[:html]} in view paths 
+      ".../hello/rails3-fortunka-w-20-minut/app/views"
+
+Zatem nie pozostaje nam nic innego jak utworzyć szablon **powiązany**
+z metodą *index*:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <h1>Fortunki</h1>
+    <% @fortunes.each do |fortune| %>
+    <p><%= fortune.body %></p>
+    <% end %>
+
+Powyżej mamy przykład szablonu *ERB* (ang. *embeded ruby*).
+
+Co może oznaczać zwrot: **convention over configuration**?
+
+Co to jest **ORM** – mapowanie obiektów na relacje
+i relacji na obiekty?
+
+Jest obojętne czy najpierw utworzymy metodę, a później szablon
+czy odwrotnie.
+
+Teraz, dla przykładu zaczniemy od szablonu *new.html.erb*.
+Szablon ten powinien zawierać formularz umożliwiający
+wpisanie nowej fortunki.
+
+    :::html_rails app/views/fortunes/new.html.erb
+    <h1>Nowa fortunka</h1>
+    <%= form_for Fortune.new do |form| %>
+    <p>
+      <%= form.text_area :body %><br/>
+      <%= form.submit %>
+    <p>
+    <% end %>
+
+Powyżej korzystamy z **metody pomocniczej** (ang. *helper method*)
+o nazwie *form_for*.
+
+Ponieważ korzystamy z routingu REST, więc aby utworzyć
+nową fortunkę wchodzimy na następujący url:
+
+    http://localhost:3000/fortunes/new
+
+Kilknięcie na przycisk *Create Fortune* daje następujący
+błąd:
+
+    Unknown action
+    The action 'create' could not be found
+
+Oznacza to **oczywiście**, że powinniśmy zaimplementować metodę
+*create* kontrolera *FortunesController*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def create
+      Fortune.create(params[:fortune])
+      redirect_to fortunes_path, :notice => 'Fortune was successfully created.'
+    end
+
+Co to jest *fortunes_path*? Dlaczego wykonujemy *redirect_to*?
+
+Tutaj zakładamy, że użytkownik nie oszukuje i wpisuje w formularz
+to co jest proszony, a nie na przykład złośliwy kod. 
+Walidacją tego co wpisują użytkownicy zajmiemy się później.
+
+
+### Poprawki w layoucie
+
+Po zapisaniu nowej fortunki w tabeli, zostajemy przekierowani na stronę
+*index* i na tej stronie powinien pojawić się komunikat, *notice*
+powyżej, o utworzeniu fortunki.
+ 
+Aby zobaczyć ten komunikat, musimy poprawić wygenerowany layout.
+
+Przy okazji: co to jest **layout**? Jak to przetłumaczyć na język polski?
+
+Nowy layout utworzymy w okrężny sposób. Skorzystamy z gotowca.
+Dopiszmy w pliku *Gemfile*:
+
+    gem 'nifty-generators'
+
+i wykonajmy polecenie
+
+    bundle install
+
+Teraz polecenie:
+
+    rails generate
+
+wypisze coś takiego:
+
+    Nifty:
+      nifty:authentication
+      nifty:config
+      nifty:layout
+      nifty:scaffold
+
+Wykonanie polecenia:
+
+    rails generate nifty:layout 
+
+spowoduje wygenerowanie prostego layoutu. 
+Zawiera on kilka elementów *div* o które nam chodziło:
+
+    :::html_rails app/views/layouts/application.html.erb
+    <% flash.each do |name, msg| %>
+      <%= content_tag :div, msg, :id => "flash_#{name}" %>
+    <% end %>
+
+Jakich? :info, :notice, inne… jakie? Co to jest **flash**?
+
+
+### Kontroler + szablon dla edycji fortunki
+
+Zacznijmy od przyjrzenia się jak działa **ORM** na konsoli:
+
+    :::ruby
+    Fortune.find_by_id 1
+    Fortune.find 1
+    Fortune.find 1, 4
+    Fortune.find [1, 4]
+    f = Fortune.find(1)
+    f.update_attributes :updated_at => Time.now, :body => 'Hi!'
+
+Zaczniemy od szablonu. Szablon dla metody *edit* różni się
+tylko nagłówkiem H1 od szablonu dla *new*.
+
+    :::html_rails app/views/fortunes/edit.html.erb
+    <h1>Edycja fortunki</h1>
+    <%= form_for @fortune do |f| %>
+    <p>
+      <%= f.text_area :body %><br>
+      <%= f.submit %>
+    <p>
+    <% end %>
+
+Następnie piszemy metodę *edit* powiązaną z tym szablonem:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def edit
+      @fortune = Fortune.find_by_id(params[:id])
+    end    
+
+
+### Szablony częściowe
+
+I mamy problem – powtórzony fragment kodu w szablonach *new* i *edit*. 
+
+Mała refaktoryzacji kodu powinna wyeliminować powtórzony kod.
+
+Zaczniemy od napisania metody *new*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def new
+      @fortune = Fortune.new
+    end    
+
+Teraz, jeśli w szablonie dla *new* podmienimy *Fortune.new* na
+*@fortune*, to kod formularza będzie taki sam w obu szablonach.
+
+Co to jest refaktoryzacja?
+
+Ciąg dalszy refaktoryzacji: usuwamy kod formularza z szablonów
+i przenosimy go do szablonu *_form.html.erb*:
+
+    :::html_rails app/views/fortunes/_form.html.erb
+    <%= form_for @fortune do |f| %>
+    <p>
+      <%= f.text_area :body, :rows => 4 %><br>
+      <%= f.submit %>
+    <p>
+    <% end %>
+
+Zamiast usuniętego kodu wpisujemy w szablonach:
+
+    :::html_rails
+    <%= render 'form' %>
+
+Szablon *_form.html.erb* nazywamy szablonem częściowym (ang. *partial template*).
+
+Co to jest zasada DRY – Don’t repeat yourself.
+Dlaczego „osuszanie” kodu jest ważne?
+
+
+### Linkujemy widoki
+
+W szablonie *index.html.erb* dopisujemy dwa linki:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <% @fortunes.each do |fortune| %>
+    <p>
+     <%= fortune.body %>
+     <%= link_to "Edit", edit_fortune_path(fortune) %>
+    </p>
+    <% end %>
+    <p><%= link_to "New Fortune", new_fortune_path %></p>
+
+Wejdźmy na stronę:
+
+    htttp://localhost:3000/fortunes
+
+i sprawdźmy czy linki działają. Klikamy w jakikolwiek link 'Edit'.
+Działa? Jeśli tak, to edytujemy fortunkę i następnie kliknijmy
+przycisk 'Update Fortune' i… oops! dostajemy błąd:
+
+    Unknown action
+    The action 'update' could not be found
+
+Wygląda na to, że zapomnieliśmy zaimplementować metodę *update*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def update
+      fortune = Fortune.find_by_id(params[:id])
+      fortune.update_attributes(params[:fortune])
+      redirect_to fortunes_path, :notice => 'Fortune was successfully updated.'
+    end
+
+Przy okazji, zwróćmy uwagę, że metody *update* i *create* nie mają
+powiązanych widoków.
+
+Ciekawostka: napis na przycisku *submit* jest *New Fortune* albo
+*Update Fortune*. Jak można to wyjaśnić? Co decyduje
+o tym jaki napis jest na przycisku?
+
+
+### Usuwanie rekordów z tabel
+
+W aktualnej wersji można utworzyć „pustą” fortunkę. Jak? Klikamy link
+'New Fortune', następnie przycisk 'New Fortune'. 
+Oczywiście nie ma sensu umieszczanie pustych fortunek w bazie.
+
+Na następnym wykładzie zaimplementujemy mechanizm zabezpieczający
+przed zapisywaniem pustych fortunek w tabeli *fortunes* (walidacja).
+
+Teraz zajmiemy się usuwaniem pustych fortunek z bazy.
+
+Zrobimy to w taki sposób: przy każdej fortunce w widoku *index* dodamy
+przycisk 'Delete' po kliknięciu którego fortunka zostanie usunięta:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <% @fortunes.each do |fortune| %>
+    <p>
+     <%= fortune.body %>
+     <%= link_to "Edit", edit_fortune_path(fortune) %>
+     <%= link_to "Delete", fortune_path(fortune), :confirm = "Are you sure?", :method => :delete %>
+    </p>
+    <% end %>
+    <%= link_to "New Fortune", new_fortune_path %>
+
+Odświeżamy stronę, klikamy w przycisk *Delete* i… oops! dostajemy błąd:
+
+    Unknown action
+    The action 'destroy' could not be found
+
+Oznacza to, że czeka nas pisanie metody *destroy*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def destroy
+      fortune = Fortune.find_by_id(params[:id])
+      fortune.destroy
+      redirect_to fortunes_path, :notice => "Fortune #{fortune.id} was deleted."
+    end
+
+
+### Pozostała tylko implementacja *show*
+
+Został tylko do napisania widok *show* i powiązana z nim metoda
+kontrolera.
+
+    :::html_rails app/views/fortunes/show.html.erb
+    <h1>Fortunka #<%= @fortune.id %></h1>
+    <p>
+      <%= @fortune.body %>
+    </p>
+    <p><%= link_to "All Fortunes", fortunes_path %></p>
+
+Kontroler:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def show
+      @fortune = Fortune.find_by_id(params[:id])
+      respond_with @fortune
+    end
+
+W widoku *index* dopisujemy link:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <%= fortune.body %>
+    <%= link_to "Show", fortune_path(fortune) %>
+
+**Inne propozycje olinkowania zasobów?**
+
+
+## Atom
+
+Dopisujemy do kontrolera:
+
+    respond_to :html, :atom
+
+Widok:
+
+    :::ruby app/views/fortunes/index.atom.builder
+    atom_feed do |feed|
+      feed.title "Moje Fortunki"
+      feed.updated @fortunes.first.updated_at
+      @fortunes.each do |fortune|
+        feed.entry(fortune) do |entry|
+          entry.content fortune.body, :type => "html"
+        end
+      end
+    end
+
+W layout dopisujemy w znaczniku *HEAD*:
+
+    :::html_rails app/views/layouts/application.html.erb
+    <%= auto_discovery_link_tag(:atom, fortunes_path(:atom)) %>
+
+
+## Przechodzimy z Prototype na jQuery
+
+Kopiujemy do katalogu *public/javascripts* plik *rails.js* z:
+
+    http://github.com/rails/jquery-ujs
+
+zmienając jego nazwę na *jquery.rails.js*.
+
+Zmieniamy w layoucie wiersz z *javascript_include_tag* na:
+
+    :::html_rails app/views/layouts/application.html.erb
+    <%= javascript_include_tag 
+      "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js", 
+      "jquery.rails.js" %> 
+
+i usuwamy z katalogu *public/javascripts* następujące pliki:
+*controls.js*, *dragdrop.js*, *effects.js*, *prototype.js* i *rails.js*.
+
+
+## Routing
+
+Zmieniamy routing tak, aby */fortunes* była stroną główną */*:
+
+    :::ruby config/routes.rb
+    # You can have the root of your site routed with "root"
+    # just remember to delete public/index.html.
+    root :to => "fortunes#index"
+
+
+## AJAX – dodajemy wyszukiwanie
+
+Co oznacza „unobtrusive Javascript”?
+
+Do szablonu *index.html.erb* dodamy formularz do wyszukiwania
+fortunek. Wyszukane fortunki umieścimy w elemencie *DIV*.
+Dlaczego potrzebujemy pojemnika na fortunki?
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <%= form_tag products_path, :method => :get, :remote => true do %>  
+      <p>  
+        <%= text_field_tag :search, params[:search] %>  
+        <%= submit_tag "Search", :name => nil %>  
+      </p>  
+    <% end %>  
+    <div id="fortunes">
+      <%= render @fortunes %>
+    </div>
+    <p><%= link_to "New Fortune", new_fortune_path %></p>
+
+Oto fragment źródła strony wygenerowanej z powyższego szablonu:
+
+    :::html_rails
+    <form action="/fortunes" data-remote="true" method="get"> 
+
+Do czego służą atrybuty *data-\** ?
+Czy elementy z takimi atrybutami się walidują?
+
+W szablonie częściowym *_fortune.html.erb* usuniemy pętlę,
+która była w widoku *index.html.erb*:
+
+    :::html_rails app/views/fortunes/_fortune.html.erb
+    <p>
+     <%= fortune.body %> 
+     <%= link_to "Show", fortune_path(fortune) %> | 
+     <%= link_to "Edit", edit_fortune_path(fortune) %> |
+     <%= link_to "Delete", fortune_path(fortune), :confirm => "Are you sure?", :method => :delete %>
+    </p>
+
+Wchodzimy na stronę:
+
+    http://localhost:3000/
+
+Gdzie podziała się pętla po fortunkach?
+
+Pozostało napisać szablon *index.js.erb*.
+Co oznacza rozszerzenie *.js.erb*?
+
+    :::jquery_javascript app/views/fortunes/index.js.erb
+    $("#fortunes").html("<%= escape_javascript(render(@fortunes)) %>");
+
+Czym musimy jeszcze dopisać / zmienić jakiś kod w kontrolerze
+*FortunesController*? Jakąś metodę? Jeśli tak, to jaką?
+
+Odpowiedzi. Zmieniamy kod metody *index*
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def index
+      @fortunes = Fortune.search(params[:search]).order("created_at desc")
+      respond_with @fortunes
+    end
+
+A użytą powyżej metodę klasową *search* implementujemy w modelu
+*Fortune* tak:
+
+    :::ruby app/models/fortune.rb
+    def self.search(query)
+      where("body like ?", "%#{query}%")
+    end
+
+Metoda *search* jest wykonywana zawsze po wejściu na stronę *index*,
+nawet jak nic nie wyszukujemy. Dlaczego nie generuje ona błędu?
+Dlaczego wyszukiwanie działa?
+
+
+## Dodajemy tagowanie
+
+Tagowanie dodamy, korzystając z gemu
+[acts-as-taggable-on](http://github.com/mbleigh/acts-as-taggable-on).
+
+Korzystając z tego co napisano w *README.rdoc* dokonujemy
+następujących zmian w aplikacji.
+
+Zgodnie z README ze strony git projektu, dopisujemy gem do pliku *Gemfile*:
+
+    :::ruby Gemfile
+    gem 'acts-as-taggable-on'
+
+i instalujemy go w systemie za pomocą:
+
+    bundle install
+
+Po instalacji wykonujemy polecenia:
+
+    rails generate acts_as_taggable_on:migration
+    rake db:migrate
+
+### Zmiany w kodzie
+
+Do modelu dopisujemy:
+
+    :::ruby app/models/fortune.rb
+    class Fortune < ActiveRecord::Base
+      acts_as_taggable_on :tags
+      ActsAsTaggableOn::TagList.delimiter = " "
+
+Przy okazji, zmieniamy domyślny znak do oddzielania tagów z przecinka
+na spację.
+
+W formularzu dopisujemy:
+
+    :::html_rails app/views/fortunes/_form.html.erb
+    <p>
+      <%= form.label :tag_list %><br>
+      <%= form.text_field :tag_list %>
+    </p>
+
+a w widoku *index*:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <p>Tags: <%= fortune.tag_list %></p>
+
+
+### Chmurka tagów
+
+Aby utworzyć chmurkę tagów dopisujemy do widoku *index*:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
+      <%= link_to tag.name, LINK_DO_CZEGO?, :class=>css_class %>
+    <% end %>
+
+Aby ten kod zadziałał musimy zdefiniować zmienną *@tags*, wczytać kod
+metody pomocniczej *tag_cloud*, wystylizować chmurkę tagów oraz
+podmienić *LINK_DO_CZEGO?* na coś sensownego.
+
+W metodzie *index* kontrolera *FortunesController* przed dopisujemy:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    @tags = Fortune.tag_counts
+    respond_with @fortunes  # bez zmian
+
+W pliku na metody pomocnicze dopisujemy;
+
+    :::ruby app/helpers/fortunes_helper.rb
+    module FortunesHelper
+      include ActsAsTaggableOn::TagsHelper
+    end
+
+Na koniec dopisujemy do pliku CSS aplikacji:
+
+    :::css public/stylesheets/application.css
+    .css1 { font-size: 1.0em; }
+    .css2 { font-size: 1.2em; }
+    .css3 { font-size: 1.4em; }
+    .css4 { font-size: 1.6em; }
+
+
+### Dodajemy własne akcje do REST
+
+Mając chmurkę z tagami, wypadałoby olinkować tagi tak, aby
+po kliknięciu na nazwę wyświetliły się fortunki otagowane
+tą nazwą.
+
+Spróbujemy zrobić to tak. Zaczniemy od routingu:
+
+    :::ruby config/routes.rb
+    resources :fortunes do
+      collection do 
+        get :tags
+      end
+      resources :comments
+    end
+
+Sprawdzamy routing:
+
+    rake routes
+
+i widzimy, że mamy dodatkowo:
+
+    tags_fortunes GET /fortunes/tags {:action=>"tags", :controller=>"fortunes"}
+
+Teraz dopisujemy co trzeba w kontrolerze (plus mała refaktoryzacja):
+
+    :::ruby app/controllers/fortunes_controller.rb
+    before_filter :only => [:index, :tags] do
+      @tags = Fortune.tag_counts  # for tag clouds    
+    end
+    def index
+      @fortunes = Fortune.search(params[:search]).order("created_at desc")
+      respond_with @fortunes
+    end
+    def tags
+      @fortunes = Fortune.tagged_with(params[:name])
+      render 'index'
+    end
+
+Na koniec podmieniamy `LINK_DO_CZEGO?` powyżej:
+
+    :::ruby
+    <%= link_to tag.name, tags_fortunes_path(:name=>tag.name), :class=>css_class %>
+
+
+## Dodajemy komentarze do fortunek
+
+<blockquote>
+ <p>Software is invisible and <b>unvisualizable</b>. Geometric abstractions are
+  powerful tools. The floor plan of a building helps both architect and
+  client evaluate spaces, traffic flows, views. Contradictions and
+  omissions become obvious.</p>
+ <p>In spite of progress in restricting and simplifying the structures of
+  software, they remain inherently unvisualizable, and thus do not
+  permit the mind to use some of its most powerful conceptual
+  tools. This lack not only impedes the process of design within one
+  mind, it severely hinders communication among minds.</p>
+ <p class="author">— Frederick P. Brooks, Jr.</p>
+</blockquote>
+
+Dodajemy do każdej fortunki możliwość dopisywania komentarzy.
+
+Zaczynamy od wygenerowania szkieletu dla zasobu *Comment* oraz
+wykonania migracji:
+
+    rails g resource Comment fortune_id:integer \
+        author:string body:string
+    rake db:migrate
+
+Zagnieżdżamy zasoby i sprawdzamy jak to zmienia routing:
+
+    :::ruby
+    resources :fortunes do
+      resources :comments
+    end
+
+Po tej zmianie polecenie
+
+    rake routes
+
+wypisuje nowy routing:
+ 
+                         GET    /fortunes/:fortune_id/comments          {:action=>"index", :controller=>"comments"}
+        fortune_comments POST   /fortunes/:fortune_id/comments          {:action=>"create", :controller=>"comments"}
+     new_fortune_comment GET    /fortunes/:fortune_id/comments/new      {:action=>"new", :controller=>"comments"}
+                         GET    /fortunes/:fortune_id/comments/:id      {:action=>"show", :controller=>"comments"}
+                         PUT    /fortunes/:fortune_id/comments/:id      {:action=>"update", :controller=>"comments"}
+         fortune_comment DELETE /fortunes/:fortune_id/comments/:id      {:action=>"destroy", :controller=>"comments"}
+    edit_fortune_comment GET    /fortunes/:fortune_id/comments/:id/edit {:action=>"edit", :controller=>"comments"}
+
+
+oraz stary routing, który też obowiązuje:
+
+                 GET    /fortunes          {:action=>"index", :controller=>"fortunes"}
+        fortunes POST   /fortunes          {:action=>"create", :controller=>"fortunes"}
+     new_fortune GET    /fortunes/new      {:action=>"new", :controller=>"fortunes"}
+                 GET    /fortunes/:id      {:action=>"show", :controller=>"fortunes"}
+                 PUT    /fortunes/:id      {:action=>"update", :controller=>"fortunes"}
+         fortune DELETE /fortunes/:id      {:action=>"destroy", :controller=>"fortunes"}
+    edit_fortune GET    /fortunes/:id/edit {:action=>"edit", :controller=>"fortunes"}
+            root        /                  {:controller=>"fortunes", :action=>"index"}
+
+Przechodzimy do modelu *Comment*, gdzie dopisujemy powiązanie:
+
+    :::ruby app/models/comment.rb
+    class Comment < ActiveRecord::Base
+      belongs_to :fortune
+    end
+
+Przechodzimy do modelu *Fortune*, gdzie dopisujemy drugą stronę
+powiązania:
+
+    :::ruby app/models/fortune.rb
+    class Fortune < ActiveRecord::Base
+      has_many :comments
+      ...
+
+Nie zapominamy o migracji:
+
+    rake db:migrate
+
+Jeśli na konsoli uruchomimy kod:
+
+    :::ruby
+    Fortune.first.comments  #=> []
+
+to przekonamy się, że komentarze pierwszej fortunki tworzą pustą tablicę.
+Aby dodać komentarz możemy postąpić tak:
+
+    :::ruby
+    Fortune.first.comments << Comment.new(:author=>"Ja", :body=>"Fajne!")
+
+
+### Gdzie wyświetlać komentarze?
+
+Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show* 
+(**inne propozycje?**). Dopiszemy taki kod:
+
+    :::html_rails app/views/fortunes/show.html.erb
+    <% if @fortune.comments.any? %>
+      <h2>Komentarze</h2>
+      <% @fortune.comments.each do |comment| %>
+       <p>Autor:<br><%= comment.author %></p>
+       <div class="comment">
+         Body:<br><%= comment.body %>
+       </div>
+       <%= button_to "Delete", [@fortune, comment], 
+          :confirm => "Are you sure?", :method => :delete %>
+      <% end %>
+    <% end %>
+
+Jakie nowe rzeczy pojawiły się powyższym kodzie?
+
+
+### Gdzie wpisywać nowe komentarze?
+
+Najwygodniej byłoby dodać formularz też do widoku *show*
+(**dlaczego?**):
+
+    :::html_rails app/views/fortunes/show.html.erb
+    <h2>Dodaj komentarz</h2>
+    <%= form_for [@fortune, Comment.new] do |form| %>
+      <p>
+        <%= form.label :author, "Author" %><br>
+        <%= form.text_field :author %>
+      </p>
+      <p><%= form.text_area :body, :rows => 4 %></p>
+      <p><%= form.submit %></p>
+    <% end %>
+
+Nowe rzeczy w kodzie?
+
+
+### Tworzenie i usuwanie komentarzy
+
+W pustym *CommentsController* wpisujemy:
+
+    :::ruby app/controllers/comments_controller.rb
+    class CommentsController < ApplicationController
+      def create
+        fortune = Fortune.find_by_id(params[:fortune_id])
+        comment = Comment.create(params[:comment])
+        fortune.comments << comment
+        redirect_to fortune, :notice => 'Comment was successfully created.'
+      end
+      def destroy
+        fortune = Fortune.find_by_id(params[:fortune_id])
+        comment = Comment.find_by_id(params[:id])
+        comment.destroy
+        redirect_to fortune, :notice => "Comment #{comment.id} was deleted."
+      end
+    end
+
+I od razu usuwamy powielony kod:
+
+    :::ruby app/controllers/comments_controller.rb
+    class CommentsController < ApplicationController
+      before_filter do
+        @fortune = Fortune.find_by_id(params[:fortune_id])
+      end
+      def create
+        @comment = Comment.create(params[:comment])
+        @fortune.comments << @comment
+        redirect_to @fortune, :notice => 'Comments was successfully created.'
+      end
+      def destroy
+        comment = Comment.find_by_id(params[:id])
+        comment.destroy
+        redirect_to @fortune, :notice => "Comment #{comment.id} was deleted."
+      end
+    end
+
+
+## Różne
+
+* Co to jest „unobtrusive Javascript”?
+  [jQuery UJS dla Rails3](http://github.com/rails/jquery-ujs).
+* Zajaxowana Fortunka: sklonować repozytorium git *hello/rails3-ajax*.
+  Jak to działa? Źródło 
+  [Creating a 100% ajax CRUD using rails 3 and unobtrusive javascript](http://stjhimy.com/posts/7).
+* Bundler. Gemfile examples 
+  [Featuring Bundler, Cucumber, RVM, Postgres, on Ruby-1.8.7](http://gist.github.com/416372)
+* [Rails3 blog w 20 minut] [rails3 blog]
+
+
+## Zadanie
+
+Napisać fortunkę korzystającą z DM, Mongo, CouchDB…
+
+
+[rvm]: http://rvm.beginrescueend.com/ "Ruby Version Manager"
+[rails3 blog]: http://www.railsdispatch.com/posts/rails-3-makes-life-better "Rails3 blog w 20 minut"

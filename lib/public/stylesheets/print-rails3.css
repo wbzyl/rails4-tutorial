@@ -1,0 +1,20 @@
+header {
+  display: none;
+}
+pre {
+  padding: 0 0 0 20px;
+  background: none;
+  margin-left: 20px;
+  border-left: none;
+  font-size: 14pt;
+}
+body {
+  line-height: 1.5;
+  font-family: "Minion Pro", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  color: #000;
+  background: none;
+  font-size: 12pt;
+}
+article h1, article h2, article h3, article h4 {
+  font-family: "Myriad Pro", "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
+}

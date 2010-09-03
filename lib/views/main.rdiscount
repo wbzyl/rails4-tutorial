@@ -1,0 +1,173 @@
+# Wykłady
+
+<blockquote>
+  {%= image_tag "/images/why.jpg", :alt => "[_Why]" %} 
+  <p>
+    When you don’t create things, you become defined by your tastes
+    rather than ability. Your tastes only narrow and exclude people. 
+    So create.
+  </p>
+  <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
+</blockquote>
+
+1. {%= link_to "Zaczynamy", "/zaczynamy" %}
+1. {%= link_to "Walidacja", "/walidacja" %}
+1. {%= link_to "Konsola", "/konsola" %}
+1. {%= link_to "Layouts", "/layouty" %}
+1. {%= link_to "I18n", "/i18n" %}
+
+TODO:
+ 
+1. {%= link_to "Hello Fortune", "/fortunka" %}
+1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
+1. {%= link_to "Autentykacja z Authlogic", "/authentication-authlogic" %}
+1. {%= link_to "Autentykacja z Devise", "/authentication-devise" %}
+1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %}
+1. {%= link_to "Heroku krok po kroku", "/heroku" %}
+1. {%= link_to "Aplikacja „Todo”", "/todo" %}
+1. {%= link_to "Aplikacja „Blog”", "/blog" %}
+1. {%= link_to "Aplikacja „Store”", "/store" %}
+1. {%= link_to "Aplikacja „Ale kino”", "/ale-kino" %}
+1. {%= link_to "Wyszukiwanie", "/searching" %}
+1. {%= link_to "Bezpieczeństwo", "/security" %}
+1. {%= link_to "Caching", "/caching" %}
+
+<!--
+1. {%= link_to "Autoryzacja I", "/authorization" %}
+1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
+-->
+
+Konfiguracja, RVM…
+
+* {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}
+
+
+## Laboratoria
+
+* {%= link_to "Laboratorium", "/zadania" %}
+
+
+# Dokumentacja
+
+<blockquote>
+  <p>
+    Jeden z wykładowców powiedział mi, że człowiek
+    zaczyna używać dopiero rozumu, kiedu kończą mu się
+    wszystkie możliwości. Wcześniej korzysta tylko
+    z procedur.
+  </p>
+  <p class="author">— Robert Krool</p>
+</blockquote>
+
+Na początek zaczynamy od przeczytania
+[Rails Guides (Edge)](http://guides.rails.info/):
+
+1. [Getting Started with Rails](http://guides.rubyonrails.org/getting_started.html).
+2. [Active Record Query Interface](http://guides.rubyonrails.org/active_record_querying.html).
+3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
+4. Dalej już według własnego uznania, 
+   wybieramy kolejny *Przewodnik* do przestudiowania.
+
+Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/). 
+
+Is Your Plugin Ready For Rails 3? sprawdź na 
+[Rails Plugins Compatibility Tracking] [railsplugins]
+
+
+### API
+
+Rails 3:
+
+* [Edge API](http://edgeapi.rubyonrails.org/)
+* [Plasmarails](http://plasmarails.org/)
+
+Rails 2:
+
+* [YARD](http://yardoc.org/docs)
+* [APIdock](http://apidock.com/)
+* [Rails Searchable API Doc](http://railsapi.com/)
+
+
+### Ruby
+
+* [RVM](http://rvm.beginrescueend.com/) – Ruby Version Manager
+* [Rubyflow](http://rubyflow.com)
+
+
+## Screencasty
+
+* Ryan Bates. [Railscasts](http://railscasts.com/)
+* [Rails Performance Resources](http://railslab.newrelic.com/) —
+  Expert advice on tuning and optimizing your Rails app
+* [Learnivore: Ruby/Rails/iPhone screencasts](http://www.learnivore.com/search)
+
+
+## Podręczniki do języka Ruby
+
+* [Why's (Poignant) Guide to Ruby](http://www.ember.co.nz/files/resources/whys-poignant-guide-to-ruby.pdf)
+* [Mr. Neighborly's Humble Little 
+  Ruby Book](http://www.humblelittlerubybook.com/book/html/index.html)
+  \([pdf](http://www.humblelittlerubybook.com/book/hlrb.pdf)\)
+
+
+## Podręczniki do Rails
+
+* Cody Fauser, James MacAulay, Edward Ocampo-Gooding, John Guenin.
+  [Rails in a Nutshell](http://rails-nutshell.labs.oreilly.com/).
+* Michael Hartl.
+  [Ruby on Rails Tutorial. Learn Rails by Example](http://www.railstutorial.org/book).
+
+
+## Ciekawe projekty
+
+* Tim Riley.
+  [ryanb's complex-form-examples](git://github.com/ryanb/complex-form-examples.git)
+
+
+## Pomysły na aplikacje WWW
+
+<blockquote>
+  <p>
+    Jeśli coś jest do pomyślenia, to jest.
+  </p>
+  <p class="author">— Stanisław Lem</p>
+</blockquote>
+
+[Rails Rumble Leaderboard](http://r09.railsrumble.com/entries):
+The Rails Rumble is an annual 48 hour web application development
+competition in which teams of skilled web application developers get
+one weekend to design, develop, and deploy the best web property that
+they can, using the power of Ruby and Rails.
+
+<script type="text/javascript">
+$(function () {
+ deadline = new Date(2009, 10, 27);
+ $('#defaultCountdown').countdown({
+   until: deadline, 
+   compact: true, 
+   layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
+   format: 'dHMS'});
+});
+</script>
+
+## EuRuKo 2010
+
+Konferencja odbyła się w Krakowie, 29–30 maja:
+
+* [dzień 1](http://nuclearsquid.com/writings/euruko-day1.html)
+* [dzień 2](http://nuclearsquid.com/writings/euruko-day2.html)
+
+## Rails 3 stuff only
+
+* [Rails Dispatch](http://www.railsdispatch.com/) – Rails
+  news delivered fresh
+  ([linki do wszystkich postów](http://www.railsdispatch.com/posts))
+
+Najświeższe posty:
+
+* [Blog w 20 minut](http://www.railsdispatch.com/posts/rails-3-makes-life-better)
+  (wideo [Build a Blog Update](http://vimeo.com/10732081))
+* [How Rails 3 Enables More Choices](http://www.railsdispatch.com/posts/how-rails-3-enables-more-choices-part-1) (part 1)
+
+
+[railsplugins]: http://www.railsplugins.org/ "Is Your Plugin Ready For Rails 3?"

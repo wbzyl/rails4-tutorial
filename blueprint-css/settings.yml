@@ -1,0 +1,11 @@
+rails3:
+  path: /opt/nginx/html/stylesheets/
+  custom_layout:
+    column_count: 25
+    column_width: 20
+    gutter_width: 20
+  plugins:
+    - buttons
+    - link-icons
+  semantic_classes:
+    "#content": ".span-25, div.span-25"

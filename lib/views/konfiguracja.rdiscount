@@ -1,0 +1,129 @@
+#### {% title "Konfiguracja" %}
+
+# Konfiguracja
+
+Z różnych powodów, w użyciu jest wiele wersji języka ruby –
+1.8.7, 1.9.2, Ruby Enterprise…
+Ruby Version Manager umożliwia zainstalowanie i przełączanie
+się między różnymi wersjami rubiego.
+
+Zanim zaczniemy pracę z Ruby on Rails powinniśmy też 
+sobie skonfigurować konsolę języka Ruby oraz frameworka
+Ruby on Rails.
+
+
+## RVM – Ruby Version Manager
+
+Dlaczego [RVM] [rvm]? 
+„RVM helps ensure that all aspects of ruby are completely contained
+within user space, strongly encouraging **non-root usage**. Use of RVM
+rubies provide a higher level of system security and therefore reduce
+risk and overall system downtime. Additionally, since all processes
+run as the user, a compromised ruby process will not be able to
+compromise the entire system.”
+
+Podstawowe polecenia RVM:
+
+    rvm list known
+    rvm install ree-1.8.7      # alias ree
+    rvm install ruby-1.9.2-p0  # alias 1.9.2
+    rvm use ree
+    rvm list
+    ruby -v
+    which ruby
+    rvm env
+    rvm --default ree
+
+
+## Instalujemy gem rails (ostatnie prelease)
+
+W trakcie instalacji jakiejkolwiek wersji Rubiego 
+tworzone są dwa zestawy gemów (ang. *gemset*):
+
+* **default** (bez nazwy)
+* **global**
+
+    rvm gemset list
+
+Do zestawu *global* dodajemy gemy:
+
+    rvm gemset use global
+    gem install bundler wirble hirb awesome_print
+    gem install thin unicorn rainbows
+    gem install sqlite3-ruby
+    gem install gem_snapshot
+    gem install git_remote_branch gemedit 
+
+A tak tworzymy dodatkowe zestawy:
+
+    rvm gemset create 'rails2'
+    rvm gemset create 'rails3'
+    rvm gemset list
+    rvm gemset name
+
+Środowisko dla Rails w wersji 2.3.8:
+
+    rvm use ree
+    rvm gemset use rails2
+    gem install rails -v 2.3.8
+
+Środowisko dla Rails3:
+
+    rvm use ree
+    rvm gemset use rails3
+    gem install rails --pre
+    rvm --default ree@rails3
+
+O czym należy jeszcze poczytać:
+
+* thin, unicorn, rainbows (gemy)
+* nginx (serwer www)
+* passenger (moduł dla apache i nginx)
+* jQuery (biblioteka Javascript)
+
+
+## Dump & Restore Gems
+
+Wykonujemy snapshot zainstalowanych gemów, np. z *Sigmy*:
+
+    gem snapshot dump --file sigma.yml
+
+W innym środowisku instalujemy te gemy:
+
+    gem snapshot restore --file sigma.yml
+
+
+## A gemset by project
+
+Przeczytać artykuł J. Lecour’a
+[„Advice on using Ruby, RVM, Passenger, Rails, Bundler, … in development”](http://jeremy.wordpress.com/2010/08/19/ruby-rvm-passenger-rails-bundler-in-development/)
+
+
+## Konsola Rails i Ruby
+
+Oto moja konfiguracja konsoli (dla Ruby i Rails):
+
+    :::ruby .irbrc
+    require 'rubygems'
+    require 'wirble'
+    require 'hirb'
+    # start wirble (with color)
+    Wirble.init
+    Wirble.colorize
+    Hirb.enable
+    if ENV.include?('RAILS_ENV') && !Object.const_defined?('RAILS_DEFAULT_LOGGER')
+      require 'logger'
+      RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
+    end
+
+**Uwaga:** oba gemy – *wirble* i *hirb* – należy dopisać do każdego
+pliku *Gemfile* aplikacji Rails.
+
+
+## Roadmap for Learning Rails
+
+Roadmap specially designed for a beginner to navigate their way to Rails mastery.
+
+{%= image_tag "/images/Learning-Rails-Roadmap.png", :alt => "[Learning Rails Roadmap]" %} 
+
+[Źródło](http://techiferous.com/2010/07/roadmap-for-learning-rails/)

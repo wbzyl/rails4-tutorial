@@ -1,0 +1,130 @@
+#### {% title "i18n" %}
+
+# [I18n](http://guides.rubyonrails.org/i18n.html)
+
+Wyświetlane komunikaty, w szczególności komunikaty o błędach,
+powinny być po polsku.
+
+Jak to zrobić? Zaglądamy do katalogu *locales* po wskazówki:
+
+    :::ruby
+    # Sample localization file for English. 
+    # Add more files in this directory for other locales.
+    # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale 
+    # for starting points.
+
+Wszystkie(?) komunikaty Rails można znaleźć w plikach:
+
+* [action_view.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails/action_view.yml)
+* [active_record.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails/active_record.yml)
+* [active_support.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails/active_support.yml)
+
+Polskie tłumaczenia komunikatów są w pliku
+[pl.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/locale/pl.yml)
+
+Lokale zmieniamy w następujący sposób.
+W pliku *environment.rb* odkomentowujemy i edytujemy wiersz
+z `config.i18n.default_locale`:
+
+    :::ruby
+      # The default locale is :en and all translations 
+      # from config/locales/*.rb,yml are auto loaded.
+      # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
+      config.i18n.default_locale = :pl
+    end
+
+Wersję *raw* pliku *pl.yml* zapisujemy w katalogu *config/locales/*.
+
+Angielskie nazwy modeli i atrybutów też możemy przetłumaczyć.
+Przykład pokazujący jak to zrobić znajdziemy w pliku *active_record.yml*.
+Opisane to też jest w Rails Guides, 
+[Translations for Active Record Models](http://guides.rubyonrails.org/i18n.html#translations-for-active-record-models)
+
+
+## I18n w Fortunce
+
+Korzystamy z i18n:
+
+    :::yaml
+    pl:
+      activerecord:
+        errors:
+          template:
+            header:
+              one:   "%{model} nie został zachowany z powodu %{count} błędu"
+              other: "%{model} nie został zachowany z powodu %{count} błędów"
+            body: "Błędy dotyczą następujących pól:"
+
+Czy tak będzie lepiej?
+
+    :::html_rails
+    <div id="error_explanation">
+      <h2><%= I18n.t("activerecord.errors.template.header", 
+                :model => @fortune.class.name, :count => @fortune.errors.count) %>
+      <ul>
+      <p><%= I18n.t("activerecord.errors.template.body") %></p>
+      <% @fortune.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+
+## I18n pluralization
+
+Dodajemy w katalogach *config/initializers* oraz *config/locales*
+dwa pliki (nazwy plików mogą być dowolne):
+
+    :::ruby config/initializers/pluralization.rb
+    I18n::Backend::Simple.send(:include, I18n::Backend::Pluralization)
+
+oraz
+
+    :::ruby config/locales/pl_pluralization.rb
+    {
+      :pl => {
+        :i18n => {
+          :plural => {
+            :keys => [:one, :few, :other],
+            :rule => lambda { |n| n==1 ? :one :
+              [2,3,4].include?(n%10) && ![12,13,14].include?(n%100) && ![22,23,24].include?(n%100) ? :few :
+              :other
+            }
+     }}}}
+
+Teraz pliki z tłumaczeniami będą wyglądać tak:
+
+    :::yaml
+    too_long:
+      one:   "jest za długie (maksymalnie %{count} znak)"
+      few:   "jest za długie (maksymalnie %{count} znaki)"
+      other: "jest za długie (maksymalnie %{count} znaków)"
+    too_short:
+      one:   "jest za krótkie (minimalnie %{count} znak)"
+      few:   "jest za krótkie (minimalnie %{count} znaki)"
+      other: "jest za krótkie (minimalnie %{count} znaków)"
+
+
+
+## I18n_routing
+
+URL też czasami należy przetłumaczyć. Jak to zrobić opisano 
+w [Translate your Rails2/3 routes with ease](http://www.tricksonrails.com/2010/05/i18n_routing-translate-your-rails2-rails3-routes-with-ease/).
+
+
+## Przykład: will paginate
+
+Jak spolszczyć komunikaty: Next, Previous…
+
+
+## Gem r18n
+
+Nowe możliwości…
+
+* [Tutorial for R18n core](http://r18n.rubyforge.org/tutorial.html)
+
+
+## Różne
+
+Obejrzenie, krótkiego 
+[screencastu Ryana Batesa](http://railscasts.com/episodes/138-i18n) 
+też ma sens.
