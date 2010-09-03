@@ -1,20 +1,21 @@
-# Rails 3
+# Rails 4
 
 Gem z notatkami do wykładu „Architektura serwisów internetowych”.
+Przykłady JTZ dla wersji Rails aż do 4.
 
 
 ## Instalacja
 
 Wykonać polecenie:
 
-    gem install wb-rails3
+    gem install rails4-tutorial
 
 
 ## Uruchamianie
 
 Sprawdzamy gdzie w systemie został zainstalowany gem *wb-rails3*:
 
-    gem which wb-rails3
+    gem which rails4-tutorial
 
 Aplikację uruchamiamy tak:
 
@@ -23,7 +24,7 @@ Aplikację uruchamiamy tak:
 
 Na przykład:
 
-    rackup /usr/lib/ruby/gems/1.8/gems/wb-rails3/lib/config.ru -p 8008
+    rackup /usr/lib/ruby/gems/1.8/gems/rails4-tutorial/lib/config.ru -p 8008
 
 Po uruchomieniu aplikacja jest dostępna z URL:
 

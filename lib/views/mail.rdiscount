@@ -1,0 +1,28 @@
+#### {% title "Majlujemy" %}
+
+# Majlujemy
+
+Jak wysyłać email z aplikacji można obejrzeć na screencaście
+Ryana Batesa [Action Mailer in Rails 3](http://railscasts.com/episodes/206-action-mailer-in-rails-3).
+
+Poniżej ten przykład z dodatkami wspomnianymi przez Ryana.
+
+Zaczynamy:
+
+    :::
+    rails mailit
+    cd mailit
+    rails g scaffold user name:string email:string
+    rake db:migrate
+    rails g mailer user_mailer
+
+Do pliku *Gemfile* dopisujemy:
+
+    :::ruby
+    gem "mail"
+    gem "nifty-generators"
+    gem "thin"
+
+Teraz kolej na:
+
+    bundle install
