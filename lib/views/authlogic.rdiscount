@@ -1,0 +1,168 @@
+#### {% title "Autentykacja z Authlogic" %}
+
+# Autentykacja z Authlogic
+
+Różnice do Rails2:
+
+    rails g nifty:scaffold fortune quotation:text
+
+Konfiguracja routingu:
+
+    root :to => "fortunes#index
+
+Do Gemfile dopisujemy:
+
+    gem "authlogic"
+
+Teraz:
+
+    rm db/migrate/20100903194327_create_users.rb
+    rm db/development*
+    rails g migration CreateUsers
+
+Zamienimay migrację:
+
+    :::ruby
+    def self.up
+      create_table :users do |t|
+        t.string :username, :null => false
+        t.string :email, :null => false
+        t.string :crypted_password, :null => false
+        t.string :password_salt, :null => false
+        t.string :persistence_token, :null => false      
+        t.integer :login_count, :default => 0, :null => false
+        t.datetime :last_request_at
+        t.datetime :last_login_at
+        t.datetime :current_login_at
+        t.string :last_login_ip
+        t.string :current_login_ip
+      
+        t.timestamps
+      end
+      add_index :users, :username
+      add_index :users, :email
+    end
+    def self.down
+      drop_table :users
+    end
+
+Model *User*:
+
+    :::ruby
+    class User < ActiveRecord::Base
+      acts_as_authentic 
+
+      attr_accessible :username, :email, :password, :password_confirmation
+      attr_accessible :crypted_password, :password_salt, :persistence_token,
+        :login_count, :last_request_at, :last_login_at,
+        :current_login_at, :last_login_ip, :current_login_ip,
+        :created_at, :updated_at
+     end
+
+Routing:
+
+    Mailit::Application.routes.draw do
+      match 'signup' => 'users#new',             :as => :signup
+      match 'login'  => 'user_sessions#new',     :as => :login
+      match 'logout' => 'user_sessions#destroy', :as => :logout
+
+      resources :fortunes
+
+      resources :user_sessions
+      resources :users
+ 
+Widok aplikacji:
+
+    :::html_rails
+    <div id="user_nav">
+      <% if logged_in? %>
+        Welcome <%= current_user.username %>! Not you?
+        <%= link_to "Logout", logout_path %> |
+        <%= link_to "Edit Profile", edit_user_path(current_user.username) %>
+      <% else %>
+        <%= link_to "Register", signup_path %> |
+        <%= link_to "Login", login_path %>
+      <% end %>
+    </div>
+
+Dopiero teraz generujemy pseudo-model *UserSessions*:
+
+    rails g nifty:scaffold user_session login:string password:string new destroy --skip-model
+
+Tworzymy *UserSession*:
+
+    :::ruby app/models/user_session.rb
+    class UserSession < Authlogic::Session::Base
+      login_field :username  # pytanie: a to po co?
+    end
+
+Dodajemy linijkę:
+
+    class ApplicationController < ActionController::Base
+      include Authentication
+
+A plik z definicją *Application* wstawiamy do katalogu *lib*:
+
+    :::ruby lib/authentication.rb
+    # You can also restrict unregistered users from accessing a controller using
+    # a before filter. For example.
+    # 
+    #   before_filter :login_required, :except => [:index, :show]
+    #
+    module Authentication
+      def self.included(controller)
+        controller.send :helper_method, :current_user, :logged_in?, :redirect_to_target_or_default
+      end
+      
+      def current_user_session
+        return @current_user_session if defined?(@current_user_session)
+        @current_user_session = UserSession.find
+      end
+      
+      def current_user
+        return @current_user if defined?(@current_user)
+        @current_user = current_user_session && current_user_session.record
+      end
+      
+      def logged_in?
+        current_user
+      end
+      
+      def login_required
+        unless logged_in?
+          flash[:error] = "You must first log in or sign up before accessing this page."
+          store_target_location
+          redirect_to login_url
+        end
+      end
+      
+      def redirect_to_target_or_default(default)
+        redirect_to(session[:return_to] || default)
+        session[:return_to] = nil
+      end
+      
+      private
+      
+      def store_target_location
+        session[:return_to] = request.request_uri
+      end
+    end
+
+Jeszcze musimy poprawić kod tak aby działał routing 
+geneoany przez *Edit Profile*:
+
+    /users/wlodek/edit
+
+W tym celu konieczne są poprawki w kodzie kontrolera
+*UsersController*:
+
+    :::ruby
+    def edit
+      #@user = User.find(params[:id])
+      @user = current_user
+      ...
+    end
+    def update
+      #@user = User.find(params[:id])
+      @user = current_user
+      ...

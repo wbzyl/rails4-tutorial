@@ -14,7 +14,7 @@
 </head>
 <body>
   <header>
-   <h1><%= link_to "WB@Rails3_Rails3_Rails3___", "/" %></h1>
+   <h1><%= link_to "WB@Rails3_Rails4_Rails5___", "/" %></h1>
   </header>
   <div id="content">
    <article>

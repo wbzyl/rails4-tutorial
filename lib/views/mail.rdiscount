@@ -9,12 +9,8 @@ Poniżej ten przykład z dodatkami wspomnianymi przez Ryana.
 
 Zaczynamy:
 
-    :::
-    rails mailit
+    rails new mailit
     cd mailit
-    rails g scaffold user name:string email:string
-    rake db:migrate
-    rails g mailer user_mailer
 
 Do pliku *Gemfile* dopisujemy:
 
@@ -23,6 +19,137 @@ Do pliku *Gemfile* dopisujemy:
     gem "nifty-generators"
     gem "thin"
 
-Teraz kolej na:
+
+Teraz kolej na (dodałem pola: password oraz password_confirmation):
 
     bundle install
+    rails g nifty:layout
+    rails g nifty:scaffold user username:string email:string password:string password_confirmation:string
+    rake db:migrate
+    rails s thin
+
+Po wejściu na stronę 
+
+    http://localhost:3000/users/new**
+
+wpisaniu danych do formularza i kliknięciu przycisku „Create User”
+aplikacja ma wysłać na podany email email.
+
+## JTZ – konfiguracja
+
+Zaczynamy od inicjalizacji zmiennych z których korzysta program do
+wysłania poczty:
+
+    :::ruby /config/initializers/setup_mail.rb
+    ActionMailer::Base.smtp_settings = {
+      :address              => MAIL_CONFIG[:address],
+      :port                 => MAIL_CONFIG[:port],
+      :domain               => MAIL_CONFIG[:domain],
+      :user_name            => MAIL_CONFIG[:user_name],
+      :password             => MAIL_CONFIG[:password],
+      :authentication       => MAIL_CONFIG[:authentication],
+      :enable_starttls_auto => true
+    }
+    ActionMailer::Base.default_url_options[:host] = MAIL_CONFIG[:host]
+    ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor) if Rails.env.development?
+
+Oczywiście ukryliśmy „sensitive data”. Można to zrobić tak:
+
+    rails g nifty:config mail
+
+W wygenerowanym pliku *mail_config.yml* dopisujemy w *development*
+coś takiego (przykład jak skonfigurować konto na Gmailu):
+
+    :::ruby config/mail_config.yml
+    development:
+      address: smtp.gmail.com
+      port: 587
+      domain: gmail.com
+      user_name: wbzyl
+      password: sekret
+      authentication: plain
+      host: localhost:3000
+    
+    test:
+      domain: localhost:3000
+    
+    production:
+      domain: sigma.ug.edu.pl
+      user_name: wbzyl
+      ... uzupełnić ...
+      host: localhost:8064
+
+Drugi wygenerowany plik pozostawiamy bez zmian
+(albo przenosimy plik *mail_config.yml* w inne, bezpieczne miejsce):
+
+    :::ruby config/initializers/load_mail_config.rb
+    raw_config = File.read("#{Rails.root}/config/mail_config.yml")
+    MAIL_CONFIG = YAML.load(raw_config)[Rails.env].symbolize_keys
+
+## Mailer
+
+Skorzystamy z generatora:
+
+    rails g mailer user_mailer
+
+Zmieniamy wygenerowany kod na:
+
+    :::ruby app/mailers/user_mailer.rb
+    class UserMailer < ActionMailer::Base
+      def registration_confirmation(user)
+        mail(:to => user.email, :subject => "Registered", :from => "matwb@ug.edu.pl")
+      end  
+    end
+
+a po krótkim zastanowieniu na:
+
+    :::ruby app/mailers/user_mailer.rb
+    class UserMailer < ActionMailer::Base
+      default :from => "matwb@ug.edu.pl"
+      
+      def registration_confirmation(user)
+        @user = user 
+        attachments["rails.png"] = File.read("#{Rails.root}/public/images/rails.png")
+        mail(:to => user.email, :subject => "Registered")
+      end  
+    end
+
+Treść wysyłanego emaila umieszczamy w pliku:
+
+    :::html_rails /app/views/user_mailer/registration_confirmation.text.erb
+    <%= @user.username %>,
+    Thank you for registering! 
+    Edit Profile: <%= edit_user_url(@user, :host => MAIL_CONFIG[:host]) %>
+
+Uwaga: *Mail* nic nie wie na jakim hoście uruchomiona jest aplikacja.
+
+Kod wysyłający pocztę umieścimy dopisując w metodzie *create* kontrolera
+*UserController* (dlaczego w tej metodzie?):
+
+    :::ruby app/controllers/users_controller.rb
+    def create
+      @user = User.new(params[:user])
+      if @user.save
+        UserMailer.registration_confirmation(@user).deliver 
+        ... dalej bez zmian ...
+
+## Mail interceptors
+
+    :::ruby lib/development_mail_interceptor.rb
+    class DevelopmentMailInterceptor
+      def self.delivering_email(message)
+        message.subject = "[#{message.to}] #{message.subject}"
+        message.to = "matwb@ug.edu.pl"
+      end
+    end
+
+Dopisujemy (zrobiliśmy to już wcześniej):
+
+    :::ruby config/initializers/setup_mail.rb
+    ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor) if Rails.env.development?
+
+Ponieważ katalog *lib* nie jest w ścieżce *$LOAD_PATH* dopisujemy go w pliku
+konfiguracyjnym aplikacji:
+
+    :::ruby config/application.rb
+    config.autoload_paths += %W(#{config.root}/lib)

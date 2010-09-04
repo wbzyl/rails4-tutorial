@@ -16,6 +16,7 @@
 1. {%= link_to "Layouts", "/layouty" %}
 1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "Majlujemy", "/mail" %}
+1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
 
 TODO:
  
