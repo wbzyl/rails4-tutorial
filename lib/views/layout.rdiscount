@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="author" content="Włodek Bzyl" />
-  <title><%= "WB//Rails3" + page_title %></title>
+  <title><%= "WB//Rails4" + page_title %></title>
   <%= stylesheet_link_tag "/stylesheets/screen.css", "/stylesheets/uv.css", "/stylesheets/rails3.css" %>
   <%= stylesheet_link_tag "/stylesheets/print.css", :media => "print" %>
   <%= stylesheet_link_tag "/stylesheets/print-rails3.css", :media => "print" %>
