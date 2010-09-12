@@ -50,8 +50,12 @@ Model *User*:
 
     :::ruby
     class User < ActiveRecord::Base
-      acts_as_authentic 
-
+      # a tak zmieniamy domyślne ustawienia walidacji w Authlogic
+      acts_as_authentic do |c|
+        c.validates_length_of_password_field_options= {:within => 2..4}
+        c.validates_length_of_password_confirmation_field_options= {:within => 2..4}    
+      end
+      
       attr_accessible :username, :email, :password, :password_confirmation
       attr_accessible :crypted_password, :password_salt, :persistence_token,
         :login_count, :last_request_at, :last_login_at,
@@ -61,13 +65,14 @@ Model *User*:
 
 Routing:
 
+    :::ruby
     Mailit::Application.routes.draw do
       match 'signup' => 'users#new',             :as => :signup
       match 'login'  => 'user_sessions#new',     :as => :login
       match 'logout' => 'user_sessions#destroy', :as => :logout
-
+      
       resources :fortunes
-
+      
       resources :user_sessions
       resources :users
  
@@ -78,7 +83,7 @@ Widok aplikacji:
       <% if logged_in? %>
         Welcome <%= current_user.username %>! Not you?
         <%= link_to "Logout", logout_path %> |
-        <%= link_to "Edit Profile", edit_user_path(current_user.username) %>
+        <%= link_to "Edit Profile", edit_user_path(current_user.id) %>
       <% else %>
         <%= link_to "Register", signup_path %> |
         <%= link_to "Login", login_path %>
@@ -87,21 +92,29 @@ Widok aplikacji:
 
 Dopiero teraz generujemy pseudo-model *UserSessions*:
 
-    rails g nifty:scaffold user_session login:string password:string new destroy --skip-model
+    rails g nifty:scaffold user_session username:string password:string new destroy --skip-model
 
-Tworzymy *UserSession*:
+Czy wygenerowany widok *app/views/user_sessions/new.html.erb*
+będzie kiedykolwiek użyty? Czy można ten plik usunąć?
+
+Tworzymy **pseudo-model** *UserSession*:
 
     :::ruby app/models/user_session.rb
     class UserSession < Authlogic::Session::Base
-      login_field :username  # pytanie: a to po co?
     end
 
-Dodajemy linijkę:
+Dlatego mówimy, że *Authlogic* jest **model based**.
 
+Domieszkujemy moduł *Authentication* do klasy *ApplicationController*
+
+    :::ruby app/controllers/application_controller.rb
     class ApplicationController < ActionController::Base
       include Authentication
+      protect_from_forgery
+    end
 
-A plik z definicją *Application* wstawiamy do katalogu *lib*:
+Moduł *Authentication* zawiera definicje metod pomocniczych
+użytych powyżej.
 
     :::ruby lib/authentication.rb
     # You can also restrict unregistered users from accessing a controller using
@@ -111,7 +124,10 @@ A plik z definicją *Application* wstawiamy do katalogu *lib*:
     #
     module Authentication
       def self.included(controller)
-        controller.send :helper_method, :current_user, :logged_in?, :redirect_to_target_or_default
+        controller.send :helper_method, 
+          :current_user, :logged_in?, 
+          :login_required, :logout_required,
+          :redirect_to_target_or_default
       end
       
       def current_user_session
@@ -136,6 +152,15 @@ A plik z definicją *Application* wstawiamy do katalogu *lib*:
         end
       end
       
+      def logout_required
+        if logged_in?
+          store_target_location
+          flash[:notice] = "You must be logged out before accessing this page."
+          redirect_to root_url
+          return false
+        end
+      end
+      
       def redirect_to_target_or_default(default)
         redirect_to(session[:return_to] || default)
         session[:return_to] = nil
@@ -144,12 +169,12 @@ A plik z definicją *Application* wstawiamy do katalogu *lib*:
       private
       
       def store_target_location
-        session[:return_to] = request.request_uri
+        session[:return_to] = request.fullpath
       end
     end
 
 Jeszcze musimy poprawić kod tak aby działał routing 
-geneoany przez *Edit Profile*:
+generowny przez *Edit Profile*:
 
     /users/wlodek/edit
 
@@ -167,13 +192,22 @@ W tym celu konieczne są poprawki w kodzie kontrolera
       @user = current_user
       ...
 
+Pytanie: dlaczego po tych poprawkach routing działa?
+Czy poprawki te są konieczne?
+
 
 ## Le Grande Finale: ograniczamy dostęp 
 
 Jak zapewnić sobie, aby **tylko** zalogowany użytkownik mógł 
 dodawać nowe cytaty oraz edytować i usuwać już istniejące cytaty?
 
-Po co?
+Częściowe rozwiązanie: dopisujemy w kontrolerze
+*FortunesController*:
+
+    :::ruby
+    before_filter :login_required, :except => [:index, :show]
+
+Dlaczego to rozwiązanie jest częściowe?
 
 
 ## Jak zmienić zapomniane hasło?
@@ -299,7 +333,7 @@ Here is what it does for extra security:
 
 Widok *new.html.erb* dla tego kontrolera:
 
-    :::html 
+    :::html
     <h1>Forgot Password</h1>
     <p>Fill out the form below and instructions 
        to reset your password will be emailed to you:
