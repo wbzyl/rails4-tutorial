@@ -50,15 +50,22 @@ wysłania poczty:
       :authentication       => MAIL_CONFIG[:authentication],
       :enable_starttls_auto => true
     }
-    ActionMailer::Base.default_url_options[:host] = MAIL_CONFIG[:host]
     ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor) if Rails.env.development?
+    ActionMailer::Base.default_url_options[:host] = MAIL_CONFIG[:host]
 
-Oczywiście ukryliśmy „sensitive data”. Można to zrobić tak:
+**Uwaga:** Setting *ActionMailer::Base.default_url_options directly*
+is now deprecated, use the configuration option to set
+the default host:
+
+    :::ruby config/application.rb
+    config.action_mailer.default_url_options = { :host => MAIL_CONFIG[:host] }
+
+Oczywiście ukryliśmy „sensitive data”. Zrobiłem to tak:
 
     rails g nifty:config mail
 
-W wygenerowanym pliku *mail_config.yml* dopisujemy w *development*
-coś takiego (przykład jak skonfigurować konto na Gmailu):
+W wygenerowanym pliku *mail_config.yml* dopisałem w *development*
+coś takiego (przykład konfigurowacji konto na Gmailu):
 
     :::ruby config/mail_config.yml
     development:
