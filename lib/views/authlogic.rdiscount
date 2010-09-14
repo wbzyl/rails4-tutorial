@@ -302,7 +302,8 @@ i wklejamy gotowca (na razie tylko tyle):
       end
     end
 
-Metodę *require_no_user* dopisujemy pliku *authentication.rb*.
+Metodę *logout_required* dopisujemy w pliku *lib/authentication.rb*
+do *controler.send* (definicję już wpisaliśmy wcześniej):
 
     :::ruby lib/authentication.rb
     module Authentication
@@ -310,15 +311,6 @@ Metodę *require_no_user* dopisujemy pliku *authentication.rb*.
         # dopisujemy :logout_required
         controller.send :helper_method, :current_user, :logged_in?, 
             :redirect_to_target_or_default, :logout_required
-      end
-      
-      def logout_required
-        if logged_in?
-          store_target_location
-          flash[:notice] = "You must be logged out before accessing this page."
-          redirect_to root_url
-          return false
-        end
       end
 
 Method *find_using_perishable_token* is a special in *Authlogic*. 
@@ -345,14 +337,15 @@ Widok *new.html.erb* dla tego kontrolera:
       <%= submit_tag "Reset my password" %>
     <% end %>
 
-Kilknięcie na przycisk "Reset my password" powoduje wywołanie 
-metody *create* tego kontrolera:
+Kilknięcie na przycisk "Reset my password" powoduje wywołanie metody
+*create* kontrolera:
 
     :::ruby app/controllers/password_resets_controller.rb
     def create
       @user = User.find_by_email(params[:email])
       if @user
-        # za chwilę tutaj wstawimy kod wysyłający Email
+        # tutaj wstawiamy kod wysyłający Email – implementacja poniżej
+        @user.deliver_password_reset_instructions!
         flash[:notice] = "Instructions to reset your password have been emailed to you. " +
           "Please check your email."
         redirect_to root_url
@@ -362,11 +355,12 @@ metody *create* tego kontrolera:
       end
     end
 
-Zanim zajmiemy się wysyłaneim eamila, podczepiamy „Forgot password?”.
-W widoku *layout/application.html.erb* w elemencie *div#user_nav*
-dopisujemy link do "Forgot password?" (i kilka innych rzeczy):
+Zanim zajmiemy się wysyłaniem maila, podczepimy link do „Forgot password?”.
 
-    :::html
+Dopisujemy link do "Forgot password?" (i kilka innych rzeczy)
+do elementu *div#user_nav*
+
+    :::html app/views/layouts/application.html.erb
     <div id="user_nav">
       <% if logged_in? %>
         Welcome <%= current_user.username %>! Not you?
@@ -382,52 +376,57 @@ dopisujemy link do "Forgot password?" (i kilka innych rzeczy):
 
 ### Email z linkiem do zmiany hasła 
 
-TODO: Wysyłanie emaila z linkiem realizuje metoda *password_reset_instructions!*.
-Za wysłanie odpowiedzialna jest klasa *Notifier*.
+Za wysłanie maila z linkiem będzie odpowiedzialna metoda
+*deliver_password_reset_instructions!*:
 
-    :::ruby
+    :::ruby app/models/user.rb
     class User < ActiveRecord::Base
-      acts_as_authentic
-      
+      ...
       def deliver_password_reset_instructions!
         reset_perishable_token!
-        Notifier.deliver_password_reset_instructions(self)
+        Notifier.password_reset_instructions(self).deliver
       end
 
-gdzie metoda *reset\_perishable\_token!* gemu *Authlogic*
-nadaje nową przypadkową wartość polu *perishable_token*.
+Uwagi: 
 
-Pozostaje zdefiniować **model** *Notifier* i w niej metodę 
-*password_reset_instructions* (konwencja nazewnicza: 
-nazwa bez prefixu *deliver*):
+* metoda *reset\_perishable\_token!* jest zdefiniowana w *Authlogic*;
+  metoda ta zmienia wartość pola *perishable_token* w tabelce *users*
+  na nową przypadkową wartość
+* jak widać za wysłanie odpowiedzialna jest klasa *Notifier*
 
-    :::ruby
+Teraz zajmiemy się wygenerowaniem gotowca dla *Notifier*:
+
+    rails g mailer Notifier
+    
+      create  app/mailers/notifier.rb
+      invoke  erb
+      create    app/views/notifier
+
+Zmieniamy wygenerowany kod na:
+
+    :::ruby app/mailers/notifier.rb
     class Notifier < ActionMailer::Base
-      default_url_options[:host] = "sigma.ug.edu.pl:3000"
-      #default_url_options[:host] = "localhost:3000"
-      
+      default :from => "matwb@ug.edu.pl"
+
       def password_reset_instructions(user)
-        subject    "Password Reset Instructions"
-        from       "noreply@sigma.ug.edu.pl"
-        recipients  user.email
-        sent_on     Time.now
-        body        :edit_password_reset_url => 
-                       edit_password_reset_url(user.perishable_token)
-      end
+        @user = user 
+        mail(:to => user.email, :subject => "Pasword reset instructions")
+      end  
     end
 
-Szablon emaila, to widok *app/views/notifier/password_reset_instructions.erb*:
+I dodajemy szablon tekstowy dla tego maila:
 
-    :::html
+    :::html_rails app/views/notifier/password_reset_instructions.text.erb
     A request to reset your password has been made. 
     If you did not make this request, simply ignore this email. 
     If you did make this request just click the link below:
-    
-    <%= @edit_password_reset_url %>
-    
+
+      <%= edit_password_reset_url(@user.perishable_token, :host => MAIL_CONFIG[:host]) %>
+
     If the above URL does not work try copying and pasting 
     it into your browser. If you continue to have problem 
     please feel free to contact us.
+ 
 
 ### Użytkownik kilka na link w emailu
 
@@ -437,17 +436,17 @@ Link który użytkownik ma kliknąć w emailu będzie wyglądał jakoś tak:
 
 Po kliknięciu wykonana zostanie metoda *edit* klasy *PasswordResetsController*:
 
-    :::ruby
+    :::ruby app/controllers/password_resets_controller.rb
     def edit
       render
     end
 
-która renderuje widok *edit.html.erb*:    
+Powiązany z nią widok jest taki:
     
-    :::ruby
+    :::ruby app/views/password_resets/edit.html.erb
     <h1>Change My Password</h1>
     
-    <% form_for @user, :url => password_reset_path, :method => :put do |f| %>
+    <%= form_for @user, :url => password_reset_path, :method => :put do |f| %>
       <%= f.error_messages %>
       <%= f.label :password %><br />
       <%= f.password_field :password %><br />
@@ -463,14 +462,13 @@ Wyrenderowany formularz wygląda mniej więcej tak
 
     :::html
     <form action="/password_resets/RgfuGYh4yU6qbQIsIeiE" id="edit_user_1" method="put">
-    ...
     <input id="user_password" name="user[password]" size="30" type="password" />
-    ...
+    <input id="user_password_confirmation" name="user[password_confirmation]" size="30" type="password" />
 
 Oznacza to, że po kliknięciu na przycisk submit zostanie wywołana
 metoda *update* klasy *PasswordResetsConttoller* (dopisujemy ją):
 
-    :::ruby
+    :::ruby app/controllers/password_resets_controller.rb
     def update
       @user.password = params[:user][:password]
       @user.password_confirmation = params[:user][:password_confirmation]
@@ -481,3 +479,14 @@ metoda *update* klasy *PasswordResetsConttoller* (dopisujemy ją):
         render :action => :edit
       end
     end
+
+## TODO
+
+Pozostało pozmieniać napisy na przyciskach oraz tytuły niektórych
+stron. Na przykład, napis na przycisku „New User Session” na „Zaloguj”
+a tytuł „New User Session” na „Logowanie” itp.
+
+Na stronie „Edit User” możemy wypisać zawartość pozostałych
+pól tabelki *users*.
+
+Czy zostało coś jeszcze do zrobienia?
