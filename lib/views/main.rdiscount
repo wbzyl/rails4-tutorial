@@ -17,15 +17,15 @@
 1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "Majlujemy", "/mail" %}
 1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
+1. {%= link_to "Autoryzacja z Cancan", "/cancan" %}
 
 TODO:
- 
+
+1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %} 
 1. {%= link_to "Hello Fortune", "/fortunka" %}
 1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
-1. {%= link_to "Autentykacja z Authlogic", "/authentication-authlogic" %}
-1. {%= link_to "Autentykacja z Devise", "/authentication-devise" %}
-1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %}
 1. {%= link_to "Heroku krok po kroku", "/heroku" %}
+1. {%= link_to "Autentykacja z Devise", "/authentication-devise" %}
 1. {%= link_to "Aplikacja „Todo”", "/todo" %}
 1. {%= link_to "Aplikacja „Blog”", "/blog" %}
 1. {%= link_to "Aplikacja „Store”", "/store" %}
