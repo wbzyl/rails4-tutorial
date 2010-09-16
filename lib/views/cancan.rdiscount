@@ -15,59 +15,51 @@ Zamierzamy to sprawdzić, dodając autoryzację do Fortunki z autentykacją.
 * [CanCan](http://github.com/ryanb/cancan) – 
   simple authorization for Rails.
 
-Zaczynamy od sklonowania Fortunki z *Autentykacja z Authlogic*:
+Zaczynamy od sklonowania Fortunki z autentykacja:
 
     git clone git://sigma.ug.edu.pl/~wbzyl/rails3-authlogic
 
-Teraz zmieniamy katalog, czytamy plik README:
+Teraz zmieniamy katalog:
 
     cd rails3-authlogic
-    less README
 
-i tak jak to opisano w README tworzymy gałąź *cancan*:
+i tak jak to opisano w pliku *README* tworzymy 
+„tracking branch” *cancan*:
 
     git checkout --track origin/cancan
 
-Pora na migrację i umieszczenie przykładowych danych w bazie:
+Pora na migrację:
 
     rake db:migrate
-    rake db:seed
 
-Teraz jesteśmy w miejscu w którym zakończyliśmy zabawę z Authlogic.
+Teraz jesteśmy w miejscu w którym zakończyliśmy 
+implementację autentykacji z Authlogic.
 Ale tym razem jesteśmy na gałęzi **cancan**, a nie na **master**.
+
+I18n: komunikaty definiowane przez CanCan powinny
+być wypisywane w języku polskim.
+Jak to zrobić jest opisane w dokumentacji kontrolera
+[ControllerAdditions](http://rubydoc.info/github/ryanb/cancan/master/CanCan/ControllerAdditions)
+
+
+## Autoryzacja na podstawie roli
 
 Wykorzystamy gem *CanCan* do dodania trzech ról do Fortunki:
 
 * admin — **może** wszystko
-* moderator — **może**  edytować i usuwać cytaty
-* author — **może** dodawać, edytować i usuwać swoje cytaty
+* moderator — **może**  edytować i usuwać **wszystkie** cytaty
+* author — **może** dodawać, edytować i usuwać **swoje** cytaty
 
+Dopuszczamy sytuację, że użytkownik może być przypisany do kilku ról.
 
-## TODO: I18n
+O „role based authorization” można poczytać na 
+[CanCan Wiki](http://github.com/ryanb/cancan/wiki/Role-Based-Authorization).
+Jak to działa można przećwiczyć instalując gem *role_model* i przerabiając
+przykłady z [README](http://github.com/martinrehfeld/role_model).
 
-Zobacz plik *lib/cancan/controller_additions.rb* w repo
-gemu *cancan*, albo dokumentację na *http://rubydoc.info/*:
+### Zmiany w tabeli *users*
 
-    http://rubydoc.info/github/ryanb/cancan/master/CanCan/ControllerAdditions
-
-
-## TODO: Przygotowania
-
-TODO: przeczytać info na wiki:
-
-    http://github.com/ryanb/cancan/wiki/Role-Based-Authorization
-
-oraz zainstalować i przećwiczyć:
-
-    http://github.com/martinrehfeld/role_model
-
-
-Dopuszczamy sytuację, że użytkownik może mieć kilka ról.
-
-Wszystkie role użytkownika będziemy **kodować** w dodatkowym atrybucie
-modelu *User* o nazwie *roles_mask*.
-
-Zaczynamy od dodania kolumny *roles_mask:integer* do tabeli *users*:
+TODO: Zaczynamy od dodania kolumny *roles_mask:integer* do tabeli *users*:
 
     script/generate migration AddRoleRolesMaskToUser roles_mask:integer
     rake db:migrate
@@ -115,6 +107,8 @@ a limitation in HTML form checkbox”.
 
 Jak to działa? Korzystamy z wirtualnego atrybutu *roles*.
 
+Wszystkie role użytkownika będziemy **kodować** w dodatkowym atrybucie
+modelu *User* o nazwie *roles_mask*.
 
 ## TODO: Powiązania między modelami
 
