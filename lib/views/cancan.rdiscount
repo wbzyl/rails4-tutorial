@@ -44,118 +44,147 @@ Jak to zrobić jest opisane w dokumentacji kontrolera
 
 ## Autoryzacja na podstawie roli
 
-Wykorzystamy gem *CanCan* do dodania trzech ról do Fortunki:
+Wykorzystamy gem *CanCan* do dodania trzech ról do Fortunki.
+Dopuszczamy sytuację, że użytkownik może być przypisany do kilku ról.
 
 * admin — **może** wszystko
-* moderator — **może**  edytować i usuwać **wszystkie** cytaty
-* author — **może** dodawać, edytować i usuwać **swoje** cytaty
+* moderator — **może**  edytować i usuwać **wszystkie** fortunki
+* author — **może** dodawać, edytować i usuwać **swoje** fortunki
 
-Dopuszczamy sytuację, że użytkownik może być przypisany do kilku ról.
+Nie zapominamy o uwzględnieniu powiązania między modelami *User*
+i *Fortune*. Inaczej role *moderator* i *author* nie 
+będą miały sensu.
+
+Ponieważ każdy użytkownik może wpisać wiele fortunek, a każda 
+fortunka została wpisana przez jednego użytkownika
+więc między *User* a *Fortune* mamy powiązanie **jeden do wielu**:
+
+    :::ruby
+    class Fortune < ActiveRecord::Base
+      attr_accessible :quotation, :user_id
+      belongs_to :user
+
+    class User < ActiveRecord::Base
+      has_many :fortunes
+
+Kończymy implementację powiązania między modelami dodając
+pole *user_id:integer* do tabeli *fortunes*:
+
+    rails g migration AddUserIDToFortune user_id:integer
+    rake db:migrate
+
+Dodatkowo będziemy korzystać z gemu *role_model*.
+Dlaczego? Wyjaśni się za chwilę.
+
+Dlatego do pliku *Gemfile* dopisujemy:
+
+    :::ruby
+    gem 'cancan'
+    gem 'role_model'
+
+i instalujemy nowe gemy wraz z zależnościami:
+
+    bundle install
 
 O „role based authorization” można poczytać na 
 [CanCan Wiki](http://github.com/ryanb/cancan/wiki/Role-Based-Authorization).
-Jak to działa można przećwiczyć instalując gem *role_model* i przerabiając
-przykłady z [README](http://github.com/martinrehfeld/role_model).
+
 
 ### Zmiany w tabeli *users*
 
-TODO: Zaczynamy od dodania kolumny *roles_mask:integer* do tabeli *users*:
+Informację o rolach będziemy zapisywać w tabeli *users*.
+W tym celu dodamy do tabeli nową kolumnę *roles_mask:integer*.
 
-    script/generate migration AddRoleRolesMaskToUser roles_mask:integer
+    rails g migration AddRolesMaskToUser roles_mask:integer
     rake db:migrate
 
-Następnie dopisujemy do modelu *User*:
+Następnie w modelu *User* dopisujemy trochę kodu z README
+gemu *role_model*.
 
     :::ruby
     class User < ActiveRecord::Base
-      attr_accessible :login, :email, :password, :password_confirmation
+      include RoleModel
+      
       attr_accessible :roles
+      
+      # optionally set the integer attribute to store the roles in,
+      # :roles_mask is the default
+      roles_attribute :roles_mask
+      
+      # declare the valid roles -- do not change the order if you add more
+      # roles later, always append them at the end!
+      roles :admin, :moderator, :author
 
-      has_many :fortunes
-    
-      named_scope :with_role, lambda { 
-        |role| {:conditions => "roles_mask & #{2**ROLES.index(role.to_s)} > 0"} 
-      }
-    
-      ROLES = %w[admin moderator author]
-    
-      def roles=(roles)
-        self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.sum
-      end
-      def roles
-        ROLES.reject { |r| ((roles_mask || 0) & 2**ROLES.index(r)).zero? }
-      end
-      def role?(role)
-        roles.include? role.to_s
-      end
+Przyjrzymy się rolom na konsoli przerabiając przykłady
+z [README](http://github.com/martinrehfeld/role_model):
 
-Do widoku częściowego *users/_form.html.erb* dopisujemy:
+    rails console --sandbox
 
-    :::html_rails
-    <p>
-      <%= f.label :roles %><br />
-      <% for role in User::ROLES %>
-        <%= check_box_tag "user[roles][]", role, @user.roles.include?(role) %>
-        <%=h role.humanize %><br />
-      <% end %>
-      <%= hidden_field_tag "user[roles][]", "" %>
-    </p>
-
-I jeszcze komentarz do kodu: „use of *hidden_field_tag* to workaround
-a limitation in HTML form checkbox”.
-
-
-Jak to działa? Korzystamy z wirtualnego atrybutu *roles*.
-
-Wszystkie role użytkownika będziemy **kodować** w dodatkowym atrybucie
-modelu *User* o nazwie *roles_mask*.
-
-## TODO: Powiązania między modelami
-
-Każada fortunka została wpisana przez jakiegoś użytkownika,
-a użytkownik mógł wpisać wiele fortunek:
+Zaczynamy od utworzenia nowego użytkownika:
 
     :::ruby
-    belongs_to :user    // model Fortune
-    has_many :fortunes  // model User
+    u = User.new
 
-Migracja:
-
-    script/generate migration AddUserIdToFortune user_id:integer
-    rake db:migrate
-
-Dopisujemy identyfikator użytkownika w modelu *Fortune* do
-*attr_accessible*, ponieważ będziemy chcieli aby admini
-i moderatorzy mogli go zmieniać:
+role assignment:
 
     :::ruby
-    attr_accessible :quotation, :user_id
+    u.roles = [:admin]  # ['admin'] works as well
+    => [:admin]
 
+adding roles:
 
-## TODO: Umieszczamy przykładowe dane w bazie
+    :::ruby
+    u.roles << :moderator
 
-Przykładowe dane wpiszemy w pliku *db/seeds.rb*.
-W Railsach jest specjalne zadanie *rake*, które
-dane z tego pliku „przepisze” do bazy:
+querying roles: get all valid roles that have been declared:
 
-    rake db:seed  # load the seed data from db/seeds.rb
+    :::ruby
+    User.valid_roles
 
-Zaczynamy od umieszczenia w bazie trzech użytkowników:
+retrieve all assigned roles:
 
-    User.create :login => 'wlodek', :email => 'matwb@ug.edu.pl', 
-      :password=> '1234', :password_confirmation => '1234', 
-      :roles => ["admin", "", ""]
-    User.create :login => 'renia', :email => 'renia@example.pl', 
-      :password=> '1234', :password_confirmation => '1234', 
-      :roles => ["", "moderator", ""]
-    User.create :login => 'bazylek', :email => 'bazylek@cats.com', 
-      :password=> '1234', :password_confirmation => '1234', 
-      :roles => ["", "", "author"]
+    :::ruby
+    u.roles # aliased to role_symbols for DeclarativeAuthorization
+
+check for individual roles:
+
+    :::ruby
+    u.has_role? :author  # has_role? is also aliased to is?
+
+check for multiple roles:
+
+    :::ruby
+    u.has_any_role? :author, :moderator   # has_any_role? is also aliased to is_any_of?
+    u.has_all_roles? :author, :moderator  # has_all_roles? is also aliased to is?
+
+see the internal bitmask representation (3 = 0b0011):
+
+    :::ruby
+    u.roles_mask
+
+## Umieszczamy przykładowe dane w bazie
+
+Ułatwimy sobie pracę z częściowo zaimplementowaną autoryzacją
+umieszczając w bazie trochę danych.
+
+Zaczynamy od zdefiniowania trzech użytkowników:
+
+    :::ruby db/seed.rb
+    User.create :username => 'wlodek', :email => 'matwb@ug.edu.pl',
+      :password=> '1234', :password_confirmation => '1234',
+      :roles => [:admin]
+    User.create :username => 'renia', :email => 'renia@example.pl', 
+      :password=> '1234', :password_confirmation => '1234',
+      :roles => [:moderator]
+    User.create :username => 'bazylek', :email => 'bazylek@cats.com',
+      :password=> '1234', :password_confirmation => '1234',
+      :roles => [:author]
 
 W tej wersji Fortunki skorzystamy z cytatów ze strony
 [The Quotations Page](http://www.quotationspage.com/subjects/).
-Każdemu użytkownikowi przypiszemy po dwa cytaty:
+Włodkowi przypiszemy dwa, a Bazylkowi cztery cytaty z tej strony:
 
+    :::ruby db/seed.rb
     Fortune.create :quotation => "Men willingly believe what they wish.",
       :user_id => 1
     Fortune.create :quotation => "I have often regretted my speech, never my silence.",
@@ -168,6 +197,51 @@ Każdemu użytkownikowi przypiszemy po dwa cytaty:
       :user_id => 3
     Fortune.create :quotation => "Security is a kind of death.",
       :user_id => 3
+
+Dane z pliku *db/seeds.rb* „przepiszemy” do bazy za pomocą gotowego
+zadanie *rake*:
+
+    rake db:seed  # load the seed data from db/seeds.rb
+
+Na konsoli sprawdzamy, czy coś poszło nie tak:
+
+    :::ruby
+    User.all
+    Fortune.all
+    User.find(1).has_role? :admin
+
+## Podrasowujemy widoki
+
+Zacznyamy od widoku częściowego, gdzie dopisujemy:
+
+    :::html_rails app/models/users/_form.html.erb
+    <p>
+      <%= f.label :roles %><br />
+      <% for role in User.valid_roles %>
+        <%= check_box_tag "user[roles][]", role, @user.roles.include?(role) %>
+        <%= role.to_s.humanize %><br />
+      <% end %>
+    </p>
+
+Przy okazji zmieniamy walidację:
+
+    :::ruby
+    class User < ActiveRecord::Base
+      acts_as_authentic do |c|
+        #c.validates_length_of_password_field_options= {:within => 2..4}
+        #c.validates_length_of_password_confirmation_field_options= {:within => 2..4}    
+        c.ignore_blank_passwords= true
+      end
+
+Dlaczego? Czy poniższy cytat 
+z [dokumentacji](http://rubydoc.info/github/binarylogic/authlogic/master/Authlogic/ActsAsAuthentic/Password/Config#ignore_blank_passwords-instance_method)
+coś wyjaśnia?
+
+„Think about a profile page, where the user can edit all of
+their information, including changing their password. If they do not
+want to change their password they just leave the fields blank. This
+will try to set the password to a blank value, in which case is
+incorrect behavior. As such, Authlogic ignores this.”
 
 
 ## TODO: Zmiany w layoucie
@@ -190,29 +264,49 @@ powinniśmy zobaczyć co Authlogic zapisał w sesji:
     :::yaml
     --- !ruby/object:User 
     attributes: 
-      ...
-      last_request_at: !timestamp 
-        at: "2010-05-10 11:24:35.641914 Z"
-        "@marshal_with_utc_coercion": true
-      crypted_password: 50ae…9f
-      perishable_token: EFHnHjn_-stHPpMPFoMb
-      ...
+      created_at: 2010-09-16 20:21:00.365203
+      last_request_at: &id001 2010-09-16 21:08:31.265948 Z
+      crypted_password: 2e2b....a6ba
+      perishable_token: DtGcInxA8Do0Z2vJcFNX
+      updated_at: &id002 2010-09-16 21:08:31.266530 Z
+      username: wlodek
       current_login_ip: 127.0.0.1
-      id: "1"
-      current_login_at: 2010-05-10 11:23:58
-      password_salt: 3Jm5kBjYvk6qUlZX50YA
-      roles_mask: "1"
-      login_count: "1"
-      persistence_token: e5cb…fe
-      ...
-      login: wlodek
+      id: 1
+      current_login_at: 2010-09-16 21:03:53.627695
+      password_salt: GCKhdI6rry414DqhhQLY
+      roles_mask: 1
+      login_count: 6
+      persistence_token: ebd3....591d
+      last_login_ip: 127.0.0.1
+      last_login_at: 2010-09-16 20:53:01.460084
       email: matwb@ug.edu.pl
-      ...
+    attributes_cache: 
+      last_request_at: *id001
+      updated_at: *id002
+    changed_attributes: {}
+
+    destroyed: false
+    marked_for_destruction: false
+    new_record: false
+    new_record_before_save: false
+    password_changed: 
+    previously_changed: !map:ActiveSupport::HashWithIndifferentAccess 
+      last_request_at: 
+      - 2010-09-16 21:05:40.304001 Z
+      - *id001
+      perishable_token: 
+      - xUS96rH5cPRMXvSCQZ6
+      - DtGcInxA8Do0Z2vJcFNX
+      updated_at: 
+      - 2010-09-16 21:05:40.304566 Z
+      - *id002
+    readonly: false
+    skip_session_maintenance: false
 
 Stąd widzimy, że 
 
     :::ruby
-    current_user.login
+    current_user.username
 
 to login zalogowanego użytkownika.
 
@@ -220,33 +314,30 @@ Zatem dopisujemy w *layout/application.html.erb*
 poniżej linka *"Logout"*:
 
     :::html_rails
-    Hello <em><%= current_user.login %></em>
+    Welcome <em><%= current_user.username %></em>
 
 
-## TODO: Zmiany na stronie głównej
+## Zmiany widoków index i show
 
-Widok z rusztowania to tabelka. Nie wygląda to zbyt ładnie.  
+Wygenerowanny widok to tabelka. Nie wygląda to zbyt ładnie.  
 Zamiast tabelki uzyjemy kilku elementów *div*.
 
-A w widoku *show.html.erb* przy każdym cytacie
+W widoku *show* przy każdym cytacie
 dopiszemy login użytkownika który dodał cytat.
 
-Oto oryginalny widok *fortunes/index.html.erb*:
+Oto oryginalny widok *index*:
 
-    :::html_rails
+    :::html_rails app/views/fortunes/index.html.erb
     <table>
       <tr>
         <th>Quotation</th>
       </tr>
       <% for fortune in @fortunes %>
         <tr>
-          <td><%=h fortune.quotation %></td>
+          <td><%= fortune.quotation %></td>
           <td><%= link_to "Show", fortune %></td>
-          <% if logged_in? %>
-            <td><%= link_to "Edit", edit_fortune_path(fortune) %></td>
-            <td><%= link_to "Destroy", fortune, :confirm => 'Are you sure?', 
-                      :method => :delete %></td>
-          <% end %>
+          <td><%= link_to "Edit", edit_fortune_path(fortune) %></td>
+          <td><%= link_to "Destroy", fortune, :confirm => 'Are you sure?', :method => :delete %></td>
         </tr>
       <% end %>
     </table>
@@ -254,9 +345,9 @@ Oto oryginalny widok *fortunes/index.html.erb*:
 
 A to ten sam widok po „liftingu”:
 
-    :::html_rails
+    :::html_rails app/views/fortunes/index.html.erb
     <% for fortune in @fortunes %>
-      <p><%=h fortune.quotation %>
+      <p><%= fortune.quotation %>
       <p><%= link_to "Show", fortune %>
          <% if logged_in? %>
            | <%= link_to "Edit", edit_fortune_path(fortune) %>
@@ -267,23 +358,26 @@ A to ten sam widok po „liftingu”:
     <% end %>
     <p><%= link_to "New Fortune", new_fortune_path %></p>
 
-A to są poprawki do widoku *fortunes/show.html.erb*:
+Na razie ukrywamy linki do edycji i usuwania przed niezalogowanymi
+użytkownikami. **TODO** Docelowo zastosujemy tutaj role.
 
-    :::html_rails
+A to są poprawki do widoku *show*:
+
+    :::html_rails app/views/fortunes/show.html.erb
     <p>
-      <strong>Quotation </strong> added by <em><%= @fortune.user.login %></em>
+      <strong>Quotation </strong> added by <em><%= @fortune.user.username %></em>
     </p>
     <p>
-      <%=h @fortune.quotation %>
+      <%= @fortune.quotation %>
     </p>
 
 
-## TODO: Zmiany w edycji fortunek
+## Zmiany w edycji fortunek
  
-Do widoku częściowego *_form.html.erb* dodajemy możliwość edycji
+Do widoku częściowego dodamy możliwość edycji
 użytkownika (użyjemy listy rozwijanej), który dodał cytat.
 
-    :::html_rails
+    :::html_rails app/views/fortunes/_form.html.erb
     <% form_for @fortune do |f| %>
       <%= f.error_messages %>
       <p>
@@ -296,9 +390,10 @@ użytkownika (użyjemy listy rozwijanej), który dodał cytat.
       <p><%= f.submit "Submit" %></p>
     <% end %>
 
+Po co to robimy?
 Na razie każdy zalogowany użytkownik może dodawany przez siebie cytat
-przypisać innemu użytkownikowi. Później ograniczymy
-możliwość edycji użytkownika do admina i moderatora.
+przypisać innemu użytkownikowi. Później ograniczymy możliwość edycji
+użytkownika do admina i moderatora.
 
 Tyle przygotowań i poprawek w aplikacji. Teraz zabieramy się za
 implementację autoryzacji.
@@ -310,17 +405,11 @@ implementację autoryzacji.
   {%= image_tag "/images/authorization.jpg", :alt => "[Autoryzacja]" %}
 </blockquote>
 
-Zaczynamy instalacji gemu *cancan* w Fortunce:
+Zgodnie z tym co jest napisane w dokumentacji CanCan,
+autoryzację programujemy tworząc nową klasę
+i włączając do niej moduł *CanCan::Ability*:
 
-    :::ruby
-    Rails::Initializer.run do |config|
-      config.gem "authlogic", "2.1.3"
-      config.gem "cancan", "1.1.1"
-
-Autoryzację będziemy programować tworząc nową klasę
-i domieszkujac do niej moduł *CanCan::Ability*:
-
-    :::ruby 
+    :::ruby app/models/ability.rb
     class Ability  
       include CanCan::Ability  
 
@@ -329,14 +418,15 @@ i domieszkujac do niej moduł *CanCan::Ability*:
     end
 
 gdzie do metody *initialize* przkazywany jest obiekt *user*.
-W metodzie **initialize** określamy to co może każdy użytkownik.
+Następnie w metodzie **initialize** określimy to co może każdy użytkownik.
 
-Autor gemu sugeruje, aby powyższy kod umieścić w pliku *models/ability.rb*.
+Autor gemu sugeruje, aby powyższy kod umieścić w folderze
+*app/models*.
 
-Zaczynamy umożliwienia każdemu użytkownikowi czytanie z modelu
+TODO: Zaczynamy umożliwienia każdemu użytkownikowi czytanie z modelu
 *Fortune*:
 
-    :::ruby 
+    :::ruby app/models/ability.rb
     class Ability
       include CanCan::Ability  
 
@@ -345,6 +435,8 @@ Zaczynamy umożliwienia każdemu użytkownikowi czytanie z modelu
         can :read, Fortune
       end  
     end
+
+TODO: Co to oznacza?
 
 CanCan definiuje kilka użytecznych aliasów:
 
