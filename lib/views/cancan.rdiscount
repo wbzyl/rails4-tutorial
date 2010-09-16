@@ -243,6 +243,14 @@ want to change their password they just leave the fields blank. This
 will try to set the password to a blank value, in which case is
 incorrect behavior. As such, Authlogic ignores this.”
 
+Czy taka walidacja jest lepsza?
+
+    :::ruby
+    acts_as_authentic do |c|
+       c.merge_validates_length_of_email_field_options(:allow_blank => true)
+       c.merge_validates_format_of_email_field_options(:allow_blank => true)
+    end
+
 
 ## TODO: Zmiany w layoucie
 
