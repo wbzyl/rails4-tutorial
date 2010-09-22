@@ -48,10 +48,10 @@ Wykorzystamy gem *CanCan* do dodania trzech ról do Fortunki.
 Dopuszczamy sytuację, że użytkownik może być przypisany do kilku ról.
 
 * admin — **może** wszystko
-* moderator — **może**  edytować i usuwać **wszystkie** fortunki
+* moderator — **może**  edytować i usuwać **każdą** fortunkę
 * author — **może** dodawać, edytować i usuwać **swoje** fortunki
 
-Nie zapominamy o uwzględnieniu powiązania między modelami *User*
+Zaczynamy od dodania powiązania między modelami *User*
 i *Fortune*. Inaczej role *moderator* i *author* nie 
 będą miały sensu.
 
@@ -212,7 +212,7 @@ Na konsoli sprawdzamy, czy coś poszło nie tak:
 
 ## Podrasowujemy widoki
 
-Zacznyamy od widoku częściowego, gdzie dopisujemy:
+Zaczynamy od widoku częściowego, gdzie dopisujemy:
 
     :::html_rails app/models/users/_form.html.erb
     <p>
@@ -252,7 +252,7 @@ Czy taka walidacja jest lepsza?
     end
 
 
-## TODO: Zmiany w layoucie
+## Zmiany w layoucie
 
 W główce każdej strony umieścimy login zalogowanego użytkownika.
 Informację o zalogowanym użytkowniku znajdziemy w sesji.
