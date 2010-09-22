@@ -407,7 +407,7 @@ Tyle przygotowań i poprawek w aplikacji. Teraz zabieramy się za
 implementację autoryzacji.
 
 
-# TODO: Implementujemy autoryzację
+# Implementujemy autoryzację
 
 <blockquote>
   {%= image_tag "/images/authorization.jpg", :alt => "[Autoryzacja]" %}
@@ -431,8 +431,10 @@ Następnie w metodzie **initialize** określimy to co może każdy użytkownik.
 Autor gemu sugeruje, aby powyższy kod umieścić w folderze
 *app/models*.
 
-TODO: Zaczynamy umożliwienia każdemu użytkownikowi czytanie z modelu
-*Fortune*:
+Autoryzację będziemy implementować małymi kroczkami.
+Zaczniemy od umożliwienia każdemu użytkownikowi 
+wykonania akcji *index* oraz *show* dla rekordów
+z tabeli *fortunes*:
 
     :::ruby app/models/ability.rb
     class Ability
@@ -444,9 +446,8 @@ TODO: Zaczynamy umożliwienia każdemu użytkownikowi czytanie z modelu
       end  
     end
 
-TODO: Co to oznacza?
-
-CanCan definiuje kilka użytecznych aliasów:
+Co to oznacza? CanCan definiuje kilka użytecznych aliasów,
+m.in. alias `:read`:
 
     :::ruby
     alias_action :index, :show, :to => :read
@@ -458,6 +459,9 @@ i skrótów:
     :::ruby
     can :manage, Fortune  # has permissions to do anything to fortunes
     can :manage, :all     # has permission to do anything to any model
+
+
+## TODO
 
 Uaktywniamy autoryzację wykomentowując wiersz z *before_filter* 
 i wpisując w kodzie kontrolera *FortunesController*:
