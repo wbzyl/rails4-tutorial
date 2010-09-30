@@ -11,14 +11,18 @@ Jak będą oceniane projekty:
 * ocena projektów oddanych po deadline zostanie 
   zmniejszona o jeden
 
-## HTML5 & CSS3
+## HTML5 & CSS3 & jQuery
 
 [HTML5 Boilerplate](http://html5boilerplate.com/)
 is the professional badass's base HTML/CSS/JS template for a fast,
 robust and future-proof site.
-
 Sam szablon jest [tutaj](http://github.com/paulirish/html5-boilerplate/).
 
+Przygotować stronę statyczną korzystającą z HTML5 boilerplate.
+Dodać do strony przykład z jakąś wtyczką jQuery. Na przykład 
+[gMap](http://gmap.nurtext.de/):
+*gMap helps you embed Google Maps into your website. 
+With only 2 KB in size it is very flexible and highly customizable.*
 
 <blockquote>
 <p>
