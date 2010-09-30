@@ -461,8 +461,6 @@ i skrótów:
     can :manage, :all     # has permission to do anything to any model
 
 
-## TODO
-
 Uaktywniamy autoryzację wykomentowując wiersz z *before_filter* 
 i wpisując w kodzie kontrolera *FortunesController*:
 
@@ -472,7 +470,7 @@ i wpisując w kodzie kontrolera *FortunesController*:
       load_and_authorize_resource
 
 Ponieważ, CanCan jest kontrolerem napisanym w stylu RESTful, więc możemy
-usunąć wszystkie linjki z kodem:
+usunąć wszystkie linjki z kodem (tylko liczba pojedyncza):
 
     :::ruby
     @fortune = ... 
@@ -501,7 +499,9 @@ Do pliku *application_controller.rb* dopiszemy:
       redirect_to root_url
     end
 
-Sprawdzamy jak to działa — jest lepiej!
+Sprawdzamy jak to działa. Klikamy link *Edit*. Jest lepiej?
+
+## TODO
 
 Następną rzeczą, którą zrobimy będzie ukrycie linków *Edit* i
 *Destroy*. Przy okazji będziemy musieli zamienić/usunąć kod, który
