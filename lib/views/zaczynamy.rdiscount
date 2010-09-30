@@ -124,7 +124,7 @@ zainstalowane:
 ### Web server
 
 Uruchamiamy, w trybie *development*, wygenerowaną szkieletową
-aplikację, tak:
+aplikację:
 
     unicorn config.ru -p 3000
 
