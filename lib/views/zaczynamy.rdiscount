@@ -95,14 +95,15 @@ Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
 
     :::ruby Gemfile
     source 'http://rubygems.org'
+    gem 'bundler'
     gem 'rails', '3.0.0'
     # or
-    # gem 'rails', :git => 'git://github.com/rails/rails.git', :branch => '3-0-stable'
+    #   gem 'rails', :git => 'git://github.com/rails/rails.git', :branch => '3-0-stable'
     # or bundle edge Rails instead:    
-    # gem 'rails', :git => 'git://github.com/rails/rails.git'
+    #   gem 'rails', :git => 'git://github.com/rails/rails.git'
     gem 'sqlite3-ruby', :require => 'sqlite3'
-    # Use unicorn or thin as the web servers
-    gem 'unicorn'
+    # use unicorn or thin as the web servers
+    # gem 'unicorn'
     gem 'thin'
     # configure irb, see ~/.irbrc
     group :development, :test do
@@ -562,6 +563,27 @@ Zmieniamy w layoucie wiersz z *javascript_include_tag* na:
 
 i usuwamy z katalogu *public/javascripts* następujące pliki:
 *controls.js*, *dragdrop.js*, *effects.js*, *prototype.js* i *rails.js*.
+
+Zamiast zręcznie ręcznie zmieniać źródła możemy skorzystać z generatora
+który zrobi to za nas. 
+
+Dopisujemy do *Gemfile*:
+
+    :::ruby Gemfile
+    group :development do
+      # automate using jQuery: http://github.com/indirect/jquery-rails
+      gem 'jquery-rails'
+    end
+
+Po wykonaniu polecenia
+
+    rails generate jquery:install
+
+dopisujemy 
+
+    <%= csrf_meta_tag %>
+
+w layoucie w pojemniku *<head>*.
 
 
 ## Routing
