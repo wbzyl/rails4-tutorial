@@ -74,6 +74,12 @@ A tak tworzymy dodatkowe zestawy:
     gem install rails --pre
     rvm --default ree@rails3
 
+Ale najlepiej jest utworzyć **osobny dla każdego projektu** gemset. Dlaczego
+takie podejście jest właciwe opisał J. Lecour.
+[„Advice on using Ruby, RVM, Passenger, Rails, Bundler, … in development”](http://jeremy.wordpress.com/2010/08/19/ruby-rvm-passenger-rails-bundler-in-development/).
+Krótko o tym jak to działa jest opisane na stronie
+[RVM: Ruby Version Manager – rvmrc](http://rvm.beginrescueend.com/workflow/rvmrc/).
+
 O czym należy jeszcze poczytać:
 
 * thin, unicorn, rainbows (gemy)
@@ -91,12 +97,6 @@ Wykonujemy snapshot zainstalowanych gemów, np. z *Sigmy*:
 W innym środowisku instalujemy te gemy:
 
     gem snapshot restore --file sigma.yml
-
-
-## A gemset by project
-
-Przeczytać artykuł J. Lecour’a
-[„Advice on using Ruby, RVM, Passenger, Rails, Bundler, … in development”](http://jeremy.wordpress.com/2010/08/19/ruby-rvm-passenger-rails-bundler-in-development/)
 
 
 ## Konsola Rails i Ruby
