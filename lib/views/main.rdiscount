@@ -19,6 +19,8 @@
 1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
 1. {%= link_to "Autoryzacja z Cancan", "/cancan" %}
 
+<!-- 
+
 TODO:
 
 1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %} 
@@ -33,6 +35,8 @@ TODO:
 1. {%= link_to "Wyszukiwanie", "/searching" %}
 1. {%= link_to "Bezpieczeństwo", "/security" %}
 1. {%= link_to "Caching", "/caching" %}
+
+-->
 
 <!--
 1. {%= link_to "Autoryzacja I", "/authorization" %}
