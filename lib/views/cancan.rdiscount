@@ -501,29 +501,30 @@ Do pliku *application_controller.rb* dopiszemy:
 
 Sprawdzamy jak to działa. Klikamy link *Edit*. Jest lepiej?
 
-## TODO
+Następną rzeczą którą zrobimy będzie ukrycie linków *Edit*
+i *Destroy* przed użytkownikami którzy nie mają uprawnień do edycji
+i usuwania fortunek.
 
-Następną rzeczą, którą zrobimy będzie ukrycie linków *Edit* i
-*Destroy*. Przy okazji będziemy musieli zamienić/usunąć kod, który
-dodaliśmy przy okazji autentykacji.
+Przy okazji będziemy musieli zamienić/usunąć kod, który
+dodaliśmy przy okazji autentykacji. Skorzystamy z metody
+*can?* (*cannot?*):
 
 Zaczynamy od zmian w widoku *fortunes/index.html.erb*:
 
     :::html_rails
     <% for fortune in @fortunes %>
-      <p><%=h fortune.quotation %> 
-      <p class="right"><%= link_to "Show", fortune %>
-         <!-- zamiast logged_in? -->
-         <% if can? :update, fortune %> 
+      <p><%= fortune.quotation %>
+      <p><%= link_to "Show", fortune %>
+         <% if can? :update, fortune %>
            | <%= link_to "Edit", edit_fortune_path(fortune) %>
          <% end %>
-         <% if can? :destroy, fortune %> 
-           | <%= link_to "Destroy", fortune, :confirm => 'Are you sure?', 
-                      :method => :delete %>
+         <% if can? :destroy, fortune %>
+           | <%= link_to "Destroy", fortune, :confirm => 'Are you sure?', :method => :delete %>
          <% end %>
       </p>
     <% end %>
-    <% if can? :create, Fortune %>
+
+    <% if can? :create, fortune %>
       <p><%= link_to "New Fortune", new_fortune_path %></p>
     <% end %>
 
@@ -535,15 +536,16 @@ Następnie w pliku *show.html.erb* poprawiamy akapit:
         <%= link_to "Edit", edit_fortune_path(@fortune) %>
       <% end %>
       <% if can? :destroy, @fortune %> 
-        | <%= link_to "Destroy", @fortune, :confirm => 'Are you sure?', 
-                   :method => :delete %>
+        | <%= link_to "Destroy", @fortune, :confirm => 'Are you sure?', :method => :delete %>
       <% end %>
     </p>
 
-## TODO: Doprecyzowujemy *Abilities*
+### Doprecyzowujemy *Abilities*
 
-Role dodaliśmy w trakcie wstępnych przygotowań. Teraz zabierzemy
-się za przypisanie *abilities* do ról.
+Teraz zabierzemy się za doprecyzowanie *abilities* korzystając
+z ról, które dodaliśmy w trakcie wstępnych przygotowań.
+
+Zaczynamy od admina.
 
     :::ruby
     class Ability  
@@ -551,7 +553,7 @@ się za przypisanie *abilities* do ról.
       
       def initialize(user)  
         user ||= User.new    # guest user
-        if user.role? :admin  
+        if user.has_role? :admin  
           can :manage, :all  
         else  
           can :read, Fortune
@@ -562,7 +564,7 @@ się za przypisanie *abilities* do ról.
 Sprawdzamy, jak to działa logując się jako admin (*wlodek* jest adminem)
 i jako zwykły użytkownik (*bazylek*).
 
-Teraz zabieramy się za rolę *author*.
+Teraz zabieramy się za autora. 
 Autor może dodawać, edytować i usuwać swoje cytaty:
 
     :::ruby
@@ -572,9 +574,9 @@ Autor może dodawać, edytować i usuwać swoje cytaty:
       def initialize(user)  
         user ||= User.new  
 
-        if user.role? :admin  
+        if user.has_role? :admin  
           can :manage, :all  
-        elsif user.role? :author
+        elsif user.has_role? :author
           can :read, Fortune
           can :create, Fortune
           can [:update, :destroy], Fortune, :user_id => user.id
@@ -582,24 +584,27 @@ Autor może dodawać, edytować i usuwać swoje cytaty:
           can :read, Fortune         
         end  
       end  
-    end  
+    end
 
 Na koniec zostawiliśmy rolę *moderatora*, który może tylko edytować
 i usuwać cytaty.
 
     :::ruby
-    if user.role? :admin
+    if user.has_role? :admin
       can :manage, :all
-    elsif user.role? :author
+    elsif user.has_role? :author
       can :read, Fortune
       can :create, Fortune
       can [:update, :destroy], Fortune, :user_id => user.id
-    elsif user.role? :moderator
+    elsif user.has_role? :moderator
       can :read, Fortune
       can [:update, :destroy], Fortune
     else
       can :read, Fortune
     end
+
+
+## TODO
 
 Powinniśmy jeszcze zadbać o to, aby *autor* nie mógł przypisać nowej
 fortunki innemu użytkownikowi.

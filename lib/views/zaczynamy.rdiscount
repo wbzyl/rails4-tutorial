@@ -161,6 +161,8 @@ fortunek do bazy na dwa sposoby:
 * wpisując je w pliku *db/seed.rb* i wykonując polecenie `rake seed`
 * dodając je z konsoli
 
+Zobacz też [Easy environment specific seed files in Rails 3](http://www.codeofficer.com/blog/entry/easy_environment_specific_seed_files_in_rails_3/).
+
 Oczywiście, w aplikacji www rekordy do bazy dodajemy
 korzystając z formularzy.
  
