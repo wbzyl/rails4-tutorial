@@ -25,12 +25,9 @@ article, aside, dialog, figure, footer, header, hgroup, menu, nav, section {
 body {
   margin: 0;
   padding: ;0
-  font-family: "DejaVu Sans", "Trebuchet MS", sans-serif ;
+  font-family: Verdana, "DejaVu Sans", "Trebuchet MS", sans-serif ;
   font-size: 16px;
   line-height: 26px;
-  background: -moz-linear-gradient(0 0 0deg, #FF9500, #FF9500 40px, white 80px) repeat-y;
-  background: -webkit-gradient(linear, 0% 0%, 55% 0%, 
-                 from(#FF9500), color-stop(4%, #FF9500), to(white)) repeat-y;
 }
 
 h1, h2, h3 {
@@ -38,27 +35,26 @@ h1, h2, h3 {
 }
 
 header {
-  margin: 0 0 0 40px;
-  padding: 24px 0 1px 0;
-  background: url(header.jpg);
+  padding: 20px 0 12px 40px;
+  background-color: #F01685; 
 }
 header h1 {
   margin: 0 0 0 12px;
   padding: 0;
-  color: #440000;
-  font: italic normal 400%/1 Blackout, Cyklop, sans-serif;
+  font: italic normal 400%/1 "Blackout Midnight", Cyklop, sans-serif;
 }
 header h1 a {
   text-decoration: none;
-  color: #440000;
+  color: white;
 }
 header h1 a:hover {
-  color: red;
+  color: #3C324D;
 }
 
 #content {
+  border-left:  40px solid #FCF9D8;
   width: 1040px;
-  margin: 0 0 0 40px;
+  /** margin: 0 0 0 40px; */
   padding: 0 0 0 20px;
   background: white;
 }
@@ -70,31 +66,31 @@ article {
 article h1 {
   width: 980px;
   font: italic 160%/1 Cyklop, sans-serif;
-  color: #880000;
+  color: #9C266A;
   margin: 0 0 20px -20px;
   padding: 12px 0 12px 20px;
-  background: -moz-linear-gradient(0 0 0deg, #FF9500, white 1000px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FF9500), to(white)) no-repeat;
+  background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 1000px) no-repeat;
+  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat;
 }
 article h2 {
   width: 980px;
   font: italic 140%/1 Cyklop, sans-serif;
-  margin-left: -26px;
-  border-left: 11px solid #466600;
+  margin-left: -22px;
+  /* border-left: 11px solid #09A6A3; */
   padding: 6px 0 10px 20px;
-  background: -moz-linear-gradient(0 0 0deg, #BFFC00, white 660px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#BFFC00), to(white)) no-repeat;
-  color: #466600;
+  background: -moz-linear-gradient(0 0 0deg, #EDEBC9, white 660px) no-repeat;
+  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#EDEBC9), to(white)) no-repeat;
+  color: #09A6A3;
 }
 article h3 {
   width: 980px;
-  font: italic 120%/1 Cyklop, sans-serif;
-  margin-left: -26px;
-  border-left: 11px solid #888000;
+  font: italic 100%/1 Cyklop, sans-serif;
+  margin-left: -22px;
+  /* border-left: 11px solid #00CCBE; */
   padding: 6px 0 10px 20px;
-  background: -moz-linear-gradient(0 0 0deg, #FFF200, white 460px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FFF200), to(white)) no-repeat;
-  color: #888000;
+  background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 460px) no-repeat;
+  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat;
+  color: #00CCBE;
 }
 
 blockquote {
@@ -105,8 +101,8 @@ blockquote {
   margin-left: 660px;
   padding: 1.25em 10px 0 10px;
   -moz-border-radius: 4px;  
-  background: -moz-linear-gradient(0 0 0deg, #FFF84B, white 460px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#BDBB99), to(white)) no-repeat;
+  background: -moz-linear-gradient(0 0 0deg, #EDEBC9, white 460px) no-repeat;
+  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#EDEBC9), to(white)) no-repeat;
   -moz-box-shadow: 2px 0 4px #AAA;
   -webkit-box-shadow: 2px 0 4px #AAA;
 }
@@ -132,7 +128,7 @@ pre, code, tt {
 pre {
   padding: 0 0 0 36px;
   margin-left: -26px;
-  border-left: 11px solid red;
+  border-left: 11px solid #F01685;
 }
 ul pre {
   border: none;
@@ -140,8 +136,8 @@ ul pre {
 }
 
 div.pre-caption {
-  background: -moz-linear-gradient(0 0 0deg, white, #FFAAAA 820px);
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(white), to(#FFAAAA)) no-repeat;
+  background: -moz-linear-gradient(0 0 0deg, white, #F01685 1900px);
+  background: -webkit-gradient(linear, 0% 0%, 160% 0%, from(white), to(#F01685)) no-repeat;
   font-style: italic;
   text-align: right;
   margin-top: -10px;

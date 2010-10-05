@@ -48,11 +48,9 @@ tworzone są dwa zestawy gemów (ang. *gemset*):
 Do zestawu *global* dodajemy gemy:
 
     rvm gemset use global
-    gem install bundler wirble hirb awesome_print
-    gem install thin unicorn rainbows
+    gem install rake rdoc bundler wirble hirb thin
     gem install sqlite3-ruby
     gem install gem_snapshot
-    gem install git_remote_branch gemedit 
 
 A tak tworzymy dodatkowe zestawy:
 
