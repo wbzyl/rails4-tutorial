@@ -14,12 +14,6 @@ Na zaliczenie należy oddać następujące projekty:
 Egzamin – projekt zespołowy (4–5 programistów).
 Prezentacje projektów: styczeń 2011.
 
-Jak będą oceniane projekty:
-
-* projekt należy oddać przed upływem deadline 
-* ocena projektów oddanych po deadline zostanie 
-  zmniejszona o jeden
-
 
 # FAQ
 
@@ -214,40 +208,6 @@ jQuery](http://tympanus.net/codrops/2010/07/05/minimalistic-slideshow-gallery/)
 <p class="author">- Martin Fowler</p>
 </blockquote>
 
-
-## JSON, XML 
-
-1\. [Faker.js](http://github.com/marak/Faker.js) —
-generate massive amounts of fake data in Node.js and the browser.
-
-Korzystając z Faker.js umieścić przykłądowe dane w bazie aplikacji
-Rails.  To samo, ale dane umieścić w *seed.rb*, a same dane zapisać
-w bazie:
-
-    rake db:seed
-
-2\. Przeczytać [Ruby Libxml Tutorial - Reader API](http://anurag-priyam.blogspot.com/2010/05/ruby-libxml-tutorial-reader-api.html)
-i skorzystać.
-
-
-## Redis
-
-Cytat, [Redweb: A Web Interface for Redis](http://philosophyofweb.com/2010/02/redweb-a-web-interface-for-redis/):
-„In my opinion, Redis is a superb option for a number of different use
-cases (web bookmarks/tags, working with data locally, and much more).”
-
-Sprawdzamy, czy tak jest. Zaczynamy od instalacji  
-[Redisa](http://github.com/antirez/redis) i [Redweb](http://github.com/tnm/redweb).
-
-1\. Aplikacja „Bookmarks”. Inne przykłady:
-
-* [NoSQL Twitter Applications](http://nosql.mypopescu.com/post/319859407/nosql-twitter-applications)
-* [A NoSQL Use Case: URL Shorteners](http://nosql.mypopescu.com/post/597603446/a-nosql-use-case-url-shorteners)
-* [Usecase: NoSQL-based Blogs](http://nosql.mypopescu.com/post/346471814/usecase-nosql-based-blogs)
-
-2\. Node.JS + Redis + Pygments: [Snip](http://bitbucket.org/nikhilm/snip/src/).
-
-
 ## Stylizacja Leniwca
 
 1\. Do strony z wynikami wyszukiwania dodać paginację.
@@ -315,6 +275,40 @@ Add the following:
 * When a photo is added instead of displaying the album index page,
   display the album show page so that users can continue uploading
   photos.
+
+
+## JSON, XML 
+
+1\. [Faker.js](http://github.com/marak/Faker.js) —
+generate massive amounts of fake data in Node.js and the browser.
+
+Korzystając z Faker.js umieścić przykłądowe dane w bazie aplikacji
+Rails.  To samo, ale dane umieścić w *seed.rb*, a same dane zapisać
+w bazie:
+
+    rake db:seed
+
+2\. Przeczytać [Ruby Libxml Tutorial - Reader API](http://anurag-priyam.blogspot.com/2010/05/ruby-libxml-tutorial-reader-api.html)
+i skorzystać.
+
+
+## Redis
+
+Cytat, [Redweb: A Web Interface for Redis](http://philosophyofweb.com/2010/02/redweb-a-web-interface-for-redis/):
+„In my opinion, Redis is a superb option for a number of different use
+cases (web bookmarks/tags, working with data locally, and much more).”
+
+Sprawdzamy, czy tak jest. Zaczynamy od instalacji  
+[Redisa](http://github.com/antirez/redis) i [Redweb](http://github.com/tnm/redweb).
+
+1\. Aplikacja „Bookmarks”. Inne przykłady:
+
+* [NoSQL Twitter Applications](http://nosql.mypopescu.com/post/319859407/nosql-twitter-applications)
+* [A NoSQL Use Case: URL Shorteners](http://nosql.mypopescu.com/post/597603446/a-nosql-use-case-url-shorteners)
+* [Usecase: NoSQL-based Blogs](http://nosql.mypopescu.com/post/346471814/usecase-nosql-based-blogs)
+
+2\. Node.JS + Redis + Pygments: [Snip](http://bitbucket.org/nikhilm/snip/src/).
+
 
 
 #### Links
