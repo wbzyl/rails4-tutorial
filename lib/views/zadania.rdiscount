@@ -2,14 +2,30 @@
 
 # Laboratorium
 
-Każdy projekt będzie miał swój deadline.
-Daty będą na stronie głównej.
+Na zaliczenie należy oddać następujące projekty:
+
+* Fortunka.<br/>
+  Termin oddania: 26.10.2010.
+* Fortunka + CouchDB albo MongoDB.<br/>
+  Termin oddania: 9.11.2010.
+* Kontakty.<br/>
+  Termin oddania: 30.11.2010.
+
+Egzamin – projekt zespołowy (4–5 programistów).
+Prezentacje projektów: styczeń 2011.
 
 Jak będą oceniane projekty:
 
 * projekt należy oddać przed upływem deadline 
 * ocena projektów oddanych po deadline zostanie 
   zmniejszona o jeden
+
+
+# FAQ
+
+1. Co będzie jak nie oddam projektu w terminie? 
+   *Odpowiedź:* Ocena z laboratorium zostanie obniżona o 1.
+
 
 ## HTML5 & CSS3 & jQuery
 
@@ -59,7 +75,7 @@ Użyć Yslow do oceny strony przygotowanej w 1\.
 
 ## Fortunka
 
-1\. Dodać paginację do strony index z fortunkami.
+Dodać paginację do strony index z fortunkami.
 Skorzystać z gemu *will_paginate*. 
 
 Wystylizować linki do kolejnych „stron”.
@@ -70,18 +86,15 @@ Wystylizować linki do kolejnych „stron”.
 Dodać „AJAX rating“ dla komentarzy.
 Skorzystać z jakiejś gotowej wtyczki lub gemu.
 
-
-## Shoutbox
-
-Przeczytać 
-[From CodeIgniter to Ruby on Rails: A Conversion](http://net.tutsplus.com/tutorials/ruby/from-codeigniter-to-ruby-on-rails-a-conversion/).
-
-Przepisać aplikację *Shoutbox* na Rails 3. Zamiast MySQL użyć
-SQLite albo Postgresql.
+Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
+Zamienić wygenerowane formularze na formularze korzystajęce
+z gemu [simple_form](http://github.com/plataformatec/simple_form).
 
 
-Zadanie ekstra: Uruchomić aplikację *Shoutbox* według opisu
-[Shoutbox with Grasshopper and CouchDB](http://howtonode.org/grasshopper-shoutbox).
+## Fortunka + CouchDB / MongoDB
+
+Użyć w Fortunce dokumentową bazą danych, np. CouchDB albo MongoDB.
+
 
 <blockquote>
  <p>
@@ -263,6 +276,19 @@ na screencaście R. Batesa,
 
 5\. Użyć innego ORM, np. Datamapper
 \([przykład](http://github.com/dkubb/datamapper-on-rails/)\).
+
+
+## Shoutbox
+
+Przeczytać 
+[From CodeIgniter to Ruby on Rails: A Conversion](http://net.tutsplus.com/tutorials/ruby/from-codeigniter-to-ruby-on-rails-a-conversion/).
+
+Przepisać aplikację *Shoutbox* na Rails 3. Zamiast MySQL użyć
+SQLite albo Postgresql.
+
+
+Zadanie ekstra: Uruchomić aplikację *Shoutbox* według opisu
+[Shoutbox with Grasshopper and CouchDB](http://howtonode.org/grasshopper-shoutbox).
 
 
 ## Z życia leniwców

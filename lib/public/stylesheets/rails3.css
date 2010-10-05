@@ -74,6 +74,10 @@ article h1 {
   background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 1000px) no-repeat;
   background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat;
 }
+article h1:first-child {
+  padding-top: 24px;
+}
+
 article h2 {
   width: 980px;
   font: italic 140%/1 Cyklop, sans-serif;
