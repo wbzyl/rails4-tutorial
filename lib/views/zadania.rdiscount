@@ -75,11 +75,11 @@ Użyć Yslow do oceny strony przygotowanej w 1\.
 
 ## Fortunka
 
-Dodać paginację do strony index z fortunkami.
-Skorzystać z gemu *will_paginate*. 
+Dodać paginację do widoku *index*.
+Skorzystać z gemu [will_paginate](http://github.com/mislav/will_paginate/tree/rails3).
 
-Wystylizować linki do kolejnych „stron”.
-*Wskazówki:* Vitaly Friedman,
+Wystylizować linki do kolejnych „stron”.<br/>
+**JTZ:** Vitaly Friedman,
 [Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) oraz
 [Samples of pagination styling for will_paginate](http://mislav.uniqpath.com/will_paginate/).
 
@@ -89,6 +89,11 @@ Skorzystać z jakiejś gotowej wtyczki lub gemu.
 Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
 Zamienić wygenerowane formularze na formularze korzystajęce
 z gemu [simple_form](http://github.com/plataformatec/simple_form).
+
+Dodać autentykację do fortunki.
+Skorzystać z [Janrain Engage](http://www.janrain.com/products/engage).
+Jak to zrobić można objerzeć na screencaście
+R. Batesa [Engage with Devise](http://railscasts.com/episodes/233-engage-with-devise).
 
 
 ## Fortunka + CouchDB / MongoDB
@@ -138,14 +143,14 @@ Rails](http://sigma.ug.edu.pl/~ksteinborn/rails3/2010/01/16/Szablony-HTML-dla-Ra
 Skorzystać z jakiegoś gemu lub jakiejś wtyczki.
 
 Albo zamiast wtyczki skorzystać z pomysłu przedstawionego
-w [Railscasts \#182](http://railscasts.com/episodes/182-cropping-images).
-W tym screencaście, R. Bates pokazuje jak
+w [Cropping Images](http://railscasts.com/episodes/182-cropping-images).
+W screencaście, R. Bates pokazuje jak
 dodać do aplikacji zgrabny  interfejs umożliwiający przycinanie 
 obrazków przed umieszczeniem ich w bazie danych.
 Dodać taką funkcjonalność do budowanej aplikacji.
 
 4\. Zmodyfikować formularz aplikacji tak aby korzystał
-z [Fancy Sliding Form with jQuery](http://tympanus.net/codrops/2010/06/07/fancy-sliding-form-with-jquery/)
+z [Fancy Sliding Form with jQuery](http://tympanus.net/codrops/2010/06/07/fancy-sliding-form-with-jquery/).
 
 5\. Wersja 3.5 Firefoxa obsługuje 
 [W3C Geolocation API](http://dev.w3.org/geo/api/spec-source.html).
@@ -167,7 +172,7 @@ Korzystając jedengo z gemów polecanych na stronie
 Używamy YSLow do oceny strony korzystającej z tej wtyczki.
 
 
-## Dodajemy tagowanie
+### Dodać tagowanie
 
 Do aplikacji *Kontakty* dodać możliwośc dodawania tagów,
 na przykład takich: praca, rodzina, znajomi, przypadkowi znajomi,
@@ -185,13 +190,7 @@ uczelnia, wojsko, pizzeria itp.
   albo czegoś podobnego.
 
 
-## Mail
-
-Dodać wysyłanie emajli, np. do administratora aplikacji
-po dodaniu kontaktu.
-
-
-## Galeria
+### Dodać wyszukiwanie zdjęć po tagach
 
 Wyszukiwanie zdjęć po tagach. Rezultat: prosta galeria taka jak 
 [Minimalistic Slideshow Gallery with 
