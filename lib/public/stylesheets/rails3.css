@@ -36,7 +36,9 @@ h1, h2, h3 {
 
 header {
   padding: 20px 0 12px 40px;
-  background-color: #F01685; 
+  /* background-color: #F01685;  */
+  background: -moz-linear-gradient(0 0 0deg, #F01685, white 1130px) no-repeat;
+  background: -webkit-gradient(linear, 0% 0%, 105% 0%, from(#FCF9D8), to(white)) no-repeat;
 }
 header h1 {
   margin: 0 0 0 12px;
