@@ -113,7 +113,7 @@ Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
       #gem 'awesome_print'
     end
 
-Z gemów Wirble i Hirb będziemyy korzystać tylko w trybie development.
+Z gemów Wirble i Hirb będziemy korzystać tylko w trybie development.
 
 Na koniec instalujemy gemy i sprawdzmay, gdzie w systemie zostały
 zainstalowane:
@@ -984,11 +984,6 @@ I od razu usuwamy powielony kod:
 * Bundler. Gemfile examples 
   [Featuring Bundler, Cucumber, RVM, Postgres, on Ruby-1.8.7](http://gist.github.com/416372)
 * [Rails3 blog w 20 minut] [rails3 blog]
-
-
-## Zadanie
-
-Napisać fortunkę korzystającą z DM, Mongo, CouchDB…
 
 
 [rvm]: http://rvm.beginrescueend.com/ "Ruby Version Manager"
