@@ -11,7 +11,19 @@ Na zaliczenie należy oddać następujące projekty:
 * Kontakty.<br/>
   Termin oddania: 30.11.2010.
 
-Egzamin – projekt zespołowy (4–5 programistów).
+Projekty należy umieścić w osobnych repozytoriach git
+na serwerze Sigma.
+Nazwy repozytoriów na poszczególne projekty to:
+
+* **fortunka**  
+* **fortunka-dbd**  
+* **kontakty**  
+
+
+# Egzamin 
+
+Na egzamin należy przygotować i uruchomić serwis www wg własnego
+pomysłu.  Serwis piszemy w zespołach 4–5 programistów.<br/>
 Prezentacje projektów: styczeń 2011.
 
 
