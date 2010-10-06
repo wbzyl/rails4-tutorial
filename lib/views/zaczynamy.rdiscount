@@ -211,7 +211,12 @@ W naszym przypadku są to wszystkie fortunki.
       end
     end
 
-Zob. też API dla klasy *ActionController::Responder*.
+Więcej info o **respond_with**:
+
+* [Controllers in Rails 3](http://asciicasts.com/episodes/224-controllers-in-rails-3)
+* w API klasy *ActionController::Responder*
+* [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/)
+  – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
 
 
 ### Szablony i Widoki
