@@ -1,0 +1,13 @@
+body {
+  font-size: 16px;
+  margin: 1em 0 1em 2em;
+}
+
+pre {
+  font: bold 100%/1.5 "Anonymous Pro", Monaco, monospace;  
+}
+
+h2 em {
+  color: red;
+  font-weight: bold;
+}

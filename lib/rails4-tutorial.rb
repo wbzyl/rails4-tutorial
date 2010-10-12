@@ -9,6 +9,8 @@ require 'sinatra/static_assets'
 
 module WB
   class Rails4 < Sinatra::Base
+    include Rack::Utils
+
     helpers Sinatra::UrlForHelper
     register Sinatra::StaticAssets
 
@@ -47,11 +49,46 @@ module WB
       rdiscount :main
     end
 
+    get %r{^([-_\w\/]+)\/([-_\w]+)\.((\w{1,4})(\.\w{1,4})?)$} do
+
+      translate = { # to ultraviolet syntax names: uv -l syntax
+        'html' => 'html',
+        'html.erb' => 'html_rails',
+        'text.erb' => 'html_rails',       
+        'rb' => 'ruby_experimental',
+        'ru' => 'ruby_experimental',
+        'css' => 'css_experimental',
+        'js' => 'jquery_javascript',
+        'yml' => 'yaml',
+        'sh' => 'shell-unix-generic'
+      }
+      
+      content_type 'text/html', :charset => 'utf-8'
+
+      dirname = params[:captures][0]
+      name = params[:captures][1]
+      extname = params[:captures][2]
+      filename = name + "." + extname
+
+      @title = filename
+      @filename = File.expand_path(File.join(File.dirname(__FILE__), 'doc', dirname, filename))
+
+      lang = translate[extname] || 'plain_text'
+      
+      if File.exists?(@filename) && File.readable?(@filename)
+        content = "<pre><code>:::#{lang}\n#{escape_html(File.read @filename)}</code></pre>"
+      else
+        content = "<h2>oops! couldn't find <em>#{filename}</em></h2>"
+      end
+
+      erb content, :layout => :code
+    end
+    
     get '/:section' do
       rdiscount :"#{params[:section]}"
     end
-    
-    error do
+
+     error do
       e = request.env['sinatra.error']
       Kernel.puts e.backtrace.join("\n")
       'Application error'
