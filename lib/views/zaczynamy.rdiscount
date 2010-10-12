@@ -189,6 +189,15 @@ zasobu *User*.
 Generator utworzył plik *app/controllers/fortunes_controller.rb*.
 zawierający pusty kontroler *FortunesController*.
 
+<blockquote>
+ <h2>Rails 3 controllers</h2>
+ <ul>
+   <li>{%= link_to "nifty:scaffold", "/rails3/nifty-generators/comments_controller.rb" %}
+   <li>{%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %}
+   <li>{%= link_to "respond_with", "/rails3/respond-with/products_controller.rb" %}
+ </ul>
+</blockquote>
+
 *FortunesController* jest podklasą klasy *ApplicationController*.
 Ponieważ tworzymy *resource controller* (albo krótko kontroler REST)
 to powinniśmy napisać 7 metod o nazwach:
@@ -197,14 +206,6 @@ to powinniśmy napisać 7 metod o nazwach:
 * *new*, *create* 
 * *edit*, *update*
 * *destroy*
-
-<blockquote>
- <h3>Rails 3 controllers</h3>
- <p>
-   {%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %}</br>
-   {%= link_to "nifty:scaffold", "/rails3/scaffold/posts_controller.rb" %}
- </p>
-</blockquote>
 
 Zaczniemy od napisania metody *index* kontrolera *FortunesController*.
 Zwyczajowo *index* oznacza kompletną listę zasobów. 

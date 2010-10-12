@@ -88,6 +88,7 @@ article h2 {
   background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#EDEBC9), to(white)) no-repeat;
   color: #09A6A3;
 }
+
 article h3 {
   width: 980px;
   font: italic 100%/1 Cyklop, sans-serif;
@@ -112,6 +113,14 @@ blockquote {
   -moz-box-shadow: 2px 0 4px #AAA;
   -webkit-box-shadow: 2px 0 4px #AAA;
 }
+
+article blockquote h2 {
+  margin-left: 0;
+  padding: 0px 0 10px 20px;
+  width: 300px;
+  color: #9C266A;
+}
+
 blockquote img {
   margin: 0 auto 12px auto;
   display: block;
