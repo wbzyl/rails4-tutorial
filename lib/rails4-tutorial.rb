@@ -78,7 +78,7 @@ module WB
       if File.exists?(@filename) && File.readable?(@filename)
         content = "<pre><code>:::#{lang}\n#{escape_html(File.read @filename)}</code></pre>"
       else
-        content = "<h2>oops! couldn't find <em>#{filename}</em></h2>"
+        content = "<h2>oops! couldn't find <em>#{@filename}</em></h2>"
       end
 
       erb content, :layout => :code
