@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
 
   # lol - required for validation
-  s.rubyforge_project = "wb-rails3"
+  s.rubyforge_project = "rails4-tutorial"
 
   # If you have other dependencies, add them here
   s.add_dependency "rack", "> 1.0"
