@@ -2,14 +2,18 @@
 
 # Konfiguracja
 
-Z różnych powodów, w użyciu jest wiele wersji języka ruby –
-1.8.7, 1.9.2, Ruby Enterprise…
-Ruby Version Manager umożliwia zainstalowanie i przełączanie
-się między różnymi wersjami rubiego.
+W użyciu jest wiele implementacji i wersji języka 
+Ruby: Ruby MRI w wersjach 1.8.7, 1.9.2, Ruby Enterprise Edition – 1.8.7, 
+jRuby – 1.5.0, Rubinius – 1.0.1, MagLev, IronRuby – 1.0.
+(Polecenie `rvm list known` wypisuje je wszystkie.)
+Wynika to z popularności frameworka Ruby on Rails.
 
-Zanim zaczniemy pracę z Ruby on Rails powinniśmy też 
-sobie skonfigurować konsolę języka Ruby oraz frameworka
-Ruby on Rails.
+Ruby Version Manager umożliwia zainstalowanie i przełączanie
+się między różnymi implementacjami i wersjami języka Ruby.
+
+Zanim zaczniemy pracę z Ruby on Rails powinniśmy
+skonfigurować konsolę języka Ruby (**irb**) oraz konsolę 
+frameworka Ruby on Rails (**rails console**).
 
 
 ## RVM – Ruby Version Manager
@@ -24,61 +28,62 @@ compromise the entire system.”
 
 Podstawowe polecenia RVM:
 
-    rvm list known
-    rvm install ree-1.8.7      # alias ree
-    rvm install ruby-1.9.2-p0  # alias 1.9.2
+    rvm install ree-1.8.7    # alias ree
+    rvm install ruby-1.9.2   # alias 1.9.2
     rvm use ree
     rvm list
+    rvm gemset list
+
+Dodatkowo możemy sprawdzić:
+
     ruby -v
     which ruby
     rvm env
-    rvm --default ree
+
+Dla każdego projektu rails powinniśmy w katalogu głównym aplikacji
+umieścić plik *.rvmrc* o następującej zawartości:
+
+<pre>rvm use ree  # albo 1.9.2
+rvm --create gemset use <i>nazwa zestawu dla projektu</i>
+</pre>
+
+Dlaczego tak należy postępować opisał J. Lecour,
+[„Advice on using Ruby, RVM, Passenger, Rails, Bundler, … in development”](http://jeremy.wordpress.com/2010/08/19/ruby-rvm-passenger-rails-bundler-in-development/).
+
+Więcej na ten tema jest na stronie
+[RVM: Ruby Version Manager – rvmrc](http://rvm.beginrescueend.com/workflow/rvmrc/).
 
 
-## Instalujemy gem rails (ostatnie prelease)
+### Zestawy gemów
 
-W trakcie instalacji jakiejkolwiek wersji Rubiego 
+W trakcie instalacji dla każdej wersji Rubiego 
 tworzone są dwa zestawy gemów (ang. *gemset*):
 
 * **default** (bez nazwy)
 * **global**
 
-    rvm gemset list
-
-Do zestawu *global* dodajemy gemy:
+Do zestawu *global* dodajemy gemy używane we wszystkich projektach:
 
     rvm gemset use global
     gem install rake rdoc bundler wirble hirb thin
     gem install sqlite3-ruby
     gem install gem_snapshot
 
-A tak tworzymy dodatkowe zestawy:
+Tak wypisujemy listę zestawów oraz z jakiego zestawu korzystamy:
 
-    rvm gemset create 'rails2'
-    rvm gemset create 'rails3'
     rvm gemset list
     rvm gemset name
 
-Środowisko dla Rails w wersji 2.3.8:
+Aby zainstalować starszą wersję Rails należy wykonać:
 
     rvm use ree
     rvm gemset use rails2
     gem install rails -v 2.3.8
 
-Środowisko dla Rails3:
 
-    rvm use ree
-    rvm gemset use rails3
-    gem install rails --pre
-    rvm --default ree@rails3
+### Dodatkowa lektura
 
-Ale najlepiej jest utworzyć **osobny dla każdego projektu** gemset. Dlaczego
-takie podejście jest właciwe opisał J. Lecour.
-[„Advice on using Ruby, RVM, Passenger, Rails, Bundler, … in development”](http://jeremy.wordpress.com/2010/08/19/ruby-rvm-passenger-rails-bundler-in-development/).
-Krótko o tym jak to działa jest opisane na stronie
-[RVM: Ruby Version Manager – rvmrc](http://rvm.beginrescueend.com/workflow/rvmrc/).
-
-O czym należy jeszcze poczytać:
+Należy jeszcze poczytać o:
 
 * thin, unicorn, rainbows (gemy)
 * nginx (serwer www)
@@ -86,7 +91,7 @@ O czym należy jeszcze poczytać:
 * jQuery (biblioteka Javascript)
 
 
-## Dump & Restore Gems
+### Dump & Restore Gems
 
 Wykonujemy snapshot zainstalowanych gemów, np. z *Sigmy*:
 
@@ -97,11 +102,11 @@ W innym środowisku instalujemy te gemy:
     gem snapshot restore --file sigma.yml
 
 
-## Konsola Rails i Ruby
+## Konfiguracja konsoli
 
-Oto moja konfiguracja konsoli (dla Ruby i Rails):
+Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
 
-    :::ruby .irbrc
+    :::ruby ~/.irbrc
     require 'rubygems'
     require 'wirble'
     require 'hirb'
@@ -125,3 +130,6 @@ Roadmap specially designed for a beginner to navigate their way to Rails mastery
 {%= image_tag "/images/Learning-Rails-Roadmap.png", :alt => "[Learning Rails Roadmap]" %} 
 
 [Źródło](http://techiferous.com/2010/07/roadmap-for-learning-rails/)
+
+
+[rvm]: http://rvm.beginrescueend.com/ "Ruby Version Manager"
