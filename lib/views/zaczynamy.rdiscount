@@ -96,13 +96,12 @@ Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
     :::ruby Gemfile
     source 'http://rubygems.org'
     gem 'rails'
-    # or
+    # or use stable branch
     #   gem 'rails', :git => 'git://github.com/rails/rails.git', :branch => '3-0-stable'
-    # or bundle edge Rails instead:    
+    # or bundle edge Rails    
     #   gem 'rails', :git => 'git://github.com/rails/rails.git'
     gem 'sqlite3-ruby', :require => 'sqlite3'
-    # use unicorn or thin as the web servers
-    # gem 'unicorn'
+    # use thin as web server
     gem 'thin'
     # configure irb, see ~/.irbrc
     group :development, :test do
