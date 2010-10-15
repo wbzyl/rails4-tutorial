@@ -19,7 +19,6 @@ class ProductsController < ApplicationController
   def create  
     @product = Product.new(params[:product])  
     if @product.save  
-      cookies[:last_product_id] = @product.id  
       flash[:notice] = "Successfully created product."  
     end  
     respond_with(@product)  
