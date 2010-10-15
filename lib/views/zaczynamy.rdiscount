@@ -95,8 +95,7 @@ Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
 
     :::ruby Gemfile
     source 'http://rubygems.org'
-    gem 'bundler'
-    gem 'rails', '3.0.0'
+    gem 'rails'
     # or
     #   gem 'rails', :git => 'git://github.com/rails/rails.git', :branch => '3-0-stable'
     # or bundle edge Rails instead:    
@@ -109,8 +108,6 @@ Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
     group :development, :test do
       gem 'wirble'
       gem 'hirb'
-      # or
-      #gem 'awesome_print'
     end
 
 Z gemów Wirble i Hirb będziemy korzystać tylko w trybie development.
