@@ -115,8 +115,8 @@ Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
 
 Z gemów Wirble i Hirb będziemy korzystać tylko w trybie development.
 
-Na koniec instalujemy gemy i sprawdzmay, gdzie w systemie zostały
-zainstalowane:
+Na koniec instalujemy gemy i sprawdzamy, gdzie zostały zainstalowane
+w systemie:
 
     bundle install
     bundle show rails
