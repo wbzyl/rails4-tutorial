@@ -124,46 +124,70 @@ zainstalowane:
 
 ### Web server
 
-Uruchamiamy, w trybie *development*, wygenerowaną szkieletową
-aplikację:
+W trakcie pisania kodu aplikację uruchamiamy w trybie **development**.
+Możemy to zrobić na kilka sposobów:
 
-    unicorn config.ru -p 3000
-
-albo tak:
-
-    thin --rackup config.ru start -p 8080
-
-albo tak:
-
-    rails server thin -p 3000
+<pre>rails server thin -p <i>numer portu</i>
+passenger start -p <i>numer portu</i>
+thin --rackup config.ru start -p <i>numer portu</i>
+unicorn config.ru -p <i>numer portu</i>
+</pre>
 
 
-### REST
+## Co to jest REST?
 
-Korzystając z generatora *resource* tworzymy zasób (ang. *resource*)
-o nazwie *fortune*:
+<blockquote>
+{%= image_tag "/images/hfrails_cover.png", :alt => "[Head First Rails]" %}
+<p>
+  If you use REST, your teeth will be brighter,
+  your life will be happier,
+  and all will be goodnes and sunshine with the world.
+</p>
+<p class="author">– David Griffiths</p>
+</blockquote>
+
+Dłuższy cytat: „**REST** stands for **Represenational State Transfer**
+\[…hmm?!…\] RESTful design really means designing your applications
+to work the way the web was **originally** meant to look.”
+
+Podstawy REST:
+
+1. Dane są zasobami (ang. *resources*). Fortunka to zbiór
+   cytatów, dlatego cytaty są *resources*.
+2. Każdy zasób ma swój unikalny URI.
+3. Na zasobach można wykonywać cztery podstawowe operacje
+   Create, Read, Update i Delete 
+   (zwykle skracane do *CRUD*).
+4. Klient i serwer komunikują się ze sobą korzystając
+   protokołu bezstanowego. Oznacza to, że klient 
+   zwraca się z żądaniem do serwera. Serwer odpowiada i
+   cała konwersacja się kończy.
+
+
+### Korzystamy z generatora *resource*
+
+Generujemy kod dla zasóbu (ang. *resource*) *fortune*:
 
     rails generate resource fortune body:text
 
-Generator utworzył model oraz migrację.
+Co wygenerował generator?
 
-Wykonujemy polecenie:
+Aby utworzyć bazę danych o nazwie podanej w pliku
+*config/database.yml* oraz tabelę zdefiniowaną w pliku
+*db/migrate/20100624132312_create_fortunes.rb*
+wykonujemy polecenie:
 
     rake db:migrate
 
-Powoduje ono utworzenie bazy danych zdefiniowanej w pliku
-*config/database.yml* oraz utworzenie tabelki zdefiniowanej w pliku
-migracji *db/migrate/20100624132312_create_fortunes.rb*.
+W bazie nie ma jeszcze fortunek. Na tym etapie pisania aplikacji, do
+bazy możemy dodać kilka fortunek na dwa sposoby:
 
-W bazie nie ma jeszcze fortunek. Teraz możemy dodać kilka
-fortunek do bazy na dwa sposoby:
-
-* wpisując je w pliku *db/seed.rb* i wykonując polecenie `rake seed`
 * dodając je z konsoli
+* wpisując je w pliku *db/seed.rb* i wykonując polecenie `rake seed`
 
 Zobacz też [Easy environment specific seed files in Rails 3](http://www.codeofficer.com/blog/entry/easy_environment_specific_seed_files_in_rails_3/).
 
-Oczywiście, w aplikacji www rekordy do bazy dodajemy
+Oczywiście, w gotowych aplikacjach rekordy do bazy dodajemy
 korzystając z formularzy.
  
 Generator dopisał do pliku z routingiem *config/routes.rb*:
