@@ -16,8 +16,8 @@ na serwerze Sigma.
 Nazwy repozytoriów na poszczególne projekty to:
 
 * **fortunka**  
-* **fortunka-dbd**  
-* **kontakty**  
+* **fortunka-dbd**
+* **kontakty**
 
 
 # Egzamin 
@@ -83,10 +83,9 @@ Użyć Yslow do oceny strony przygotowanej w 1\.
 
 Dodać paginację do widoku *index*.
 Skorzystać z gemu [will_paginate](http://github.com/mislav/will_paginate/tree/rails3).
-
-Wystylizować linki do kolejnych „stron”.<br/>
-**JTZ:** Vitaly Friedman,
-[Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) oraz
+Wystylizować linki do kolejnych „stron”.
+Jak to się robi opisał Vitaly Friedman,
+[Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) i Mislav Marohnić,
 [Samples of pagination styling for will_paginate](http://mislav.uniqpath.com/will_paginate/).
 
 Dodać „AJAX rating“ dla komentarzy.
@@ -96,9 +95,12 @@ Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234
 Zamienić wygenerowane formularze na formularze korzystajęce
 z gemu [simple_form](http://github.com/plataformatec/simple_form).
 
-Dodać autentykację do fortunki.
-Skorzystać z [Janrain Engage](http://www.janrain.com/products/engage).
-Jak to zrobić można objerzeć na screencaście
+Dodać autentykację do fortunki. Zrobić to tak jak, to
+przedstawił R. Bates w *OmniAuth*
+[Part 1](http://railscasts.com/episodes/235-omniauth-part-1)
+[Part_2](http://railscasts.com/episodes/236-omniauth-part-2).
+Albo skorzystać z [Janrain Engage](http://www.janrain.com/products/engage).
+Jak to zrobić można obejrzeć na screencaście
 R. Batesa [Engage with Devise](http://railscasts.com/episodes/233-engage-with-devise).
 
 
@@ -116,20 +118,14 @@ Użyć w Fortunce dokumentową bazą danych, np. CouchDB albo MongoDB.
 
 ## Aplikacja „Kontakty”
 
-1\. Generujemy szablon aplikacji Rails o nazwie *kontakty*.  Aplikacja
-*kontakty* powinna umożliwiać wpisywanie, edycję kontaktów: imię,
-nazwisko, email, www, adres, itp.
+Aplikacja *kontakty* powinna umożliwiać wpisywanie, edycję kontaktów.
 
-Użyć YSLow do oceny wygenerowanych stron.
+Aplikacja powinna zawierać model *AddressBook* oraz inne konieczne do
+działania modele. W bazie umieścić następujące dane: imię, nazwisko,
+email, url strony www, adres.
 
-2\. [Install any HTML theme/template into your Rails 
-app](http://drnicwilliams.com/2009/10/06/install-any-html-themetemplate-into-your-rails-app/):
-„But how do we install *theme template* to our Rails apps?  I don’t 
-know. It sucks. And it takes more time than it should. Here’s my idea
-– a tool to install any HTML template into your Rails app. To treat
-any HTML template as if it was a «Ruby on Rails HTML Template».
-So I’ve started to try and make any «HTML Template» into a 
-«Ruby on Rails Template» with the helper app *install_theme*.
+Użyć rozszerzenia YSLow (*Firefox*) albo Speed Tracer (*Google Chrome*) 
+„to identify and fix performance problems in your web applications”.
 
 <blockquote>
  <p>
@@ -138,30 +134,19 @@ So I’ve started to try and make any «HTML Template» into a
  <p class="author">— Dr Nic</p>
 </blockquote>
 
-Wyszukać w sieci darmowy szablon, albo przygotować go
-samemu. Zainstalować za go pomocą programu *install_theme*.
-
-Krótki przewodnik po *install_theme* napisała
-Karolina Steinborn, [Szablony HTML dla 
-Rails](http://sigma.ug.edu.pl/~ksteinborn/rails3/2010/01/16/Szablony-HTML-dla-Rails/).
-
-3\. Dodać *gravatary* do aplikacji (użyć migracji). 
+1\. Do aplikacji dodać *gravatary*. 
 Skorzystać z jakiegoś gemu lub jakiejś wtyczki.
 
 Albo zamiast wtyczki skorzystać z pomysłu przedstawionego
 w [Cropping Images](http://railscasts.com/episodes/182-cropping-images).
 W screencaście, R. Bates pokazuje jak
-dodać do aplikacji zgrabny  interfejs umożliwiający przycinanie 
+dodać do aplikacji zgrabny interfejs umożliwiający przycinanie 
 obrazków przed umieszczeniem ich w bazie danych.
 Dodać taką funkcjonalność do budowanej aplikacji.
 
-4\. Zmodyfikować formularz aplikacji tak aby korzystał
-z [Fancy Sliding Form with jQuery](http://tympanus.net/codrops/2010/06/07/fancy-sliding-form-with-jquery/).
-
-5\. Wersja 3.5 Firefoxa obsługuje 
-[W3C Geolocation API](http://dev.w3.org/geo/api/spec-source.html).
-Korzystając jedengo z gemów polecanych na stronie
-[The Ruby Toolbox](http://www.ruby-toolbox.com/categories/geocoding___maps.html)
+2\. Zmodyfikować formularz aplikacji tak aby korzystał
+z [Fancy Sliding Form with jQuery](http://tympanus.net/codrops/2010/06/07/fancy-sliding-form-with-jquery/)
+albo z czegoś podobnego w działaniu.
 
 <blockquote>
 <p>
@@ -172,17 +157,22 @@ Korzystając jedengo z gemów polecanych na stronie
 <p class="author">— Pivotal Labs</p>
 </blockquote>
 
-6\. Skompresować *static assets* za pomocą wtyczki
+3\. Skompresować *static assets* za pomocą wtyczki
 [Asset Packager] [asset-packager]: 
 „JavaScript and CSS Asset Compression for **Production** Rails Apps.”
-Używamy YSLow do oceny strony korzystającej z tej wtyczki.
 
+Korzystając z rozszerzenia YSlow albo Speed Tracer sprawdzić wydajność
+aplikacji przed i po instalacji tej wtyczki.
+Opisać różnice w pliku README.
 
-### Dodać tagowanie
+4\. Wersja 3.5 Firefoxa obsługuje 
+[W3C Geolocation API](http://dev.w3.org/geo/api/spec-source.html).
+Korzystając z któregoś z gemów polecanych na stronie
+[The Ruby Toolbox](http://www.ruby-toolbox.com/categories/geocoding___maps.html)
+dodać geolokację do aplikacji.
 
-Do aplikacji *Kontakty* dodać możliwośc dodawania tagów,
-na przykład takich: praca, rodzina, znajomi, przypadkowi znajomi,
-uczelnia, wojsko, pizzeria itp.
+5\. Dodać możliwośc dodawania tagów.  Na przykład takich: praca,
+rodzina, znajomi, przypadkowi znajomi, uczelnia, wojsko, pizzeria, biblioteka itp.
 
 * Zaimplementować tagowanie tak jak to jest pokazane na screencaście 
   [More on Virtual Attributes](http://railscasts.com/episodes/167-more-on-virtual-attributes).
@@ -191,16 +181,14 @@ uczelnia, wojsko, pizzeria itp.
   Autorem jest Michael Bleigh. Cytat:
   A tagging plugin for Rails applications that allows for custom 
   tagging along dynamic contexts.
-* Dodać „tags cloud”. Skorzystać z wtyczki jQuery
+
+6\. Dodać „tags cloud”. Skorzystać z wtyczki jQuery
   [Tag Cloud](http://rohitsengar.cueblocks.net/jquery-tag-cloud-plugin/)
   albo czegoś podobnego.
 
+7\. Dodać wyszukiwanie: nazwisko lub imię.
 
-### Dodać wyszukiwanie zdjęć po tagach
-
-Wyszukiwanie zdjęć po tagach. Rezultat: prosta galeria taka jak 
-[Minimalistic Slideshow Gallery with 
-jQuery](http://tympanus.net/codrops/2010/07/05/minimalistic-slideshow-gallery/)
+8\. Dodać wyszukiwanie po tagach.
 
 
 <blockquote>
