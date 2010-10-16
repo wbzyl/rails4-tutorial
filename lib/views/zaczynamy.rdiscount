@@ -9,6 +9,22 @@ Czym jest Ruby on Rails:
 „Ruby on Rails is an **MVC** framework for web application development.”
 
 
+<blockquote>
+ {%= image_tag "/images/frederick-brooks.jpg", :alt => "[Frederick P. Brooks, Jr.]" %}
+ <p>To see what rate of progress one can expect in software technology,
+  let us examine the difficulties of that technology. Following
+  Aristotle, I divide them into <b>essence</b>, the difficulties inherent in
+  the nature of software, and <b>accidents</b>, those difficulties that today
+  attend its production but are not inherent.</p>
+ <p>I believe the hard part of building software to be the specification,
+   design, and testing of this conceptual construct, not the labor of
+   representing it and testing the fidelity of the representation. We
+   still make syntax errors, to be sure; but they are fuzz compared with
+   the conceptual errors in most systems.
+ </p>
+ <p class="author">— Frederick P. Brooks, Jr.</p>
+</blockquote>
+
 ## MVC ≡ Model / Widok / Kontroler
 
 „MVC is sometimes called a design pattern, but thats not technically
@@ -40,23 +56,16 @@ Można także tworzyć nowe widoki dla modelu bez potrzeby modyfikowania
 go.”
 
 
-# Fortunka
-
 <blockquote>
- {%= image_tag "/images/frederick-brooks.jpg", :alt => "[Frederick P. Brooks, Jr.]" %}
- <p>To see what rate of progress one can expect in software technology,
-  let us examine the difficulties of that technology. Following
-  Aristotle, I divide them into <b>essence</b>, the difficulties inherent in
-  the nature of software, and <b>accidents</b>, those difficulties that today
-  attend its production but are not inherent.</p>
- <p>I believe the hard part of building software to be the specification,
-   design, and testing of this conceptual construct, not the labor of
-   representing it and testing the fidelity of the representation. We
-   still make syntax errors, to be sure; but they are fuzz compared with
-   the conceptual errors in most systems.
+ <p>
+  {%= image_tag "/images/ken-arnold.jpg", :alt => "[Ken Arnold]" %}
  </p>
- <p class="author">— Frederick P. Brooks, Jr.</p>
+ <p>A fortune program first appeared in Version 7 Unix. The most common
+  version on modern systems is the BSD fortune, originally written by
+  Ken Arnold. [source Wikipedia]</p>
 </blockquote>
+
+# Fortunka
 
 Fortune (Unix) to program „which will display quotes or
 witticisms. Fun-loving system administrators can add fortune to users'
@@ -65,7 +74,7 @@ they log in.”
 
 Opis funkcjonalności aplikacji webowej *Fortunka*:
 
-* **CRUD** na fortunkach
+* **CRUD** na fortunkach (co to znaczy?)
 * do każdej fortunki będzie można dopisać komentarz
 
 Na razie tyle. Później dodamy jeszcze kilka funkcji.
@@ -78,20 +87,14 @@ katalogu z wygenerowanym rusztowaniem:
 
 Z czego składa się wygenerowane rusztowanie?
 
-Poniżej umieszczę kompletny kod działającej aplikacji. 
-
-Na wykładzie zamierzam szczegółowo omówić kod Fortunki. Objaśnione
-zostaną też konwencje używane w kodzie aplikacji Rails.
-
-
-### Bundler
+## Bundler
 
 Będziemy korzystać z gotowych gemów (bibliotek) języka Ruby.
 Gemami użytymi w Fortunce zarządzamy za pomocą programu
 *bundler*. Instrukcje dla tego programu umieszczamy
 w pliku *Gemfile*.
 
-Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
+Zaczynamy od modyfikacji wygenerowanego pliku:
 
     :::ruby Gemfile
     source 'http://rubygems.org'
@@ -104,7 +107,7 @@ Zaczynamy od modyfikacji wygenerowanego pliku *Gemfile*:
     # use thin as web server
     gem 'thin'
     # configure irb, see ~/.irbrc
-    group :development, :test do
+    group :development do
       gem 'wirble'
       gem 'hirb'
     end
@@ -118,7 +121,7 @@ w systemie:
     bundle show rails
 
 
-### Web server
+## Serwer WWW
 
 W trakcie pisania kodu aplikację uruchamiamy w trybie **development**.
 Możemy to zrobić na kilka sposobów:
@@ -160,9 +163,9 @@ Podstawy REST:
    cała konwersacja się kończy.
 
 
-### Korzystamy z generatora *resource*
+## Korzystamy z generatora „resource”
 
-Generujemy kod dla zasóbu (ang. *resource*) *fortune*:
+Generujemy kod dla zasobu (ang. *resource*) *fortune*:
 
     rails generate resource fortune body:text
 
@@ -208,6 +211,7 @@ zasobu *User*.
 
 Generator utworzył plik *app/controllers/fortunes_controller.rb*.
 zawierający pusty kontroler *FortunesController*.
+*FortunesController* jest podklasą *ApplicationController*.
 
 <blockquote>
  <h2>Rails 3 controllers</h2>
@@ -218,18 +222,30 @@ zawierający pusty kontroler *FortunesController*.
  </ul>
 </blockquote>
 
-*FortunesController* jest podklasą klasy *ApplicationController*.
-Ponieważ tworzymy *resource controller* (albo krótko kontroler REST)
-to powinniśmy napisać 7 metod o nazwach:
+Każdy *resource controller* musi definiować **7 metod** o nazwach:
 
 * *index*, *show* 
 * *new*, *create* 
 * *edit*, *update*
 * *destroy*
 
-Zaczniemy od napisania metody *index* kontrolera *FortunesController*.
-Zwyczajowo *index* oznacza kompletną listę zasobów. 
-W naszym przypadku są to wszystkie fortunki.
+Przykładowe implementacje można podejrzeć klikając linki po prawej.
+
+
+## Akcje i szablony
+
+Zwyczajowo *index* kojarzymy kompletną listę zasobów. 
+
+Uruchamiamy serwer www i wchodzimy na stronę z fortunkami:
+
+    http://localhost:3000/fortunes
+
+Co powinno się wydarzyć? 
+
+    Unknown action
+    The action 'index' could not be found for FortunesController
+
+Oznacza to, że powinniśmy napisać metodę *index*.
 
     :::ruby app/controllers/fortunes_controller.rb
     class FortunesController < ApplicationController
@@ -240,35 +256,28 @@ W naszym przypadku są to wszystkie fortunki.
       end
     end
 
-Więcej info o **respond_with**:
+Więcej info o parze **respond_to** i **respond_with**:
 
 * [Controllers in Rails 3](http://asciicasts.com/episodes/224-controllers-in-rails-3)
 * [ActionController::Responder](http://github.com/rails/rails/blob/master/actionpack/lib/action_controller/metal/responder.rb)
 * [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/)
   – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
 
-
-### Szablony i Widoki
-
-Uruchamiamy serwer www i wchodzimy na stronę:
+Odświeżamy stronę:
 
     http://localhost:3000/fortunes
 
-Co powinno się wydarzyć? 
+Teraz serwer zgłasza wyjątek i odpowiada (*response*) komunikatem
+o błędzie:
 
-A oto odpowiedź (*response*) serwera:
-
-    HTTP/1.1 500 Internal Server Error
-
-i komunikat o błędzie:
-
+    Action Controller: Exception caught
+    
     Template is missing
     Missing template fortunes/index with 
       {:locale=>[:en, :en], :handlers=>[:builder, :rjs, :erb, :rhtml, :rxml], 
-      :formats=>[:html]} in view paths 
-      ".../hello/rails3-fortunka-w-20-minut/app/views"
+      :formats=>[:html]} in view paths ".../app/views"
 
-Zatem nie pozostaje nam nic innego jak utworzyć szablon **powiązany**
+Nie pozostaje nam nic innego jak utworzyć szablon **powiązany**
 z metodą *index*:
 
     :::html_rails app/views/fortunes/index.html.erb
@@ -277,23 +286,28 @@ z metodą *index*:
     <p><%= fortune.body %></p>
     <% end %>
 
+Jeszcze raz wchodzimy na stronę *index*. Teraz powinniśmy zobaczyć
+widok wygenerowany z powyższego szablonu.
+
 Powyżej mamy przykład szablonu *ERB* (ang. *embeded ruby*).
 
 Co może oznaczać zwrot: **convention over configuration**?
-
 Co to jest **ORM** – mapowanie obiektów na relacje
 i relacji na obiekty?
 
-Jest obojętne czy najpierw utworzymy metodę, a później szablon
-czy odwrotnie.
+
+### Tworzymy szablon „new” i metodę „new”
+
+Jest obojętne czy najpierw utworzymy szablon, a później
+metodę metodę powiązaną z tym szablonem czy odwrotnie.
 
 Teraz, dla przykładu zaczniemy od szablonu *new.html.erb*.
-Szablon ten powinien zawierać formularz umożliwiający
+Szablon powinien zawierać formularz umożliwiający
 wpisanie nowej fortunki.
 
     :::html_rails app/views/fortunes/new.html.erb
     <h1>Nowa fortunka</h1>
-    <%= form_for Fortune.new do |form| %>
+    <%= form_for(Fortune.new) do |form| %>
     <p>
       <%= form.text_area :body %><br/>
       <%= form.submit %>
@@ -308,34 +322,55 @@ nową fortunkę wchodzimy na następujący url:
 
     http://localhost:3000/fortunes/new
 
-Kilknięcie na przycisk *Create Fortune* daje następujący
-błąd:
+Widzimy stronę z formularzem. Kilkamy przycisk *Create Fortune*.
+Daje to następujący błąd:
 
     Unknown action
-    The action 'create' could not be found
+    The action 'create' could not be found for FortunesController
 
-Oznacza to **oczywiście**, że powinniśmy zaimplementować metodę
-*create* kontrolera *FortunesController*:
+**Oczywiście** oznacza to, że powinniśmy zaimplementować metodę
+*create*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def create
-      Fortune.create(params[:fortune])
-      redirect_to fortunes_path, :notice => 'Fortune was successfully created.'
+      @fortune = Fortune.create(params[:fortune])
+      respond_with @fortune # odpowiadamy polimorficznie
     end
 
-Co to jest *fortunes_path*? Dlaczego wykonujemy *redirect_to*?
+Dlaczego wykonujemy *redirect_to*? Co oznacza tutaj *polimorficznie*?
 
-Tutaj zakładamy, że użytkownik nie oszukuje i wpisuje w formularz
+Na razie zakładamy, że użytkownik nie oszukuje i wpisuje w formularz
 to co jest proszony, a nie na przykład złośliwy kod. 
-Walidacją tego co wpisują użytkownicy zajmiemy się później.
+Walidacją tego co wpisuje użytkownik zajmiemy się później.
+
+Po kliknięciu przycisku „Create Fortune”, nowa fortunka 
+jest zapisywana w tabeli, a my zostajemy przekierowani na stronę
+*show*, której nie ma:
+
+    Unknown action
+    The action 'show' could not be found for FortunesController
+
+Nie napisaliśmy też metody *show*. Robimy to teraz.
+
+Metoda:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def show  
+      @product = Product.find(params[:id])  
+      respond_with @product  
+    end 
+
+Szablon:
+
+    :::html_rails app/views/fortunes/show.html.erb
+    <p>
+      <b>Body:</b>
+      <%= @fortune.body %>
+    </p>
 
 
-### Poprawki w layoucie
+## TODO: poprawki w layoucie
 
-Po zapisaniu nowej fortunki w tabeli, zostajemy przekierowani na stronę
-*index* i na tej stronie powinien pojawić się komunikat, *notice*
-powyżej, o utworzeniu fortunki.
- 
 Aby zobaczyć ten komunikat, musimy poprawić wygenerowany layout.
 
 Przy okazji: co to jest **layout**? Jak to przetłumaczyć na język polski?
