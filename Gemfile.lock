@@ -1,0 +1,68 @@
+GIT
+  remote: git://github.com/wbzyl/rack-codehighlighter
+  revision: ec8e0b1ac1c26e9aca1749312ac2a903bdede672
+  branch: pre-caption
+  specs:
+    rack-codehighlighter (0.4.6)
+      nokogiri (>= 1.4.1)
+      rack (>= 1.0.0)
+
+GIT
+  remote: git://github.com/wbzyl/syntax.git
+  revision: f76f6f31feb0a83cdc00b8ef64b21875e06268c1
+  specs:
+    syntax (1.0.1)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    abstract (1.0.0)
+    daemons (1.1.0)
+    emk-sinatra-url-for (0.2.1)
+      sinatra (>= 0.9.1.1)
+    erubis (2.6.6)
+      abstract (>= 1.0.0)
+    eventmachine (0.12.10)
+    maruku (0.6.0)
+      syntax (>= 1.0.0)
+    nokogiri (1.4.3.1)
+    oniguruma (1.1.0)
+    plist (3.1.0)
+    rack (1.2.1)
+    rdiscount (1.6.5)
+    sinatra (0.9.6)
+      rack (>= 0.9.1)
+    sinatra-maruku (1.0.0.2)
+      maruku (>= 0.6.0)
+      sinatra (~> 0.9)
+    sinatra-rdiscount (1.0.0.6)
+      erubis (>= 2.6.5)
+      rdiscount (>= 1.5.8)
+      sinatra (~> 0.9)
+    sinatra-static-assets (0.5.0)
+      emk-sinatra-url-for (>= 0.2.1)
+      rack (>= 1.0.0)
+      sinatra (>= 0.9.1)
+    textpow (0.10.1)
+      oniguruma (>= 1.1.0)
+      plist (>= 3.0.0)
+    thin (1.2.7)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
+    ultraviolet (0.10.2)
+      textpow (>= 0.10.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler
+  rack-codehighlighter!
+  sinatra (= 0.9.6)
+  sinatra-maruku
+  sinatra-rdiscount
+  sinatra-static-assets
+  syntax!
+  thin
+  ultraviolet

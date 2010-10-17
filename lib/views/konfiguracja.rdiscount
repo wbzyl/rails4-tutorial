@@ -28,11 +28,13 @@ compromise the entire system.”
 
 Podstawowe polecenia RVM:
 
-    rvm install ree-1.8.7    # alias ree
-    rvm install ruby-1.9.2   # alias 1.9.2
+    rvm install ree    # alias ree-1.8.7
+    rvm install 1.9.2  # alias ruby-1.9.2
     rvm use ree
     rvm list
     rvm gemset list
+    rvm gemset use NAZWA_ZESTAWU
+    rvm gemset name
 
 Dodatkowo możemy sprawdzić:
 
@@ -65,20 +67,7 @@ tworzone są dwa zestawy gemów (ang. *gemset*):
 Do zestawu *global* dodajemy gemy używane we wszystkich projektach:
 
     rvm gemset use global
-    gem install rake rdoc bundler wirble hirb thin
-    gem install sqlite3-ruby
-    gem install gem_snapshot
-
-Tak wypisujemy listę zestawów oraz z jakiego zestawu korzystamy:
-
-    rvm gemset list
-    rvm gemset name
-
-Aby zainstalować starszą wersję Rails należy wykonać:
-
-    rvm use ree
-    rvm gemset use rails2
-    gem install rails -v 2.3.8
+    gem install bundler gem_snapshot
 
 
 ### Dodatkowa lektura

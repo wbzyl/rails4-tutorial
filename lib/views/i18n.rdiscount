@@ -2,6 +2,9 @@
 
 # [I18n](http://guides.rubyonrails.org/i18n.html)
 
+Zaczynamy od lektury
+[Rails 3 I18n changes](http://blog.plataformatec.com.br/2010/02/rails-3-i18n-changes/).
+
 Wyświetlane komunikaty, w szczególności komunikaty o błędach,
 powinny być po polsku.
 

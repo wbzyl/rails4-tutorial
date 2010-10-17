@@ -352,15 +352,15 @@ jest zapisywana w tabeli, a my zostajemy przekierowani na stronę
 
 Nie napisaliśmy też metody *show*. Robimy to teraz.
 
-Metoda:
+Czytamy to co zostało wypisane na konsoli i piszemy metodę *show*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def show  
       @product = Product.find(params[:id])  
-      respond_with @product  
+      respond_with @product # odpowiadamy polimorficznie
     end 
 
-Szablon:
+Szablon też piszemy „od ręki”:
 
     :::html_rails app/views/fortunes/show.html.erb
     <p>
@@ -369,13 +369,20 @@ Szablon:
     </p>
 
 
-## TODO: poprawki w layoucie
+## Poprawki w layoucie
 
-Aby zobaczyć ten komunikat, musimy poprawić wygenerowany layout.
+Zwyczajowo, po zapisaniu rekordu w bazie, na stronie na którą
+zostajemy przekierowani, jest wyświetlany komunikat w stylu:
+*Utworzono nowy rekord Fortune*.
+
+Railsy do wyświetlania takich komunikatów korzystają z **flash messages** 
+Szablon do wyświetlania flash messages umieszczamy layoucie.
 
 Przy okazji: co to jest **layout**? Jak to przetłumaczyć na język polski?
 
-Nowy layout utworzymy w okrężny sposób. Skorzystamy z gotowca.
+Nowy layout utworzymy w pokrętny sposób. Skorzystamy z gotowca
+wygenerowanego przez generator *nifty:layout*. 
+
 Dopiszmy w pliku *Gemfile*:
 
     gem 'nifty-generators'
@@ -400,18 +407,63 @@ Wykonanie polecenia:
 
     rails generate nifty:layout 
 
-spowoduje wygenerowanie prostego layoutu. 
-Zawiera on kilka elementów *div* o które nam chodziło:
+spowoduje wygenerowanie layoutu z flash messages:
 
     :::html_rails app/views/layouts/application.html.erb
-    <% flash.each do |name, msg| %>
-      <%= content_tag :div, msg, :id => "flash_#{name}" %>
-    <% end %>
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title><%= content_for?(:title) ? yield(:title) : "Untitled" %></title>
+        <%= stylesheet_link_tag "application" %>
+        <%= javascript_include_tag :defaults %>
+        <%= csrf_meta_tag %>
+        <%= yield(:head) %>
+      </head>
+      <body>
+        <div id="container">
+          <% flash.each do |name, msg| %>
+            <%= content_tag :div, msg, :id => "flash_#{name}" %>
+          <% end %>
+          <%= content_tag :h1, yield(:title) if show_title? %>
+          <%= yield %>
+        </div>
+      </body>
+    </html>
 
-Jakich? :info, :notice, inne… jakie? Co to jest **flash**?
+
+## Responders
+
+Problem:
+
+* gdzie wpisać komunikaty flash? 
+* co z i18n?
+
+Eleganckie rozwiązanie obu probelmów przedstawił 
+[José Valim[(http://blog.plataformatec.com.br/tag/respond_with/).
+
+Zaczynamy od:
+
+    rails destroy controller fortune
+
+Następnie dopisujemy gem do *Gemfile*:
+
+    gem 'responders'
+
+i wykonujemy:
+
+    bundle install
+
+Teraz możemy skorzystać z nowych generatorów:
+
+    rails generate responders:install
+    rails generate responders_controller fortune
+
+Niestety generator nadpisał utworzone przez nas pliki. 
+Dopóty nie zostanie to poprawione, dopóki czeka nas poprawianie
+widoków.
 
 
-### Kontroler + szablon dla edycji fortunki
+### Konsola
 
 Zacznijmy od przyjrzenia się jak działa **ORM** na konsoli:
 
@@ -423,11 +475,13 @@ Zacznijmy od przyjrzenia się jak działa **ORM** na konsoli:
     f = Fortune.find(1)
     f.update_attributes :updated_at => Time.now, :body => 'Hi!'
 
-Zaczniemy od szablonu. Szablon dla metody *edit* różni się
+### Szablon dla new i edit
+
+Szablon dla metody *edit* różni się
 tylko nagłówkiem H1 od szablonu dla *new*.
 
     :::html_rails app/views/fortunes/edit.html.erb
-    <h1>Edycja fortunki</h1>
+    <%= title "Edycja fortunki" %>
     <%= form_for @fortune do |f| %>
     <p>
       <%= f.text_area :body %><br>
@@ -435,21 +489,45 @@ tylko nagłówkiem H1 od szablonu dla *new*.
     <p>
     <% end %>
 
-Następnie piszemy metodę *edit* powiązaną z tym szablonem:
+Uwaga: metoda pomocnicza *title* jest zdefiniowana w pliku
+*app/helpers/layout_helper.rb* wygenerowanym przez generator
+nifty:layout.
 
-    :::ruby app/controllers/fortunes_controller.rb
-    def edit
-      @fortune = Fortune.find_by_id(params[:id])
-    end    
+Ciekawostka: Napis na przycisku *submit* jest *New Fortune* albo
+*Update Fortune*. Jak można to wyjaśnić? Co decyduje
+o tym jaki napis jest na przycisku?
+
+I18N: Responders + napis na przycisku Submit. Tłumaczenia
+możemy wpisywać w jednym pliku albo w kilku plikach.
+
+Responders:
+
+    :::yaml config/locales/responders.pl.yml
+    pl:
+      flash:
+        actions:
+          create:
+            notice: '%{resource_name} was successfully utworzono.'
+          update:
+            notice: '%{resource_name} was successfully uaktualniono.'
+          destroy:
+            notice: '%{resource_name} was successfully usunięto.'
+            alert: '%{resource_name} could not be usunąć.'
+
+Modele:
+
+    :::yaml config/locales/models.pl.yml
+    pl:
+      helpers:
+        submit:
+          create: "Utwórz %{model}"
+          update: "Zapisz zmiany"
 
 
 ### Szablony częściowe
 
-I mamy problem – powtórzony fragment kodu w szablonach *new* i *edit*. 
-
-Mała refaktoryzacji kodu powinna wyeliminować powtórzony kod.
-
-Zaczniemy od napisania metody *new*:
+Generator rozwiązał problem powtórzonego fragmentu kodu 
+w naszych szablonach *new* i *edit*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def new
@@ -483,9 +561,10 @@ Co to jest zasada DRY – Don’t repeat yourself.
 Dlaczego „osuszanie” kodu jest ważne?
 
 
-### Linkujemy widoki
+## Linkujemy widoki
 
-W szablonie *index.html.erb* dopisujemy dwa linki:
+W wygenerowanych szablonach generator wstawił odsyłacze. 
+Na przykład w widoku *index*:
 
     :::html_rails app/views/fortunes/index.html.erb
     <% @fortunes.each do |fortune| %>
@@ -501,27 +580,10 @@ Wejdźmy na stronę:
     htttp://localhost:3000/fortunes
 
 i sprawdźmy czy linki działają. Klikamy w jakikolwiek link 'Edit'.
-Działa? Jeśli tak, to edytujemy fortunkę i następnie kliknijmy
-przycisk 'Update Fortune' i… oops! dostajemy błąd:
-
-    Unknown action
-    The action 'update' could not be found
-
-Wygląda na to, że zapomnieliśmy zaimplementować metodę *update*:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def update
-      fortune = Fortune.find_by_id(params[:id])
-      fortune.update_attributes(params[:fortune])
-      redirect_to fortunes_path, :notice => 'Fortune was successfully updated.'
-    end
+Działa?
 
 Przy okazji, zwróćmy uwagę, że metody *update* i *create* nie mają
 powiązanych widoków.
-
-Ciekawostka: napis na przycisku *submit* jest *New Fortune* albo
-*Update Fortune*. Jak można to wyjaśnić? Co decyduje
-o tym jaki napis jest na przycisku?
 
 
 ### Usuwanie rekordów z tabel
@@ -535,9 +597,6 @@ przed zapisywaniem pustych fortunek w tabeli *fortunes* (walidacja).
 
 Teraz zajmiemy się usuwaniem pustych fortunek z bazy.
 
-Zrobimy to w taki sposób: przy każdej fortunce w widoku *index* dodamy
-przycisk 'Delete' po kliknięciu którego fortunka zostanie usunięta:
-
     :::html_rails app/views/fortunes/index.html.erb
     <% @fortunes.each do |fortune| %>
     <p>
@@ -548,24 +607,10 @@ przycisk 'Delete' po kliknięciu którego fortunka zostanie usunięta:
     <% end %>
     <%= link_to "New Fortune", new_fortune_path %>
 
-Odświeżamy stronę, klikamy w przycisk *Delete* i… oops! dostajemy błąd:
-
-    Unknown action
-    The action 'destroy' could not be found
-
-Oznacza to, że czeka nas pisanie metody *destroy*:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def destroy
-      fortune = Fortune.find_by_id(params[:id])
-      fortune.destroy
-      redirect_to fortunes_path, :notice => "Fortune #{fortune.id} was deleted."
-    end
-
 
 ### Pozostała tylko implementacja *show*
 
-Został tylko do napisania widok *show* i powiązana z nim metoda
+Został tylko do omówienia widok *show* i powiązana z nim metoda
 kontrolera.
 
     :::html_rails app/views/fortunes/show.html.erb
@@ -579,7 +624,7 @@ Kontroler:
 
     :::ruby app/controllers/fortunes_controller.rb
     def show
-      @fortune = Fortune.find_by_id(params[:id])
+      @fortune = Fortune.find(params[:id])
       respond_with @fortune
     end
 
@@ -650,17 +695,6 @@ Po wykonaniu polecenia
 
     rails generate jquery:install
 
-dopisujemy w pojemniku *head* polecenie *csrf_meta_tag*:
-
-    :::html_rails app/views/layouts/application.html.erb
-    <head>
-      <title><%= yield(:title) || "Fortune" %></title>
-      <%= stylesheet_link_tag "application" %>
-      <%= javascript_include_tag :defaults %>
-      <%= csrf_meta_tag %>
-      <%= yield(:head) %>
-    </head>
-
 
 ## Routing
 
@@ -672,7 +706,7 @@ Zmieniamy routing tak, aby */fortunes* była stroną główną */*:
     root :to => "fortunes#index"
 
 
-## AJAX – dodajemy wyszukiwanie
+## TODO: AJAX – dodajemy wyszukiwanie
 
 Co oznacza „unobtrusive Javascript”?
 
@@ -892,10 +926,10 @@ Na koniec podmieniamy `LINK_DO_CZEGO?` powyżej:
 
 Dodajemy do każdej fortunki możliwość dopisywania komentarzy.
 
-Zaczynamy od wygenerowania szkieletu dla zasobu *Comment* oraz
+Zaczynamy od wygenerowania rusztowania dla zasobu *Comment* oraz
 wykonania migracji:
 
-    rails g resource Comment fortune_id:integer \
+    rails g resource Comment fortune:references \
         author:string body:string
     rake db:migrate
 
@@ -932,15 +966,14 @@ oraz stary routing, który też obowiązuje:
     edit_fortune GET    /fortunes/:id/edit {:action=>"edit", :controller=>"fortunes"}
             root        /                  {:controller=>"fortunes", :action=>"index"}
 
-Przechodzimy do modelu *Comment*, gdzie dopisujemy powiązanie:
+Przechodzimy do modelu *Comment*, gdzie znajdujemy dopisane powiązanie:
 
     :::ruby app/models/comment.rb
     class Comment < ActiveRecord::Base
       belongs_to :fortune
     end
 
-Przechodzimy do modelu *Fortune*, gdzie dopisujemy drugą stronę
-powiązania:
+Przechodzimy do modelu *Fortune*, gdzie dopisujemy drugą stronę powiązania:
 
     :::ruby app/models/fortune.rb
     class Fortune < ActiveRecord::Base
@@ -1041,6 +1074,38 @@ I od razu usuwamy powielony kod:
         redirect_to @fortune, :notice => "Comment #{comment.id} was deleted."
       end
     end
+
+
+## I18N: form.error_messages
+
+Kod wygenerowany przez nifty:layout:
+
+    :::ruby app/helpers/error_messages_helper.rb
+    module ErrorMessagesHelper
+      # Render error messages for the given objects. The :message and :header_message options are allowed.
+      def error_messages_for(*objects)
+        options = objects.extract_options!
+        options[:header_message] ||= "Invalid Fields"
+        options[:message] ||= "Correct the following errors and try again."
+        ...
+
+Jak to zlokalizować? Jaki dodać prefix? Zobacz 
+[Support Rails built in i18n system for easy translations](http://github.com/ryanb/nifty-generators/issues#issue/22).
+
+Może tak:
+
+    :::ruby 
+    options[:header_message] ||= I18n.t(errors.template.header_message), :default => "Invalid Fields"
+    options[:message] ||= I18n.t(errors.template.message), :default => "Correct the following errors and try again."
+
+Plik z polskim tłumaczeniem:
+
+    errors:
+      template:
+        header_message: 
+          "Nieprawidłowo wypełniony formularz"
+        message: 
+          "Popraw poniższe błędy i spróbuj jeszcze raz:"
 
 
 ## Różne

@@ -1,5 +1,6 @@
-log
-lib/tmp/pids/
+.bundle
+lib/log/*.log
+lib/tmp/**/*
 *.gem
 *~
 .\#*
