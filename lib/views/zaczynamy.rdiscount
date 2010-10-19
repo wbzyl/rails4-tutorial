@@ -1073,7 +1073,6 @@ W pustym *CommentsController* wpisujemy:
       end
 
       def new
-        @comment = Comment.new
         respond_with @comment
       end
 
@@ -1120,7 +1119,9 @@ oraz *_comment.html.erb*::
     <div class="comment">
       <b>Body:</b> <%= comment.body %>
     </div>
-    <%= link_to "Delete", [@fortune, comment], :confirm => "Are you sure?", :method => :delete %>
+    <%= link_to "Delete", [comment.fortune, comment], :confirm => "Are you sure?", :method => :delete %>
+
+Interesujący kod w *link_to* powyżej!
 
 Poprawiamy kod widoku *show*, tak aby korzystał z tych szablonów:
 
