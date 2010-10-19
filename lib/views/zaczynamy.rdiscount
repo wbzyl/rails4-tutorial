@@ -1001,7 +1001,7 @@ Przechodzimy do modelu *Fortune*, gdzie dopisujemy drugą stronę powiązania:
 
     :::ruby app/models/fortune.rb
     class Fortune < ActiveRecord::Base
-      has_many :comments
+      has_many :comments, :dependent => :destroy
       ...
 
 Nie zapominamy o migracji:
@@ -1169,8 +1169,10 @@ Plik z polskim tłumaczeniem:
 
 ## TODO
 
-Fortunka jest niechlujnie olinkowana: gdzieniegdzie brakuje odsyłaczy,
+1\. Fortunka jest niechlujnie olinkowana: gdzieniegdzie brakuje odsyłaczy,
 a w innych miejscach jesteśmy odsyłani w maliny.
+
+2\. Dopisać logowanie via *authenticate_or_request_with_http_basic*.
 
 
 ## Różne
