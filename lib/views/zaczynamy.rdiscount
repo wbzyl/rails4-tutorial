@@ -104,8 +104,9 @@ Zaczynamy od modyfikacji wygenerowanego pliku:
     # or bundle edge Rails    
     #   gem 'rails', :git => 'git://github.com/rails/rails.git'
     gem 'sqlite3-ruby', :require => 'sqlite3'
-    # use thin as web server
+    # use thin / unicorn as web server
     gem 'thin'
+    gem 'unicorn'
     # configure irb, see ~/.irbrc
     group :development do
       gem 'wirble'
@@ -128,8 +129,8 @@ Możemy to zrobić na kilka sposobów:
 
 <pre>rails server thin -p <i>numer portu</i>
 passenger start -p <i>numer portu</i>
+unicorn -p <i>numer portu</i>
 thin --rackup config.ru start -p <i>numer portu</i>
-unicorn config.ru -p <i>numer portu</i>
 </pre>
 
 
@@ -639,9 +640,9 @@ W widoku *index* dopisujemy link:
 
 ## Atom
 
-Dopisujemy do kontrolera:
+Dopisujemy do kontrolera (z formatu :js skorzystamy go później):
 
-    respond_to :html, :atom
+    respond_to :html, :atom, :js
 
 Widok:
 
@@ -705,6 +706,10 @@ Zmieniamy routing tak, aby */fortunes* była stroną główną */*:
     # just remember to delete public/index.html.
     root :to => "fortunes#index"
 
+I usuwamy statyczną stronę „Welcome aboard”:
+
+    rm public/index.html
+
 
 ## TODO: AJAX – dodajemy wyszukiwanie
 
@@ -714,8 +719,11 @@ Do szablonu *index.html.erb* dodamy formularz do wyszukiwania
 fortunek. Wyszukane fortunki umieścimy w elemencie *DIV*.
 Dlaczego potrzebujemy pojemnika na fortunki?
 
+Przy okazji zrobimy refaktoryzację kodu:
+
     :::html_rails app/views/fortunes/index.html.erb
-    <%= form_tag products_path, :method => :get, :remote => true do %>  
+    <% title "Wszystkie fortunki" %>
+    <%= form_tag fortunes_path, :method => :get, :remote => true do %>  
       <p>  
         <%= text_field_tag :search, params[:search] %>  
         <%= submit_tag "Search", :name => nil %>  
@@ -726,16 +734,8 @@ Dlaczego potrzebujemy pojemnika na fortunki?
     </div>
     <p><%= link_to "New Fortune", new_fortune_path %></p>
 
-Oto fragment źródła strony wygenerowanej z powyższego szablonu:
-
-    :::html_rails
-    <form action="/fortunes" data-remote="true" method="get"> 
-
-Do czego służą atrybuty *data-\** ?
-Czy elementy z takimi atrybutami się walidują?
-
-W szablonie częściowym *_fortune.html.erb* usuniemy pętlę,
-która była w widoku *index.html.erb*:
+W szablonie częściowym *_fortune.html.erb* nie potrzebujemy pętli
+(dlaczego?):
 
     :::html_rails app/views/fortunes/_fortune.html.erb
     <p>
@@ -745,11 +745,17 @@ która była w widoku *index.html.erb*:
      <%= link_to "Delete", fortune_path(fortune), :confirm => "Are you sure?", :method => :delete %>
     </p>
 
+Oto fragment źródła strony wygenerowanej z powyższego szablonu:
+
+    :::html_rails
+    <form action="/fortunes" data-remote="true" method="get"> 
+
+Do czego służą atrybuty *data-\** ?
+Czy elementy z takimi atrybutami się walidują?
+
 Wchodzimy na stronę:
 
     http://localhost:3000/
-
-Gdzie podziała się pętla po fortunkach?
 
 Pozostało napisać szablon *index.js.erb*.
 Co oznacza rozszerzenie *.js.erb*?
@@ -757,7 +763,7 @@ Co oznacza rozszerzenie *.js.erb*?
     :::jquery_javascript app/views/fortunes/index.js.erb
     $("#fortunes").html("<%= escape_javascript(render(@fortunes)) %>");
 
-Czym musimy jeszcze dopisać / zmienić jakiś kod w kontrolerze
+Pytanie: co powinniśmy dopisać / zmienić w kontrolerze
 *FortunesController*? Jakąś metodę? Jeśli tak, to jaką?
 
 Odpowiedzi. Zmieniamy kod metody *index*
@@ -815,18 +821,18 @@ Do modelu dopisujemy:
 Przy okazji, zmieniamy domyślny znak do oddzielania tagów z przecinka
 na spację.
 
-W formularzu dopisujemy:
+W formularzu zmieniamy i dopisujemy:
 
     :::html_rails app/views/fortunes/_form.html.erb
-    <p>
-      <%= form.label :tag_list %><br>
-      <%= form.text_field :tag_list %>
-    </p>
+    <p>Body:<br/><%= f.text_area :body, :cols => 60, :rows => 8 %></p>
+    <p><%= f.label :tag_list %>: <%= f.text_field :tag_list, :size => 60 %></p>
 
 a w widoku *index*:
 
     :::html_rails app/views/fortunes/index.html.erb
     <p>Tags: <%= fortune.tag_list %></p>
+
+Pozsotaje jeszcze dopisać wyświetlanie tagów tu i ówdzie (gdzie?).
 
 
 ### Chmurka tagów
@@ -835,12 +841,22 @@ Aby utworzyć chmurkę tagów dopisujemy do widoku *index*:
 
     :::html_rails app/views/fortunes/index.html.erb
     <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
-      <%= link_to tag.name, LINK_DO_CZEGO?, :class=>css_class %>
+      <%= link_to tag.name, LINK_DO_CZEGO?, :class => css_class %>
     <% end %>
 
 Aby ten kod zadziałał musimy zdefiniować zmienną *@tags*, wczytać kod
 metody pomocniczej *tag_cloud*, wystylizować chmurkę tagów oraz
 podmienić *LINK_DO_CZEGO?* na coś sensownego.
+
+Na razie możemy wypróbować coś takiego:
+
+    :::html_rails
+    <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
+      <%= link_to tag.name, fortunes_path, :class => css_class %>
+      <%= debug(tag) %>
+    <% end %>
+
+Jakieś rozwiązanie jest w następnej sekcji.
 
 W metodzie *index* kontrolera *FortunesController* przed dopisujemy:
 
@@ -907,6 +923,8 @@ Na koniec podmieniamy `LINK_DO_CZEGO?` powyżej:
 
     :::ruby
     <%= link_to tag.name, tags_fortunes_path(:name=>tag.name), :class=>css_class %>
+
+Przyjrzeć się jak to działa!
 
 
 ## Dodajemy komentarze do fortunek
