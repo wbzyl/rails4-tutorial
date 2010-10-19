@@ -711,7 +711,7 @@ I usuwamy statyczną stronę „Welcome aboard”:
     rm public/index.html
 
 
-## TODO: AJAX – dodajemy wyszukiwanie
+## AJAX: dodajemy wyszukiwanie
 
 Co oznacza „unobtrusive Javascript”?
 
@@ -893,7 +893,6 @@ Spróbujemy zrobić to tak. Zaczniemy od routingu:
       collection do 
         get :tags
       end
-      resources :comments
     end
 
 Sprawdzamy routing:
@@ -904,16 +903,18 @@ i widzimy, że mamy dodatkowo:
 
     tags_fortunes GET /fortunes/tags {:action=>"tags", :controller=>"fortunes"}
 
-Teraz dopisujemy co trzeba w kontrolerze (plus mała refaktoryzacja):
+Teraz dopisujemy co trzeba w kontrolerze (plus mała refaktoryzacja; jaka?):
 
     :::ruby app/controllers/fortunes_controller.rb
     before_filter :only => [:index, :tags] do
       @tags = Fortune.tag_counts  # for tag clouds    
     end
+    
     def index
       @fortunes = Fortune.search(params[:search]).order("created_at desc")
       respond_with @fortunes
     end
+    
     def tags
       @fortunes = Fortune.tagged_with(params[:name])
       render 'index'
@@ -922,7 +923,7 @@ Teraz dopisujemy co trzeba w kontrolerze (plus mała refaktoryzacja):
 Na koniec podmieniamy `LINK_DO_CZEGO?` powyżej:
 
     :::ruby
-    <%= link_to tag.name, tags_fortunes_path(:name=>tag.name), :class=>css_class %>
+    <%= link_to tag.name, tags_fortunes_path(:name=>tag.name), :class => css_class %>
 
 Przyjrzeć się jak to działa!
 
@@ -956,6 +957,9 @@ Zagnieżdżamy zasoby i sprawdzamy jak to zmienia routing:
     :::ruby
     resources :fortunes do
       resources :comments
+      collection do 
+        get :tags
+      end
     end
 
 Po tej zmianie polecenie
@@ -964,25 +968,27 @@ Po tej zmianie polecenie
 
 wypisuje nowy routing:
  
-                         GET    /fortunes/:fortune_id/comments          {:action=>"index", :controller=>"comments"}
-        fortune_comments POST   /fortunes/:fortune_id/comments          {:action=>"create", :controller=>"comments"}
-     new_fortune_comment GET    /fortunes/:fortune_id/comments/new      {:action=>"new", :controller=>"comments"}
-                         GET    /fortunes/:fortune_id/comments/:id      {:action=>"show", :controller=>"comments"}
-                         PUT    /fortunes/:fortune_id/comments/:id      {:action=>"update", :controller=>"comments"}
+                         GET    /fortunes/:fortune_id/comments          {:action=>"index",   :controller=>"comments"}
+        fortune_comments POST   /fortunes/:fortune_id/comments          {:action=>"create",  :controller=>"comments"}
+     new_fortune_comment GET    /fortunes/:fortune_id/comments/new      {:action=>"new",     :controller=>"comments"}
+                         GET    /fortunes/:fortune_id/comments/:id      {:action=>"show",    :controller=>"comments"}
+                         PUT    /fortunes/:fortune_id/comments/:id      {:action=>"update",  :controller=>"comments"}
          fortune_comment DELETE /fortunes/:fortune_id/comments/:id      {:action=>"destroy", :controller=>"comments"}
-    edit_fortune_comment GET    /fortunes/:fortune_id/comments/:id/edit {:action=>"edit", :controller=>"comments"}
+    edit_fortune_comment GET    /fortunes/:fortune_id/comments/:id/edit {:action=>"edit",    :controller=>"comments"}
 
 
 oraz stary routing, który też obowiązuje:
 
-                 GET    /fortunes          {:action=>"index", :controller=>"fortunes"}
-        fortunes POST   /fortunes          {:action=>"create", :controller=>"fortunes"}
-     new_fortune GET    /fortunes/new      {:action=>"new", :controller=>"fortunes"}
-                 GET    /fortunes/:id      {:action=>"show", :controller=>"fortunes"}
-                 PUT    /fortunes/:id      {:action=>"update", :controller=>"fortunes"}
-         fortune DELETE /fortunes/:id      {:action=>"destroy", :controller=>"fortunes"}
-    edit_fortune GET    /fortunes/:id/edit {:action=>"edit", :controller=>"fortunes"}
-            root        /                  {:controller=>"fortunes", :action=>"index"}
+    tags_fortunes GET    /fortunes/tags     {:action=>"tags",    :controller=>"fortunes"}
+                  GET    /fortunes          {:action=>"index",   :controller=>"fortunes"}
+         fortunes POST   /fortunes          {:action=>"create",  :controller=>"fortunes"}
+      new_fortune GET    /fortunes/new      {:action=>"new",     :controller=>"fortunes"}
+                  GET    /fortunes/:id      {:action=>"show",    :controller=>"fortunes"}
+                  PUT    /fortunes/:id      {:action=>"update",  :controller=>"fortunes"}
+          fortune DELETE /fortunes/:id      {:action=>"destroy", :controller=>"fortunes"}
+     edit_fortune GET    /fortunes/:id/edit {:action=>"edit",    :controller=>"fortunes"}
+    
+             root        /                  {:controller=>"fortunes", :action=>"index"}
 
 Przechodzimy do modelu *Comment*, gdzie znajdujemy dopisane powiązanie:
 
@@ -1025,10 +1031,9 @@ Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*
       <% @fortune.comments.each do |comment| %>
        <p>Autor:<br><%= comment.author %></p>
        <div class="comment">
-         Body:<br><%= comment.body %>
+         <b>Body:</b> <%= comment.body %>
        </div>
-       <%= button_to "Delete", [@fortune, comment], 
-          :confirm => "Are you sure?", :method => :delete %>
+       <%= link_to "Delete", [@fortune, comment], :confirm => "Are you sure?", :method => :delete %>
       <% end %>
     <% end %>
 
@@ -1037,21 +1042,24 @@ Jakie nowe rzeczy pojawiły się powyższym kodzie?
 
 ### Gdzie wpisywać nowe komentarze?
 
-Najwygodniej byłoby dodać formularz też do widoku *show*
+Najwygodniej byłoby dodać też formularz do widoku *show*
 (**dlaczego?**):
 
     :::html_rails app/views/fortunes/show.html.erb
     <h2>Dodaj komentarz</h2>
-    <%= form_for [@fortune, Comment.new] do |form| %>
+    <%= form_for [@fortune, @fortune.comments.build] do |f| %>
+      <%= f.error_messages %>
       <p>
-        <%= form.label :author, "Author" %><br>
-        <%= form.text_field :author %>
+        <%= f.label :author, "Author" %><br>
+        <%= f.text_field :author %>
       </p>
-      <p><%= form.text_area :body, :rows => 4 %></p>
-      <p><%= form.submit %></p>
+      <p><%= f.text_area :body, :rows => 4 %></p>
+      <p><%= f.submit %></p>
     <% end %>
 
-Nowe rzeczy w kodzie?
+Nowe rzeczy w kodzie? Dlaczego taki pokrętny kod: **@fortune.comments.build**?
+Czy samo *Comment.new* nie wystarczy?
+Gdzie jest zdefiniowana metoda *error_messages*?
 
 
 ### Tworzenie i usuwanie komentarzy
@@ -1061,42 +1069,87 @@ W pustym *CommentsController* wpisujemy:
     :::ruby app/controllers/comments_controller.rb
     class CommentsController < ApplicationController
       def create
-        fortune = Fortune.find_by_id(params[:fortune_id])
-        comment = Comment.create(params[:comment])
-        fortune.comments << comment
-        redirect_to fortune, :notice => 'Comment was successfully created.'
+        @fortune = Fortune.find params[:fortune_id]
+        @comment = @fortune.comments.create params[:comment]
+        respond_with @fortune
       end
+
       def destroy
-        fortune = Fortune.find_by_id(params[:fortune_id])
-        comment = Comment.find_by_id(params[:id])
-        comment.destroy
-        redirect_to fortune, :notice => "Comment #{comment.id} was deleted."
+        @fortune = Fortune.find params[:fortune_id]
+        @comment = @fortune.comments.find params[:id]
+        @comment.destroy
+        respond_with @fortune
       end
     end
 
-I od razu usuwamy powielony kod:
+## Refaktoryzacja
+
+Od razu usuwamy powielony kod:
 
     :::ruby app/controllers/comments_controller.rb
     class CommentsController < ApplicationController
       before_filter do
-        @fortune = Fortune.find_by_id(params[:fortune_id])
+        @fortune = Fortune.find params[:fortune_id]
       end
+
+      def new
+        @comment = Comment.new
+        respond_with @comment
+      end
+
       def create
-        @comment = Comment.create(params[:comment])
-        @fortune.comments << @comment
-        redirect_to @fortune, :notice => 'Comments was successfully created.'
+        @comment = @fortune.comments.new params[:comment]
+        @comment.save
+        respond_with @comment, :location => fortunes_url
       end
+
       def destroy
-        comment = Comment.find_by_id(params[:id])
-        comment.destroy
-        redirect_to @fortune, :notice => "Comment #{comment.id} was deleted."
+        @comment = @fortune.comments.find params[:id]
+        @comment.destroy
+        respond_with @fortune
       end
     end
 
+Dodajemy widok *new*:
 
-## I18N: form.error_messages
+    :::html_rails app/views/comments/new.html.erb
+    <% title "Nowy komentarz" %>
+    <%= render 'form' %>
+    <%= link_to 'Back', fortunes_path %>
 
-Kod wygenerowany przez nifty:layout:
+oraz szablon częściowy:
+
+    :::html_rails app/views/comments/_form.html.erb
+    <%= form_for [@fortune, @comment] do |f| %>
+      <%= f.error_messages %>
+      <p>Author:<br/><%= f.text_field :author %></p>
+      <p>Body:<br/><%= f.text_area :body, :cols => 60, :rows => 8 %></p>
+      <div class="actions">
+        <%= f.submit %>
+      </div>
+    <% end %>
+
+Tworzymy szablon częściowy dla komentarzy:
+
+    :::html_rails app/views/comments/_comment.html.erb
+    <p>Autor:<br><%= comment.author %></p>
+    <div class="comment">
+      <b>Body:</b> <%= comment.body %>
+    </div>
+    <%= link_to "Delete", [@fortune, comment], :confirm => "Are you sure?", :method => :delete %>
+
+i zmieniamy widok:
+
+    :::html_rails app/views/fortunes/show.html.erb
+    <% if @fortune.comments.any? %>
+      <h2>Komentarze</h2>
+      <%= render @fortune.comments %>
+    <% end %>
+
+
+## I18N: error_messages
+
+Kod wygenerowany przez generator nifty:layout:
 
     :::ruby app/helpers/error_messages_helper.rb
     module ErrorMessagesHelper
