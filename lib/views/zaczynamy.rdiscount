@@ -1166,6 +1166,12 @@ Plik z polskim tłumaczeniem:
           "Popraw poniższe błędy i spróbuj jeszcze raz:"
 
 
+## TODO
+
+Fortunka jest niechlujnie olinkowana: gdzieniegdzie brakuje odsyłaczy,
+a w innych miejscach jesteśmy odsyłani w maliny.
+
+
 ## Różne
 
 * Co to jest „unobtrusive Javascript”?
