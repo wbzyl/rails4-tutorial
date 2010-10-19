@@ -1068,26 +1068,6 @@ W pustym *CommentsController* wpisujemy:
 
     :::ruby app/controllers/comments_controller.rb
     class CommentsController < ApplicationController
-      def create
-        @fortune = Fortune.find params[:fortune_id]
-        @comment = @fortune.comments.create params[:comment]
-        respond_with @fortune
-      end
-
-      def destroy
-        @fortune = Fortune.find params[:fortune_id]
-        @comment = @fortune.comments.find params[:id]
-        @comment.destroy
-        respond_with @fortune
-      end
-    end
-
-## Refaktoryzacja
-
-Od razu usuwamy powielony kod:
-
-    :::ruby app/controllers/comments_controller.rb
-    class CommentsController < ApplicationController
       before_filter do
         @fortune = Fortune.find params[:fortune_id]
       end
@@ -1110,26 +1090,30 @@ Od razu usuwamy powielony kod:
       end
     end
 
-Dodajemy widok *new*:
+Dodajemy nowy widok *new* dla komentarzy (dlaczego?):
 
     :::html_rails app/views/comments/new.html.erb
     <% title "Nowy komentarz" %>
     <%= render 'form' %>
     <%= link_to 'Back', fortunes_path %>
 
-oraz szablon częściowy:
+
+### Refaktoryzacja widoku „show” dla fortunek
+
+Tworzymy dwa szablony częściowe dla komentarzy: *_form.html.erb*:
 
     :::html_rails app/views/comments/_form.html.erb
-    <%= form_for [@fortune, @comment] do |f| %>
+    <%= form_for [@fortune, @fortune.comments.build] do |f| %>
       <%= f.error_messages %>
-      <p>Author:<br/><%= f.text_field :author %></p>
-      <p>Body:<br/><%= f.text_area :body, :cols => 60, :rows => 8 %></p>
-      <div class="actions">
-        <%= f.submit %>
-      </div>
+      <p>
+        <%= f.label :author, "Author" %><br>
+        <%= f.text_field :author %>
+      </p>
+      <p><%= f.text_area :body, :rows => 4 %></p>
+      <p><%= f.submit %></p>
     <% end %>
 
-Tworzymy szablon częściowy dla komentarzy:
+oraz *_comment.html.erb*::
 
     :::html_rails app/views/comments/_comment.html.erb
     <p>Autor:<br><%= comment.author %></p>
@@ -1138,9 +1122,12 @@ Tworzymy szablon częściowy dla komentarzy:
     </div>
     <%= link_to "Delete", [@fortune, comment], :confirm => "Are you sure?", :method => :delete %>
 
-i zmieniamy widok:
+Poprawiamy kod widoku *show*, tak aby korzystał z tych szablonów:
 
     :::html_rails app/views/fortunes/show.html.erb
+    <h2>Dodaj komentarz</h2>
+    <%= render 'comments/form' %>
+    
     <% if @fortune.comments.any? %>
       <h2>Komentarze</h2>
       <%= render @fortune.comments %>
