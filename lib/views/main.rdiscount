@@ -43,7 +43,7 @@ TODO:
 1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
 -->
 
-Konfiguracja, RVM…
+Konfiguracja – RVM, konsola, dokumentacja online:
 
 * {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}
 

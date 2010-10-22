@@ -18,9 +18,10 @@ Jak to zrobić? Zaglądamy do katalogu *locales* po wskazówki:
 
 Wszystkie(?) komunikaty Rails można znaleźć w plikach:
 
-* [action_view.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails/action_view.yml)
-* [active_record.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails/active_record.yml)
-* [active_support.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails/active_support.yml)
+* [action_view.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails3/action_view.yml)
+* [active_model.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails3/active_model.yml)
+* [active_record.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails3/active_record.yml)
+* [active_support.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails3/active_support.yml)
 
 Polskie tłumaczenia komunikatów są w pliku
 [pl.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/locale/pl.yml)
