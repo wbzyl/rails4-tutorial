@@ -50,7 +50,6 @@ wysłania poczty:
       :authentication       => MAIL_CONFIG[:authentication],
       :enable_starttls_auto => true
     }
-    ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor) if Rails.env.development?
     ActionMailer::Base.default_url_options[:host] = MAIL_CONFIG[:host]
 
 **Uwaga:** Setting *ActionMailer::Base.default_url_options directly*
@@ -143,17 +142,13 @@ Kod wysyłający pocztę umieścimy dopisując w metodzie *create* kontrolera
 ## Mail interceptors
 
     :::ruby lib/development_mail_interceptor.rb
-    class DevelopmentMailInterceptor
+    class FortuneMailInterceptor
       def self.delivering_email(message)
         message.subject = "[#{message.to}] #{message.subject}"
         message.to = "matwb@ug.edu.pl"
       end
     end
-
-Dopisujemy (zrobiliśmy to już wcześniej):
-
-    :::ruby config/initializers/setup_mail.rb
-    ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor) if Rails.env.development?
+    ActionMailer::Base.register_interceptor(FortuneMailInterceptor) if Rails.env.development?
 
 Ponieważ katalog *lib* nie jest w ścieżce *$LOAD_PATH* dopisujemy go w pliku
 konfiguracyjnym aplikacji:
