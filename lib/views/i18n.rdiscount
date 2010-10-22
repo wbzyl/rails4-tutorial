@@ -107,7 +107,6 @@ Teraz pliki w plikach z tłumaczeniami można dodać dodatkowe tłumaczenia:
       other: "jest za krótkie (minimalnie %{count} znaków)"
 
 
-
 ## I18n_routing
 
 URL też czasami należy przetłumaczyć. Jak to zrobić opisano 
