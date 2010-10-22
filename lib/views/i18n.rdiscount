@@ -82,7 +82,7 @@ dwa pliki (nazwy plików mogą być dowolne):
 
 oraz
 
-    :::ruby config/locales/pl_pluralization.rb
+    :::ruby config/locales/pluralization.rb
     {
       :pl => {
         :i18n => {
@@ -94,7 +94,7 @@ oraz
             }
      }}}}
 
-Teraz pliki z tłumaczeniami będą wyglądać tak:
+Teraz pliki w plikach z tłumaczeniami można dodać dodatkowe tłumaczenia:
 
     :::yaml
     too_long:
