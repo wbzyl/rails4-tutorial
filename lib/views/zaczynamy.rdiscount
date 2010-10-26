@@ -219,7 +219,7 @@ zawierający pusty kontroler *FortunesController*.
  <ul>
    <li>{%= link_to "nifty:scaffold", "/rails3/nifty-generators/comments_controller.rb" %}
    <li>{%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %}
-   <li>{%= link_to "respond_with", "/rails3/respond-with/products_controller.rb" %}
+   <li>{%= link_to "respond_with", "/rails3/respond-with/fortunes_controller.rb" %}
  </ul>
 </blockquote>
 
@@ -459,9 +459,8 @@ Teraz możemy skorzystać z nowych generatorów:
     rails generate responders:install
     rails generate responders_controller fortune
 
-Niestety generator nadpisał utworzone przez nas pliki. 
-Dopóty nie zostanie to poprawione, dopóki czeka nas poprawianie
-widoków.
+Oooops! Drugi generator nadpisał utworzone przez nas pliki. Teraz
+czeka nas poprawianie widoków.
 
 
 ### Konsola
@@ -494,14 +493,16 @@ Uwaga: metoda pomocnicza *title* jest zdefiniowana w pliku
 *app/helpers/layout_helper.rb* wygenerowanym przez generator
 nifty:layout.
 
-Ciekawostka: Napis na przycisku *submit* jest *New Fortune* albo
-*Update Fortune*. Jak można to wyjaśnić? Co decyduje
-o tym jaki napis jest na przycisku?
+Pytanie: jak można wyjaśnić, że napis na przycisku *submit* jest *New
+Fortune* albo *Update Fortune*? Co decyduje o tym jaki napis jest na
+przycisku?
 
-I18N: Responders + napis na przycisku Submit. Tłumaczenia
-możemy wpisywać w jednym pliku albo w kilku plikach.
+Odpowiedź: Napisy, np. na przycisku submit, można samemu zdefiniować.
+Tłumaczenia wpisujemy w jednym pliku albo w kilku
+plikach. Pliki umieszczamy w katalogu *config/locales*.
 
-Responders:
+Tak wygląda plik z polskimi tłumaczeniami dla komunikatów
+wypisywanych przez *Responders*:
 
     :::yaml config/locales/responders.pl.yml
     pl:
@@ -515,14 +516,14 @@ Responders:
             notice: '%{resource_name} was successfully usunięto.'
             alert: '%{resource_name} could not be usunąć.'
 
-Modele:
+A tak to wygląda dla przycisku *Submit*:
 
     :::yaml config/locales/models.pl.yml
     pl:
       helpers:
         submit:
           create: "Utwórz %{model}"
-          update: "Zapisz zmiany"
+          update: "Uaktualnij %{model}"
 
 
 ### Szablony częściowe
@@ -1097,7 +1098,7 @@ Dodajemy nowy widok *new* dla komentarzy (dlaczego?):
     <%= link_to 'Back', fortunes_path %>
 
 
-### Refaktoryzacja widoku „show” dla fortunek
+## Refaktoryzacja widoku „show” dla fortunek
 
 Tworzymy dwa szablony częściowe dla komentarzy: *_form.html.erb*:
 
@@ -1172,7 +1173,90 @@ Plik z polskim tłumaczeniem:
 1\. Fortunka jest niechlujnie olinkowana: gdzieniegdzie brakuje odsyłaczy,
 a w innych miejscach jesteśmy odsyłani w maliny.
 
-2\. Dopisać logowanie via *authenticate_or_request_with_http_basic*.
+2\. Dopisać logowanie via *authenticate_or_request_with_http_basic* tak jak to jest
+opisane w samouczku [Getting Started with Rails](http://edgeguides.rubyonrails.org/getting_started.html).
+
+
+## Autentykacja z Devise
+
+* [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise).
+* [Customizing Devise](http://asciicasts.com/episodes/210-customizing-devise).
+
+### Korzystamy z własnej poczty
+
+Konfiguracja:
+
+    :::yaml config/mailer_config.yml
+    development:
+      domain: localhost:3000
+      host: localhost:3000
+      address: smtp.gmail.com
+      port: 587
+      user_name: <login> 
+      password: <password>
+      authentication: plain
+
+    test:
+      domain: localhost:3000
+
+    production:
+      domain: localhost:3000
+      host: sigma.ug.edu.pl:3000
+      address: inf.ug.edu.pl
+      port: 25
+      user_name: <login>
+      password: <password>
+      authentication: login
+
+Używamy stałej globalnej:
+
+    :::ruby config/initializers/load_mailer_config.rb
+    raw_config = File.read("#{Rails.root}/config/mailer_config.yml")
+    MAILER_CONFIG = YAML.load(raw_config)[Rails.env].symbolize_keys
+
+
+Konfigurujemy SMTP:
+
+    :::ruby config/initializers/setup_mail.rb 
+    ActionMailer::Base.smtp_settings = {
+      :address              => MAILER_CONFIG[:address],
+      :port                 => MAILER_CONFIG[:port],
+      :domain               => MAILER_CONFIG[:domain],
+      :user_name            => MAILER_CONFIG[:user_name],
+      :password             => MAILER_CONFIG[:password],
+      :authentication       => MAILER_CONFIG[:authentication],
+      :enable_starttls_auto => true
+    }
+    ActionMailer::Base.default_url_options[:host] = MAILER_CONFIG[:host]
+
+Wygodne w development:
+
+    :::ruby lib/development_mail_interceptor.rb
+    class FortuneMailInterceptor
+      def self.delivering_email(message)
+        message.subject = "[#{message.to}] #{message.subject}"
+        message.to = "matwb@ug.edu.pl"
+      end
+    end
+    ActionMailer::Base.register_interceptor(FortuneMailInterceptor) if Rails.env.development?
+
+Musimy jeszcze dodać katalog *lib* do ścieżki wyszukiwania:
+
+    :::ruby config/application.rb
+    module Fortunka
+      class Application < Rails::Application
+        # Custom directories with classes and modules you want to be autoloadable.
+        # config.autoload_paths += %W(#{config.root}/extras)
+        config.autoload_paths += %W(#{config.root}/lib)
+
+
+## Engage With Devise: OAuth
+
+[Engage With Devise](http://asciicasts.com/episodes/233-engage-with-devise).
+
+Rejestrujemy sie na *https://www.myopenid.com/*.
+
+Rejestrujemy się na Engage: *http://www.janrain.com/products/engage*.
 
 
 ## Różne
