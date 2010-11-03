@@ -20,10 +20,15 @@ Nazwy repozytoriów na poszczególne projekty to:
 * **kontakty**
 
 Do katalogu głównego aplikacji należy dodać plik
-*.rvmrc* zawierający taki oto kod:
+*.rvmrc* zawierający taki kod:
 
-    rvm use 1.9.2               # lub ree
-    rvm --create gemset use asi # lub swoją nazwę
+    rvm use ree
+    rvm --create gemset use asi 
+
+albo taki kod:
+
+    rvm use 1.9.2
+    rvm --create gemset use asi 
 
 
 # Egzamin 
