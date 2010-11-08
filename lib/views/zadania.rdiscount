@@ -19,6 +19,17 @@ Nazwy repozytoriów na poszczególne projekty to:
 * **fortunka-dbd**
 * **kontakty**
 
+Do katalogu głównego aplikacji należy dodać plik
+*.rvmrc* zawierający taki kod:
+
+    rvm use ree
+    rvm --create gemset use asi 
+
+albo taki kod:
+
+    rvm use 1.9.2
+    rvm --create gemset use asi 
+
 
 # Egzamin 
 

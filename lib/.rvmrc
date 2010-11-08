@@ -1,3 +1,0 @@
-rvm use ree
-rvm --create gemset use tutorials 
-
