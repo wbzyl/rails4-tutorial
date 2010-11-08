@@ -17,12 +17,13 @@ class FortunesController < ApplicationController
   # GET /fortunes/new.xml
   def new
     @fortune = Fortune.new
-    respond_with(@fortune)
+    #? respond_with(@fortune)
   end
 
   # GET /fortunes/1/edit
   def edit
     @fortune = Fortune.find(params[:id])
+    #? respond_with(@fortune)
   end
 
   # POST /fortunes
