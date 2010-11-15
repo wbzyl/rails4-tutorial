@@ -152,9 +152,9 @@ ul pre {
   margin-left: 0;
 }
 
-div.pre-caption {
-  background: -moz-linear-gradient(0 0 0deg, white, #F01685 1900px);
-  background: -webkit-gradient(linear, 0% 0%, 160% 0%, from(white), to(#F01685)) no-repeat;
+.pre-caption {
+  background: -moz-linear-gradient(0 0 0deg, white, #9C266A 1900px);
+  background: -webkit-gradient(linear, 0% 0%, 160% 0%, from(white), to(#9C266A)) no-repeat;
   font-style: italic;
   text-align: right;
   margin-top: -10px;
@@ -162,6 +162,6 @@ div.pre-caption {
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
 }
-div.pre-caption + pre {
+.pre-caption + pre {
   margin-top: 6px;
 }
