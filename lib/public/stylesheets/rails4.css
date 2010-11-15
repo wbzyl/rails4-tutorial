@@ -35,10 +35,11 @@ h1, h2, h3 {
 }
 
 header {
-  padding: 20px 0 12px 40px;
-  /* background-color: #F01685;  */
-  background: -moz-linear-gradient(0 0 0deg, #F01685, white 1130px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 101% 0%, from(#F01685), to(white)) no-repeat;
+  margin-left: 40px;
+  padding: 20px 0 12px 2px;
+  background-color: #9C266A;
+  /* background: -moz-linear-gradient(0 0 0deg, #F01685, white 1130px) no-repeat; */
+  /* background: -webkit-gradient(linear, 0% 0%, 101% 0%, from(#F01685), to(white)) no-repeat; */
 }
 header h1 {
   margin: 0 0 0 12px;
@@ -54,7 +55,8 @@ header h1 a:hover {
 }
 
 #content {
-  border-left:  40px solid #FCF9D8;
+  /* border-left: 40px solid #FCF9D8; */
+  margin-left: 40px;
   width: 1040px;
   /** margin: 0 0 0 40px; */
   padding: 0 0 0 20px;
@@ -71,8 +73,8 @@ article h1 {
   color: #9C266A;
   margin: 0 0 20px -20px;
   padding: 12px 0 12px 20px;
-  background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 1000px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat;
+  /* background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 1000px) no-repeat; */
+  /* background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat; */
 }
 article h1:first-child {
   padding-top: 24px;
@@ -84,8 +86,8 @@ article h2 {
   margin-left: -22px;
   /* border-left: 11px solid #09A6A3; */
   padding: 6px 0 10px 20px;
-  background: -moz-linear-gradient(0 0 0deg, #EDEBC9, white 660px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#EDEBC9), to(white)) no-repeat;
+  /* background: -moz-linear-gradient(0 0 0deg, #EDEBC9, white 660px) no-repeat; */
+  /* background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#EDEBC9), to(white)) no-repeat; */
   color: #09A6A3;
 }
 
@@ -95,8 +97,8 @@ article h3 {
   margin-left: -22px;
   /* border-left: 11px solid #00CCBE; */
   padding: 6px 0 10px 20px;
-  background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 460px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat;
+  /* background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 460px) no-repeat; */
+  /* background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat; */
   color: #00CCBE;
 }
 
@@ -143,7 +145,7 @@ pre, code, tt {
 pre {
   padding: 0 0 0 36px;
   margin-left: -26px;
-  border-left: 11px solid #F01685;
+  border-left: 11px solid #9C266A;
 }
 ul pre {
   border: none;
