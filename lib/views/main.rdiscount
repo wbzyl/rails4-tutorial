@@ -11,9 +11,9 @@
 </blockquote>
 
 1. {%= link_to "Zaczynamy", "/zaczynamy" %}
-1. {%= link_to "Walidacja", "/walidacja" %}
 1. {%= link_to "Konsola", "/konsola" %}
 1. {%= link_to "Layouts", "/layouty" %}
+1. {%= link_to "Dwa modele", "/task-todo" %}
 1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "Majlujemy", "/mail" %}
 1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
@@ -35,7 +35,7 @@ TODO:
 1. {%= link_to "Wyszukiwanie", "/searching" %}
 1. {%= link_to "Bezpieczeństwo", "/security" %}
 1. {%= link_to "Caching", "/caching" %}
-
+1. {%= link_to "Walidacja", "/walidacja" %}
 -->
 
 <!--
