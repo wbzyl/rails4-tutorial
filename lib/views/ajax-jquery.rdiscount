@@ -1,0 +1,319 @@
+#### {% title "Ajax & jQuery" %}
+
+# Ajax & jQuery
+
+Jeśli jeszcze tego nie zrobiliśmy, to przechodzimy na jQuery.
+JTZ, zob. poprzedni wykład.
+
+Ściąga z kodu z *rails.js*. It provides following callbacks:
+
+- ajax:before   - is execute before the whole thing begings (?)
+- ajax:loading  - is executed before firing ajax call
+- ajax:success  - is executed when status is success
+- ajax:complete - is execute when status is complete
+- ajax:failure  - is execute in case of error
+- ajax:after    - is execute every single time at the end of ajax call (?)
+
+Sygnatury dla funkcji zwrotnych:
+
+    :::jquery_javascript
+    var that = this
+    method   = that.attr('method') || that.attr('data-method') || 'GET',
+    url      = that.attr('action') || that.attr('href'),
+    dataType = that.attr('data-type') || ($.ajaxSettings && $.ajaxSettings.dataType);
+    var data = that.is('form') ? that.serializeArray() : [];
+    $.ajax({
+        url: url,
+        data: data,
+        dataType: dataType,
+        type: method.toUpperCase(),
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Accept", "text/javascript");
+            that.trigger('ajax:loading', xhr);
+        },
+        success: function (data, status, xhr) {
+            that.trigger('ajax:success', [data, status, xhr]);
+        },
+        complete: function (xhr) {
+            that.trigger('ajax:complete', xhr);
+        },
+        error: function (xhr, status, error) {
+            that.trigger('ajax:failure', [xhr, status, error]);
+        }
+    });
+
+
+## Ajaxujemy formularz wpisywania zadań
+
+Elementy wyzwalające zdarzenia powinniśmy jakoś wyróżnić.
+Wtedy będzie nam łatwiej do nich się odwołać z kodu Javascript.
+
+Od razu przeorganizujemy *layout/application.html.erb*. Zamiast
+pętli po widomościach flash wstawimy:
+
+    :::html_rails
+    <div id="container">
+      <%= content_tag :div, "", :id => "flash_notice" %>
+      <%= content_tag :div, "", :id => "flash_error" %>
+
+Elementy te nie powinny być widoczne. Dlatego w pliku *application.js*
+wpiszemy:
+
+    :::jquery_javascript
+    $(document).ready(function() {
+        $("#flash_notice").hide();
+        $("#flash_error").hide();
+    });
+
+Poniżej będziemy też korzystać z identyfikatora **new_task** dodanego
+przez Rails, do elementu *form* oraz oraz **tasks_list** który
+dopiszemy do elementu *table* z listą zadań.
+
+Samo zajaxowanie formularza jest proste. Wystarczy dodać *remote*
+w argumentach dla *form_for* i już!
+
+    :::html_rails
+    <%= form_for(@task, :remote => true) do |f| %>
+
+
+## Sprawdzamy jak to działa
+
+Po tych zmianach, kliknięcie przycisku „Create Task” powoduje wysłanie
+następującego żądania Ajax:
+
+    POST tasks
+      Request Headers
+        Accept text/javascript
+
+W odpowiedzi dostajemy:
+
+    500 Internal Server Error
+    ActionView::MissingTemplate (Missing template tasks/create with
+      {:handlers=>[:erb, :rjs, :builder, :rhtml, :rxml], :formats=>[:js, :html], :locale=>[:en, :en]}
+      in view paths ".../app/views"):
+      app/controllers/tasks_controller.rb:40:in `create'
+
+
+### Dopisujemy nowe zadanie do listy zadań
+
+Widzimy, że brakuje szablonu **views/tasks/create.js.erb**.
+Po napisaniu szablonu, np. takiego:
+
+    :::html_rails
+    $("#flash_notice")
+      .html("<%= escape_javascript(flash[:notice])%>")
+      .show();
+    $("#tasks_list")
+      .append("<%= escape_javascript(render @task) %>")
+
+Powyżej korzystamy szablonu częściowego *_task.erb.html*:
+
+    :::html_rails
+    <tr>
+      <td><%= task.name %></td>
+      <td><%= link_to 'Show', task_path(task) %></td>
+      <td><%= link_to 'Edit', edit_task_path(task) %></td>
+      <td><%= link_to 'Destroy', task, :confirm => 'Are you sure?', :method => :delete %></td>
+    </tr>
+
+Teraz, po ponownym kliknięciu przycisku nowe zadanie powinno się
+pojawić na liście zadań.
+
+
+## Usuwanie zadań
+
+Dopisujemy w szablonie *_task.erb.html*, przy linku „Destroy”:
+
+    <td><%= link_to 'Destroy', task, :remote=>true, :confirm=>'Are you sure?', :method=>:delete %></td>
+
+Kliknięcie linku „Destroy” daje błąd:
+
+    DELETE http://localhost:3000/tasks/4
+    500 Internal Server Error
+    ActionView::MissingTemplate (Missing template tasks/destroy with
+      {:handlers=>[:erb, :rjs, :builder, :rhtml, :rxml], :formats=>[:js, :html], :locale=>[:en, :en]}
+      in view paths ".../app/views"):
+      app/controllers/tasks_controller.rb:54:in `destroy'
+
+Oznacza to, że brakuje szablonu **views/tasks/destroy.js.erb**.
+Piszemy ten szablon:
+
+    :::jquery_javascript
+    $("#flash_notice")
+      .html("<%= escape_javascript(flash[:notice])%>");
+
+I mamy taki problem: **Jak usunąć usunięty element z listy?**
+
+Można ten problem obejść wyciągając listę zadań tabeli (nie zawiera
+ona już usuniętego elementu) i renderując całą tabelę.
+
+Aby usunąć usunięty element zaczniemy od podczepienia zdarzenia
+*ajax:success* do tabelki z listą zadań:
+
+    :::jquery_javascript
+    $('#tasks_list')
+      .bind("ajax:success", function(evt, data, status, xhr) {
+        console.log(evt);
+      });
+
+Teraz podejrzymy zdarzenie *evt* na konsoli. Widzimy, że usunięty
+element można opisać tak:
+
+    :::jquery_javascript
+    $(evt.target).closest('tr')
+
+Dlatego poniższy kod powinien usunąć usunięty element:
+
+    :::jquery_javascript
+    $('#tasks_list')
+      .bind("ajax:success", function(evt, data, status, xhr) {
+        $(evt.target).closest('tr').fadeOut();
+      });
+
+Sprawdzamy czy to działa. Działa! Uff, to było trudne zadanie!
+
+Zanim zajmiemy się błędami walidacji zrobimy dwie proste rzeczy.
+
+
+## Zdarzenia *ajax:loading* i *ajax:complete*
+
+Zdarzenia te użyjmey do pokazania użytkownikowi, że
+po kliknięciu przycisku „Create Task” coś się dzieje w tle.
+
+Zrobimy to tak. Podmienimy napis na przycisku na „Submitting...”.
+Po umieszczeniu nowego zadania na liście odtworzymy oryginalny
+napis.
+
+W pliku *application.js* dopiszemy:
+
+    :::jquery_javascript
+    $(document).ready(function() {
+      $('#new_task')
+        .bind("ajax:loading", function(evt, xhr) {
+          var $submitButton = $(this).find('input[name="commit"]');
+          $submitButton.data('origText', $submitButton.val());
+          $submitButton.val("Submitting...");
+        })
+        .bind('ajax:complete', function(evt, xhr) {
+          var $submitButton = $(this).find('input[name="commit"]');
+          $submitButton.val($submitButton.data('origText'));
+        });
+      });
+
+Aby zobaczyć jak to działa, spowolnimy działanie metody *create*
+kontrolera *TasksController* dopisując opóźnienie 1 sekundy:
+
+    :::ruby
+    def create
+      @task = Task.new(params[:task])
+      @task.save
+      respond_with(@task)
+      sleep(1)
+    end
+
+
+## Walidacja
+
+Zaczniemy od próby utworzenia niewalidującego się zadania.
+
+Podglądamy co się dzieje na konsoli Rails i przeglądarki.
+
+Tego można było oczekiwać:
+
+    500 Internal Server Error
+    ActionController::RoutingError in Tasks#create
+    Showing .../tasks/_task.html.erb where line #3 raised:
+    No route matches {:action=>"show", :controller=>"tasks",
+      :id=>#<Task id: nil, name: "", created_at: nil, updated_at: nil>}
+    3:  <td><%= link_to 'Show', task_path(task)
+
+Wygląda na to, że **responders** się pogubiły. W wypadku błędów
+walidacji renderowany jest widok *new*.
+
+Poprawić to można na przykład tak:
+
+    :::ruby
+    def create
+      @task = Task.new(params[:task])
+      if @task.save
+        respond_with(@task)
+      else
+        respond_with(@task.errors) do |format|
+          format.js { render :action => :new }
+        end
+      end
+    end
+
+Potrzebny jest jeszcze szablon *new.js.erb*:
+
+    :::jquery_javascript
+    $("#new_task").replaceWith("<%= escape_javascript(render 'form') %>")
+
+
+## Linki
+
+Tutaj zaglądałem:
+
+* [What's New in Edge Rails: Default RESTful Rendering](http://ryandaigle.com/articles/2009/8/10/what-s-new-in-edge-rails-default-restful-rendering)
+* [What's New in Edge Rails: Cleaner RESTful Controllers w/ respond_with](http://www.simonecarletti.com/blog/2010/06/unobtrusive-javascript-in-rails-3/)
+* [Creating a 100% ajax CRUD using rails 3 and unobtrusive javascript](http://www.stjhimy.com/posts/7)
+* [Rails 3 Remote Links and Forms: A Definitive Guide](http://www.alfajango.com/blog/rails-3-remote-links-and-forms/)
+
+
+## TODO
+
+Zwalić całą robotę na Javascript. Tak:
+
+    :::jquery_javascript
+    $('#form-for-remote')
+      .bind("ajax:success", function(evt, data, status, xhr){
+        // Debugging
+        console.log(evt);
+        console.log(xhr);
+
+        var $form = $(this);
+
+        // Reset fields and any validation errors, so form can be used
+        // again, but leave hidden_field values intact.
+        $form.find('textarea,input[type="text"],input[type="file"]').val("");
+        $form.find('#error_explanation').empty();
+
+        // Insert response partial into page below the form.
+        $('#list-remote').append(xhr.responseText);
+
+      })
+      .bind("ajax:failure", function(evt, xhr, status, error){
+        // Debugging
+        console.log(evt);
+        console.log(xhr);
+
+        var $form = $(this),
+            errors,
+            errorText;
+
+        try {
+          // Populate errorText with the comment errors
+          errors = $.parseJSON(xhr.responseText);
+        } catch(err) {
+          // If the responseText is not valid JSON (like if a 500 exception was thrown),
+          // populate errors with a generic error message.
+          errors = {message: "Please reload the page and try again"};
+        }
+
+        // Build an unordered list from the list of errors
+        errorText = "There were errors with the submission: \n<ul>";
+
+        for ( error in errors ) {
+          errorText += "<li>" + error + ': ' + errors[error] + "</li> ";
+        }
+
+        errorText += "</ul>";
+
+        // Insert error list into form
+        $form.find('div.validation-error').html(errorText);
+      });
+
+    });
+
+To się chyba nie sprawdza. Jest masę kodu i problemów przy walidacji
+i wiadomościach flash.

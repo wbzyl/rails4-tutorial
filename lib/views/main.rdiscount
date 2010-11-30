@@ -1,10 +1,10 @@
 # Wykłady
 
 <blockquote>
-  {%= image_tag "/images/why.jpg", :alt => "[_Why]" %} 
+  {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
   <p>
     When you don’t create things, you become defined by your tastes
-    rather than ability. Your tastes only narrow and exclude people. 
+    rather than ability. Your tastes only narrow and exclude people.
     So create.
   </p>
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
@@ -14,16 +14,17 @@
 1. {%= link_to "Konsola", "/konsola" %}
 1. {%= link_to "Layouts", "/layouty" %}
 1. {%= link_to "Dwa modele", "/task-todo" %}
+1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
 1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "Majlujemy", "/mail" %}
 1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
 1. {%= link_to "Autoryzacja z Cancan", "/cancan" %}
 
-<!-- 
+<!--
 
 TODO:
 
-1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %} 
+1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %}
 1. {%= link_to "Hello Fortune", "/fortunka" %}
 1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
 1. {%= link_to "Heroku krok po kroku", "/heroku" %}
@@ -71,12 +72,12 @@ Na początek zaczynamy od przeczytania
 1. [Getting Started with Rails](http://guides.rubyonrails.org/getting_started.html).
 2. [Active Record Query Interface](http://guides.rubyonrails.org/active_record_querying.html).
 3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
-4. Dalej już według własnego uznania, 
+4. Dalej już według własnego uznania,
    wybieramy kolejny *Przewodnik* do przestudiowania.
 
-Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/). 
+Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
 
-Is Your Plugin Ready For Rails 3? sprawdź na 
+Is Your Plugin Ready For Rails 3? sprawdź na
 [Rails Plugins Compatibility Tracking] [railsplugins]
 
 
@@ -103,7 +104,7 @@ Is Your Plugin Ready For Rails 3? sprawdź na
 ## Podręczniki do języka Ruby
 
 * [Why's (Poignant) Guide to Ruby](http://www.ember.co.nz/files/resources/whys-poignant-guide-to-ruby.pdf)
-* [Mr. Neighborly's Humble Little 
+* [Mr. Neighborly's Humble Little
   Ruby Book](http://www.humblelittlerubybook.com/book/html/index.html)
   \([pdf](http://www.humblelittlerubybook.com/book/hlrb.pdf)\)
 
@@ -125,7 +126,7 @@ Is Your Plugin Ready For Rails 3? sprawdź na
   <p class="author">— Stanisław Lem</p>
 </blockquote>
 
-Rails Rumble Leaderboard 
+Rails Rumble Leaderboard
 [2009](http://r09.railsrumble.com/entries),
 [2010](http://r10.railsrumble.com/entries):
 The Rails Rumble is an annual 48 hour web application development
@@ -137,8 +138,8 @@ they can, using the power of Ruby and Rails.
 $(function () {
  deadline = new Date(2009, 10, 27);
  $('#defaultCountdown').countdown({
-   until: deadline, 
-   compact: true, 
+   until: deadline,
+   compact: true,
    layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
    format: 'dHMS'});
 });
