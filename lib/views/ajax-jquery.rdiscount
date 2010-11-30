@@ -250,6 +250,12 @@ Potrzebny jest jeszcze szablon *new.js.erb*:
     $("#new_task").replaceWith("<%= escape_javascript(render 'form') %>")
 
 
+## TODO
+
+Dopisać gdzie trzeba kasowanie niepotrzebnych komunikatów:
+notice, error, błędów walidacji.
+
+
 ## Linki
 
 Tutaj zaglądałem:
@@ -262,7 +268,7 @@ Tutaj zaglądałem:
 
 ## TODO
 
-Zwalić całą robotę na Javascript. Tak:
+Zwalić całą robotę na Javascript. Na przykład tak:
 
     :::jquery_javascript
     $('#form-for-remote')
