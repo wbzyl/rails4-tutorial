@@ -255,6 +255,20 @@ Potrzebny jest jeszcze szablon *new.js.erb*:
 Dopisać gdzie trzeba kasowanie niepotrzebnych komunikatów:
 notice, error, błędów walidacji.
 
+Zaczynamy od szablonu *create.js.erb*:
+
+    :::jquery_javascript
+    /* remove validation errors stuff */
+    $("#error_explanation").remove();
+    $("label, input").unwrap();
+    /* clear the entire form */
+    $(":input:not(input[type=submit])").val("");
+
+Następnie w szablonie *new.js.erb*:
+
+    :::jquery_javascript
+    $("#flash_notice").empty().hide();;
+
 
 ## Linki
 
