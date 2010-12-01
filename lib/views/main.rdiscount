@@ -1,10 +1,9 @@
-# Wykłady
-
-## Ważna informacja!
+# Ważna informacja!
 
 Przygotowałem harmonogram [prezentacji](/rails4/prezentacje).
 Proszę o podesłanie brakujących linków do repozytorium projektu.
 
+# Wykłady
 
 <blockquote>
   {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
