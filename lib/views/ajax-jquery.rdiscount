@@ -269,6 +269,25 @@ Następnie w szablonie *new.js.erb*:
     :::jquery_javascript
     $("#flash_notice").empty().hide();;
 
+Usuwanie zadań:
+
+    :confirm => "Are you sure?"
+    :confirm => "t('.confirm')"
+
+Tłumaczenie:
+
+    pl:
+      tasks:
+        task:
+          confirm: "Jesteś pewny, że chcesz usunąć zadanie?"
+
+Dopisać szablon „Editing task”:
+
+    ActionView::MissingTemplate (Missing template tasks/update with
+      {:handlers=>[:erb, :rjs, :builder, :rhtml, :rxml], :formats=>[:js, :html], :locale=>[:en, :en]}
+      in view paths ".../app/views"):
+    app/controllers/tasks_controller.rb:54:in `update'
+
 
 ## Linki
 
