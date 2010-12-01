@@ -165,3 +165,8 @@ ul pre {
 .pre-caption + pre {
   margin-top: 6px;
 }
+
+table caption {
+  padding-left: 1em;
+  margin-bottom: 0.5ex;
+}
