@@ -238,7 +238,7 @@ Poprawić to można na przykład tak:
       if @task.save
         respond_with(@task)
       else
-        respond_with(@task.errors) do |format|
+        respond_with(@task) do |format|
           format.js { render :action => :new }
         end
       end
