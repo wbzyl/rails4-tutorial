@@ -250,10 +250,10 @@ Potrzebny jest jeszcze szablon *new.js.erb*:
     $("#new_task").replaceWith("<%= escape_javascript(render 'form') %>")
 
 
-## TODO
+## Szlifowanie widoków
 
-Dopisać gdzie trzeba kasowanie niepotrzebnych komunikatów:
-notice, error, błędów walidacji.
+Musimy dopisać w kilku miejscach kasowanie niepotrzebnych komunikatów:
+notice, error, błędów walidacji oraz czyszczenie formularza:
 
 Zaczynamy od szablonu *create.js.erb*:
 
@@ -263,30 +263,75 @@ Zaczynamy od szablonu *create.js.erb*:
     $("label, input").unwrap();
     /* clear the entire form */
     $(":input:not(input[type=submit])").val("");
+    $("#flash_notice").html("<%= escape_javascript(flash[:notice])%>")
+      .show();
+    $("#tasks_list").append("<%= escape_javascript(render @task) %>")
+      .find("tr:last")
+      .hide()
+      .show("slow");
 
-Następnie w szablonie *new.js.erb*:
+Następnie w *new.js.erb*:
 
     :::jquery_javascript
     $("#flash_notice").empty().hide();;
+    $("#new_task").replaceWith("<%= escape_javascript(render 'form') %>")
 
-Usuwanie zadań:
+I na koniec, w *destroy.js.erb*:
 
+    :::jquery_javascript
+    $("#flash_notice").html("<%= escape_javascript(flash[:notice])%>");
+
+I to chyba tyle szlifowania.
+
+
+### Edycja zadania
+
+Edycja zadania, chyba bez remote:
+
+    :::ruby
+    module TasksHelper
+      def remote_form_for(record_or_name_or_array, *args, &proc)
+        options = args.extract_options!
+        options[:remote] = true if ['index', 'create'].include?(controller.action_name)
+        form_for(record_or_name_or_array, *(args << options), &proc)
+      end
+    end
+
+I w *_form.html.erb* zamiast *form_for* z *remote* wpisujemy:
+
+    :::html_rails
+    <%= remote_form_for(@task) do |f| %>
+
+
+### Are you sure?
+
+W linkach usuwania zadań zamieniamy:
+
+    :::ruby
     :confirm => "Are you sure?"
+
+na
+
+    :::ruby
     :confirm => "t('.confirm')"
 
-Tłumaczenie:
+I dodajemy komunikaty w plikach z tłumaczeniami:
 
+    :::yaml
+    en:
+      tasks:
+        task:
+          confirm: "Are you sure?"
     pl:
       tasks:
         task:
-          confirm: "Jesteś pewny, że chcesz usunąć zadanie?"
+          confirm: "Jesteś pewny, że chcesz usunąć to zadanie?"
 
-Dopisać szablon „Editing task”:
 
-    ActionView::MissingTemplate (Missing template tasks/update with
-      {:handlers=>[:erb, :rjs, :builder, :rhtml, :rxml], :formats=>[:js, :html], :locale=>[:en, :en]}
-      in view paths ".../app/views"):
-    app/controllers/tasks_controller.rb:54:in `update'
+## TODO: Search, Sort, Paginate with AJAX
+
+Zobacz screencast R. Batesa,
+[Search, Sort, Paginate with AJAX](http://railscasts.com/episodes/240-search-sort-paginate-with-ajax).
 
 
 ## Linki
@@ -299,7 +344,7 @@ Tutaj zaglądałem:
 * [Rails 3 Remote Links and Forms: A Definitive Guide](http://www.alfajango.com/blog/rails-3-remote-links-and-forms/)
 
 
-## TODO
+## Inne podejście do Ajaxa…
 
 Zwalić całą robotę na Javascript. Na przykład tak:
 
@@ -322,10 +367,6 @@ Zwalić całą robotę na Javascript. Na przykład tak:
 
       })
       .bind("ajax:failure", function(evt, xhr, status, error){
-        // Debugging
-        console.log(evt);
-        console.log(xhr);
-
         var $form = $(this),
             errors,
             errorText;
@@ -354,5 +395,5 @@ Zwalić całą robotę na Javascript. Na przykład tak:
 
     });
 
-To się chyba nie sprawdza. Jest masę kodu i problemów przy walidacji
-i wiadomościach flash.
+To chyba nie jest dobry pomysł. Będziemy musieli przerzucić teksty komunikatów
+flash z Rails do Javascript oraz powielić generowanie kodu HTML.
