@@ -46,7 +46,7 @@ Do pliku *Gemfile* dopisujemy:
       # gem 'file-tail'
       # gem 'daemon_controller'
       # jQuery
-      gem 'rails-ujs', :git => 'git://github.com/rails/jquery-ujs.git'
+      gem 'jquery-rails'
     end
 
 Instalujemy gemy i przechodzimy na *jQuery*:
