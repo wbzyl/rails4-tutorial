@@ -97,7 +97,7 @@ Ale nie będziemy korzystać z metod pomocniczych dla formularzy:
 Korzystamy z generatorów:
 
     rails g model task name:string
-    rails db:migrate
+    rake db:migrate
     rails g responders_controller task
 
 Dopisujemy do routingu:
