@@ -477,6 +477,17 @@ Dopisujemy do kontrolera:
     end
 
 
+## Szablon dla todos\#new
+
+Zanim sprawdzimy czy działa walidacja, napiszmy
+szablon *new* dla todo:
+
+    :::html_rails
+    <h1>Edit todo</h1>
+    <%= render 'form' %>
+    <p><%= link_to 'Back', task_path(@task) %></p>
+
+
 ## Walidacja Todo
 
 Dopisujemy do modelu *Todo*:
