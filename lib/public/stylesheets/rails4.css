@@ -1,9 +1,9 @@
-article, aside, dialog, figure, footer, header, hgroup, menu, nav, section { 
-  display: block; 
+article, aside, dialog, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
 }
 
 @font-face {
-  font-family: "Cyklop"; 
+  font-family: "Cyklop";
   src: url(fonts/Cyklop-Regular.otf) format("opentype");
 }
 @font-face {
@@ -13,12 +13,12 @@ article, aside, dialog, figure, footer, header, hgroup, menu, nav, section {
 }
 
 @font-face {
-  font-family: "Blackout"; 
+  font-family: "Blackout";
   src: url(fonts/Blackout-2am.ttf) format("truetype");
 }
 
 @font-face {
-  font-family: "Blackout Midnight"; 
+  font-family: "Blackout Midnight";
   src: url(fonts/Blackout-Midnight.ttf) format("truetype");
 }
 
@@ -35,71 +35,74 @@ h1, h2, h3 {
 }
 
 header {
-  margin-left: 40px;
-  padding: 20px 0 12px 2px;
-  background-color: #9C266A;
-  /* background: -moz-linear-gradient(0 0 0deg, #F01685, white 1130px) no-repeat; */
-  /* background: -webkit-gradient(linear, 0% 0%, 101% 0%, from(#F01685), to(white)) no-repeat; */
-}
-header h1 {
-  margin: 0 0 0 12px;
+  margin: 0;
   padding: 0;
-  font: italic normal 400%/1 "Blackout Midnight", Cyklop, sans-serif;
 }
-header h1 a {
+header a {
+  display: block;
   text-decoration: none;
-  color: white;
-}
-header h1 a:hover {
-  color: #3C324D;
+  margin-left: -20px;
 }
 
 #content {
-  /* border-left: 40px solid #FCF9D8; */
-  margin-left: 40px;
+  margin-top: -70px;
   width: 1040px;
-  /** margin: 0 0 0 40px; */
-  padding: 0 0 0 20px;
+  margin-left: 0;
+  border-left: 32px solid #F4E8DB;
+  padding-left: 32px;
   background: white;
 }
+
+pre {
+  margin-left: -64px;
+  /* border-left: 32px solid #F4E8DB   or lighter */
+  border-left: 32px solid #EDCEAD;
+  padding-left: 64px;
+}
+ul pre {
+  border: none;
+  margin-left: 0;
+}
+.pre-caption {
+  font-size: 80%;
+  font-style: italic;
+  color: #888;
+  text-align: right;
+  margin-top: -12px;
+}
+.pre-caption + pre {
+  margin-top: 6px;
+}
+
 
 article {
   background: white;
   width: 640px;
 }
+article h1:first-child {
+  margin-top: 70px;
+}
 article h1 {
   width: 980px;
   font: italic 160%/1 Cyklop, sans-serif;
-  color: #9C266A;
+  color: #C76491;
   margin: 0 0 20px -20px;
   padding: 12px 0 12px 20px;
-  /* background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 1000px) no-repeat; */
-  /* background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat; */
 }
-article h1:first-child {
-  padding-top: 24px;
-}
-
 article h2 {
   width: 980px;
   font: italic 140%/1 Cyklop, sans-serif;
   margin-left: -22px;
   /* border-left: 11px solid #09A6A3; */
   padding: 6px 0 10px 20px;
-  /* background: -moz-linear-gradient(0 0 0deg, #EDEBC9, white 660px) no-repeat; */
-  /* background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#EDEBC9), to(white)) no-repeat; */
-  color: #09A6A3;
+  color: #D79C4E;
 }
-
 article h3 {
   width: 980px;
   font: italic 100%/1 Cyklop, sans-serif;
   margin-left: -22px;
-  /* border-left: 11px solid #00CCBE; */
   padding: 6px 0 10px 20px;
-  /* background: -moz-linear-gradient(0 0 0deg, #FCF9D8, white 460px) no-repeat; */
-  /* background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#FCF9D8), to(white)) no-repeat; */
-  color: #00CCBE;
+  color: #453F3F;
 }
 
 blockquote {
@@ -109,11 +112,11 @@ blockquote {
   margin-top: 0px;
   margin-left: 660px;
   padding: 1.25em 10px 0 10px;
-  -moz-border-radius: 4px;  
-  background: -moz-linear-gradient(0 0 0deg, #EDEBC9, white 460px) no-repeat;
-  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#EDEBC9), to(white)) no-repeat;
-  -moz-box-shadow: 2px 0 4px #AAA;
-  -webkit-box-shadow: 2px 0 4px #AAA;
+  -moz-border-radius: 4px;
+  background: -moz-linear-gradient(0 0 0deg, #F4E8DB, white 460px) no-repeat;
+  background: -webkit-gradient(linear, 0% 0%, 60% 0%, from(#F4E8DB), to(white)) no-repeat;
+  -moz-box-shadow: 2px 0 4px #CCCCCC;
+  -webkit-box-shadow: 2px 0 4px #CCCCCC;
 }
 
 article blockquote h2 {
@@ -140,30 +143,6 @@ blockquote p {
 
 pre, code, tt {
   font: 100%/1.5 'Anonymous Pro', 'DejaVu Sans Mono', 'Monospace';
-}
-
-pre {
-  padding: 0 0 0 36px;
-  margin-left: -26px;
-  border-left: 11px solid #9C266A;
-}
-ul pre {
-  border: none;
-  margin-left: 0;
-}
-
-.pre-caption {
-  background: -moz-linear-gradient(0 0 0deg, white, #9C266A 1900px);
-  background: -webkit-gradient(linear, 0% 0%, 160% 0%, from(white), to(#9C266A)) no-repeat;
-  font-style: italic;
-  text-align: right;
-  margin-top: -10px;
-  padding-right: 20px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-}
-.pre-caption + pre {
-  margin-top: 6px;
 }
 
 table caption {

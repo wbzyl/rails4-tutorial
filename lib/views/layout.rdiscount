@@ -6,7 +6,7 @@
   <title><%= "WB//Rails4" + page_title %></title>
   <%= stylesheet_link_tag "/stylesheets/screen.css", "/stylesheets/uv.css", "/stylesheets/rails4.css" %>
   <%= stylesheet_link_tag "/stylesheets/print.css", :media => "print" %>
-  <%= stylesheet_link_tag "/stylesheets/print-rails3.css", :media => "print" %>
+  <%= stylesheet_link_tag "/stylesheets/print-rails4.css", :media => "print" %>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <!--[if IE]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -14,12 +14,12 @@
 </head>
 <body>
   <header>
-   <h1><%= link_to "WB@Rails1_Rails2_Rails3__", "/" %></h1>
+    <%= link_to "#{ image_tag "/images/rails4.png", :alt => "[WB//Rails4]" }", "/" %>
   </header>
   <div id="content">
    <article>
    <%= yield %>
-   </article>    
+   </article>
   </div>
   <%= javascript_script_tag "/javascripts/rails3.js" %>
 </body>
