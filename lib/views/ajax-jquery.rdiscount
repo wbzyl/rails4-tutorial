@@ -3,9 +3,19 @@
 # Ajax & jQuery
 
 Jeśli jeszcze tego nie zrobiliśmy, to przechodzimy na jQuery.
-JTZ, zob. poprzedni wykład.
+JTZ? Dopisujemy do *Gemfile*:
 
-Ściąga z kodu z *rails.js*. It provides following callbacks:
+    :::ruby
+    gem 'jquery-rails'
+
+Wykonujemy polecenie:
+
+    rails generate jquery:install --ui
+
+I już?!
+
+W katalogu *public/javascripts* znajdziemy plik *rails.js*.
+Implementuje on następujące funkcje zwrotne:
 
 - ajax:before   - is execute before the whole thing begings (?)
 - ajax:loading  - is executed before firing ajax call
@@ -14,7 +24,7 @@ JTZ, zob. poprzedni wykład.
 - ajax:failure  - is execute in case of error
 - ajax:after    - is execute every single time at the end of ajax call (?)
 
-Sygnatury dla funkcji zwrotnych:
+Sygnatury funkcji zwrotnych:
 
     :::jquery_javascript
     var that = this
@@ -56,8 +66,8 @@ pętli po widomościach flash wstawimy:
       <%= content_tag :div, "", :id => "flash_notice" %>
       <%= content_tag :div, "", :id => "flash_error" %>
 
-Elementy te nie powinny być widoczne. Dlatego w pliku *application.js*
-wpiszemy:
+Elementy te nie powinny być widoczne po wczytaniu strony.
+Dlatego w pliku *application.js* wpiszemy:
 
     :::jquery_javascript
     $(document).ready(function() {
@@ -65,12 +75,12 @@ wpiszemy:
         $("#flash_error").hide();
     });
 
-Poniżej będziemy też korzystać z identyfikatora **new_task** dodanego
-przez Rails, do elementu *form* oraz oraz **tasks_list** który
-dopiszemy do elementu *table* z listą zadań.
+Poniżej będziemy korzystać z identyfikatora **new_task** dodanego
+przez Rails, do elementu *form* oraz oraz **tasks_list**, który
+sami dopiszemy do elementu *table* z listą zadań.
 
-Samo zajaxowanie formularza jest proste. Wystarczy dodać *remote*
-w argumentach dla *form_for* i już!
+Zajaxowanie formularza jest proste. Wystarczy dodać *remote*
+w argumentach metody pomocniczej *form_for*:
 
     :::html_rails
     <%= form_for(@task, :remote => true) do |f| %>
@@ -79,13 +89,13 @@ w argumentach dla *form_for* i już!
 ## Sprawdzamy jak to działa
 
 Po tych zmianach, kliknięcie przycisku „Create Task” powoduje wysłanie
-następującego żądania Ajax:
+następującego żądania Ajax (konsola przeglądarki):
 
     POST tasks
       Request Headers
         Accept text/javascript
 
-W odpowiedzi dostajemy:
+W odpowiedzi dostajemy (konsola rails albo przeglądarki):
 
     500 Internal Server Error
     ActionView::MissingTemplate (Missing template tasks/create with
@@ -122,8 +132,9 @@ pojawić na liście zadań.
 
 ## Usuwanie zadań
 
-Dopisujemy w szablonie *_task.erb.html*, przy linku „Destroy”:
+Dopisujemy *remote => true* w szablonie *_task.erb.html*, przy linku „Destroy”:
 
+    :::html_rails
     <td><%= link_to 'Destroy', task, :remote=>true, :confirm=>'Are you sure?', :method=>:delete %></td>
 
 Kliknięcie linku „Destroy” daje błąd:
@@ -136,7 +147,9 @@ Kliknięcie linku „Destroy” daje błąd:
       app/controllers/tasks_controller.rb:54:in `destroy'
 
 Oznacza to, że brakuje szablonu **views/tasks/destroy.js.erb**.
-Piszemy ten szablon:
+Co ten szablon miałby zawierać?
+
+Czy coś takiego to jest to o co chodzi?
 
     :::jquery_javascript
     $("#flash_notice")
@@ -147,8 +160,10 @@ I mamy taki problem: **Jak usunąć usunięty element z listy?**
 Można ten problem obejść wyciągając listę zadań tabeli (nie zawiera
 ona już usuniętego elementu) i renderując całą tabelę.
 
+Postąpimy inaczej. Usuniemy tylko usunięty element.
 Aby usunąć usunięty element zaczniemy od podczepienia zdarzenia
-*ajax:success* do tabelki z listą zadań:
+*ajax:success* do tabelki z listą zadań i podejrzenia zdarzenia
+na konsoli przeglądarki:
 
     :::jquery_javascript
     $('#tasks_list')
@@ -156,8 +171,8 @@ Aby usunąć usunięty element zaczniemy od podczepienia zdarzenia
         console.log(evt);
       });
 
-Teraz podejrzymy zdarzenie *evt* na konsoli. Widzimy, że usunięty
-element można opisać tak:
+Na konsoli widzimy, że wiersz tabeli z usuniętym elementem można
+opisać tak:
 
     :::jquery_javascript
     $(evt.target).closest('tr')
@@ -177,7 +192,7 @@ Zanim zajmiemy się błędami walidacji zrobimy dwie proste rzeczy.
 
 ## Zdarzenia *ajax:loading* i *ajax:complete*
 
-Zdarzenia te użyjmey do pokazania użytkownikowi, że
+Zdarzeń tych użyjemy do pokazania użytkownikowi, że
 po kliknięciu przycisku „Create Task” coś się dzieje w tle.
 
 Zrobimy to tak. Podmienimy napis na przycisku na „Submitting...”.
