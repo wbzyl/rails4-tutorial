@@ -242,10 +242,10 @@ Tego można było oczekiwać:
       :id=>#<Task id: nil, name: "", created_at: nil, updated_at: nil>}
     3:  <td><%= link_to 'Show', task_path(task)
 
-Wygląda na to, że **responders** się pogubiły. W wypadku błędów
-walidacji renderowany jest widok *new*.
+Wygląda na to, że **responders** obsługują żądania Ajax inaczej niż
+zwykłe żądania HTTP.
 
-Poprawić to można na przykład tak:
+Błąd ten można obejść na przykład tak:
 
     :::ruby
     def create
@@ -259,7 +259,7 @@ Poprawić to można na przykład tak:
       end
     end
 
-Potrzebny jest jeszcze szablon *new.js.erb*:
+Brakuje jeszcze szablonu *new.js.erb*:
 
     :::jquery_javascript
     $("#new_task").replaceWith("<%= escape_javascript(render 'form') %>")
@@ -267,16 +267,16 @@ Potrzebny jest jeszcze szablon *new.js.erb*:
 
 ## Szlifowanie widoków
 
-Musimy dopisać w kilku miejscach kasowanie niepotrzebnych komunikatów:
-notice, error, błędów walidacji oraz czyszczenie formularza:
+Musimy jeszcze w kilku miejscach dopisać kasowanie niepotrzebnych komunikatów:
+notice, error, błędów walidacji oraz wczyścić pola formularza:
 
 Zaczynamy od szablonu *create.js.erb*:
 
     :::jquery_javascript
-    /* remove validation errors stuff */
+    /* usuń błędy walidacji */
     $("#error_explanation").remove();
     $("label, input").unwrap();
-    /* clear the entire form */
+    /* wyczyść formularz */
     $(":input:not(input[type=submit])").val("");
     $("#flash_notice").html("<%= escape_javascript(flash[:notice])%>")
       .show();
@@ -285,13 +285,13 @@ Zaczynamy od szablonu *create.js.erb*:
       .hide()
       .show("slow");
 
-Następnie w *new.js.erb*:
+Następnie dopisujemy trochę kodu w *new.js.erb*:
 
     :::jquery_javascript
     $("#flash_notice").empty().hide();;
     $("#new_task").replaceWith("<%= escape_javascript(render 'form') %>")
 
-I na koniec, w *destroy.js.erb*:
+I na koniec — w *destroy.js.erb*:
 
     :::jquery_javascript
     $("#flash_notice").html("<%= escape_javascript(flash[:notice])%>");
@@ -318,7 +318,7 @@ I w *_form.html.erb* zamiast *form_for* z *remote* wpisujemy:
     <%= remote_form_for(@task) do |f| %>
 
 
-### Are you sure?
+## I!8N: Are you sure?
 
 W linkach usuwania zadań zamieniamy:
 
