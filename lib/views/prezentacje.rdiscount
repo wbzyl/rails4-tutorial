@@ -2,7 +2,7 @@
 
 # Prezentacje
 
-**Uwaga:** Poniżej podano **orientacyjne**
+**Uwaga:** Poniżej podano **orientacyjne** 
 godziny rozpoczęcia prezentacji.
 
 <table class="span-16" summary="harmonogram">
@@ -38,7 +38,7 @@ godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>13:15–13:30 <b>(5.01)</b></td>
- <td><a href="/">Epiks</a></td>
+ <td><a href="https://github.com/kazukeri/railsShop">Epiks</a></td>
  </tr>
 
  <tr>
@@ -68,17 +68,22 @@ godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>13:00–13:15 <b>(12.01)</b></td>
- <td><a href="/">Lejdis</a></td>
+ <td><a href="https://github.com/Lejdis/project">Lejdis</a></td>
  </tr>
 
  <tr>
  <td>13:15–13:30 <b>(12.01)</b></td>
- <td><a href="https://github.com/c2h5oh-Ruby">C2H5OH</a></td>
+ <td><a href="/">C2H5OH</a></td>
  </tr>
 
  <tr>
  <td>13:30–13:45 <b>(12.01)</b></td>
  <td><a href="https://github.com/ascii-main/ascii-arch-serw-int">ASCII</a></td>
+ </tr>
+
+ <tr>
+ <td>13:45–14:00 <b>(12.01)</b></td>
+ <td><a href="https://github.com/gnysek/xxx">XXX</a></td>
  </tr>
 
 </tbody>
