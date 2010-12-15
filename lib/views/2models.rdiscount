@@ -2,23 +2,27 @@
 
 # Dwa modele
 
-Przykład aplikacji www ilustrujący typowe problemy pojawiające się
-w trakcie dodawania drugiego modelu do aplikacji Rails.
+Na przykładzie aplikacji „2models* przyjrzymy się typowym problemom
+pojawiającym się w trakcie dodawania drugiego modelu.
 
 Będziemy korzystać z gemu [responders](https://github.com/plataformatec/responders).
-Skorzystamy z dwóch responderów: flash i http_cache.
+Gem ten zawiera generator *responders_controller* który tworzy rusztowanie
+z blokami *respond_with* zamiast zwyczajowych *respond_to*.
+Według autorów tego gemu takie podejście **dry up your
+application**.
 
-Za pomocą generatora *responders_controller* wygenerujemy rusztowanie
-dla pierwszego modelu. Wygenerowany kod kontrolera używa bloków
-*respond_with* zamiast *respond_to*. Według autorów tego gemu takie
-podejście „dry up your application”. Rusztowanie dla
-drugiego modelu utworzymy „ręcznie” wzorując się na wygenerowanym kodzie.
+Rusztowanie dla drugiego modelu utworzymy „ręcznie” wzorując się na
+kodzie wygenerowanym przez *responders_controller*.
 
-Zaczniemy od modelu *Task* z nazwami zadań nad którymi pracujemy. Do
-każdego zadania będziemy dopisywać *Todo*, rzeczy do zrobienia, które
-pojawiają się w trakcie realizacji konkretnego zadania.
+Skorzystamy też z responderów: collection, flash i http_cache
+(dlaczego? co one oferują?).
 
-Podsumowując, aplikacja „2models” będzie składać się z dwóch modeli:
+Zaczniemy od utworzenia modelu *Task* z nazwami zadań nad którymi
+pracujemy. Do każdego zadania będziemy dopisywać *Todo*, rzeczy do
+zrobienia, które pojawiają się w trakcie realizacji konkretnego
+zadania.
+
+Podsumowując, na aplikację „2models” składają się modele:
 
 * *Task* – has many *todos*
 * *Todo* – belongs to *task*
@@ -32,7 +36,7 @@ Tworzymy rusztowanie aplikacji, usuwamy pliki *README* oraz *public/index.html*.
     cd two_models
     rm README public/index.html
 
-Do pliku *Gemfile* dopisujemy:
+Podmieniamy kod *Gemfile* na:
 
     :::ruby
     source 'http://rubygems.org'
@@ -204,7 +208,8 @@ Z kodu szablonu *tasks\#index* wydzielamy szablon częściowy
       <td><%= link_to 'Destroy', task, :confirm => 'Are you sure?', :method => :delete %></td>
     </tr>
 
-którym zastępujemy pętlę wypisującą wszystkie zadania:
+którym zastępujemy pętlę wypisującą wszystkie zadania
+w szablonie *index.html.erb*:
 
     :::html_rails
     <table>
@@ -267,8 +272,8 @@ I podglądamy jak on wygląda:
 
 ## todo\#new i todo\#index wędrują do tasks\#show
 
-Wzorując się na szablonie *todo\#_form* dopisujemy do szablonu
-**task\#show** formularz:
+Wzorując się na szablonie *tasks\#_form* dopisujemy do szablonu
+**task\#show** formularz dla *todo*:
 
     :::html_rails
     <h3>New todo</h3>
@@ -366,7 +371,7 @@ W widoku *tasks\#show* dodajemy linki do usuwania i edycji todo:
       <%= link_to 'Destroy', [@task, todo], :confirm => 'Are you sure?', :method => :delete %>)
     </li>
 
-W kontrolerze *todo\#edit* dopisujemy:
+Aby linki dzialały, w kontrolerze *todo\#edit* dopisujemy:
 
     :::ruby
     def edit
@@ -381,8 +386,16 @@ W kontrolerze *todo\#edit* dopisujemy:
       respond_with(@task, @todo, :location => task_url(@task))
     end
 
-Na razie, Linki Edit i Destroy nie działają tak jak trzeba.
-Zanim się za nie zabierzemy – refaktoryzacja.
+    def destroy
+      @task = Task.find(params[:task_id])
+      @todo = @task.todos.find(params[:id])
+      @todo.destroy
+      respond_with(@task, @todo, :location => task_url(@task))
+    end
+
+Edycja nie działa – brak szablonu.
+
+Najwyższa pora na trochę refaktoryzacji.
 
 
 ## Refaktoryzacja widoku *tasks\#show*
@@ -394,15 +407,15 @@ Tworzymy dwa widoki częściowe w widoku *tasks\#show*:
     <%= link_to 'Edit', edit_task_path(@task) %> |
     <%= link_to 'Back', tasks_path %>
 
-    <h3>New Todo</h3>
-    <%= render 'todos/form' %>
-
     <% if @task.todos.any? %>
     <h2>Listing todos</h2>
     <ol>
        <%= render @task.todos %>
     </ol>
     <% end %>
+
+    <h3>New Todo</h3>
+    <%= render 'todos/form' %>
 
 Drugi szablon częściowy *todos/_form.html.erb* jest prawie taki sam
 jak szablon dla formularza dla modelu *Task*::
@@ -445,7 +458,7 @@ Dopisujemy do *TodosController*:
       @task = Task.find(params[:task_id])
     end
 
-oraz
+oraz do *TasksController*:
 
     :::ruby
     before_filter :only => [:show, :edit, :update, :destroy] do
@@ -455,9 +468,9 @@ oraz
 i usuwamy z metod zbędny kod.
 
 
-## Szablon *todos\#edit*
+## Brakujący szablon *todos\#edit*
 
-Coś takiego powinno wystarczyć:
+Coś takiego powinno wystarczyć(?):
 
     :::html_rails
     <h1>Editing todo</h1>
@@ -465,38 +478,14 @@ Coś takiego powinno wystarczyć:
     <p><%= link_to 'Back', task_path(@task) %></p>
 
 
-## Metoda destroy todo
+## Brakujący szablon dla todos\#new
 
-Dopisujemy do kontrolera:
-
-    :::ruby
-    def destroy
-      @todo = @task.todos.find(params[:id])
-      @todo.destroy
-      respond_with(@task, @todo, :location => task_url(@task))
-    end
-
-
-## Szablon dla todos\#new
-
-Zanim sprawdzimy czy działa walidacja, napiszmy
-szablon *new* dla todo:
+Oto on. Ale czy jest potrzebny?
 
     :::html_rails
-    <h1>Edit todo</h1>
+    <h1>New todo</h1>
     <%= render 'form' %>
     <p><%= link_to 'Back', task_path(@task) %></p>
-
-
-## Walidacja Todo
-
-Dopisujemy do modelu *Todo*:
-
-    :::ruby
-    validates :name, :presence => true
-    validates :name, :length => { :minimum => 4 }
-
-Sprawdzamy jak działa walidacja.
 
 
 ## Ostatnie poprawki w kodzie
@@ -511,7 +500,7 @@ W kontolerach dopisujemy, *tasks_controller.rb*:
     :::ruby
     responders :flash, :http_cache, :collection
 
-*todo_controller.rb*:
+oraz w *todo_controller.rb*:
 
     :::ruby
     responders :flash, :http_cache
@@ -520,20 +509,15 @@ Po tych zmianach kod klasy *TodosController* jest taki:
 
     :::ruby
     class TodosController < ApplicationController
+
+      responders :flash, :http_cache
+
       before_filter do
         @task = Task.find(params[:task_id])
       end
 
-      responders :flash, :http_cache
-
       def edit
         @todo = @task.todos.find(params[:id])
-      end
-
-      def create
-        @todo = @task.todos.build(params[:todo])
-        @todo.save
-        respond_with(@task, @todo, :location => task_url(@task))
       end
 
       def update
@@ -542,11 +526,18 @@ Po tych zmianach kod klasy *TodosController* jest taki:
         respond_with(@task, @todo, :location => task_url(@task))
       end
 
+      def create
+        @todo = @task.todos.build(params[:todo])
+        @todo.save
+        respond_with(@task, @todo, :location => task_url(@task))
+      end
+
       def destroy
         @todo = @task.todos.find(params[:id])
         @todo.destroy
         respond_with(@task, @todo, :location => task_url(@task))
       end
+
     end
 
 Wydaje się, że kod jest naprawdę DRY!

@@ -18,7 +18,7 @@ Proszę o podesłanie brakujących linków do repozytorium projektu.
 1. {%= link_to "Zaczynamy", "/zaczynamy" %}
 1. {%= link_to "Konsola", "/konsola" %}
 1. {%= link_to "Layouts", "/layouty" %}
-1. {%= link_to "Dwa modele", "/task-todo" %}
+1. {%= link_to "Dwa modele", "/2models" %}
 1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
 1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "Majlujemy", "/mail" %}
