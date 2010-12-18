@@ -1,4 +1,13 @@
-# Korzystamy z gemu simple_form
+#### {% title "FormBuilder v. simple_form gem" %}
+
+# FormBuilder v. simple_form gem
+
+Dlaczego? Zaczniemy od gotowca. Następnie roboty ręczne.
+
+Wspomnieć o gemie *ActiveScaffold*. Jaki problem on rozwiązuje?
+
+
+## Korzystamy z gemu simple_form
 
 Na początek instalujemy rozszerzenie View Source Chart do Firefoksa:
 
@@ -14,7 +23,7 @@ i wykonujemy dwa polecenia:
 
     bundle update
     rails generate simple_form:install
-    
+
       create  config/initializers/simple_form.rb
       create  config/locales/simple_form.en.yml
       create  lib/templates/erb/scaffold/_form.html.erb
@@ -39,6 +48,8 @@ i już!
 ## TODO: CSS
 
 Podrasować CSS!
+
+
 # FormBuilder
 
 Na początek instalujemy rozszerzenie View Source Chart do Firefoksa:
@@ -115,7 +126,7 @@ Zaczynamy od takiego kodu:
     <% end %>
 
 
-## Refaktoryzacja 
+## Refaktoryzacja
 
 Na początek usuniemy ten nadmiarowy kod w szablonie *_form*:
 
@@ -140,7 +151,7 @@ W pliku *config/initializers/change_field_error.rb* wpisujemy:
       end
     end
 
-Sprawdzamy czy to działa. Nie. 
+Sprawdzamy czy to działa. Nie.
 
 Należy jeszcze dopisać do formularza:
 
@@ -170,7 +181,7 @@ Jak widać ciało obu funkcji jest takie samo. Dlatego postąpimy tak:
       end
     end
 
-Wyjątki, etykieta po elemencie formularza, ns przykład 
+Wyjątki, etykieta po elemencie formularza, ns przykład
 (trochę naciągany przykład – przydałoby się nowe pole w modelu):
 
     <%= f.text_area :name %> <= f.label :name %>
@@ -204,9 +215,9 @@ A tak będzie wyglądał powyższy kod po „liftingu”:
     def text_field(field_name, *args)
       @template.content_tag(:span, field_label(field_name, *args) + super(field_name, *args))
     end
-    
+
     private
-    
+
     def field_label(field_name, *args)
       options = args.extract_options!
       label(field_name, options[:label])
@@ -228,12 +239,12 @@ Kod:
     end
 
 Kod do poprawki, ponieważ element *input* teraz to:
- 
-    <input id="task_name" label_class="required" name="task[name]" required="required" 
+
+    <input id="task_name" label_class="required" name="task[name]" required="required"
 
 Jakoś trzeba użyte argumenty usunąć z hasza.
 
-Hakowanie w czystej postaci! 
+Hakowanie w czystej postaci!
 W części **private** nadpisujemy metodę Rails:
 
     # fix the problem
@@ -271,11 +282,11 @@ Ale teraz można to zrobić inaczej: wypisujemy wszystkie błędy walidacji zami
 class LabeledFormBuilder < ActionView::Helpers::FormBuilder
   %w[text_field text_area].each do |method_name|
     define_method(method_name) do |field_name, *args|
-      @template.content_tag(:span, 
+      @template.content_tag(:span,
          field_label(field_name, *args) + super(field_name, *args) + field_error(field_name))
     end
   end
-  ...  
+  ...
   private
   ...
   def field_error(field_name)
