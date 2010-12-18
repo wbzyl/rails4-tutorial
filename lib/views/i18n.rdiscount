@@ -11,9 +11,9 @@ powinny być po polsku.
 Jak to zrobić? Zaglądamy do katalogu *locales* po wskazówki:
 
     :::ruby
-    # Sample localization file for English. 
+    # Sample localization file for English.
     # Add more files in this directory for other locales.
-    # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale 
+    # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale
     # for starting points.
 
 Wszystkie(?) komunikaty Rails można znaleźć w plikach:
@@ -31,7 +31,7 @@ W pliku *environment.rb* odkomentowujemy i edytujemy wiersz
 z `config.i18n.default_locale`:
 
     :::ruby
-      # The default locale is :en and all translations 
+      # The default locale is :en and all translations
       # from config/locales/*.rb,yml are auto loaded.
       # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
       config.i18n.default_locale = :pl
@@ -41,7 +41,7 @@ Wersję *raw* pliku *pl.yml* zapisujemy w katalogu *config/locales/*.
 
 Angielskie nazwy modeli i atrybutów też możemy przetłumaczyć.
 Przykład pokazujący jak to zrobić znajdziemy w pliku *active_record.yml*.
-Opisane to też jest w Rails Guides, 
+Opisane to też jest w Rails Guides,
 [Translations for Active Record Models](http://guides.rubyonrails.org/i18n.html#translations-for-active-record-models)
 
 
@@ -63,7 +63,7 @@ Czy tak będzie lepiej?
 
     :::html_rails
     <div id="error_explanation">
-      <h2><%= I18n.t("activerecord.errors.template.header", 
+      <h2><%= I18n.t("activerecord.errors.template.header",
                 :model => @fortune.class.name, :count => @fortune.errors.count) %>
       <ul>
       <p><%= I18n.t("activerecord.errors.template.body") %></p>
@@ -108,9 +108,33 @@ Teraz pliki w plikach z tłumaczeniami można dodać dodatkowe tłumaczenia:
       other: "jest za krótkie (minimalnie %{count} znaków)"
 
 
+## Javascript: Are you sure?
+
+W linkach usuwania zadań zamieniamy:
+
+    :::ruby
+    :confirm => "Are you sure?"
+
+na
+
+    :::ruby
+    :confirm => "t('.confirm')"
+
+I dodajemy komunikaty w plikach z tłumaczeniami:
+
+    :::yaml
+    en:
+      tasks:
+        task:
+          confirm: "Are you sure?"
+    pl:
+      tasks:
+        task:
+          confirm: "Jesteś pewny, że chcesz usunąć to zadanie?"
+
 ## I18n_routing
 
-URL też czasami należy przetłumaczyć. Jak to zrobić opisano 
+URL też czasami należy przetłumaczyć. Jak to zrobić opisano
 w [Translate your Rails2/3 routes with ease](http://www.tricksonrails.com/2010/05/i18n_routing-translate-your-rails2-rails3-routes-with-ease/).
 
 
@@ -128,6 +152,6 @@ Nowe możliwości…
 
 ## Różne
 
-Obejrzenie, krótkiego 
-[screencastu Ryana Batesa](http://railscasts.com/episodes/138-i18n) 
+Obejrzenie, krótkiego
+[screencastu Ryana Batesa](http://railscasts.com/episodes/138-i18n)
 też ma sens.

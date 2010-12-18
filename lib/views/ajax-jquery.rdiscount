@@ -42,16 +42,25 @@ Sygnatury funkcji zwrotnych:
             el.trigger('ajax:success', [data, status, xhr]);
         },
         complete: function (xhr) {
-            // invoked after succes or error calbacks
-            // missing status argument?
-            // status: status code
+            // bug? missing status argument
             el.trigger('ajax:complete', xhr);
         },
         error: function (xhr, status, error) {
-            // status: error or timeout or parsererror
             el.trigger('ajax:error', [xhr, status, error]);
         }
     });
+
+
+**Uwagi:**
+
+1\. Argument *status* jest napisem opisującym stan żądania:
+
+- "success", "notmodified" (zdarzenie *success*)
+- "error", "timeout", "parsererror" (zdarzenie *error*)
+
+2\. Argument *data* jest dołączany do url dla żądań GET.
+
+Pozostałe szczegóły opisano w [jQuery.ajax() API](http://api.jquery.com/jQuery.ajax/).
 
 
 ## Ajaxujemy formularz nowych zadań
@@ -259,7 +268,7 @@ Powinniśmy, podobnie jak przy szablonie *create.js.erb*,
 do listy zadań dowiązać zdarzenia *ajax:error* i *ajax:complete*.
 
 
-## TODO: Walidacja Tasks
+## Walidacja Tasks
 
 Zaczniemy od próby utworzenia „pustego” zadania:
 
@@ -283,60 +292,51 @@ Na konsoli Firebuga, w Response znajdziemy jeszcze taką informację:
 
     Extracted source (around line #3):
 
-Oznacza to, że błąd jest w wierszu oznaczonym *\#3* powyżej.
+Oznacza to, że błąd jest w wierszu oznaczonym *\#3* powyżej, czyli
+poniższy kod z szablonu *create.js.erb*:
 
+    :::jquery_javascript
+    $("#tasks_list")
+      .append("<%= escape_javascript(render @task) %>");
 
-Wygląda na to, że **responders** obsługują żądania Ajax inaczej niż
-zwykłe żądania HTTP.
+został użyty ze zmienną *@task* w której jest zapisany obiekt *Task*
+z *id* równym *nil*. Dla takiej zmiennej, *task_path(task)* nie ma sensu.
 
-Błąd ten można obejść na przykład tak:
-
-    :::ruby
-    def create
-      @task = Task.new(params[:task])
-      if @task.save
-        respond_with(@task)
-      else
-        respond_with(@task) do |format|
-          format.js { render :action => :new }
-        end
-      end
-    end
-
-Ale lepiej jest nic powyżej nie zmieniać. Za to poprawiamy *create.js.erb*:
+Poprawimy to zmieniając *create.js.erb*:
 
     :::html_rails
     <% if @task.valid? %>
-    $("#flash_notice")
-      .html("<%= escape_javascript(flash[:notice])%>")
-      .show();
-    $("#tasks_list")
-      .append("<%= escape_javascript(render @task) %>");
+      $("#flash_notice")
+        .html("<%= escape_javascript(flash[:notice])%>")
+        .show();
+      $("#tasks_list")
+        .append("<%= escape_javascript(render @task) %>");
     <% else %>
-    $("#new_task")
-      .replaceWith("<%= escape_javascript(render 'form') %>")
+      $("#new_task")
+        .replaceWith("<%= escape_javascript(render 'form') %>")
     <% end %>
 
 
 ## Szlifowanie widoków
 
 Musimy jeszcze w kilku miejscach dopisać kasowanie niepotrzebnych komunikatów:
-notice, error, błędów walidacji oraz wczyścić pola formularza:
+notice, error, błędów walidacji oraz wczyścić pola formularza.
 
-Zaczynamy od szablonu *create.js.erb*:
+Cały kod zaprowadzający porządek w widokach umieścimy
+w funkcji zwrotnej zdarzenia *ajax:complete*:
 
-    :::jquery_javascript
-    /* usuń błędy walidacji */
-    $("#error_explanation").remove();
-    $("label, input").unwrap();
-    /* wyczyść formularz */
-    $(":input:not(input[type=submit])").val("");
-    $("#flash_notice").html("<%= escape_javascript(flash[:notice])%>")
-      .show();
-    $("#tasks_list").append("<%= escape_javascript(render @task) %>")
-      .find("tr:last")
-      .hide()
-      .show("slow");
+    :::jquery_javascript public/javascripts/application.js
+    $(document).ready(function() {
+      ...
+      $('#new_task')
+        .live('ajax:complete', function(evt, xhr) {
+          var that = $(this);
+          that.find(':input:not(input[type=submit])').val('')
+          that.find('#error_explanation').remove();
+          that.find('label, input').unwrap();
+        });
+      ...
+    });
 
 
 ## Edycja zadania
@@ -358,32 +358,12 @@ I w *_form.html.erb* zamiast *form_for* z *remote* wpisujemy:
     <%= remote_form_for(@task) do |f| %>
 
 
-# Are you sure? ==> I18N
+## Ajax i dodawanie Todo
 
-W linkach usuwania zadań zamieniamy:
-
-    :::ruby
-    :confirm => "Are you sure?"
-
-na
-
-    :::ruby
-    :confirm => "t('.confirm')"
-
-I dodajemy komunikaty w plikach z tłumaczeniami:
-
-    :::yaml
-    en:
-      tasks:
-        task:
-          confirm: "Are you sure?"
-    pl:
-      tasks:
-        task:
-          confirm: "Jesteś pewny, że chcesz usunąć to zadanie?"
+**Zadanie.** Zajaxować dodawanie nowych *todo* na stronie *tasks\#show*.
 
 
-## TODO: Search, Sort, Paginate with AJAX
+## Search, Sort, Paginate with AJAX
 
 Zobacz screencast R. Batesa,
 [Search, Sort, Paginate with AJAX](http://railscasts.com/episodes/240-search-sort-paginate-with-ajax).
@@ -401,54 +381,48 @@ Tutaj zaglądałem:
 
 ## Inne podejście do Ajaxa…
 
-Zwalić całą robotę na Javascript. Na przykład tak:
+Zwalić całą robotę na Javascript. Na przykład jakoś tak:
 
     :::jquery_javascript
     $('#form-for-remote')
       .bind("ajax:success", function(evt, data, status, xhr){
-        // Debugging
+        // debugging
         console.log(evt);
+        console.log(data);
         console.log(xhr);
 
-        var $form = $(this);
-
-        // Reset fields and any validation errors, so form can be used
-        // again, but leave hidden_field values intact.
-        $form.find('textarea,input[type="text"],input[type="file"]').val("");
-        $form.find('#error_explanation').empty();
-
-        // Insert response partial into page below the form.
-        $('#list-remote').append(xhr.responseText);
+        var form = $(this);
+        // parsujemy xhr.responseText,
+        // przekształcamy na html (przydałyby się jakieś szablony)
+        // umieszczamy html na stronie
 
       })
       .bind("ajax:failure", function(evt, xhr, status, error){
-        var $form = $(this),
+        var form = $(this),
             errors,
             errorText;
-
+        // jakoś tak: http://www.alfajango.com/blog/rails-3-remote-links-and-forms/
         try {
-          // Populate errorText with the comment errors
+          // populate errorText with the comment errors
           errors = $.parseJSON(xhr.responseText);
         } catch(err) {
-          // If the responseText is not valid JSON (like if a 500 exception was thrown),
+          // if the responseText is not valid JSON (like if a 500 exception was thrown),
           // populate errors with a generic error message.
           errors = {message: "Please reload the page and try again"};
         }
-
-        // Build an unordered list from the list of errors
+        // build an unordered list from the list of errors
+        // przydałyby się jakieś szablony
         errorText = "There were errors with the submission: \n<ul>";
-
-        for ( error in errors ) {
+        for (error in errors) {
           errorText += "<li>" + error + ': ' + errors[error] + "</li> ";
         }
-
         errorText += "</ul>";
-
-        // Insert error list into form
-        $form.find('div.validation-error').html(errorText);
+        // insert error list into form
+        form.find('div.validation-error').html(errorText);
       });
 
     });
 
-To chyba nie jest dobry pomysł. Będziemy musieli przerzucić teksty komunikatów
-flash z Rails do Javascript oraz powielić generowanie kodu HTML.
+Powyższy kod zależy od tego jakie dane zostaną przesłane. Ułatwimy
+sobie zadanie, „ładnie opakowując” dane przed wysłaniem oraz
+odpowiednio oznaczając elementy w których umieścimy wypakowane dane.

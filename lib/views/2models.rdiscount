@@ -124,7 +124,13 @@ Dopisujemy nieco kodu do szablonów, *index.html.erb*:
 *_form.html.erb*:
 
     :::ruby
-    <p><%= f.label :name %><%= f.text_field :name %></p>
+    <%= f.label :name %><%= f.text_field :name %>
+
+**Uwaga:** Powinniśmy oba elementy otoczyć elementem *p*.
+Niestety, railsowy *FormBuilder* nie widzi akapitu
+otaczającego oba elementy i wypadku błędów walidacji
+przenosi oba elementy poza akapit, zostawiając za sobą
+pusty element *p*.
 
 *show.html.erb*:
 
