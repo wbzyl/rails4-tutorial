@@ -1,20 +1,11 @@
-#### {% title "i18n" %}
+#### {% title "i18n & l10n" %}
 
-# [I18n](http://guides.rubyonrails.org/i18n.html)
+# I18N & L10N
 
-Zaczynamy od lektury
-[Rails 3 I18n changes](http://blog.plataformatec.com.br/2010/02/rails-3-i18n-changes/).
-
-Wyświetlane komunikaty, w szczególności komunikaty o błędach,
-powinny być po polsku.
-
-Jak to zrobić? Zaglądamy do katalogu *locales* po wskazówki:
-
-    :::ruby
-    # Sample localization file for English.
-    # Add more files in this directory for other locales.
-    # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale
-    # for starting points.
+Co oznacza *i18n*, a co *l10n*?
+Aby to wyjaśnić zaglądamy tutaj:
+[Rails 3 I18n changes](http://blog.plataformatec.com.br/2010/02/rails-3-i18n-changes/)
+i tutaj: [I18n](http://guides.rubyonrails.org/i18n.html).
 
 Wszystkie(?) komunikaty Rails można znaleźć w plikach:
 
@@ -23,29 +14,327 @@ Wszystkie(?) komunikaty Rails można znaleźć w plikach:
 * [active_record.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails3/active_record.yml)
 * [active_support.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/rails3/active_support.yml)
 
-Polskie tłumaczenia komunikatów są w pliku
+Polskie tłumaczenia wszystkich tych komunikatów są w jednym pliku:
 [pl.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/locale/pl.yml)
+(co niekoniecznie jest dobrym pomysłem; dlaczego?).
 
-Lokale zmieniamy w następujący sposób.
-W pliku *environment.rb* odkomentowujemy i edytujemy wiersz
-z `config.i18n.default_locale`:
+
+## Przechodzimy na język polski
+
+1\. Zmieniamy locale edytując wiersz z `config.i18n.default_locale`
+w pliku *convig/environment.rb*:
 
     :::ruby
-      # The default locale is :en and all translations
-      # from config/locales/*.rb,yml are auto loaded.
-      # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
-      config.i18n.default_locale = :pl
-    end
+    # The default locale is :en and all translations
+    # from config/locales/*.rb,yml are auto loaded.
+    # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
+    config.i18n.default_locale = :pl
 
-Wersję *raw* pliku *pl.yml* zapisujemy w katalogu *config/locales/*.
+2\. Wersję *raw* pliku
+[pl.yml](http://github.com/svenfuchs/rails-i18n/blob/master/rails/locale/pl.yml)
+zapisujemy w katalogu *config/locales/*.
 
-Angielskie nazwy modeli i atrybutów też możemy przetłumaczyć.
-Przykład pokazujący jak to zrobić znajdziemy w pliku *active_record.yml*.
-Opisane to też jest w Rails Guides,
+3\. Angielskie nazwy modeli i ich atrybutów też można przetłumaczyć.
+Przykład pokazujący jak to zrobić znajdziemy w pliku
+*active_record.yml*. Więcej informacji znajdziemy w przewodniku
 [Translations for Active Record Models](http://guides.rubyonrails.org/i18n.html#translations-for-active-record-models)
 
+Obejrzenie, krótkiego [screencastu Ryana Batesa](http://railscasts.com/episodes/138-i18n)
+też ma sens. Zwłaszcza jeśli planujemy przygotować **kaszubską** wersję aplikacji.
 
-## I18n w Fortunce
+
+## Pluralization, czyli liczba mnoga
+
+W pliku *config/initializers/pluralization.rb* wpisujemy:
+
+    I18n::Backend::Simple.send(:include, I18n::Backend::Pluralization)
+
+a w pliku *config/locales/pluralization.rb*:
+
+    lm = lambda do |n|
+        n==1 ? :one :
+        [2,3,4].include?(n%10) && ![12,13,14].include?(n%100) && ![22,23,24].include?(n%100) ? :few : :other
+    end
+    {
+      :pl => {
+        :i18n => {
+          :plural => {
+            :keys => [:one, :few, :other],
+            :rule => lm
+          }
+     }}}
+
+Teraz w plikach z polskimi tłumaczeniami można dodać dodatkowe
+tłumaczenia. Dla przykładu:
+
+    :::yaml  config/locales/pl.yml
+    too_long:
+      one:   "jest za długie (maksymalnie %{count} znak)"
+      few:   "jest za długie (maksymalnie %{count} znaki)"
+      other: "jest za długie (maksymalnie %{count} znaków)"
+    too_short:
+      one:   "jest za krótkie (minimalnie %{count} znak)"
+      few:   "jest za krótkie (minimalnie %{count} znaki)"
+      other: "jest za krótkie (minimalnie %{count} znaków)"
+
+
+## Poprawiamy jeszcze kilka tłumaczeń
+
+Próbujemy utworzyć niewalidujące się zadania.
+Rails generuje takie komunikaty:
+
+    2 errors prohibited this task from being saved:
+      * Name nie może być puste
+      * Name jest za krótkie (co najmniej 4 znaki)
+
+Poprawiamy to tak:
+
+    Z powodu 2 błędów walidacji nie zapisano zadania w bazie:
+      * nazwa zadania nie może być pusta
+      * nazwa zadania jest za krótka (co najmniej 4 znaki)
+
+JTZ? TODO. Komunikaty generyczne. Komunikaty specyficzne dla
+konkretnego modelu.
+
+
+## TODO: Język polski w widokach
+
+JTZ opisano w [4.1.4 “Lazy” Lookup](http://guides.rubyonrails.org/i18n.html#looking-up-translations).
+
+Tłumaczenia tekstów w widokach umieścimy w pliku *views.yml*.
+Zaczniemy od przetłumaczenia nagłówków w widoku *tasks\#index*:
+
+    <h1><%= t '.all' %></h1>  <!-- Tasks list -->
+    <h3><%= t '.new' %></h3>  <!-- Task  new  -->
+
+Po wejściu na tę stronę, zamiast tytułów mamy:
+
+    pl, tasks, index, all
+    pl, tasks, index, new
+
+Oznacza to, że tłumaczenia należy wpisać w taki sposób:
+
+    pl:
+      tasks:
+        index:
+          all: "Lista zadań"
+          new: "Nowe zadanie"
+
+Analogicznie tłumaczymy tekst nagłówków w pozostałych widokach.
+Na przykład, *tasks\#show*:
+
+    <h2><%= t '.title' %></h2>
+    <h3><%= t 'todo.new' %></h3>
+    <h2><%= t 'todo.title' %></h2>
+
+Teraz plik z tłumaczeniami wygląda tak:
+
+    pl:
+      tasks:
+        index:
+          all: "Lista zadań"
+          new: "Nowe zadanie"
+        edit:
+          title: "Edycja zadania"
+        show:
+          title: "Zadanie"
+      todo:
+        index: "Lista zadań"
+        new: "Nowe zadanie"
+
+
+### Linki: Back, Show, Edit
+
+Tłumaczenia napisów w linkach:
+
+    <%= link_to t('back'), tasks_path %>
+    <%= link_to t('show'), @task %> |
+    <%= link_to t('edit'), edit_task_path(@task) %> |
+
+wpisujemy tak:
+
+    pl:
+     back: "Powrót"
+     show: "Pokaż"
+     edit: "Edycja"
+     destroy: "Usuń"
+
+Może być to problemem jeśli będziemy chcieli utworzyć model
+o nazwie Back, Show, Edit lub Destoy
+(Nazwy modeli są rzeczownikami, więc nie powinno być problemu.)
+
+Pytanie: Jak przetłumaczyć alert „Are you sure?”?
+
+## Formularz
+
+Zaczniemy od przycisku „submit” na któym pojawiają się dwa napisy:
+
+    en:
+      helpers:
+        submit:
+          create: "Create a %{model}"
+          update: "Confirm changes to %{model}"
+
+Tłumaczenie, które wpiszemy w pliku *helpers.yml* może wyglądać tak:
+
+    pl:
+      helpers:
+        submit:
+          create: "Utwórz %{model}"
+          update: "Zapisz zmiany w %{model}"
+
+Zob. [Rails 3 I18n changes](http://blog.plataformatec.com.br/2010/02/rails-3-i18n-changes/).
+
+
+### Etykiety, nazwy modeli i atrybuty
+
+Dla formularza:
+
+    <%= form_for @task do |f| %>
+      <%= f.label :title %>
+      <%= f.text_field :title %>
+
+napisy będą pobierane z `helpers.label.task.name`:
+
+    en:
+      helpers:
+        label:
+          task:
+            name: Name
+
+    pl:
+      helpers:
+        label:
+          task:
+            name: Nazwa
+
+Sprawdzamy jeszcze, czy przy *label* już czegoś nie wpisaliśmy, np.
+
+      <%= f.label :title, 'Jakiś tytuł' %>
+
+Po wklejeniu powyższych komunikatów do pliku *helpers.yml*
+i przeładowaniu aplikacji, widzimy że zostały zapomniane
+polskie tłumaczenia na przycisku Submit.
+Poprawiamy to tak:
+
+    pl:
+      helpers:
+        submit:
+          create: "Utwórz {{model}}"
+          update: "Zapisz zmiany w {{model}}"
+        label:
+          task:
+            name: Nazwa
+
+Zawartość pliku *models.yml* po poprawkach
+
+    pl:
+        models:
+          task: "Zadanie"
+          todo: "TODO"
+        attributes:
+          task:
+            name: "Nazwa"
+
+
+## Walidacja z *ActiveRecord*
+
+Kopiujemy plik [pl.yml](https://github.com/svenfuchs/rails-i18n/blob/master/rails/locale/pl.yml)
+do katalogu z pozostałymi locales.
+
+Uwaga: „You can define own errors for models or model attributes.
+The values :model, :attribute and :value are always available for interpolation.
+For example,
+
+    blank: "This is a custom blank message for %{model} / %{attribute}"
+
+Teraz komunikat o błędzie będzie taki:
+
+    Name This is a custom blank message for Task: Name
+
+Pytanie: Jak pozbyć się nazwy atrybutu „Name” przed słowem "This" powyżej.
+
+Na razie, w pliku *models.yml* wpisujemy:
+
+    pl:
+      activerecord:
+        # You can define own errors for models or model attributes.
+        # The values :model, :attribute and :value
+        # are always available for interpolation.
+        errors:
+          models:
+            task:
+              attributes:
+                name:
+                  blank: "nie może być puste"
+
+
+## Customizing the Error Messages HTML
+
+Na razie, do wypisywania błędów walidacji korzystamy z takiego gotowca:
+
+    <%= form_for(@task) do |f| %>
+      <% if @task.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@task.errors.count, "error") %> prohibited this task from being saved:</h2>
+          <h2><%= t('activerecord.errors.template.header', :count => @task.errors.count) %></h2>
+          <ul>
+          <% @task.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+Zob. [5.1 Translations for Active Record Models](http://guides.rubyonrails.org/i18n.html#translations-for-active-record-models):
+
+    en:
+      activerecord:
+        errors:
+          template:
+            header:
+              one:   "1 error prohibited this %{model} from being saved"
+              other: "%{count} errors prohibited this %{model} from being saved"
+            body:    "There were problems with the following fields:"
+
+Zob. [8.3 Customizing the Error Messages HTML](http://guides.rubyonrails.org/active_record_validations_callbacks.html#customizing-the-error-messages-css).
+
+The selectors to customize the style of error messages are:
+
+* *.field_with_errors* – style for the form fields and labels with errors.
+* *\#errorExplanation* – style for the div element with the error messages.
+* *\#errorExplanation h2* – style for the header of the div element.
+* *\#errorExplanation p* – style for the paragraph that holds the message
+  that appears right below the header of the div element.
+* *\#errorExplanation ul li* – style for the list items with individual error messages.
+
+
+## TODO Responders
+
+[i18n](http://github.com/plataformatec/responders)
+
+    flash:
+        actions:
+          create:
+            notice: "%{resource_name} was successfully created."
+          update:
+            notice: "%{resource_name} was successfully updated."
+          destroy:
+            notice: "%{resource_name} was successfully destroyed."
+            alert: "%{resource_name} could not be destroyed."
+
+Przykład pliku z komunikatami tylko dla modelu Posts:
+
+    flash:
+        posts:
+          create:
+            notice: "Your post was created and will be published soon"
+
+
+
+
+
+# I18n w Fortunce
 
 Korzystamy z i18n:
 
@@ -95,18 +384,6 @@ oraz
             }
      }}}}
 
-Teraz pliki w plikach z tłumaczeniami można dodać dodatkowe tłumaczenia:
-
-    :::yaml
-    too_long:
-      one:   "jest za długie (maksymalnie %{count} znak)"
-      few:   "jest za długie (maksymalnie %{count} znaki)"
-      other: "jest za długie (maksymalnie %{count} znaków)"
-    too_short:
-      one:   "jest za krótkie (minimalnie %{count} znak)"
-      few:   "jest za krótkie (minimalnie %{count} znaki)"
-      other: "jest za krótkie (minimalnie %{count} znaków)"
-
 
 ## Javascript: Are you sure?
 
@@ -132,26 +409,14 @@ I dodajemy komunikaty w plikach z tłumaczeniami:
         task:
           confirm: "Jesteś pewny, że chcesz usunąć to zadanie?"
 
+
 ## I18n_routing
 
-URL też czasami należy przetłumaczyć. Jak to zrobić opisano
-w [Translate your Rails2/3 routes with ease](http://www.tricksonrails.com/2010/05/i18n_routing-translate-your-rails2-rails3-routes-with-ease/).
+Czasami należałoby też przetłumaczyć urle.
+
+Jak to zrobić opisano w [Translate your Rails2/3 routes with ease](http://www.tricksonrails.com/2010/05/i18n_routing-translate-your-rails2-rails3-routes-with-ease/).
 
 
-## Przykład: will paginate
+## Gem *will paginate*
 
-Jak spolszczyć komunikaty: Next, Previous…
-
-
-## Gem r18n
-
-Nowe możliwości…
-
-* [Tutorial for R18n core](http://r18n.rubyforge.org/tutorial.html)
-
-
-## Różne
-
-Obejrzenie, krótkiego
-[screencastu Ryana Batesa](http://railscasts.com/episodes/138-i18n)
-też ma sens.
+L10N i komunikaty *Next* oraz *Previous*.

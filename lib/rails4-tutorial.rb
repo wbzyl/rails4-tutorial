@@ -88,7 +88,7 @@ module WB
       rdiscount :"#{params[:section]}"
     end
 
-     error do
+    error do
       e = request.env['sinatra.error']
       Kernel.puts e.backtrace.join("\n")
       'Application error'
@@ -98,4 +98,3 @@ module WB
     # use Rack::Lint
   end
 end
-
