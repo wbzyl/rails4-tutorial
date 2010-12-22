@@ -5,6 +5,9 @@
 **Uwaga:** Poniżej podano **orientacyjne** 
 godziny rozpoczęcia prezentacji.
 
+**Legenda:** *[G-]* -- brak 
+repozytorium, *[G+W-]* -- brak opisu projektu.
+
 <table class="span-16" summary="harmonogram">
   <colgroup>
     <col class="table1"/>
@@ -18,7 +21,7 @@ godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>12:15–12:30 <b>(5.01)</b></td>
- <td><a href="https://github.com/Tap-madl/fajny_link">Tap_madl</a></td>
+ <td><a href="https://github.com/Tap-madl/fajny_link">Fajny link</a></td>
  </tr>
 
  <tr>
@@ -28,22 +31,22 @@ godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>12:45–13:00 <b>(5.01)</b></td>
- <td><a href="/">Javatar</a></td>
+ <td><a href="/">Javatar</a> [G-]</td>
  </tr>
 
  <tr>
  <td>13:00–13:15 <b>(5.01)</b></td>
- <td><a href="https://github.com/borch/rails4">Więcej niż mniej</a></td>
+ <td><a href="https://github.com/borch/rails4">Monkey Presents</a></td>
  </tr>
 
  <tr>
  <td>13:15–13:30 <b>(5.01)</b></td>
- <td><a href="https://github.com/kazukeri/railsShop">Epiks</a></td>
+ <td><a href="https://github.com/kazukeri/railsShop">railsShop</a></td>
  </tr>
 
  <tr>
  <td>13:30–13:45 <b>(5.01)</b></td>
- <td><a href="https://github.com/mswinh/pehaps">PEHAPS</a></td>
+ <td><a href="https://github.com/mswinh/pehaps">Serwis mailingowy</a></td>
  </tr>
 
  <tr>
@@ -53,12 +56,12 @@ godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>12:15–12:30 <b>(12.01)</b></td>
- <td><a href="/">4Feeter</a></td>
+ <td><a href="/">4Feeter</a> [G-]</td>
  </tr>
 
  <tr>
  <td>12:30–12:45 <b>(12.01)</b></td>
- <td><a href="https://github.com/cintrzyk/project">Web Masters</a></td>
+ <td><a href="https://github.com/cintrzyk/project">e-Dziennik nauczycielski</a></td>
  </tr>
 
  <tr>
@@ -73,17 +76,17 @@ godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>13:15–13:30 <b>(12.01)</b></td>
- <td><a href="/">C2H5OH</a></td>
+ <td><a href="/">C2H5OH</a> [G-]</td>
  </tr>
 
  <tr>
  <td>13:30–13:45 <b>(12.01)</b></td>
- <td><a href="https://github.com/ascii-main/ascii-arch-serw-int">ASCII</a></td>
+ <td><a href="https://github.com/ascii-main/ascii-arch-serw-int">ASCII</a> [G+W-]</td>
  </tr>
 
  <tr>
  <td>13:45–14:00 <b>(12.01)</b></td>
- <td><a href="https://github.com/gnysek/xxx">XXX</a></td>
+ <td><a href="https://github.com/gnysek/xxx">XXX</a> [G+W-]</td>
  </tr>
 
 </tbody>
