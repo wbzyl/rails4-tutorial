@@ -2,10 +2,10 @@
 
 # Prezentacje
 
-**Uwaga:** Poniżej podano **orientacyjne** 
+**Uwaga:** Poniżej podano **orientacyjne**
 godziny rozpoczęcia prezentacji.
 
-**Legenda:** *[G-]* -- brak 
+**Legenda:** *[G-]* -- brak
 repozytorium, *[G+W-]* -- brak opisu projektu.
 
 <table class="span-16" summary="harmonogram">
@@ -87,6 +87,11 @@ repozytorium, *[G+W-]* -- brak opisu projektu.
  <tr>
  <td>13:45–14:00 <b>(12.01)</b></td>
  <td><a href="https://github.com/gnysek/xxx">XXX</a> [G+W-]</td>
+ </tr>
+
+ <tr>
+ <td>??–?? <b>(12.01)</b></td>
+ <td><a href="https://github.com/kamilpiotr/Students-on-Rails">Students on Rails</a> [G+W-]</td>
  </tr>
 
 </tbody>
