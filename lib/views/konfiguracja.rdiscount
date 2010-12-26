@@ -129,18 +129,13 @@ w jej katalogu głównym plik *.rvmrc* o następującej zawartości:
     :::shell-unix-generic
     rvm use 1.9.2  # albo ree
 
-Następnie w pliku *.gitignore* dopisujemy:
-
-    vendor/**/*
-
-Na koniec instalujemy gemy za pomocą polecenia:
+Gemy instalujemy za pomocą polecenia:
 
     :::shell-unix-generic
-    bundle install --path vendor
+    bundle install --path ~/.gems
 
 Od tej chwili, polecenie *bundle* będzie instalować gemy
-w katalogu *vendor* aplikacji.
-
+w katalogu *~/.gems* aplikacji.
 
 
 # Konfiguracja konsoli
