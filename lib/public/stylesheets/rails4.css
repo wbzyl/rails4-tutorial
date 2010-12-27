@@ -22,6 +22,35 @@ article, aside, dialog, figure, footer, header, hgroup, menu, nav, section {
   src: url(fonts/Blackout-Midnight.ttf) format("truetype");
 }
 
+/* links, images */
+
+a {
+  text-decoration: none;
+}
+a img {
+  border: none;
+}
+a:link, a:visited {
+  color: #555;
+  border-bottom: 1px solid #555;
+}
+html body a:hover {
+  color: #000;
+  background-color: #F4F2E4;
+  border-bottom: 1px solid #9A8E51;
+}
+
+header a:link, header a:visited {
+  color: #A12880;
+  border-bottom: none;
+}
+header a:hover {
+  background-color: #F4F2E4;
+  border-bottom: none;
+}
+
+/* layout */
+
 body {
   margin: 0;
   padding: 0;
