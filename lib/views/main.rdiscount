@@ -1,7 +1,43 @@
 # Ważna informacja!
 
-Przygotowałem harmonogram [prezentacji](/rails4/prezentacje).
+[05.01.2011] Poniższą listę studentów przygotowałem po przejrzeniu
+logów prezentacji:
+
+<div id="multi">
+<p>S. Hebel</p>
+<p>D. Jackiewicz</p>
+<p>K. Kruk</p>
+<p>M. Słomka</p>
+<p>P. Jakuła</p>
+<p>K. Kalfas</p>
+<p>Ł. Wyszomirski</p>
+<p>A. Narloch</p>
+<p>Ł. Lubelski</p>
+<p>K. Majkowski</p>
+<p>P. Klawikowski?</p>
+<p>M. Zawadzki?</p>
+</div>
+
+Z logów wynika, że dla każdego studenta z powyższej listy liczba linii
+jego kodu w projekcie wynosi 0. Dlatego dla tych osób nie mam podstaw
+do wystawienia oceny z egzaminu.
+
+Aby uzyskać pozytywną ocenę z egzaminu, wyżej wymienieni studenci
+powinni na ostatnich zajęciach laboratoryjnych 19.01.2011 przedstawić
+nowy projekt zespołowy. Tym razem będą trzy zespoły czteroosobowe.
+Zespół tworzą osoby wymienione w jednej kolumnie.
+
+Tak jak zwykle, projekt zaczynamy od założenia
+(o ile nie zrobiliśmy tego wcześniej) konta na Githubie.
+Następnie jedna z osób tworzy nowy projekt i dodaje pozostałe
+osoby jako *collaborators*. Do 17.01.2011 czekam na linki
+do repozytorium z projektem. Do projektu należy
+dołączyć jego opis w pliku *README.md*.
+
+
+[12.12.2010] Przygotowałem harmonogram [prezentacji](/rails4/prezentacje).
 Proszę o podesłanie brakujących linków do repozytorium projektu.
+
 
 # Wykłady
 

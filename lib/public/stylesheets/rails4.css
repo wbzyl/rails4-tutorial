@@ -178,3 +178,16 @@ table caption {
   padding-left: 1em;
   margin-bottom: 0.5ex;
 }
+
+/* multicolumn layout */
+
+#multi {
+  -moz-column-count: 3;
+  -moz-column-rule: 1px solid black;
+  -webkit-column-count: 3;
+  -webkit-column-rule: 1px solid black;
+}
+
+#multi p {
+  padding: 0 1em 0 1em;
+}
