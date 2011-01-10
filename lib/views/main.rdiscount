@@ -6,7 +6,6 @@ logów prezentacji:
 <div id="multi">
 <p>S. Hebel</p>
 <p>D. Jackiewicz</p>
-<p>K. Kruk</p>
 <p>M. Słomka</p>
 <p>P. Jakuła</p>
 <p>K. Kalfas</p>
@@ -14,9 +13,13 @@ logów prezentacji:
 <p>A. Narloch</p>
 <p>Ł. Lubelski</p>
 <p>K. Majkowski</p>
-<p>P. Klawikowski</p>
 <p>M. Zawadzki?</p>
 </div>
+
+<!--
+<p>P. Klawikowski</p>
+<p>K. Kruk</p>
+-->
 
 Z logów wynika, że dla każdego studenta z powyższej listy liczba linii
 jego kodu w projekcie wynosi 0. Dlatego dla tych osób nie mam podstaw
