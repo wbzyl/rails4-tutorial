@@ -54,13 +54,6 @@ repozytorium, *[G+W-]* -- brak opisu projektu.
  <td><a href="https://github.com/borch/rails4">Monkey Presents</a></td>
  </tr>
 
-<!--
- <tr>
- <td>12:15–12:30 <b>(12.01)</b></td>
- <td><a href="/">4Feeter</a> [G--]</td>
- </tr>
--->
-
  <tr>
  <td>12:30–12:45 <b>(12.01)</b></td>
  <td><a href="https://github.com/cintrzyk/project">BeInTouch</a></td>
@@ -94,6 +87,11 @@ repozytorium, *[G+W-]* -- brak opisu projektu.
  <tr>
  <td>??–?? <b>(12.01)</b></td>
  <td><a href="https://github.com/kamilpiotr/Students-on-Rails">Students on Rails</a> [G+W--]</td>
+ </tr>
+
+ <tr>
+ <td>??–?? <b>(12.01)</b></td>
+ <td><a href="https://github.com/ghoscik/digital-portfolio">Digital portfolio</a> [G-]</td>
  </tr>
 
 </tbody>
