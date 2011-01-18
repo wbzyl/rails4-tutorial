@@ -1,0 +1,27 @@
+#### {% title "Krok po kroku odkrywamy Heroku" %}
+
+1\. Tworzymy aplikację *foo*
+
+    gem install heroku
+    heroku create foo
+
+2\. Wdrażamy aplikację *foo*:
+
+    git push heroku master
+
+3\. Pozostałe rzeczy:
+
+    heroku rake db:migrate
+    heroku db:push
+    heroku addons:add something?
+
+
+## Kilka kont na heroku (newsletter, 01.2011)
+
+Many of us have multiple Heroku accounts - one for personal projects,
+one for work (or for each client, in some cases). Our very own David
+Dollar wrote the
+[heroku-accounts](https://github.com/ddollar/heroku-accounts)
+plugin to help ease switching between them. No more shell scripts to
+switch symbolic links! (What, you didn't do that? Guess it was just
+me, then.)

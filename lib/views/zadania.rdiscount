@@ -4,7 +4,7 @@
 
 <blockquote>
 <p>
-  Always code as if the guy who ends up maintaining your code will be 
+  Always code as if the guy who ends up maintaining your code will be
   a violent psychopath who knows where you live.
 </p>
 <p class="author">— Rick Osborne</p>
@@ -23,7 +23,7 @@ Projekty należy umieścić w osobnych repozytoriach git
 na serwerze Sigma.
 Nazwy repozytoriów na poszczególne projekty to:
 
-* **fortunka**  
+* **fortunka**
 * **fortunka-dbd**
 * **kontakty**
 
@@ -31,15 +31,15 @@ Do katalogu głównego aplikacji należy dodać plik
 *.rvmrc* zawierający taki kod:
 
     rvm use ree
-    rvm --create gemset use asi 
+    rvm --create gemset use asi
 
 albo taki kod:
 
     rvm use 1.9.2
-    rvm --create gemset use asi 
+    rvm --create gemset use asi
 
 
-# Egzamin 
+# Egzamin
 
 Na egzamin należy przygotować i uruchomić serwis www wg własnego
 pomysłu.  Serwis piszemy w zespołach 4–5 programistów.<br/>
@@ -48,7 +48,7 @@ Prezentacje projektów: styczeń 2011.
 
 # FAQ
 
-1. Co będzie jak nie oddam projektu w terminie? 
+1. Co będzie jak nie oddam projektu w terminie?
    *Odpowiedź:* Ocena z laboratorium zostanie obniżona o 1.
 
 
@@ -60,10 +60,13 @@ robust and future-proof site.
 Sam szablon jest [tutaj](http://github.com/paulirish/html5-boilerplate/).
 
 Przygotować stronę statyczną korzystającą z HTML5 boilerplate.
-Dodać do strony przykład z jakąś wtyczką jQuery. Na przykład 
+Dodać do strony przykład z jakąś wtyczką jQuery. Na przykład
 [gMap](http://gmap.nurtext.de/):
-*gMap helps you embed Google Maps into your website. 
+*gMap helps you embed Google Maps into your website.
 With only 2 KB in size it is very flexible and highly customizable.*
+
+Albo użyć gemu [Cartographer](https://github.com/joshuamiller/cartographer).
+
 
 <blockquote>
 <p>
@@ -76,10 +79,10 @@ With only 2 KB in size it is very flexible and highly customizable.*
 ## BlueprintCSS
 
 1\. Przygotować stronę ilustrującą możliwości frameworka
-Blueprint. Zacząć od ściągnięcia 
+Blueprint. Zacząć od ściągnięcia
 [repozytorium Blueprint] [blueprint-css] z Githuba.
 
-Użyć narzędzia *compress.rb* do wygenerowania własnych 
+Użyć narzędzia *compress.rb* do wygenerowania własnych
 wersji arkuszy CSS. Przeczytać:
 [Blueprint's compress.rb: A Walkthrough](http://joshuaclayton.github.com/article/2009/05/19/blueprint-css-a-walkthrough.html).
 
@@ -92,7 +95,7 @@ selektorów.
 
 4\. Zainstalować rozszerzenia do przeglądarki Firefox:
 
-   * [Firebug](https://addons.mozilla.org/en-US/firefox/addon/1843) 
+   * [Firebug](https://addons.mozilla.org/en-US/firefox/addon/1843)
    * [YSlow](http://developer.yahoo.com/yslow/).
 
 Użyć Yslow do oceny strony przygotowanej w 1\.
@@ -143,23 +146,23 @@ Aplikacja powinna zawierać model *AddressBook* oraz inne konieczne do
 działania modele. W bazie umieścić następujące dane: imię, nazwisko,
 email, url strony www, adres.
 
-Użyć rozszerzenia YSLow (*Firefox*) albo Speed Tracer (*Google Chrome*) 
+Użyć rozszerzenia YSLow (*Firefox*) albo Speed Tracer (*Google Chrome*)
 „to identify and fix performance problems in your web applications”.
 
 <blockquote>
  <p>
-  Have you ever even bothered to Google for “rails html template”? 
+  Have you ever even bothered to Google for “rails html template”?
  </p>
  <p class="author">— Dr Nic</p>
 </blockquote>
 
-1\. Do aplikacji dodać *gravatary*. 
+1\. Do aplikacji dodać *gravatary*.
 Skorzystać z jakiegoś gemu lub jakiejś wtyczki.
 
 Albo zamiast wtyczki skorzystać z pomysłu przedstawionego
 w [Cropping Images](http://railscasts.com/episodes/182-cropping-images).
 W screencaście, R. Bates pokazuje jak
-dodać do aplikacji zgrabny interfejs umożliwiający przycinanie 
+dodać do aplikacji zgrabny interfejs umożliwiający przycinanie
 obrazków przed umieszczeniem ich w bazie danych.
 Dodać taką funkcjonalność do budowanej aplikacji.
 
@@ -177,14 +180,14 @@ albo z czegoś podobnego w działaniu.
 </blockquote>
 
 3\. Skompresować *static assets* za pomocą wtyczki
-[Asset Packager] [asset-packager]: 
+[Asset Packager] [asset-packager]:
 „JavaScript and CSS Asset Compression for **Production** Rails Apps.”
 
 Korzystając z rozszerzenia YSlow albo Speed Tracer sprawdzić wydajność
 aplikacji przed i po instalacji tej wtyczki.
 Opisać różnice w pliku README.
 
-4\. Wersja 3.5 Firefoxa obsługuje 
+4\. Wersja 3.5 Firefoxa obsługuje
 [W3C Geolocation API](http://dev.w3.org/geo/api/spec-source.html).
 Korzystając z któregoś z gemów polecanych na stronie
 [The Ruby Toolbox](http://www.ruby-toolbox.com/categories/geocoding___maps.html)
@@ -193,12 +196,12 @@ dodać geolokację do aplikacji.
 5\. Dodać możliwośc dodawania tagów.  Na przykład takich: praca,
 rodzina, znajomi, przypadkowi znajomi, uczelnia, wojsko, pizzeria, biblioteka itp.
 
-* Zaimplementować tagowanie tak jak to jest pokazane na screencaście 
+* Zaimplementować tagowanie tak jak to jest pokazane na screencaście
   [More on Virtual Attributes](http://railscasts.com/episodes/167-more-on-virtual-attributes).
 * Jeszcze raz tagowanie, ale tym razem skorzystać z wtyczki/gemu
   [acts-as-taggable-on](http://github.com/mbleigh/acts-as-taggable-on/).
   Autorem jest Michael Bleigh. Cytat:
-  A tagging plugin for Rails applications that allows for custom 
+  A tagging plugin for Rails applications that allows for custom
   tagging along dynamic contexts.
 
 6\. Dodać „tags cloud”. Skorzystać z wtyczki jQuery
@@ -230,14 +233,14 @@ rodzina, znajomi, przypadkowi znajomi, uczelnia, wojsko, pizzeria, biblioteka it
 ## Stylizacja Leniwca
 
 1\. Do strony z wynikami wyszukiwania dodać paginację.
-Skorzystać z gemu 
+Skorzystać z gemu
 [mislav-will-paginate](http://github.com/mislav/will_paginate/).
 
 2\. Do wyszukiwarki dodać select-menu z listą języków
 obsługiwanych przez gem *Ultraviolet*
 (`uv -l syntaxes`). Zmodyfikować kod *leniwca.local*, tak aby
 było możliwe wyszukiwanie fragmentów kodu z wybranego
-języka. Wskazówka: objerzeć screencast 
+języka. Wskazówka: objerzeć screencast
 [Advanced Search Form](http://railscasts.com/episodes/111-advanced-search-form)
 Uwaga: na liście języków umieścić „Wszystkie języki”,
 „Języki skryptowe“ i „Języki kompilowane”.
@@ -245,11 +248,11 @@ Uwaga: na liście języków umieścić „Wszystkie języki”,
 3\. Wpisać listę wszystkich języków do tabelki *languages*.
 Do select-menu pobrać tę listę z tej tabelki.
 
-4\. Dodać „full text search”. Wykorzystać gem 
+4\. Dodać „full text search”. Wykorzystać gem
 [xapit](http://github.com/ryanb/xapit/) albo
 [thinking-sphinx](http://github.com/freelancing-god/thinking-sphinx/).
 Przykład korzystający *thinking-sphinx* można obejrzeć
-na screencaście R. Batesa, 
+na screencaście R. Batesa,
 [Thinking Sphinx](http://railscasts.com/episodes/120-thinking-sphinx).
 
 5\. Użyć innego ORM, np. Datamapper
@@ -258,7 +261,7 @@ na screencaście R. Batesa,
 
 ## Shoutbox
 
-Przeczytać 
+Przeczytać
 [From CodeIgniter to Ruby on Rails: A Conversion](http://net.tutsplus.com/tutorials/ruby/from-codeigniter-to-ruby-on-rails-a-conversion/).
 
 Przepisać aplikację *Shoutbox* na Rails 3. Zamiast MySQL użyć
@@ -279,13 +282,13 @@ Add the following:
 * Submit-to-pastie button
 * Search
 * Add Rails-ish parsers to SHJS (erb, haml, sass)
-* Tweak the PRE CSS or do something clever with wrapping 
+* Tweak the PRE CSS or do something clever with wrapping
   to make long lines display nicely
 
 
 ## Photo Album
 
-1\. [Extremely Simple Photo Album in 
+1\. [Extremely Simple Photo Album in
   Rails](http://rubyplus.org/episodes/92-Extremely-Simple-Photo-Album-in-Rails.html)
 
 * You can extend this album so that the photo upload does not tie up
@@ -296,7 +299,7 @@ Add the following:
   photos.
 
 
-## JSON, XML 
+## JSON, XML
 
 1\. [Faker.js](http://github.com/marak/Faker.js) —
 generate massive amounts of fake data in Node.js and the browser.
@@ -317,7 +320,7 @@ Cytat, [Redweb: A Web Interface for Redis](http://philosophyofweb.com/2010/02/re
 „In my opinion, Redis is a superb option for a number of different use
 cases (web bookmarks/tags, working with data locally, and much more).”
 
-Sprawdzamy, czy tak jest. Zaczynamy od instalacji  
+Sprawdzamy, czy tak jest. Zaczynamy od instalacji
 [Redisa](http://github.com/antirez/redis) i [Redweb](http://github.com/tnm/redweb).
 
 1\. Aplikacja „Bookmarks”. Inne przykłady:
