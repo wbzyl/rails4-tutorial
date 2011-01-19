@@ -27,9 +27,11 @@ Przykład jest na [tutaj](http://sinatra.inf.ug.edu.pl/sp/git).
 </blockquote>
 
 1. {%= link_to "Zaczynamy", "/zaczynamy" %}
+1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "Konsola", "/konsola" %}
 1. {%= link_to "Layouts", "/layouty" %}
 1. {%= link_to "Dwa modele", "/2models" %}
+1. {%= link_to "Mobile apps", "/mobile" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
 1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
 1. {%= link_to "I18n", "/i18n" %}
@@ -44,7 +46,6 @@ TODO:
 1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %}
 1. {%= link_to "Hello Fortune", "/fortunka" %}
 1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
-1. {%= link_to "Heroku krok po kroku", "/heroku" %}
 1. {%= link_to "Autentykacja z Devise", "/authentication-devise" %}
 1. {%= link_to "Aplikacja „Todo”", "/todo" %}
 1. {%= link_to "Aplikacja „Blog”", "/blog" %}
