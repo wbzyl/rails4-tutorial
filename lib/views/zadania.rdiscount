@@ -101,6 +101,14 @@ selektorów.
 Użyć Yslow do oceny strony przygotowanej w 1\.
 
 
+## Google Visual API
+
+Przygotować aplikację korzystającą 
+z [Google Visualization API](http://code.google.com/apis/visualization/documentation/).
+Skorzystać z gemu [google_visular](https://github.com/winston/google_visualr/).
+Sprawdzić czy gem działa z Rails3?
+
+
 ## Fortunka
 
 Dodać paginację do widoku *index*.
