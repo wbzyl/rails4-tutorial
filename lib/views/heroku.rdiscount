@@ -1,5 +1,9 @@
 #### {% title "Krok po kroku odkrywamy Heroku" %}
 
+# Krok po kroku odkrywamy Heroku
+
+Potrzebujemy trzech kroków:
+
 1\. Tworzymy aplikację *foo*
 
     gem install heroku
