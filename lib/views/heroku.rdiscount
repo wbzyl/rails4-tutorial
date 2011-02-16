@@ -2,22 +2,62 @@
 
 # Krok po kroku odkrywamy Heroku
 
-Potrzebujemy trzech kroków:
+Będziemy potrzebować gemów *heroku* i *taps*. Sprawdzamy, czy jest on
+zainstalowany w systemie:
+
+    gem list heroku
+
+Jeśli nie – to instalujemy go za pomocą polecenia:
+
+    sudo gem install heroku
+
+Następnie zakładamy darmowe konto na *heroku.com*.
+
+Generujemy szablon aplikacji Rails3:
+
+    rails new foo
+
+Aplikację *foo* na heroku wdrażamy w trzech krokach:
 
 1\. Tworzymy aplikację *foo*
 
-    gem install heroku
+    cd foo
+    git init
+    git add .
+    git commit -m "pierwsza wersja"
     heroku create foo
 
-2\. Wdrażamy aplikację *foo*:
+Odpowiedź Heroku powinna być taka:
 
+    Creating foo.... done
+    http://foo.heroku.com/ | git@heroku.com:foo.git
+    Git remote heroku added
+
+**Uwaga:** jeśli na Heroku istnieje już aplikacja o takiej
+nazwie, to musimy wymyśleć nową nazwę.
+
+2\. Dodajemy klucz publiczny do swojego konta na Heroku
+i wdrażamy aplikację *foo*:
+
+    heroku keys:add ~/.ssh/id_rsa.pub
+    git push heroku master
+
+Stosujemy się do sugestii Heroku:
+
+    bundle install --path=$HOME/.gems
+    git add .
+    git commit -m "dodano Gemfile.lock"
     git push heroku master
 
 3\. Pozostałe rzeczy:
 
-    heroku rake db:migrate
-    heroku db:push
+    heroku rake db:create
+
+A te polecenia zostawiamy sobie na potem:
+
     heroku addons:add something?
+    heroku rake db:migrate  # na razie chyba zbędne
+    heroku db:push          # to też
 
 
 ## Kilka kont na heroku (newsletter, 01.2011)
