@@ -1,9 +1,9 @@
 GIT
   remote: git://github.com/wbzyl/rack-codehighlighter
-  revision: ec8e0b1ac1c26e9aca1749312ac2a903bdede672
+  revision: ec441d44b66821adf3762c712f3b4c9ac4ec37a0
   branch: pre-caption
   specs:
-    rack-codehighlighter (0.4.6)
+    rack-codehighlighter (0.4.7.2)
       nokogiri (>= 1.4.1)
       rack (>= 1.0.0)
 
@@ -17,19 +17,22 @@ GEM
   remote: http://rubygems.org/
   specs:
     abstract (1.0.0)
+    daemon_controller (0.2.6)
     daemons (1.1.0)
     emk-sinatra-url-for (0.2.1)
       sinatra (>= 0.9.1.1)
     erubis (2.6.6)
       abstract (>= 1.0.0)
     eventmachine (0.12.10)
+    file-tail (1.0.5)
+      spruz (>= 0.1.0)
     maruku (0.6.0)
       syntax (>= 1.0.0)
-    nokogiri (1.4.3.1)
+    nokogiri (1.4.4)
     oniguruma (1.1.0)
     plist (3.1.0)
     rack (1.2.1)
-    rdiscount (1.6.5)
+    rdiscount (1.6.8)
     sinatra (0.9.6)
       rack (>= 0.9.1)
     sinatra-maruku (1.0.0.2)
@@ -43,6 +46,7 @@ GEM
       emk-sinatra-url-for (>= 0.2.1)
       rack (>= 1.0.0)
       sinatra (>= 0.9.1)
+    spruz (0.2.5)
     textpow (0.10.1)
       oniguruma (>= 1.1.0)
       plist (>= 3.0.0)
@@ -52,13 +56,17 @@ GEM
       rack (>= 1.0.0)
     ultraviolet (0.10.2)
       textpow (>= 0.10.0)
+    wirble (0.1.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   bundler
+  daemon_controller
+  file-tail
   rack-codehighlighter!
+  rdiscount
   sinatra (= 0.9.6)
   sinatra-maruku
   sinatra-rdiscount
@@ -66,3 +74,4 @@ DEPENDENCIES
   syntax!
   thin
   ultraviolet
+  wirble

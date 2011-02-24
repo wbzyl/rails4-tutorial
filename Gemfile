@@ -17,8 +17,12 @@ gem 'ultraviolet'
 
 gem 'syntax', :git => 'git://github.com/wbzyl/syntax.git'
 
+gem 'rdiscount'
+
+gem 'wirble'
+
 # extra passenger lite dependencies
 #
-# gem file-tail
-# gem daemon_controller
+gem 'file-tail'
+gem 'daemon_controller'
 # rpm asciidoc

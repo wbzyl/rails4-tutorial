@@ -45,10 +45,15 @@ Dodatkowo możemy sprawdzić:
     which ruby
     rvm env
 
+Ustawiamy domyślną wersję:
+
+    :::shell-unix-generic
+    rvm --default use 1.9.2
+
 Dla każdego projektu rails powinniśmy w katalogu głównym aplikacji
 umieścić plik *.rvmrc* o następującej zawartości:
 
-<pre>rvm use ree  # albo 1.9.2
+<pre>rvm use ree  # jeśli zmieniamy wersję na starszą
 rvm --create gemset use NAZWA_ZESTAWU_GEMÓW_DLA_PROJEKTU
 </pre>
 
