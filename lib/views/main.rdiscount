@@ -1,20 +1,21 @@
-# Ważna informacja!
+# Zaczynamy od konfiguracji systemu Git
 
-Zaczynamy od konfiguracji programu git:
+Zaczynamy konfigurowanie od przedstawienia się Gitowi:
 
     git config --global user.name "Imię Nazwisko"
     git config --global user.email "twój_login@sigma.ug.edu.pl"
-    
-po czym sprawdzamy, czy wykonalismy poprawnie powyższe polecenia:
+
+Następnie definiujemy kilka użytecznych aliasów, na przykład
+[takich](http://sinatra.inf.ug.edu.pl/sp/git).
+
+Gotowe! Zostaje tylko sprawdzić, czy powyższe polecenia wykonaliśmy
+poprawnie (dwa sposoby):
 
     cat ~/.gitconfig
     git config -l
 
-Teraz należy zdefiniować kilka użytecznych aliasów, etc.
-Przykład jest na [tutaj](http://sinatra.inf.ug.edu.pl/sp/git).
 
-
-# Wykłady
+# Notatki do wykładów
 
 <blockquote>
   {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
