@@ -2,12 +2,27 @@
 
 # Zaczynamy
 
-Pierwszą aplikacją Rails, którą utworzymy będzie Fortunka
+<blockquote>
+ <p>
+  {%= image_tag "/images/ken-arnold.jpg", :alt => "[Ken Arnold]" %}
+ </p>
+ <p>A fortune program first appeared in Version 7 Unix. The most common
+  version on modern systems is the BSD fortune, originally written by
+  Ken Arnold. [source Wikipedia]</p>
+</blockquote>
+
+Pierwszą aplikacją, którą napiszemy w Ruby on Rails będzie
+[Fortunka](http://en.wikipedia.org/wiki/Fortune_(Unix\))
 z możliwością dopisywania komentarzy.
 
 Czym jest Ruby on Rails:
 „Ruby on Rails is an **MVC** framework for web application development.”
 
+## MVC ≡ Model / Widok / Kontroler
+
+„MVC is sometimes called a design pattern, but thats not technically
+accurate. It is in fact an amalgamation of design patterns (sometimes
+referred to as an architecture pattern).”
 
 <blockquote>
  {%= image_tag "/images/frederick-brooks.jpg", :alt => "[Frederick P. Brooks, Jr.]" %}
@@ -24,12 +39,6 @@ Czym jest Ruby on Rails:
  </p>
  <p class="author">— Frederick P. Brooks, Jr.</p>
 </blockquote>
-
-## MVC ≡ Model / Widok / Kontroler
-
-„MVC is sometimes called a design pattern, but thats not technically
-accurate. It is in fact an amalgamation of design patterns (sometimes
-referred to as an architecture pattern).”
 
 **Użycie MVC w aplikacji webowej**
 [(źródło)](http://betterexplained.com/articles/intermediate-rails-understanding-models-views-and-controllers/)
@@ -55,15 +64,6 @@ jednego modelu w celu zapewnienia różnych prezentacji tych danych.
 Można także tworzyć nowe widoki dla modelu bez potrzeby modyfikowania
 go.”
 
-
-<blockquote>
- <p>
-  {%= image_tag "/images/ken-arnold.jpg", :alt => "[Ken Arnold]" %}
- </p>
- <p>A fortune program first appeared in Version 7 Unix. The most common
-  version on modern systems is the BSD fortune, originally written by
-  Ken Arnold. [source Wikipedia]</p>
-</blockquote>
 
 # Fortunka
 
@@ -97,17 +97,13 @@ w pliku *Gemfile*.
 Zaczynamy od modyfikacji wygenerowanego pliku:
 
     :::ruby Gemfile
-    source 'http://rubygems.org'
-    gem 'rails'
-    # or use stable branch
-    #   gem 'rails', :git => 'git://github.com/rails/rails.git', :branch => '3-0-stable'
-    # or bundle edge Rails    
-    #   gem 'rails', :git => 'git://github.com/rails/rails.git'
+    source 'http://rubygems.org' # domyślna wartość
+    gem 'rails' # usuwamy numer wersji; będziemy korzystać zawsze z ostatniej
+    # dla odważnych – można pobrać wersję „(bleeding?) edge”
+    # gem 'rails', :git => 'git://github.com/rails/rails.git'
     gem 'sqlite3-ruby', :require => 'sqlite3'
-    # use thin / unicorn as web server
-    gem 'thin'
-    gem 'unicorn'
-    # configure irb, see ~/.irbrc
+    gem 'thin' # będziemy używać serwera „thin” zamiast serwera „webrick”
+    # konfigurujemy irb ($HOME/.irbrc)
     group :development do
       gem 'wirble'
       gem 'hirb'
@@ -118,18 +114,20 @@ Z gemów Wirble i Hirb będziemy korzystać tylko w trybie development.
 Na koniec instalujemy gemy i sprawdzamy, gdzie zostały zainstalowane
 w systemie:
 
-    bundle install
+    bundle install --path=$HOME/.gems
     bundle show rails
+
+**Uwaga:** Opcji `--path` używamy tylko raz. Następnym razem
+uruchamiamy program *bundle* bez tej opcji.
 
 
 ## Serwer WWW
 
 W trakcie pisania kodu aplikację uruchamiamy w trybie **development**.
-Możemy to zrobić na kilka sposobów:
+Możemy to zrobić na kilka sposobów. Poniżej podaję trzy:
 
 <pre>rails server thin -p <i>numer portu</i>
 passenger start -p <i>numer portu</i>
-unicorn -p <i>numer portu</i>
 thin --rackup config.ru start -p <i>numer portu</i>
 </pre>
 
@@ -146,9 +144,12 @@ thin --rackup config.ru start -p <i>numer portu</i>
 <p class="author">– David Griffiths</p>
 </blockquote>
 
-Dłuższy cytat: „**REST** stands for **Represenational State Transfer**
-\[…hmm?!…\] RESTful design really means designing your applications
-to work the way the web was **originally** meant to look.”
+W aplikacjach Rails prawie zawsze korzystamy z *REST*, czyli
+z **Represenational State Transfer**.
+
+Dlaczego? Częściowo wyjaśnia to ten cytat:
+„RESTful design really means designing your applications
+to work the way the web was **originally** meant to look.”
 
 Podstawy REST:
 
@@ -156,19 +157,19 @@ Podstawy REST:
    cytatów, dlatego cytaty są *resources*.
 2. Każdy zasób ma swój unikalny URI.
 3. Na zasobach można wykonywać cztery podstawowe operacje
-   Create, Read, Update i Delete 
+   Create, Read, Update i Delete
    (zwykle skracane do *CRUD*).
 4. Klient i serwer komunikują się ze sobą korzystając
-   protokołu bezstanowego. Oznacza to, że klient 
+   protokołu bezstanowego. Oznacza to, że klient
    zwraca się z żądaniem do serwera. Serwer odpowiada i
    cała konwersacja się kończy.
 
 
 <blockquote>
-<p>RFC2235: 
+<p>RFC2235:
   <a href="http://www.faqs.org/rfcs/rfc2235.html">Hobbes’ Internet Timeline</a>
 </p>
-<p>RFC2334: 
+<p>RFC2334:
   <a href="http://www.faqs.org/rfcs/rfc2324.html">Hyper Text Coffee Pot Control Protocol (HTCPCP/1.0)</a>
 </p>
 </blockquote>
@@ -198,7 +199,7 @@ Zobacz też [Easy environment specific seed files in Rails 3](http://www.codeoff
 
 Oczywiście, w gotowych aplikacjach rekordy do bazy dodajemy
 korzystając z formularzy.
- 
+
 Generator dopisał do pliku z routingiem *config/routes.rb*:
 
     resources :fortunes
@@ -234,8 +235,8 @@ zawierający pusty kontroler *FortunesController*.
 
 Każdy *resource controller* musi definiować **7 metod** o nazwach:
 
-* *index*, *show* 
-* *new*, *create* 
+* *index*, *show*
+* *new*, *create*
 * *edit*, *update*
 * *destroy*
 
@@ -244,13 +245,13 @@ Przykładowe implementacje można podejrzeć klikając linki po prawej.
 
 ## Akcje i szablony
 
-Zwyczajowo *index* kojarzymy kompletną listę zasobów. 
+Zwyczajowo *index* kojarzymy kompletną listę zasobów.
 
 Uruchamiamy serwer www i wchodzimy na stronę z fortunkami:
 
     http://localhost:3000/fortunes
 
-Co powinno się wydarzyć? 
+Co powinno się wydarzyć?
 
     Unknown action
     The action 'index' could not be found for FortunesController
@@ -281,10 +282,10 @@ Teraz serwer zgłasza wyjątek i odpowiada (*response*) komunikatem
 o błędzie:
 
     Action Controller: Exception caught
-    
+
     Template is missing
-    Missing template fortunes/index with 
-      {:locale=>[:en, :en], :handlers=>[:builder, :rjs, :erb, :rhtml, :rxml], 
+    Missing template fortunes/index with
+      {:locale=>[:en, :en], :handlers=>[:builder, :rjs, :erb, :rhtml, :rxml],
       :formats=>[:html]} in view paths ".../app/views"
 
 Nie pozostaje nam nic innego jak utworzyć szablon **powiązany**
@@ -350,10 +351,10 @@ Daje to następujący błąd:
 Dlaczego wykonujemy *redirect_to*? Co oznacza tutaj *polimorficznie*?
 
 Na razie zakładamy, że użytkownik nie oszukuje i wpisuje w formularz
-to co jest proszony, a nie na przykład złośliwy kod. 
+to co jest proszony, a nie na przykład złośliwy kod.
 Walidacją tego co wpisuje użytkownik zajmiemy się później.
 
-Po kliknięciu przycisku „Create Fortune”, nowa fortunka 
+Po kliknięciu przycisku „Create Fortune”, nowa fortunka
 jest zapisywana w tabeli, a my zostajemy przekierowani na stronę
 *show*, której nie ma:
 
@@ -365,10 +366,10 @@ Nie napisaliśmy też metody *show*. Robimy to teraz.
 Czytamy to co zostało wypisane na konsoli i piszemy metodę *show*:
 
     :::ruby app/controllers/fortunes_controller.rb
-    def show  
-      @product = Product.find(params[:id])  
+    def show
+      @product = Product.find(params[:id])
       respond_with @product # odpowiadamy polimorficznie
-    end 
+    end
 
 Szablon też piszemy „od ręki”:
 
@@ -385,13 +386,13 @@ Zwyczajowo, po zapisaniu rekordu w bazie, na stronie na którą
 zostajemy przekierowani, jest wyświetlany komunikat w stylu:
 *Utworzono nowy rekord Fortune*.
 
-Railsy do wyświetlania takich komunikatów korzystają z **flash messages** 
+Railsy do wyświetlania takich komunikatów korzystają z **flash messages**
 Szablon do wyświetlania flash messages umieszczamy layoucie.
 
 Przy okazji: co to jest **layout**? Jak to przetłumaczyć na język polski?
 
 Nowy layout utworzymy w pokrętny sposób. Skorzystamy z gotowca
-wygenerowanego przez generator *nifty:layout*. 
+wygenerowanego przez generator *nifty:layout*.
 
 Dopiszmy w pliku *Gemfile*:
 
@@ -415,7 +416,7 @@ wypisze coś takiego:
 
 Wykonanie polecenia:
 
-    rails generate nifty:layout 
+    rails generate nifty:layout
 
 spowoduje wygenerowanie layoutu z flash messages:
 
@@ -445,10 +446,10 @@ spowoduje wygenerowanie layoutu z flash messages:
 
 Problem:
 
-* gdzie wpisać komunikaty flash? 
+* gdzie wpisać komunikaty flash?
 * co z i18n?
 
-Eleganckie rozwiązanie obu probelmów przedstawił 
+Eleganckie rozwiązanie obu probelmów przedstawił
 [José Valim](http://blog.plataformatec.com.br/tag/respond_with/).
 
 Zaczynamy od:
@@ -537,13 +538,13 @@ A tak to wygląda dla przycisku *Submit*:
 
 ### Szablony częściowe
 
-Generator rozwiązał problem powtórzonego fragmentu kodu 
+Generator rozwiązał problem powtórzonego fragmentu kodu
 w naszych szablonach *new* i *edit*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def new
       @fortune = Fortune.new
-    end    
+    end
 
 Teraz, jeśli w szablonie dla *new* podmienimy *Fortune.new* na
 *@fortune*, to kod formularza będzie taki sam w obu szablonach.
@@ -574,7 +575,7 @@ Dlaczego „osuszanie” kodu jest ważne?
 
 ## Linkujemy widoki
 
-W wygenerowanych szablonach generator wstawił odsyłacze. 
+W wygenerowanych szablonach generator wstawił odsyłacze.
 Na przykład w widoku *index*:
 
     :::html_rails app/views/fortunes/index.html.erb
@@ -600,7 +601,7 @@ powiązanych widoków.
 ### Usuwanie rekordów z tabel
 
 W aktualnej wersji można utworzyć „pustą” fortunkę. Jak? Klikamy link
-'New Fortune', następnie przycisk 'New Fortune'. 
+'New Fortune', następnie przycisk 'New Fortune'.
 Oczywiście nie ma sensu umieszczanie pustych fortunek w bazie.
 
 Na następnym wykładzie zaimplementujemy mechanizm zabezpieczający
@@ -684,15 +685,15 @@ zmienając jego nazwę na *jquery.rails.js*.
 Zmieniamy w layoucie wiersz z *javascript_include_tag* na:
 
     :::html_rails app/views/layouts/application.html.erb
-    <%= javascript_include_tag 
-      "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js", 
-      "jquery.rails.js" %> 
+    <%= javascript_include_tag
+      "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
+      "jquery.rails.js" %>
 
 i usuwamy z katalogu *public/javascripts* następujące pliki:
 *controls.js*, *dragdrop.js*, *effects.js*, *prototype.js* i *rails.js*.
 
 Zamiast zręcznie ręcznie zmieniać źródła możemy skorzystać z generatora
-który zrobi to za nas. 
+który zrobi to za nas.
 
 Dopisujemy do *Gemfile*:
 
@@ -733,12 +734,12 @@ Przy okazji zrobimy refaktoryzację kodu:
 
     :::html_rails app/views/fortunes/index.html.erb
     <% title "Wszystkie fortunki" %>
-    <%= form_tag fortunes_path, :method => :get, :remote => true do %>  
-      <p>  
-        <%= text_field_tag :search, params[:search] %>  
-        <%= submit_tag "Search", :name => nil %>  
-      </p>  
-    <% end %>  
+    <%= form_tag fortunes_path, :method => :get, :remote => true do %>
+      <p>
+        <%= text_field_tag :search, params[:search] %>
+        <%= submit_tag "Search", :name => nil %>
+      </p>
+    <% end %>
     <div id="fortunes">
       <%= render @fortunes %>
     </div>
@@ -749,8 +750,8 @@ W szablonie częściowym *_fortune.html.erb* nie potrzebujemy pętli
 
     :::html_rails app/views/fortunes/_fortune.html.erb
     <p>
-     <%= fortune.body %> 
-     <%= link_to "Show", fortune_path(fortune) %> | 
+     <%= fortune.body %>
+     <%= link_to "Show", fortune_path(fortune) %> |
      <%= link_to "Edit", edit_fortune_path(fortune) %> |
      <%= link_to "Delete", fortune_path(fortune), :confirm => "Are you sure?", :method => :delete %>
     </p>
@@ -758,7 +759,7 @@ W szablonie częściowym *_fortune.html.erb* nie potrzebujemy pętli
 Oto fragment źródła strony wygenerowanej z powyższego szablonu:
 
     :::html_rails
-    <form action="/fortunes" data-remote="true" method="get"> 
+    <form action="/fortunes" data-remote="true" method="get">
 
 Do czego służą atrybuty *data-\** ?
 Czy elementy z takimi atrybutami się walidują?
@@ -900,7 +901,7 @@ Spróbujemy zrobić to tak. Zaczniemy od routingu:
 
     :::ruby config/routes.rb
     resources :fortunes do
-      collection do 
+      collection do
         get :tags
       end
     end
@@ -917,14 +918,14 @@ Teraz dopisujemy co trzeba w kontrolerze (plus mała refaktoryzacja; jaka?):
 
     :::ruby app/controllers/fortunes_controller.rb
     before_filter :only => [:index, :tags] do
-      @tags = Fortune.tag_counts  # for tag clouds    
+      @tags = Fortune.tag_counts  # for tag clouds
     end
-    
+
     def index
       @fortunes = Fortune.search(params[:search]).order("created_at desc")
       respond_with @fortunes
     end
-    
+
     def tags
       @fortunes = Fortune.tagged_with(params[:name])
       render 'index'
@@ -967,7 +968,7 @@ Zagnieżdżamy zasoby i sprawdzamy jak to zmienia routing:
     :::ruby
     resources :fortunes do
       resources :comments
-      collection do 
+      collection do
         get :tags
       end
     end
@@ -977,7 +978,7 @@ Po tej zmianie polecenie
     rake routes
 
 wypisuje nowy routing:
- 
+
                          GET    /fortunes/:fortune_id/comments          {:action=>"index",   :controller=>"comments"}
         fortune_comments POST   /fortunes/:fortune_id/comments          {:action=>"create",  :controller=>"comments"}
      new_fortune_comment GET    /fortunes/:fortune_id/comments/new      {:action=>"new",     :controller=>"comments"}
@@ -997,7 +998,7 @@ oraz stary routing, który też obowiązuje:
                   PUT    /fortunes/:id      {:action=>"update",  :controller=>"fortunes"}
           fortune DELETE /fortunes/:id      {:action=>"destroy", :controller=>"fortunes"}
      edit_fortune GET    /fortunes/:id/edit {:action=>"edit",    :controller=>"fortunes"}
-    
+
              root        /                  {:controller=>"fortunes", :action=>"index"}
 
 Przechodzimy do modelu *Comment*, gdzie znajdujemy dopisane powiązanie:
@@ -1032,7 +1033,7 @@ Aby dodać komentarz możemy postąpić tak:
 
 ### Gdzie wyświetlać komentarze?
 
-Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show* 
+Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*
 (**inne propozycje?**). Dopiszemy taki kod:
 
     :::html_rails app/views/fortunes/show.html.erb
@@ -1138,7 +1139,7 @@ Poprawiamy kod widoku *show*, tak aby korzystał z tych szablonów:
     :::html_rails app/views/fortunes/show.html.erb
     <h2>Dodaj komentarz</h2>
     <%= render 'comments/form' %>
-    
+
     <% if @fortune.comments.any? %>
       <h2>Komentarze</h2>
       <%= render @fortune.comments %>
@@ -1158,12 +1159,12 @@ Kod wygenerowany przez generator nifty:layout:
         options[:message] ||= "Correct the following errors and try again."
         ...
 
-Jak to zlokalizować? Jaki dodać prefix? Zobacz 
+Jak to zlokalizować? Jaki dodać prefix? Zobacz
 [Support Rails built in i18n system for easy translations](http://github.com/ryanb/nifty-generators/issues#issue/22).
 
 Może tak:
 
-    :::ruby 
+    :::ruby
     options[:header_message] ||= I18n.t(errors.template.header_message), :default => "Invalid Fields"
     options[:message] ||= I18n.t(errors.template.message), :default => "Correct the following errors and try again."
 
@@ -1171,27 +1172,28 @@ Plik z polskim tłumaczeniem:
 
     errors:
       template:
-        header_message: 
+        header_message:
           "Nieprawidłowo wypełniony formularz"
-        message: 
+        message:
           "Popraw poniższe błędy i spróbuj jeszcze raz:"
 
 
-## TODO
+# Szlifowanie kodu
 
-1\. Fortunka jest niechlujnie olinkowana: gdzieniegdzie brakuje odsyłaczy,
-a w innych miejscach jesteśmy odsyłani w maliny.
+1\. Fortunka jest olinkowana byle jak, brakuje odsyłaczy etc.
+Znależć wszystkie te miejsca i poprawić kod.
 
 2\. Dopisać logowanie via *authenticate_or_request_with_http_basic* tak jak to jest
 opisane w samouczku [Getting Started with Rails](http://edgeguides.rubyonrails.org/getting_started.html).
 
 
-## Autentykacja z Devise
+## Dodać autentykacja
 
 * [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise).
 * [Customizing Devise](http://asciicasts.com/episodes/210-customizing-devise).
 
-### Korzystamy z własnej poczty
+
+## Przypominanie hasła – korzystamy z poczty
 
 Konfiguracja:
 
@@ -1201,7 +1203,7 @@ Konfiguracja:
       host: localhost:3000
       address: smtp.gmail.com
       port: 587
-      user_name: <login> 
+      user_name: <login>
       password: <password>
       authentication: plain
 
@@ -1217,16 +1219,17 @@ Konfiguracja:
       password: <password>
       authentication: login
 
+**Dlaczego zmienne wpisujemy w osobnym pliku?**
+
 Używamy stałej globalnej:
 
     :::ruby config/initializers/load_mailer_config.rb
     raw_config = File.read("#{Rails.root}/config/mailer_config.yml")
     MAILER_CONFIG = YAML.load(raw_config)[Rails.env].symbolize_keys
 
-
 Konfigurujemy SMTP:
 
-    :::ruby config/initializers/setup_mail.rb 
+    :::ruby config/initializers/setup_mail.rb
     ActionMailer::Base.smtp_settings = {
       :address              => MAILER_CONFIG[:address],
       :port                 => MAILER_CONFIG[:port],
@@ -1259,23 +1262,14 @@ Musimy jeszcze dodać katalog *lib* do ścieżki wyszukiwania:
         config.autoload_paths += %W(#{config.root}/lib)
 
 
-## Engage With Devise: OAuth
-
-[Engage With Devise](http://asciicasts.com/episodes/233-engage-with-devise).
-
-Rejestrujemy sie na *https://www.myopenid.com/*.
-
-Rejestrujemy się na Engage: *http://www.janrain.com/products/engage*.
-
-
 ## Różne
 
 * Co to jest „unobtrusive Javascript”?
   [jQuery UJS dla Rails3](http://github.com/rails/jquery-ujs).
 * Zajaxowana Fortunka: sklonować repozytorium git *hello/rails3-ajax*.
-  Jak to działa? Źródło 
+  Jak to działa? Źródło
   [Creating a 100% ajax CRUD using rails 3 and unobtrusive javascript](http://stjhimy.com/posts/7).
-* Bundler. Gemfile examples 
+* Bundler. Gemfile examples
   [Featuring Bundler, Cucumber, RVM, Postgres, on Ruby-1.8.7](http://gist.github.com/416372)
 * [Rails3 blog w 20 minut] [rails3 blog]
 
