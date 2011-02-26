@@ -2,7 +2,7 @@
 
 # Layouts – czyli układy graficzne
 
-Co oznacza słowo *layout*: 
+Co oznacza słowo *layout*:
 
 * makieta, układ graficzny strony, okładki, książki
 * rozmieszczenie, rozplanowanie elementów na stronie
@@ -10,7 +10,7 @@ Co oznacza słowo *layout*:
 
 *Rails Guides*,
 [Layouts and Rendering in Rails](http://guides.rubyonrails.org/layouts_and_rendering.html) –
-This guide covers the basic layout features of Action Controller and Action View. 
+This guide covers the basic layout features of Action Controller and Action View.
 
 Projekt [web-app-theme](https://github.com/pilu/web-app-theme) (autor Andrea Franz)
 jest drugi w kategorii „Most Watched Overall Javascript project” na githubie.
@@ -18,8 +18,11 @@ jest drugi w kategorii „Most Watched Overall Javascript project” na githubi
 
 ## Layout dla aplikacji
 
-Layout dla aplikacji umieszczamy w pliku
-*app/views/layouts/application.html.erb*.
+Do wygenerowaniu layoutu użyjemy generatora *nifty:layout*:
+
+    rails generate nifty:layout
+
+Layout aplikacji znajdziemy w wygenerowanym pliku *app/views/layouts/application.html.erb*.
 
 Generator *nifty_layout* z gemu *nifty_generators* wygeneruje nam taki
 prosty layout automatycznie. Dodatkowo w pliku
@@ -42,7 +45,8 @@ prosty layout automatycznie. Dodatkowo w pliku
       end
     end
 
-A oto wygenerowany layout *application.html.erb* (po małym liftingu do html5): 
+A oto wygenerowany layout *application.html.erb*
+(po małym liftingu do html5; sprawdzić czy tak jest naprawdę!):
 
     :::html_rails
     <!doctype html>
@@ -132,11 +136,11 @@ Zamiast powielenia i edycji *layouts/application.html.erb* można
 postąpić tak. Tworzymy plik *layouts/about.html.erb* o zawartości:
 
     :::html_rails
-    <% content_for :head do %>  
+    <% content_for :head do %>
       <style>
         #background { background-color: #956E6F; }
       </style>
-    <% end -%> 
+    <% end -%>
     <%= render :file => 'layouts/application' %>
 
 i według tego schematu tworzymy plik *layouts/contact.html.erb*.
@@ -149,14 +153,14 @@ Odpowiedzi udzielił [stJhimy](http://www.stjhimy.com/posts/2).
 Przykładowy plik:
 
     :::xml
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
-      <url> 
-        <loc>http://sinatra.local/rails3/</loc> 
-        <priority>1.0</priority> 
-      </url> 
-      <url> 
-        <loc>http://sinatra.local/rails3/fortunes/1</loc> 
-        <priority>1.0</priority> 
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      <url>
+        <loc>http://sinatra.local/rails3/</loc>
+        <priority>1.0</priority>
+      </url>
+      <url>
+        <loc>http://sinatra.local/rails3/fortunes/1</loc>
+        <priority>1.0</priority>
       </url>
     </urlset>
 
@@ -167,7 +171,7 @@ Taki plik wygenerujemy korzystając z *XMLbuilder*:
     xml.urlset "xmlns" => "http://www.sitemaps.org/schemas/sitemap/0.9" do
 
       xml.url do
-        xml.loc "http://sinatra.local/fortunes" # wstawiamy swój adres 
+        xml.loc "http://sinatra.local/fortunes" # wstawiamy swój adres
         xml.priority 1.0
       end
       # dodajemy wszystkie fortunki (wystarczyłby indeks)

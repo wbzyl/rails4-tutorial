@@ -27,10 +27,11 @@ poprawnie (dwa sposoby):
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
-1. {%= link_to "Zaczynamy", "/zaczynamy" %}
-1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
-1. {%= link_to "Konsola", "/konsola" %}
+1. {%= link_to "Zaczynamy – „Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "Layouts", "/layouty" %}
+1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
+1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
+1. {%= link_to "Konsola aplikacji Rails", "/konsola" %}
 1. {%= link_to "Dwa modele", "/2models" %}
 1. {%= link_to "Mobile apps", "/mobile" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
