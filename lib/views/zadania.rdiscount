@@ -13,36 +13,30 @@
 Na zaliczenie należy oddać następujące projekty:
 
 * Fortunka.<br/>
-  Termin oddania: 26.10.2010.
-* Fortunka + CouchDB albo MongoDB.<br/>
-  Termin oddania: 9.11.2010.
+  Termin oddania: ??.??.2011.
+* Fortunka + MongoDB.<br/>
+  Termin oddania: ??.??.2011.
 * Kontakty.<br/>
-  Termin oddania: 30.11.2010.
+  Termin oddania: ??.??.2011.
 
 Projekty należy umieścić w osobnych repozytoriach git
 na serwerze Sigma.
 Nazwy repozytoriów na poszczególne projekty to:
 
 * **fortunka**
-* **fortunka-dbd**
+* **fortunka-mongo**
 * **kontakty**
 
 Do katalogu głównego aplikacji należy dodać plik
 *.rvmrc* zawierający taki kod:
 
-    rvm use ree
-    rvm --create gemset use asi
-
-albo taki kod:
-
     rvm use 1.9.2
-    rvm --create gemset use asi
 
 
 # Egzamin
 
 Na egzamin należy przygotować i uruchomić serwis www wg własnego
-pomysłu.  Serwis piszemy w zespołach 4–5 programistów.<br/>
+pomysłu. Serwis piszemy w zespołach 4–5 programistów.<br/>
 Prezentacje projektów: styczeń 2011.
 
 
@@ -101,42 +95,32 @@ selektorów.
 Użyć Yslow do oceny strony przygotowanej w 1\.
 
 
-## Google Visual API
-
-Przygotować aplikację korzystającą 
-z [Google Visualization API](http://code.google.com/apis/visualization/documentation/).
-Skorzystać z gemu [google_visular](https://github.com/winston/google_visualr/).
-Sprawdzić czy gem działa z Rails3?
-
-
 ## Fortunka
 
 Dodać paginację do widoku *index*.
-Skorzystać z gemu [will_paginate](http://github.com/mislav/will_paginate/tree/rails3).
+Skorzystać z gemu [kaminari](https://github.com/amatsuda/kaminari).
 Wystylizować linki do kolejnych „stron”.
 Jak to się robi opisał Vitaly Friedman,
 [Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) i Mislav Marohnić,
 [Samples of pagination styling for will_paginate](http://mislav.uniqpath.com/will_paginate/).
 
 Dodać „AJAX rating“ dla komentarzy.
-Skorzystać z jakiejś gotowej wtyczki lub gemu.
+Skorzystać z jakiejś gotowej wtyczki lub gemu
+(wcześniej sprawdzić czy wybrana biblioteka działa z jQuery 1.5.1 + Rails 3.0.4).
 
 Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
 Zamienić wygenerowane formularze na formularze korzystajęce
 z gemu [simple_form](http://github.com/plataformatec/simple_form).
 
 Dodać autentykację do fortunki. Zrobić to tak jak, to
-przedstawił R. Bates w *OmniAuth*
-[Part 1](http://railscasts.com/episodes/235-omniauth-part-1)
-[Part_2](http://railscasts.com/episodes/236-omniauth-part-2).
-Albo skorzystać z [Janrain Engage](http://www.janrain.com/products/engage).
-Jak to zrobić można obejrzeć na screencaście
-R. Batesa [Engage with Devise](http://railscasts.com/episodes/233-engage-with-devise).
+przedstawił R. Bates w screencaście
+[Simple OmniAuth](http://railscasts.com/episodes/241-simple-omniauth).
 
 
-## Fortunka + CouchDB / MongoDB
+## Fortunka MongoDB
 
-Użyć w Fortunce dokumentową bazą danych, np. CouchDB albo MongoDB.
+Użyć w Fortunce dokumentowej bazy danych MongoDB.
+Zacząć od obejrzenia screencastu R. Batesa, [Mongoid](http://railscasts.com/episodes/238-mongoid).
 
 
 <blockquote>
@@ -188,8 +172,10 @@ albo z czegoś podobnego w działaniu.
 </blockquote>
 
 3\. Skompresować *static assets* za pomocą wtyczki
-[Asset Packager] [asset-packager]:
-„JavaScript and CSS Asset Compression for **Production** Rails Apps.”
+[Asset Packager] [asset-packager] –
+„JavaScript and CSS Asset Compression for **Production** Rails Apps”,
+albo, lepiej, z gemu [Jammit](https://github.com/documentcloud/jammit) –
+„Industrial Strength Asset Packaging for Rails”.
 
 Korzystając z rozszerzenia YSlow albo Speed Tracer sprawdzić wydajność
 aplikacji przed i po instalacji tej wtyczki.
@@ -213,7 +199,7 @@ rodzina, znajomi, przypadkowi znajomi, uczelnia, wojsko, pizzeria, biblioteka it
   tagging along dynamic contexts.
 
 6\. Dodać „tags cloud”. Skorzystać z wtyczki jQuery
-  [Tag Cloud](http://rohitsengar.cueblocks.net/jquery-tag-cloud-plugin/)
+  [Tag Cloud](http://rohitsengar.cueblocks.net/jquery-tag-cloud-plugin/),
   albo czegoś podobnego.
 
 7\. Dodać wyszukiwanie: nazwisko lub imię.
