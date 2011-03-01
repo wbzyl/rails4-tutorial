@@ -1,6 +1,6 @@
 #### {% title "Fortunka v0.0" %}
 
-# Zaczynamy – „Fortunka” v0.0
+# „Fortunka” v0.0
 
 <blockquote>
  <p>
@@ -176,7 +176,7 @@ Podstawy REST:
 </blockquote>
 
 
-## Korzystamy z generatora „scaffold”
+## Korzystamy z generatora scaffold
 
 Generujemy rusztowanie dla zasobu (ang. *resource*) *fortune*:
 
@@ -207,3 +207,39 @@ zasobu *User*.
 {%= image_tag "/images/mvc_detailed.png", :alt => "[MVC w Rails]" %}
 
 [Źródło](http://www.railstutorial.org/images/figures/mvc_detailed-full.png)
+
+
+## Korzystamy z generatora nifty:scaffold
+
+W pliku *Gemfile* umieścilismy wcześniej gem *nifty-generators*.
+Po zainstalowaniu tego gemu, polecenie *rails generators*
+pokazuje cztery nowe generatory:
+
+      nifty:authentication
+      nifty:config
+      nifty:layout
+      nifty:scaffold
+
+Użyjemy dwa z nich:
+
+    rails generate nifty:layout
+    rails generate nifty:scaffold ...
+
+ale najpierw wykonamy UNDO, tego co wygenerował *scaffold*:
+
+    rails destroy ...
+
+TODO:
+
+* dopisujemy do Gemfile gem *nifty-generators*
+* różnice w wygenerowanym kodzie
+* dlaczego *nifty:scaffold*
+
+Kontrolery Rails wygenerowane przez:
+
+<ul>
+  <li>{%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %}
+  <li>{%= link_to "nifty:scaffold", "/rails3/nifty-generators/comments_controller.rb" %}
+</ul>
+
+Porównać. Dlaczego będziemy korzystać z nifty:scaffold?

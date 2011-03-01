@@ -1,6 +1,9 @@
-# Zaczynamy od konfiguracji systemu Git
+# Zaczynamy!
 
-Zaczynamy konfigurowanie od przedstawienia się Gitowi:
+Projektami Rails będziemy zarządzać za pomocą systemu kontroli wersji
+Git. Dlatego, jeśli tego
+nie zrobiliśmy wcześniej, powinniśmy go skonfigurować. Zaczynamy od
+podania swoich danych Gitowi:
 
     git config --global user.name "Imię Nazwisko"
     git config --global user.email "twój_login@sigma.ug.edu.pl"
@@ -8,14 +11,11 @@ Zaczynamy konfigurowanie od przedstawienia się Gitowi:
 Następnie definiujemy kilka użytecznych aliasów, na przykład
 [takich](http://sinatra.inf.ug.edu.pl/sp/git).
 
-Gotowe! Zostaje tylko sprawdzić, czy powyższe polecenia wykonaliśmy
+Na koniec sprawdzamy, czy powyższe polecenia wykonaliśmy
 poprawnie (dwa sposoby):
 
     cat ~/.gitconfig
     git config -l
-
-
-# Notatki do wykładów
 
 <blockquote>
   {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
@@ -27,7 +27,10 @@ poprawnie (dwa sposoby):
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
-1. {%= link_to "Zaczynamy – „Fortunka” v0.0", "/zaczynamy" %}
+
+## Rozpiska wykładów
+
+1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "Layouts", "/layouty" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
