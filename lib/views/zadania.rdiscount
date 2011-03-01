@@ -33,6 +33,25 @@ Do katalogu głównego aplikacji należy dodać plik
     rvm use 1.9.2
 
 
+# Sciaga z Githuba
+
+Przedstawiamy sie Gitowi:
+
+    git config --global user.name "Wlodek Bzyl"
+    git config --global user.email matwb@univ.gda.pl
+
+Nastepnie wykonujemy kolejno:
+
+    mkdir sw
+    cd sw
+    git init
+    touch README
+    git add README
+    git commit -m 'first commit'
+    git remote add origin git@github.com:wbzyl/sw.git
+    git push -u origin master
+
+
 # Egzamin
 
 Na egzamin należy przygotować i uruchomić serwis www wg własnego
