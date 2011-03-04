@@ -6,7 +6,7 @@
  <p>
   {%= image_tag "/images/heroku-handles-headache.jpg", :alt => "[Heroku handles headache]" %}
  </p>
- <p class="author">źródło: <a href="http://ui.thoughtbot.com/assets/2009-1-12-skull_xray_with_headache.jpg">Heroku handles headache</a></p>
+ <p class="author">źródło: <a href="http://robots.thoughtbot.com/post/159805997/heroku-wearing-suspenders">Heroku handles headache</a></p>
 </blockquote>
 
 Będziemy potrzebować gemów *heroku* i *taps*. Najpierw sprawdzamy,

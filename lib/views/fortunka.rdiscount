@@ -211,61 +211,16 @@ Szablon też piszemy „od ręki”:
 Zwyczajowo, po zapisaniu rekordu w bazie, na stronie na którą
 zostajemy przekierowani, jest wyświetlany komunikat w stylu:
 *Utworzono nowy rekord Fortune*.
-
 Railsy do wyświetlania takich komunikatów korzystają z **flash messages**
 Szablon do wyświetlania flash messages umieszczamy layoucie.
 
-Przy okazji: co to jest **layout**? Jak to przetłumaczyć na język polski?
+Sprawdzamy, czy te rzeczy działają w Frtunce v0.0.  Kopiujemy je do
+Fortunki v1.0.  Czy można to jakoś zautomatyzować? Tak, przynajmniej
+częściowo, zobacz
 
-Nowy layout utworzymy w pokrętny sposób. Skorzystamy z gotowca
-wygenerowanego przez generator *nifty:layout*.
+    rails new -h
 
-Dopiszmy w pliku *Gemfile*:
-
-    gem 'nifty-generators'
-
-i wykonajmy polecenie
-
-    bundle install
-
-Teraz polecenie:
-
-    rails generate
-
-wypisze coś takiego:
-
-    Nifty:
-      nifty:authentication
-      nifty:config
-      nifty:layout
-      nifty:scaffold
-
-Wykonanie polecenia:
-
-    rails generate nifty:layout
-
-spowoduje wygenerowanie layoutu z flash messages:
-
-    :::html_rails app/views/layouts/application.html.erb
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title><%= content_for?(:title) ? yield(:title) : "Untitled" %></title>
-        <%= stylesheet_link_tag "application" %>
-        <%= javascript_include_tag :defaults %>
-        <%= csrf_meta_tag %>
-        <%= yield(:head) %>
-      </head>
-      <body>
-        <div id="container">
-          <% flash.each do |name, msg| %>
-            <%= content_tag :div, msg, :id => "flash_#{name}" %>
-          <% end %>
-          <%= content_tag :h1, yield(:title) if show_title? %>
-          <%= yield %>
-        </div>
-      </body>
-    </html>
+opcja *template*.
 
 
 ## Responders
@@ -534,21 +489,7 @@ Po wykonaniu polecenia
     rails generate jquery:install
 
 
-## Routing
-
-Zmieniamy routing tak, aby */fortunes* była stroną główną */*:
-
-    :::ruby config/routes.rb
-    # You can have the root of your site routed with "root"
-    # just remember to delete public/index.html.
-    root :to => "fortunes#index"
-
-I usuwamy statyczną stronę „Welcome aboard”:
-
-    rm public/index.html
-
-
-## AJAX: dodajemy wyszukiwanie
+## Dodajemy wyszukiwanie (AJAX)
 
 Co oznacza „unobtrusive Javascript”?
 
