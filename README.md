@@ -57,3 +57,11 @@ splatter, splash, paint, ink, drops, drips, dirty
 
 
 [blueprintcss]: http://www.blueprintcss.org/ "Blueprint: A CSS Framework"
+
+
+## Helpers
+
+Przykład linków do *pretty printing*::
+
+    {%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %}
+    {%= link_to "nifty:scaffold", "/rails3/nifty-generators/comments_controller.rb" %}

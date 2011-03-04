@@ -5,6 +5,9 @@
 Jednym ze sprawdzonych sposobów kontynuacji rozpoczętego projektu
 jest rozpoczęcie go od nowa. I tak zrobimy. Dlaczego?
 
+{%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
+(źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
+
 Tym razem nie skorzystamy z generatora „scaffold”.
 Użyjemy generatora „resource”. Dlaczego?
 

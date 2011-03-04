@@ -2,16 +2,21 @@
 
 # Krok po kroku odkrywamy Heroku
 
-Będziemy potrzebować gemów *heroku* i *taps*. Sprawdzamy, czy jest on
-zainstalowany w systemie:
+<blockquote>
+ <p>
+  {%= image_tag "/images/heroku-handles-headache.jpg", :alt => "[Heroku handles headache]" %}
+ </p>
+ <p class="author">źródło: <a href="http://ui.thoughtbot.com/assets/2009-1-12-skull_xray_with_headache.jpg">Heroku handles headache</a></p>
+</blockquote>
 
-    gem list heroku
+Będziemy potrzebować gemów *heroku* i *taps*. Najpierw sprawdzamy,
+czy są zainstalowane w systemie:
 
-Jeśli nie – to instalujemy go za pomocą polecenia:
+    gem list
 
-    sudo gem install heroku
+Jeśli nie, to dopisujemy je do sekcji *development* w pliku Gemfile.
 
-Następnie zakładamy darmowe konto na *heroku.com*.
+Następnie, kolejno, zakładamy darmowe konto na *heroku.com*.
 
 Generujemy szablon aplikacji Rails3:
 
