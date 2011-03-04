@@ -1,5 +1,15 @@
 # 27.02.2011 – zaczynamy!
 
+<blockquote>
+  {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
+  <p>
+    When you don’t create things, you become defined by your tastes
+    rather than ability. Your tastes only narrow and exclude people.
+    So create.
+  </p>
+  <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
+</blockquote>
+
 Projektami Rails będziemy zarządzać za pomocą systemu kontroli wersji
 Git. Dlatego, jeśli tego
 nie zrobiliśmy wcześniej, powinniśmy go skonfigurować. Zaczynamy od
@@ -16,16 +26,6 @@ poprawnie (dwa sposoby):
 
     cat ~/.gitconfig
     git config -l
-
-<blockquote>
-  {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
-  <p>
-    When you don’t create things, you become defined by your tastes
-    rather than ability. Your tastes only narrow and exclude people.
-    So create.
-  </p>
-  <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
-</blockquote>
 
 
 ## Rozpiska wykładów

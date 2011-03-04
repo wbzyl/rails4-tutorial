@@ -2,14 +2,16 @@
 
 # „Fortunka” v1.0
 
-Jednym ze sprawdzonych sposobów kontynuacji rozpoczętego projektu
-jest rozpoczęcie go od nowa. I tak zrobimy. Dlaczego?
+<blockquote>
+ <p>
+  {%= image_tag "/images/new-project.jpg", :alt => "[nowy projekt]" %}
+ </p>
+ <p class="author"><a href="http://www.eyefetch.com/image.aspx?ID=901780">New project car</a></p>
+</blockquote>
 
-{%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
-(źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
-
-Tym razem nie skorzystamy z generatora „scaffold”.
-Użyjemy generatora „resource”. Dlaczego?
+Jednym ze sprawdzonych sposobów kontynuacji rozpoczętego projektu jest
+rozpoczęcie go od nowa. Tym razem nie skorzystamy z generatora
+„scaffold”. Dlaczego?
 
 Na początek wygenerujemy kod dla zasobu (ang. *resource*) *fortune*:
 
@@ -22,41 +24,31 @@ Teraz jest czas na wykonanie migracji:
     rake db:migrate
 
 W bazie nie ma jeszcze fortunek. Na tym etapie pisania aplikacji, do
-bazy możemy dodać kilka fortunek na dwa sposoby:
+bazy należy dodać kilka fortunek wpisując je w pliku *db/seed.rb*
+i wykonując polecenie:
 
-* dodając je z konsoli
-* wpisując je w pliku *db/seed.rb* i wykonując polecenie `rake seed`
-
-Zróbmy to! Oczywiście, w gotowych aplikacjach rekordy do bazy dodajemy
-korzystając z formularzy.
+    rake seed
 
 Następne rzeczy do zrobienia to:
 
-* w pliku *config/routes.rb* ustawiamy domyślną stronę naszej aplikacji
+* ustawiamy domyślną stronę naszej aplikacji
 * usuwamy plik *public/index.html*
-* uruchamiamy serwer *thin*
-
-Teraz możemy obejrzeć jak działa nasza aplikacja w środowisku
-„development”.
-
-Na koniec, obejrzmy jeszcze raz routing aplikacji:
-
-    rake routes
 
 
 ## Kontroler
 
 Generator utworzył plik *app/controllers/fortunes_controller.rb*.
 zawierający pusty kontroler *FortunesController*.
-*FortunesController* jest podklasą *ApplicationController*.
 
 <blockquote>
- <h2>Rails 3 controllers</h2>
- <ul>
-   <li>{%= link_to "nifty:scaffold", "/rails3/nifty-generators/comments_controller.rb" %}
-   <li>{%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %}
-   <li>{%= link_to "respond_with", "/rails3/respond-with/fortunes_controller.rb" %}
- </ul>
+ <h2>Szablony REST</h2>
+ <p>Ściąga:
+   {%= link_to "index", "/rails3/respond-with/fortunes/index.html.erb" %},
+   {%= link_to "form", "/rails3/respond-with/fortunes/_form.html.erb" %},
+   {%= link_to "new", "/rails3/respond-with/fortunes/new.html.erb" %},
+   {%= link_to "show", "/rails3/respond-with/fortunes/show.html.erb" %},
+   {%= link_to "edit", "/rails3/respond-with/fortunes/edit.html.erb" %}
+ </p>
 </blockquote>
 
 Każdy *resource controller* musi definiować **7 metod** o nazwach:
@@ -66,14 +58,31 @@ Każdy *resource controller* musi definiować **7 metod** o nazwach:
 * *edit*, *update*
 * *destroy*
 
+<blockquote>
+ <h2>Kontrolery w Rails 3</h2>
+ <p>Ściąga:
+   {%= link_to "nifty:scaffold", "/rails3/nifty-generators/comments_controller.rb" %},
+   {%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %},
+   {%= link_to "respond_with", "/rails3/respond-with/fortunes_controller.rb" %}
+ </p>
+</blockquote>
+
 Przykładowe implementacje można podejrzeć klikając linki po prawej.
+My będziemy korzystać z wersji *respond_with*.
+
+Więcej informacji o **respond_with** (oraz **respond_to**):
+
+* [Controllers in Rails 3](http://asciicasts.com/episodes/224-controllers-in-rails-3)
+* [ActionController::Responder](http://github.com/rails/rails/blob/master/actionpack/lib/action_controller/metal/responder.rb)
+* [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/)
+  – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
 
 
-## Akcje i szablony
+## TODO: Akcje i szablony
 
 Zwyczajowo *index* kojarzymy kompletną listę zasobów.
 
-Uruchamiamy serwer www i wchodzimy na stronę z fortunkami:
+Uruchamiamy serwer WWW i wchodzimy na stronę z fortunkami:
 
     http://localhost:3000/fortunes
 
@@ -92,13 +101,6 @@ Oznacza to, że powinniśmy napisać metodę *index*.
         respond_with @fortunes
       end
     end
-
-Więcej info o parze **respond_to** i **respond_with**:
-
-* [Controllers in Rails 3](http://asciicasts.com/episodes/224-controllers-in-rails-3)
-* [ActionController::Responder](http://github.com/rails/rails/blob/master/actionpack/lib/action_controller/metal/responder.rb)
-* [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/)
-  – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
 
 Odświeżamy stronę:
 
@@ -208,6 +210,9 @@ Szablon też piszemy „od ręki”:
 
 ## Poprawki w layoucie
 
+{%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
+(źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
+
 Zwyczajowo, po zapisaniu rekordu w bazie, na stronie na którą
 zostajemy przekierowani, jest wyświetlany komunikat w stylu:
 *Utworzono nowy rekord Fortune*.
@@ -230,31 +235,20 @@ Problem:
 * gdzie wpisać komunikaty flash?
 * co z i18n?
 
-Eleganckie rozwiązanie obu probelmów przedstawił
-[José Valim](http://blog.plataformatec.com.br/tag/respond_with/).
+Eleganckie rozwiązanie obu probelmów przedstawił i zaimplementował
+w gemie *responders* [José Valim](http://blog.plataformatec.com.br/tag/respond_with/).
 
-Zaczynamy od:
-
-    rails destroy controller fortune
-
-Następnie dopisujemy gem do *Gemfile*:
+Dopisujemy gem do pliku *Gemfile*:
 
     gem 'responders'
 
-i wykonujemy:
+instalujemy go i responders:
 
     bundle install
-
-Teraz możemy skorzystać z nowych generatorów:
-
     rails generate responders:install
-    rails generate responders_controller fortune
-
-Oooops! Drugi generator nadpisał utworzone przez nas pliki. Teraz
-czeka nas poprawianie widoków.
 
 
-### Konsola
+## Konsola
 
 Zacznijmy od przyjrzenia się jak działa **ORM** na konsoli:
 
@@ -266,7 +260,8 @@ Zacznijmy od przyjrzenia się jak działa **ORM** na konsoli:
     f = Fortune.find(1)
     f.update_attributes :updated_at => Time.now, :body => 'Hi!'
 
-### Szablon dla new i edit
+
+## Szablon dla new i edit
 
 Szablon dla metody *edit* różni się
 tylko nagłówkiem H1 od szablonu dla *new*.
