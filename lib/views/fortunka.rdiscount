@@ -23,11 +23,11 @@ Teraz jest czas na wykonanie migracji:
 
     rake db:migrate
 
-W bazie nie ma jeszcze fortunek. Na tym etapie pisania aplikacji, do
-bazy należy dodać kilka fortunek wpisując je w pliku *db/seed.rb*
-i wykonując polecenie:
+W bazie nie ma jeszcze fortunek.
+Powinniśmy umiescić w bazie trochę „testowych” fortunek,
+które przygotowaliśmy dla Fortunki v0.0:
 
-    rake seed
+    rake seed
 
 Następne rzeczy do zrobienia to:
 
