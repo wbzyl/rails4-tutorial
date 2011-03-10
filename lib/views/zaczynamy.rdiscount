@@ -461,6 +461,104 @@ powinniśmy zobaczyć wyrenderowaną stronę:
     http://localhost:16000/fortunes
 
 
+# Zapełnianie bazy danymi testowymi
+
+Na tym etapie pisania aplikacji, powinniśmy umieścić w bazie trochę
+fortunek. Łatwiej nam będzie modyfikować **niepuste** widoki.
+
+Przykładowe fortunki możemy sami wpisać w pliku *db/seeds.rb*,
+a następnie zapisać w bazie za pomocą:
+
+    rake db:seed
+
+Ale jeśli wystarczy nam zapełnienie bazy danymi testowymi,
+możemy skorzystać z gemów: *faker* i *populator*.
+Po dopisaniu ich w pliku *Gemfile* w sekcji **development**:
+
+    :::ruby Gemfile
+    group :development do
+      gem 'responders'
+      gem 'nifty-generators'
+      gem 'wirble'
+      gem 'hirb'
+      gem 'faker'
+      gem 'populator'
+    end
+
+i po zainstalowaniu:
+
+    bundle
+
+zaglądamy na te strony:
+
+* [faker](http://faker.rubyforge.org/)
+* [populator]()
+
+szukając przykładów użycia.
+
+Po tej lekturze przećwiczymy coś prostego, na przykład:
+
+    rails g scaffold friend last_name:string first_name:string phone:string motto:text
+    rake db:migrate
+
+Nieco „monkey patching” kodu gemu Faker:
+
+    :::ruby faker_pl.rb
+    module Faker
+      class PhoneNumber
+        SIMPLE_FORMATS  = ['+48 58-###-###-###', '(58) ### ### ###']
+        MOBILE_FORMATS  = ['(+48) ###-###-###', '###-###-###']
+
+        def self.pl_phone_number(kind = :simple)
+          Faker::Base.numerify const_get("#{kind.to_s.upcase}_FORMATS").rand
+        end
+      end
+    end
+
+(zob. też [ten gist](https://gist.github.com/165751)).
+
+Przyszła wreszcie pora na wprawki konsolowe:
+
+    bundle exec irb
+
+gdzie piszemy:
+
+    :::ruby
+    require 'faker'
+    require './faker_pl'
+    Faker::PhoneNumber.pl_phone_number :mobile
+    Faker::Name.first_name
+    Faker::Name.last_name
+
+Jeśli wszystko działa tak jak powinno, to w pliku *db/seeds.rb*
+wpisujemy:
+
+    :::ruby db/seeds.rb
+    require Rails.root.join('db', 'faker_pl')
+
+    Friend.populate(100..200) do |friend|
+      friend.first_name = Faker::Name.first_name
+      friend.last_name = Faker::Name.last_name
+      friend.phone = Faker::PhoneNumber.pl_phone_number :mobile
+      friend.motto = Populator.sentences(1..2)
+    end
+
+i wykonujemy:
+
+    rake db:seed
+
+Teraz z zapełniem Fortunki danymi testowymi nie powinno być problemu.
+Chociaż przydałoby się zmodyfikować ten przykład z dokumentacji
+gemu Populator:
+
+    :::ruby
+    Friend.populate(1000..5000) do |friend|
+      # passing array of values will randomly select one
+      friend.motto = ["akapity", "z kilku", "fajnych książek"]
+    end
+
+
+
 # Poprawiamy wygenerowane szablony
 
 Przechodzimy do katalogu *app/views/fortunes* i edytujemy pliki,
