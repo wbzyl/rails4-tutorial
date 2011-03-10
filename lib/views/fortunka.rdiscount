@@ -9,9 +9,10 @@
  <p class="author"><a href="http://www.eyefetch.com/image.aspx?ID=901780">New project car</a></p>
 </blockquote>
 
-Jednym ze sprawdzonych sposobów kontynuacji rozpoczętego projektu jest
+Jednym ze sprawdzonych sposobów kontynuacji projektu jest
 rozpoczęcie go od nowa. Tym razem nie skorzystamy z generatora
-„scaffold”. Dlaczego?
+„scaffold”. Dlaczego? Ale będziemy korzystać z „gotowców”
+wygenerowanych dla wersji v0.0 Fortunki.
 
 Na początek wygenerujemy kod dla zasobu (ang. *resource*) *fortune*:
 
