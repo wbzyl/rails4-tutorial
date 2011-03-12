@@ -32,9 +32,9 @@ poprawnie (dwa sposoby):
 
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "Layouts", "/layouty" %}
+1. {%= link_to "Konsola aplikacji Rails", "/konsola" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
-1. {%= link_to "Konsola aplikacji Rails", "/konsola" %}
 1. {%= link_to "Dwa modele", "/2models" %}
 1. {%= link_to "Mobile apps", "/mobile" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
