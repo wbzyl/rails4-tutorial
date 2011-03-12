@@ -74,3 +74,122 @@ Dollar wrote the
 plugin to help ease switching between them. No more shell scripts to
 switch symbolic links! (What, you didn't do that? Guess it was just
 me, then.)
+
+
+# Nieco bardziej skomplikowany workflow
+
+Nowa aplikacja „Znajomi”:
+
+    rails new znajomi
+    cd znajomi
+    ... edycja Gemfile – development: thin, nifty-generators, heroku, taps ...
+    bundle install --path=HOME/.gems
+    rails generate nifty:layout
+    rails generate nifty:scaffold connection login:string github:string www:string
+    bundle install  # mocha
+    rake db:migrate
+    rm public/index.html
+    ... edycja config/routes.rb – ustawiamy :root na connections#index ...
+    rails server thin  # albo passenger start
+
+Jeśli wszystko działa, to:
+
+    git init
+    git add .
+    git commit -m "pierwsza wrzutka"
+    cd ..
+    git clone --bare znajomi znajomi.git
+    # cd znajomi.git ; git gc ; cd ..
+    scp -r znajomi.git wbzyl@sigma.ug.edu.pl:public_git/
+    rm -r znajomi znajomi.git  # dla początkujących mv ..gdzieś tam na przechowanie
+    git clone wbzyl@sigma.ug.edu.pl:public_git/znajomi.git
+    cd znajomi
+    ... bundler, migracja ...
+    git checkout -b production
+    git checkout master      # w zasadzie niepotrzebne
+    git checkout -b staging
+    git checkout master
+    git push origin production
+    git push origin staging
+
+Zmieniamy kolor tła na gałęziach:
+
+    git checkout production
+    ... edycja public/stylesheets/application.css – zielony #14b694 ...
+    git add .
+    git commit -m "production: zielony kolor tła"
+    git push
+    git checkout staging
+    ... edycja public/stylesheets/application.css – pomarańczowy #eb540a ...
+    git add .
+    git commit -m "production: pomarańczowy kolor tła"
+    git push
+    git co master
+
+Heroku – production:
+
+    heroku create znajomi
+    Creating znajomi... done
+    http://znajomi.heroku.com/ | git@heroku.com:znajomi.git
+    ? Git remote heroku added
+
+Od razu zmieniamy .git/config:
+
+    [remote "heroku"]
+	url = git@heroku.com:znajomi.git
+	fetch = +refs/heads/*:refs/remotes/heroku/*
+
+na:
+
+    [remote "production"]
+	url = git@heroku.com:znajomi.git
+	fetch = +refs/heads/*:refs/remotes/heroku/*
+
+Heroku – staging:
+
+    heroku create znajomi-staging
+    Creating znajomi... done
+    http://znajomi-staging.heroku.com/ | git@heroku.com:znajomi-staging.git
+    ? Git remote heroku added
+
+Od razu zmieniamy .git/config:
+
+    [remote "heroku"]
+	url = git@heroku.com:znajomi-staging.git
+	fetch = +refs/heads/*:refs/remotes/heroku/*
+
+na:
+
+    [remote "staging"]
+	url = git@heroku.com:znajomi-staging.git
+	fetch = +refs/heads/*:refs/remotes/heroku/*
+
+Wdrażamy gałąż production na *http://znajomi.heroku.com*:
+
+    git push production production:master
+
+Wdrażamy gałąż staging na *http://znajomi-staging.heroku.com*:
+
+    git push staging staging:master
+
+Zobacz też [Deploying with Git](http://devcenter.heroku.com/articles/git).
+
+Migrujemy:
+
+    heroku rake db:migrate --app znajomi
+    heroku rake db:migrate --app znajomi-staging
+
+Sprawdzamy jak to działa na heroku:
+
+    http://znajomi.heroku.com
+    http://znajomi-staging.heroku.com
+
+## Istotna uwaga!
+
+Teraz przygotowujemy odpowiednie zadania dla rake
+(utrwalamy konwencję, którą przyjęliśmy):
+
+    rake heroku:production
+    rake heroku:staging
+
+dla poleceń z push powyżej.
