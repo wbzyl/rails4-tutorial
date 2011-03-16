@@ -150,7 +150,7 @@ Heroku – production:
     http://znajomi.heroku.com/ | git@heroku.com:znajomi.git
     ? Git remote heroku added
 
-Od razu poprawiamy w *.git/config*, to co zostało dopisałane przez to polecenie:
+Od razu poprawiamy w *.git/config*, to co zostało dopisane przez to polecenie:
 
     [remote "heroku"]
 	url = git@heroku.com:znajomi.git
@@ -162,7 +162,7 @@ na:
 	url = git@heroku.com:znajomi.git
 	fetch = +refs/heads/*:refs/remotes/heroku/*
 
-Wdrażamy gałąż production na *http://znajomi.heroku.com*:
+Wdrażamy gałąź production na *http://znajomi.heroku.com*:
 
     git push production production:master
 
@@ -182,7 +182,22 @@ Sprawdzamy jak to działa na heroku:
 Teraz przygotowujemy odpowiednie zadania dla rake
 (utrwalamy konwencję, którą przyjęliśmy):
 
+    rake sigma:push
     rake heroku:production
-    rake heroku:staging
 
-dla poleceń z push powyżej.
+dla poleceń z push powyżej, na przykład dopisując w pliku *Rakefile*:
+
+    :::ruby
+    namespace "sigma" do
+      desc "Push zmiany w repo to Sigma"
+      task "push" do
+        system("git", "push")
+      end
+    end
+
+    namespace "heroku" do
+      desc "Push zmiany na gałęzi production to Heroku: znajomi.heroku.pl"
+      task "production" do
+        system("git", "push", "production", "production:master")
+      end
+    end
