@@ -10,7 +10,19 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
-Projektami Rails będziemy zarządzać za pomocą systemu kontroli wersji
+
+[18.03.2011] Czas na Rails for Zombies!
+[What Is This?](http://railsforzombies.org/):
+„Learning Rails for the first time should be fun, and Rails for
+Zombies allows you to get your feet wet without having to worry about
+configuration. You'll watch five videos, each followed by exercises
+where you'll be programming Rails in your browser.”
+
+Jeśli nie czujesz się pewnie z Ruby,
+to [Try Ruby!](http://tryruby.org/) w przeglądarce!
+
+
+[28.02.2011] Projektami Rails będziemy zarządzać za pomocą systemu kontroli wersji
 Git. Dlatego, jeśli tego
 nie zrobiliśmy wcześniej, powinniśmy go skonfigurować. Zaczynamy od
 podania swoich danych Gitowi:
