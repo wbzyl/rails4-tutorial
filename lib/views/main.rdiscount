@@ -173,16 +173,14 @@ competition in which teams of skilled web application developers get
 one weekend to design, develop, and deploy the best web property that
 they can, using the power of Ruby and Rails.
 
-<script type="text/javascript">
-$(function () {
- deadline = new Date(2009, 10, 27);
- $('#defaultCountdown').countdown({
-   until: deadline,
-   compact: true,
-   layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
-   format: 'dHMS'});
-});
-</script>
+Korzystamy z nierelacyjnych baz danych:
+
+* Jim Neath.
+  [Using Redis with Ruby on Rails](http://jimneath.org/2011/03/24/using-redis-with-ruby-on-rails.html)
+* Ryan Bates.
+  [Mongoid](http://railscasts.com/episodes/238-mongoid),
+  [MongoDB and MongoMapper](http://railscasts.com/episodes/194-mongodb-and-mongomapper)
+
 
 ## EuRuKo 2010
 
@@ -205,3 +203,15 @@ Najświeższe posty:
 
 
 [railsplugins]: http://www.railsplugins.org/ "Is Your Plugin Ready For Rails 3?"
+
+
+<script type="text/javascript">
+$(function () {
+ deadline = new Date(2009, 10, 27);
+ $('#defaultCountdown').countdown({
+   until: deadline,
+   compact: true,
+   layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
+   format: 'dHMS'});
+});
+</script>
