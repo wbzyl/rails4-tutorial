@@ -1,0 +1,19 @@
+<% title "Fortunes" %>
+
+<table>
+  <tr>
+    <th>Author</th>
+    <th>Body</th>
+  </tr>
+  <% for fortune in @fortunes %>
+    <tr>
+      <td><%= fortune.author %></td>
+      <td><%= fortune.body %></td>
+      <td><%= link_to "Show", fortune %></td>
+      <td><%= link_to "Edit", edit_fortune_path(fortune) %></td>
+      <td><%= link_to "Destroy", fortune, :confirm => 'Are you sure?', :method => :delete %></td>
+    </tr>
+  <% end %>
+</table>
+
+<p><%= link_to "New Fortune", new_fortune_path %></p>

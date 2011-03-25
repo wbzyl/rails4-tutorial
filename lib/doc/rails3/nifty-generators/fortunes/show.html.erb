@@ -1,0 +1,16 @@
+<% title "Fortune" %>
+
+<p>
+  <strong>Author:</strong>
+  <%= @fortune.author %>
+</p>
+<p>
+  <strong>Body:</strong>
+  <%= @fortune.body %>
+</p>
+
+<p>
+  <%= link_to "Edit", edit_fortune_path(@fortune) %> |
+  <%= link_to "Destroy", @fortune, :confirm => 'Are you sure?', :method => :delete %> |
+  <%= link_to "View All", fortunes_path %>
+</p>

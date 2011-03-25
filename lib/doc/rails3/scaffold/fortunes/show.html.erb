@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Author:</b>
+  <%= @fortune.author %>
+</p>
+
+<p>
+  <b>Body:</b>
+  <%= @fortune.body %>
+</p>
+
+
+<%= link_to 'Edit', edit_fortune_path(@fortune) %> |
+<%= link_to 'Back', fortunes_path %>
