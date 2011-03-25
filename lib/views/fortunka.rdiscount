@@ -14,62 +14,196 @@ rozpoczęcie go od nowa. Tym razem nie skorzystamy z generatora
 „scaffold”. Dlaczego? Ale będziemy korzystać z „gotowców”
 wygenerowanych dla wersji v0.0 Fortunki.
 
-Na początek wygenerujemy kod dla zasobu (ang. *resource*) *fortune*:
 
-    rails generate resource fortune body:text
+### Przechodzimy na jQuery (2011.03)
 
-Co wygenerował generator?
+Domyślnym frameworkiem javascriptowych aplikacji Rails 3.1 będzie jQuery.
+Dlatego, po wygenerowaniu szablonu nowej aplikacji, od razu przechodzimy na jQuery.
+Oszczędzimy sobie problemów na przyszłość.
 
-Teraz jest czas na wykonanie migracji:
-
-    rake db:migrate
-
-W bazie nie ma jeszcze fortunek.
-Powinniśmy umiescić w bazie trochę „testowych” fortunek,
-które przygotowaliśmy dla Fortunki v0.0:
-
-    rake seed
-
-Następne rzeczy do zrobienia to:
-
-* ustawiamy domyślną stronę naszej aplikacji
-* usuwamy plik *public/index.html*
+Formularze będziemy tworzyć korzystając z metod pomocniczych
+z gemu *simple_form*. Dlaczego? Najlepiej wyjaśnili to autorzy:
+„SimpleForm aims to be as flexible as possible while helping you with
+powerful components to create your forms. The basic goal of simple
+form is to not touch your way of defining the layout, letting you find
+the better design for your eyes.”
 
 
-## Kontroler
+### Robótki ręczne…
 
-Generator utworzył plik *app/controllers/fortunes_controller.rb*.
-zawierający pusty kontroler *FortunesController*.
+Zanim zaczniemy pisać fortunkę, przyjrzymy się bliżej
+rusztowaniom generowanym przez generatory:
 
-<blockquote>
- <h2>Szablony REST</h2>
- <p>Ściąga:
-   {%= link_to "index", "/rails3/respond-with/fortunes/index.html.erb" %},
-   {%= link_to "form", "/rails3/respond-with/fortunes/_form.html.erb" %},
-   {%= link_to "new", "/rails3/respond-with/fortunes/new.html.erb" %},
-   {%= link_to "show", "/rails3/respond-with/fortunes/show.html.erb" %},
-   {%= link_to "edit", "/rails3/respond-with/fortunes/edit.html.erb" %}
- </p>
-</blockquote>
+* scaffold
+* nifty:scaffold
+* responders
 
-Każdy *resource controller* musi definiować **7 metod** o nazwach:
+Dlatego wygenerowany plik *Gemfile* wymieniamy na taki:
+
+    :::ruby Gemfile
+    source 'http://rubygems.org'
+
+    gem 'rails', '3.0.5'
+    gem 'sqlite3'
+    gem 'responders'
+    gem 'simple_form'
+
+    group :development do
+      gem 'nifty-generators'
+      gem 'jquery-rails'
+
+      # już było w Fortunce v0.0
+      gem 'faker'
+      gem 'populator'
+    end
+
+Zawiera on wszystkie gemy z których będziemy korzystać.
+
+No, prawie… Moje aplikacje wdrażam też na Heroku,
+korzystam z gemów *hirb* i *wirble* oraz serwera *passenger*.
+Dlatego mój plik *Gemfile* zawiera więcej gemów:
+
+    :::ruby Gemfile
+    source 'http://rubygems.org'
+
+    gem 'rails', '3.0.5'
+    gem 'sqlite3'
+    gem 'responders'
+    gem 'simple_form'
+
+    group :development do
+      gem 'heroku'
+      gem 'nifty-generators'
+      gem 'hirb'
+      gem 'wirble'
+      gem 'file-tail'
+      gem 'daemon_controller'
+
+      # więcej info na http://github.com/indirect/jquery-rails
+      gem 'jquery-rails'
+
+      # już było w Fortunce v0.0
+      gem 'faker'
+      gem 'populator'
+    end
+
+Przy okazji usuwamy plik *public/index.html*:
+
+    rm public/index.html
+
+Po tych zmianach przerzucam repozytoria
+(zamieniajac je wcześniej na *bare repos*)
+na Sigmę, skąd ja (właściciel)
+mogę je sklonować korzystając z protokołu ssh:
+
+    git clone wbzyl@sigma.ug.edu.pl:public_git/scaffold.git
+
+a każdy – korzystając z protokołu git:
+
+    git clone git://sigma.ug.edu.pl/~wbzyl/scaffold.git
+
+Po sklonowaniu szablonu instalujemy gemy w katalogu *.bundle/gems*
+aplikacji:
+
+    bundle install --path=.bundle/gems  # Sigma: $HOME/.gems
+
+oraz przechodzę z Prototype na jQuery:
+
+    rails generate jquery:install
+
+
+## Scaffold v. Nifty Scaffold
+
+Dla przypomnienia, *resource controller* musi definiować
+następujące metody (razem siedem sztuk):
 
 * *index*, *show*
 * *new*, *create*
 * *edit*, *update*
 * *destroy*
 
+
 <blockquote>
- <h2>Kontrolery w Rails 3</h2>
- <p>Ściąga:
-   {%= link_to "nifty:scaffold", "/rails3/nifty-generators/comments_controller.rb" %},
-   {%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %},
-   {%= link_to "respond_with", "/rails3/respond-with/fortunes_controller.rb" %}
+ <h2>Scaffold</h2>
+ <p>Kontroller:
+   {%= link_to "fortunes_controller.rb", "/rails3/scaffold/controllers/fortunes_controller.rb" %}.
+ </p>
+ <p>Widoki:
+   {%= link_to "index", "/rails3/scaffold/fortunes/index.html.erb" %},
+   {%= link_to "edit", "/rails3/scaffold/fortunes/edit.html.erb" %},
+   {%= link_to "show", "/rails3/scaffold/fortunes/show.html.erb" %},
+   {%= link_to "new", "/rails3/scaffold/fortunes/new.html.erb" %},
+   {%= link_to "form", "/rails3/scaffold/fortunes/_form.html.erb" %}.
+ </p>
+ <p>CSS:
+   {%= link_to "scaffold.css", "/rails3/scaffold/scaffold.css" %}.
  </p>
 </blockquote>
 
-Przykładowe implementacje można podejrzeć klikając linki po prawej.
-My będziemy korzystać z wersji *respond_with*.
+Zaczynamy przyjrzenia się generatorowi scaffold (bez testów i migracji):
+
+    rails g scaffold fortune author:string body:text
+      invoke  active_record
+      create    app/models/fortune.rb
+       route  resources :fortunes
+      invoke  responders_controller
+      create    app/controllers/fortunes_controller.rb
+      invoke    erb
+      create      app/views/fortunes
+      create      app/views/fortunes/index.html.erb
+      create      app/views/fortunes/edit.html.erb
+      create      app/views/fortunes/show.html.erb
+      create      app/views/fortunes/new.html.erb
+      create      app/views/fortunes/_form.html.erb
+      invoke    helper
+      create      app/helpers/fortunes_helper.rb
+      invoke  stylesheets
+      create    public/stylesheets/scaffold.css
+
+<blockquote>
+ <h2>Nifty Scaffold</h2>
+ <p>Kontroller:
+   {%= link_to "fortunes_controller.rb", "/rails3/nifty-generators/controllers/fortunes_controller.rb" %}.
+ </p>
+ <p>Widoki:
+   {%= link_to "index", "/rails3/nifty-generators/fortunes/index.html.erb" %},
+   {%= link_to "edit", "/rails3/nifty-generators/fortunes/edit.html.erb" %},
+   {%= link_to "show", "/rails3/nifty-generators/fortunes/show.html.erb" %},
+   {%= link_to "new", "/rails3/nifty-generators/fortunes/new.html.erb" %},
+   {%= link_to "form", "/rails3/nifty-generators/fortunes/_form.html.erb" %}.
+ </p>
+ <p>Metody pomocnicze:
+   {%= link_to "layout_helper.rb", "/rails3/nifty-generators/layout_helper.rb" %},
+   {%= link_to "error_messages_helper.rb", "/rails3/nifty-generators/error_messages_helper.rb" %}.
+ </p>
+ <p>CSS:
+   {%= link_to "application.css", "/rails3/nifty-generators/application.css" %}.
+ </p>
+</blockquote>
+
+Teraz dla porównania generator nifty:scaffold (bez testów i migracji):
+
+    rails g nifty:layout
+      create  public/stylesheets/application.css
+      create  app/helpers/layout_helper.rb
+      create  app/helpers/error_messages_helper.rb
+
+    rails g nifty:scaffold fortune author:string body:text
+     gemfile  mocha
+      create  app/models/fortune.rb
+      create  app/controllers/fortunes_controller.rb
+      create  app/helpers/fortunes_helper.rb
+      create  app/views/fortunes/index.html.erb
+      create  app/views/fortunes/show.html.erb
+      create  app/views/fortunes/new.html.erb
+      create  app/views/fortunes/edit.html.erb
+      create  app/views/fortunes/_form.html.erb
+       route  resources :fortunes
+
+    bundle install  # mocha
+
+
+### Responders
 
 Więcej informacji o **respond_with** (oraz **respond_to**):
 
@@ -79,134 +213,66 @@ Więcej informacji o **respond_with** (oraz **respond_to**):
   – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
 
 
-## TODO: Akcje i szablony
+## Wrzucamy do bazy dane testowe
 
-Zwyczajowo *index* kojarzymy kompletną listę zasobów.
+W bazie nie ma jeszcze fortunek. W bazie zapiszemy cytaty
+z pliku *platitudes.u8* (z pakietu *fortune-mod-1.99.1*, Fedora).
 
-Uruchamiamy serwer WWW i wchodzimy na stronę z fortunkami:
+Na początek wykonamy migrację:
 
-    http://localhost:3000/fortunes
+    rake db:migrate
 
-Co powinno się wydarzyć?
+Następnie wpiszemy do pliku *seeds.rb* kod:
 
-    Unknown action
-    The action 'index' could not be found for FortunesController
-
-Oznacza to, że powinniśmy napisać metodę *index*.
-
-    :::ruby app/controllers/fortunes_controller.rb
-    class FortunesController < ApplicationController
-      respond_to :html
-      def index
-        @fortunes = Fortune.order("created_at desc")
-        respond_with @fortunes
+    :::ruby db/seeds.rb
+    platitudes = File.readlines(Rails.root.join('db', 'platitudes.u8'), "\n%\n")
+    platitudes.map do |p|
+      reg = /\t?(.+)\n\t\t--\s*(.*)\n%\n/m
+      m = p.match(reg)
+      if m
+        Fortune.create :body => m[1], :author => m[2]
+      else
+        Fortune.create :body => p[0..-4], :author => Faker::Name.name
       end
     end
 
-Odświeżamy stronę:
+Teraz po wykonaniu:
+
+    rake seed
+
+„platitudes” zostaną zapisane w bazie (razem 500 sztuk).
+
+Przy okazji zmieniamy routing, tak aby uri
+
+    http://localhost:3000
+
+przekierowywał na
 
     http://localhost:3000/fortunes
 
-Teraz serwer zgłasza wyjątek i odpowiada (*response*) komunikatem
-o błędzie:
-
-    Action Controller: Exception caught
-
-    Template is missing
-    Missing template fortunes/index with
-      {:locale=>[:en, :en], :handlers=>[:builder, :rjs, :erb, :rhtml, :rxml],
-      :formats=>[:html]} in view paths ".../app/views"
-
-Nie pozostaje nam nic innego jak utworzyć szablon **powiązany**
-z metodą *index*:
-
-    :::html_rails app/views/fortunes/index.html.erb
-    <h1>Fortunki</h1>
-    <% @fortunes.each do |fortune| %>
-    <p><%= fortune.body %></p>
-    <% end %>
-
-Jeszcze raz wchodzimy na stronę *index*. Teraz powinniśmy zobaczyć
-widok wygenerowany z powyższego szablonu.
-
-Powyżej mamy przykład szablonu *ERB* (ang. *embeded ruby*).
-
-Co może oznaczać zwrot: **convention over configuration**?
-Co to jest **ORM** – mapowanie obiektów na relacje
-i relacji na obiekty?
+**Na razie zezwalamy tylko na renderowanie *html*.**
+Później to będziemy zmieniać.
 
 
-### Tworzymy szablon „new” i metodę „new”
+## Wchodzimy na stronę *index*
 
-Jest obojętne czy najpierw utworzymy szablon, a później
-metodę metodę powiązaną z tym szablonem czy odwrotnie.
+…i od razu widzimy, że coś (to mało powiedziane) jest nie tak!
+Wszystkie cytaty na jednej stronie? Przydałaby się jakaś
+paginacja.
 
-Teraz, dla przykładu zaczniemy od szablonu *new.html.erb*.
-Szablon powinien zawierać formularz umożliwiający
-wpisanie nowej fortunki.
+Gem *kaminari* to nam ułatwi. Dopisujemy go do *Gemfile*
+i wykonujemy polecenie *bundle*.
 
-    :::html_rails app/views/fortunes/new.html.erb
-    <h1>Nowa fortunka</h1>
-    <%= form_for(Fortune.new) do |form| %>
-    <p>
-      <%= form.text_area :body %><br/>
-      <%= form.submit %>
-    <p>
-    <% end %>
+Wchodzimy na stronę
+[Pagination with Kaminari](http://asciicasts.com/episodes/254-pagination-with-kaminari)
+aby przeczytać prostą instrukcję obsługi tego gemu.
 
-Powyżej korzystamy z **metody pomocniczej** (ang. *helper method*)
-o nazwie *form_for*.
+TODO. Dopisać nieco szczegółów, na przykład: i18n
 
-Ponieważ korzystamy z routingu REST, więc aby utworzyć
-nową fortunkę wchodzimy na następujący url:
+Zobacz też:
 
-    http://localhost:3000/fortunes/new
-
-Widzimy stronę z formularzem. Kilkamy przycisk *Create Fortune*.
-Daje to następujący błąd:
-
-    Unknown action
-    The action 'create' could not be found for FortunesController
-
-**Oczywiście** oznacza to, że powinniśmy zaimplementować metodę
-*create*:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def create
-      @fortune = Fortune.create(params[:fortune])
-      respond_with @fortune # odpowiadamy polimorficznie
-    end
-
-Dlaczego wykonujemy *redirect_to*? Co oznacza tutaj *polimorficznie*?
-
-Na razie zakładamy, że użytkownik nie oszukuje i wpisuje w formularz
-to co jest proszony, a nie na przykład złośliwy kod.
-Walidacją tego co wpisuje użytkownik zajmiemy się później.
-
-Po kliknięciu przycisku „Create Fortune”, nowa fortunka
-jest zapisywana w tabeli, a my zostajemy przekierowani na stronę
-*show*, której nie ma:
-
-    Unknown action
-    The action 'show' could not be found for FortunesController
-
-Nie napisaliśmy też metody *show*. Robimy to teraz.
-
-Czytamy to co zostało wypisane na konsoli i piszemy metodę *show*:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def show
-      @product = Product.find(params[:id])
-      respond_with @product # odpowiadamy polimorficznie
-    end
-
-Szablon też piszemy „od ręki”:
-
-    :::html_rails app/views/fortunes/show.html.erb
-    <p>
-      <b>Body:</b>
-      <%= @fortune.body %>
-    </p>
+* [Kaminari](https://github.com/amatsuda/kaminari)
+* [Kaminari themes](https://github.com/amatsuda/kaminari_themes)
 
 
 ## Poprawki w layoucie
@@ -214,27 +280,38 @@ Szablon też piszemy „od ręki”:
 {%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
 (źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
 
-Zwyczajowo, po zapisaniu rekordu w bazie, na stronie na którą
-zostajemy przekierowani, jest wyświetlany komunikat w stylu:
-*Utworzono nowy rekord Fortune*.
-Railsy do wyświetlania takich komunikatów korzystają z **flash messages**
-Szablon do wyświetlania flash messages umieszczamy layoucie.
+Coś trudniejszego? [HTML5Boilerplate](http://html5boilerplate.com/) & [Initializr](http://initializr.com/).
+Przykład jak to powinno wyglądać w Rails –
+[Rails-3-HTML5-Boilerplate](https://github.com/Xac/Rails-3-HTML5-Boilerplate/blob/master/app/views/layouts/application.html.erb).
 
-Sprawdzamy, czy te rzeczy działają w Frtunce v0.0.  Kopiujemy je do
-Fortunki v1.0.  Czy można to jakoś zautomatyzować? Tak, przynajmniej
-częściowo, zobacz
+Google Analytics?
 
-    rails new -h
-
-opcja *template*.
+Albo same proste rzeczy: większe literki, ustawianie szerokości strony, koloru tła itd.
 
 
-## Responders
+## TODO: walidacja
+
+Edge guides [Active Record Validations and Callbacks](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html)
+
+Do czego jest nam potrzebna walidacja?
+
+Nietypowe sytuacje: *validates_with*, *validates_each*, walidacja warunkowa.
+
+
+## TODO: formularze
+
+Dlaczego [simple_form](https://github.com/plataformatec/simple_form)?
+
+
+## TODO: Responders
+
+Zaczynamy od zorientowania się w temacie:
+[Responders](https://github.com/plataformatec/responders)
 
 Problem:
 
-* gdzie wpisać komunikaty flash?
-* co z i18n?
+* Gdzie należy wpisywać komunikaty flash?
+* Co z i18n?
 
 Eleganckie rozwiązanie obu probelmów przedstawił i zaimplementował
 w gemie *responders* [José Valim](http://blog.plataformatec.com.br/tag/respond_with/).
