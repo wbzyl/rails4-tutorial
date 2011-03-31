@@ -502,18 +502,117 @@ Baza powinna zawsze zawierać prawidłowe dane.
 Zanim zapiszemy coś w bazie powinniśmy sprawdzić
 czy dane które chcemy umieścić w bazie są poprawne.
 Gdzie to sprawdzenie najlepiej wykonać?
-W przeglądarce? W aplikacji Rails? Czy zostawić to
-serwerowi bazy?
+W przeglądarce? W aplikacji Rails?
+Lepiej w kontrolerze, czy modelu? Dlaczego?
+Może lepiej walidację zostawić to serwerowi bazy?
+
+Dopisujemy walidację do modelu *Fortune*:
+
+    :::ruby app/models/fortune.rb
+    class Fortune < ActiveRecord::Base
+      # atrybut: body
+      validates :body, :presence => true
+      # validates_presence_of :body
+      validates_length_of :body, :in => 2..128
+      # validates_length_of :body, :minimum => 2, :maximum => 128
+      validates_uniqueness_of :body, :case_sensitive => false
+
+      # atrybut: author
+      validates :author, :in => 4..64, :allow_blank => true
+    end
+
+Sprawdzamy na konsoli Rails jak to działa:
+
+    f = Fortune.new
+    f.valid?
+     => false
+    f.errors
+     => {:body=>["can't be blank"]}
+    f.errors[:body].any?
+     => true
+    f.save
+     => false
+    f.author = "X"
+    f.valid?
+    f.errors
+    f.author = ""
+    f.valid?
+    f.errors
+
+Pozostałe rzeczy: *validates_with*, *validates_each*, walidacja warunkowa,
+walidacja dla powiązanego modelu *validates_associated*.
+
+**Ważne:** Powinniśmy sprawdzić jak działa walidacja w przeglądarce.
+Sama konsola to za mało!
 
 
-
-
-TODO: Nietypowe sytuacje: *validates_with*, *validates_each*, walidacja warunkowa.
-
-
-## TODO: formularze
+## Formularze z *simple_form*
 
 Dlaczego [simple_form](https://github.com/plataformatec/simple_form)?
+Odpowiedź autorów tego gemu: Forms made easy!
+To co opisano w samouczku [Rails Form helpers](http://edgeguides.rubyonrails.org/form_helpers.html)
+nie jest „easy”.
+
+Zaczynamy od:
+
+    rails generate simple_form:install
+      create  config/initializers/simple_form.rb
+      create  config/locales/simple_form.en.yml
+      create  lib/templates/erb/scaffold/_form.html.erb
+
+Inicjalizator:
+
+    config.wrapper_tag = :p
+
+Formularz:
+
+    :::html_rails
+    <%= simple_form_for @fortune do |f| %>
+        <%= f.input :author, :input_html => {:size => 30}, :required => false %>
+        <%= f.input :body, :input_html => {:rows => 4, :cols => 30} %>
+        <%= f.button :submit %>
+    <% end %>
+
+Tłumaczenie:
+
+    :::yaml
+    en:
+      simple_form:
+        "yes": 'Yes'
+        "no": 'No'
+        required:
+          text: 'required'
+          mark: '*'
+          # You can uncomment the line below if you need to overwrite the whole required html.
+          # When using html, text and mark won't be used.
+          # html: '<abbr title="required">*</abbr>'
+        error_notification:
+          default_message: "Some errors were found, please take a look:"
+        # Labels and hints examples
+        # labels:
+        #   password: 'Password'
+        #   user:
+        #     new:
+        #       email: 'E-mail para efetuar o sign in.'
+        #     edit:
+        #       email: 'E-mail.'
+        # hints:
+        #   username: 'User name to sign in.'
+        #   password: 'No special characters, please.'
+
+        labels:
+          fortune:
+            author: 'who'
+            body: 'what'
+        hints:
+          fortune:
+            author: 'author of fortune or blank'
+            body: 'no special chars, please!'
+        placeholders:
+          fortune:
+            author: 'author'
+            password: 'fortune'
+
 
 
 ## TODO: Responders
