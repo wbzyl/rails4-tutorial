@@ -256,23 +256,139 @@ Później to będziemy zmieniać.
 
 ## Wchodzimy na stronę *index*
 
-…i od razu widzimy, że coś (to mało powiedziane) jest nie tak!
+…i od razu widzimy, że coś jest nie tak!
 Wszystkie cytaty na jednej stronie? Przydałaby się jakaś
-paginacja.
+paginacja. W tym celu skorzystamy z gemu *kaminari*.
 
-Gem *kaminari* to nam ułatwi. Dopisujemy go do *Gemfile*
+Instalacja *kaminari* jest typowa. Dopisujemy gem do pliku *Gemfile*
 i wykonujemy polecenie *bundle*.
 
-Wchodzimy na stronę
-[Pagination with Kaminari](http://asciicasts.com/episodes/254-pagination-with-kaminari)
-aby przeczytać prostą instrukcję obsługi tego gemu.
+Następnie, przeglądamy tutorial i dokumentację gemu:
 
-TODO. Dopisać nieco szczegółów, na przykład: i18n
-
-Zobacz też:
-
+* [Pagination with Kaminari](http://asciicasts.com/episodes/254-pagination-with-kaminari)
 * [Kaminari](https://github.com/amatsuda/kaminari)
-* [Kaminari themes](https://github.com/amatsuda/kaminari_themes)
+
+### Podstawowa instalacja
+
+1\. W kontrolerze *FortunesController* w metodzie *index* zmieniamy
+wywołanie *Fortune.all* na:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    class FortunesController < ApplicationController
+      def index
+        @fortunes = Fortune.order(:author).page(params[:page]).per(8)
+        respond_with(@fortunes)
+      end
+
+2\. W widoku *index* tego kontrolera dopisujemy wywołanie metody
+pomocniczej *paginate*, np. u dołu strony:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <%= paginate @fortunes, :window => 4, :outer_window => 1 %>
+
+I już możemy sprawdzić jak działa paginacja. Paginacja jest
+renderowana w elemencie **nav**.  Poprawiamy nieco jego wygląd:
+
+    :::css public/stylesheets/applications.css
+    nav.pagination {
+      display: block;
+      margin: 2em 0;
+    }
+    nav.pagination a, nav.pagination .page.current {
+      padding: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav.pagination .page.current {
+      color: red;
+    }
+
+Musimy jeszcze pozbyć się wielokropków po prawej `…`.
+Zrobimy to za chwilę.
+
+Przy okazji zmieniamy wygląd strony.
+Zwiększamy rozmiar fontu, dodajemy ramkę, marginesy,…:
+
+    :::css public/stylesheets/applications.css
+    html {
+      margin-top: 22px;
+      background-color: #FCEC0A; /* żółty */
+    }
+    /* 1.375 * 16px = 22px */
+    body { font:16px/1.375 sans-serif; *font-size:small; }
+    /* rbates screencasts style */
+    body {
+      width: 800px;
+      margin: 0 auto;
+      padding: 0 1em;
+      border: 1px solid black;
+    }
+
+
+### I18n paginacji
+
+Zaczniemy od zmiany wyświetlanych tekstów.
+
+W pliku *application.rb* odkomentowujemy i zmieniamy wiersz:
+
+    :::ruby config/application.rb
+    config.i18n.default_locale = :en
+
+a w pliku *en.yml* dopisujemy:
+
+    :::yaml config/locales/en.yml
+    en:
+      views:
+        pagination:
+          previous: "&#x21d0; Previous"
+          next: "Next &#x21d2;"
+          truncate: ""
+(*U+21d0* to `⇐`, a *U+21d2* – `⇒`.)
+
+Domyślnie *truncate* jest tłumaczone na wielokropek `…`.  Kasujemy go.
+
+Wkrótce zajmiemy się i18n Fortunki. Ale już teraz dodamy
+tłumaczenia *previous*, *next* i *truncate*.
+W nowym pliku *pl.yml* wklejamy:
+
+    :::yaml config/locales/pl.yml
+    pl:
+      views:
+        pagination:
+          previous: "&#x21d0;"
+          next: "&#x21d2;"
+          truncate: ""
+
+*Uwaga:* Ponieważ nie każdy font zawiera strzałki `⇐` i `⇒`,
+bezpieczniej byłoby użyć cudzysłowów `«` i `»`.
+
+**Uwaga:** Kaminari jest zaprogramowane jako tzw. *Rails Engine*.
+Engine zawiera widoki, które możemy sami modyfikować, zmieniając
+wygląd paginacji. Albo generując paginację na wzór Google:
+
+    rails g kaminari:views google
+
+Ale Google to Google, dlatego:
+
+    rails destroy kaminari:views google
+
+
+## Engines are back in Rails… 3.1
+
+Engine to miniaturowa aplikacja, gem albo wtyczka.
+Zazwyczaj za pomocą engine dodajemy dodatkową funkcjonalność
+do całej aplikacji Rails. Na przykład
+autentykację (Devise), paginację (Kaminari).
+
+Engines dla Rails wymyślił [James Adams](https://github.com/lazyatom/engines).
+Z engines był jeden problem. Nie było gwarancji, że nowa wersja Rails
+będzie będzie działać ze starymi engines. Wersja Rails 3.1 ma to zmienić.
+
+Nieco Railsowej archeologii:
+
+* [Guide: Things You Shouldn't Be Doing In Rails](http://glu.ttono.us/articles/2006/08/30/guide-things-you-shouldnt-be-doing-in-rails) –
+ artykuł z 2005 roku
+* [Odpowiedź J. Adamsa](http://article.gmane.org/gmane.comp.lang.ruby.rails/29166)
 
 
 ## Poprawki w layoucie
@@ -280,13 +396,96 @@ Zobacz też:
 {%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
 (źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
 
-Coś trudniejszego? [HTML5Boilerplate](http://html5boilerplate.com/) & [Initializr](http://initializr.com/).
-Przykład jak to powinno wyglądać w Rails –
-[Rails-3-HTML5-Boilerplate](https://github.com/Xac/Rails-3-HTML5-Boilerplate/blob/master/app/views/layouts/application.html.erb).
+Do aplikacji dodamy layout [HTML5Boilerplate](http://html5boilerplate.com/).
+Na początek wygenerujemy sobie własną wersję.
+Wchodzimy na stronę [Initializr](http://initializr.com/) i wyklikujemy
+sobie następującą wersję:
 
-Google Analytics?
+* *html & css*: No content plese!
+* *javascript*: I want jQuery minified!
+* *compatibility*: Just html5shiv
+* *server configuration*: No, thanks
+* *analytics*: Nope
 
-Albo same proste rzeczy: większe literki, ustawianie szerokości strony, koloru tła itd.
+Ściągamy wyklikane archiwum. Po rozpakowaniu:
+
+    unzip jverrecchia-initializr-1.1-nocontent-shiv.zip
+      inflating: index.html
+      inflating: css/style.css
+      inflating: js/script.js
+      inflating: js/libs/jquery-1.5.1.min.js
+      inflating: js/libs/dd_belatedpng.js
+      inflating: favicon.ico
+      inflating: apple-touch-icon.png
+      inflating: TODO.txt
+      inflating: apple-touch-icon-precomposed.png
+      inflating: apple-touch-icon-57x57-precomposed.png
+      inflating: apple-touch-icon-72x72-precomposed.png
+      inflating: apple-touch-icon-114x114-precomposed.png
+
+kopiujemy pliki do odpowiednich katalogów aplikacji Rails:
+
+    RAILS_ROOT=...   # ustawiamy na katalog aplikacji
+    cp index.html    $RAILS_ROOT/app/views/layouts/application.html.erb
+    cp TODO.txt      $RAILS_ROOT/public/
+    cp css/style.css $RAILS_ROOT/public/stylesheets/
+    cp -a js/*       $RAILS_ROOT/public/javascripts/
+    rm               $RAILS_ROOT/public/javascripts/jquery.js
+    rm               $RAILS_ROOT/public/javascripts/jquery.min.js
+    rm               $RAILS_ROOT/public/javascripts/script.js
+    cp favicon.ico apple-touch-icon-*  $RAILS_ROOT/public/
+
+Przy okazji kopiujemy plik *layout_helper.rb* wygenrowany przez *nifty:scaffold*
+(zawiera kilka użytecznych metod pomocniczych):
+
+    cp .../layout_helpers.rb    $RAILS_ROOT/app/helpers/
+
+Edytujemy plik *application.html.erb* (uwaga na końce DOS-owe wierszy):
+
+    :::html_rails app/views/layouts/application.html.erb
+    <!doctype html>
+    <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]--><!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]--><!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]--><!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]--><!--[if (gt IE 9)|!(IE)]><!--> <html lang="pl" class="no-js"> <!--<![endif]--><head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+        <title>Fortunka<%= content_for?(:title) ? " | " + yield(:title) : " na codzień" %></title>
+        <meta name="description" content="fortunki">
+        <meta name="author" content="Włodek Bzyl">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="shortcut icon" href="/favicon.ico">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+        <%= stylesheet_link_tag "style", "scaffold", "application" %>
+
+        <!--[if lt IE 9]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+            <![endif]--></head>
+        <%= csrf_meta_tag %>
+      <body>
+        <%= content_tag :h1, yield(:title) if show_title? %>
+        <%= yield %>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+        <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery-1.5.1.min.js"%3E%3C/script%3E'))</script>
+
+        <%= javascript_include_tag "libs/dd_belatedpng", "rails", "application" %>
+
+        <!--[if lt IE 7 ]>
+            <script src="js/libs/dd_belatedpng.js"></script>
+            <script> DD_belatedPNG.fix('img, .png_bg');</script>
+            <![endif]--></body>
+
+        <%- # change the UA-XXXXX-X to be your site’s ID -%>
+        <%- if Rails.env.production? -%>
+        <script>
+        <!-- przyda się przy wdrażaniu aplikacji -->
+        </script>
+        <%- end -%>
+    </html>
+
+Google Analytics zajmiemy się przy wdrażaniu aplikacji na Heroku.
 
 
 ## TODO: walidacja
