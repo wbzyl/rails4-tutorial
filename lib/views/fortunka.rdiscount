@@ -165,6 +165,7 @@ Zaczynamy przyjrzenia się generatorowi scaffold (bez testów i migracji):
  <p>Kontroller:
    {%= link_to "fortunes_controller.rb", "/rails3/nifty-generators/controllers/fortunes_controller.rb" %}.
  </p>
+ <p>
  <p>Widoki:
    {%= link_to "index", "/rails3/nifty-generators/fortunes/index.html.erb" %},
    {%= link_to "edit", "/rails3/nifty-generators/fortunes/edit.html.erb" %},
@@ -172,8 +173,11 @@ Zaczynamy przyjrzenia się generatorowi scaffold (bez testów i migracji):
    {%= link_to "new", "/rails3/nifty-generators/fortunes/new.html.erb" %},
    {%= link_to "form", "/rails3/nifty-generators/fortunes/_form.html.erb" %}.
  </p>
- <p>Metody pomocnicze:
+ <p>Nifty layout:
    {%= link_to "layout_helper.rb", "/rails3/nifty-generators/layout_helper.rb" %},
+   {%= link_to "application.html.erb", "/rails3/nifty-generators/application.html.erb" %}.
+ </p>
+ <p>Metody pomocnicze:
    {%= link_to "error_messages_helper.rb", "/rails3/nifty-generators/error_messages_helper.rb" %}.
  </p>
  <p>CSS:
