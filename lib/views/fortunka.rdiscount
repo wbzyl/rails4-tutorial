@@ -560,20 +560,18 @@ Zaczynamy od:
       create  config/locales/simple_form.en.yml
       create  lib/templates/erb/scaffold/_form.html.erb
 
-Inicjalizator:
+Dostępne Opcje konfigurujemy w pliku *simple_form.rb*. Poniżej
+jest kilka opcji:
 
-    config.wrapper_tag = :p
+    :::ruby config/initializers/simple_form.rb
+    # Default tag used on errors.
+    # config.error_tag = :span
+    # You can wrap all inputs in a pre-defined tag.
+    # config.wrapper_tag = :div
+    # When false, do not use translations for labels, hints or placeholders.
+    # config.translate = true
 
-Formularz:
-
-    :::html_rails
-    <%= simple_form_for @fortune do |f| %>
-        <%= f.input :author, :input_html => {:size => 30}, :required => false %>
-        <%= f.input :body, :input_html => {:rows => 4, :cols => 30} %>
-        <%= f.button :submit %>
-    <% end %>
-
-Tłumaczenie:
+Wszystkie komunikaty generowane przez gem są w pliku *simple_form.en.yml*:
 
     :::yaml
     en:
@@ -613,9 +611,65 @@ Tłumaczenie:
             author: 'author'
             password: 'fortune'
 
+Po przejrzeniu pliku README, formularz dla fortunki wpisujemy tak:
+
+    :::html_rails
+    <%= simple_form_for @fortune do |f| %>
+        <%= f.input :author, :input_html => {:size => 40}, :required => false %>
+        <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
+        <%= f.button :submit %>
+    <% end %>
+
+Pierwsza próba wystylizowania formularza:
+
+    :::html
+    <form accept-charset="UTF-8" action="/fortunes" class="simple_form fortune" id="new_fortune" method="post">
+      <div class="input string optional">
+        <label class="string optional" for="fortune_author"> who</label>
+        <input class="string optional" id="fortune_author" maxlength="255" name="fortune[author]" placeholder="author" size="30" type="text" />
+        <span class="hint">author of fortune or blank</span>
+      </div>
+      <div class="input text required">
+        <label class="text required" for="fortune_body">
+          <abbr title="required">*</abbr> what</label>
+        <textarea class="text required" cols="30" id="fortune_body" name="fortune[body]" required="required" rows="4"></textarea>
+        <span class="hint">no special chars, please!</span>
+      </div>
+      <input class="button" id="fortune_submit" name="commit" type="submit" value="Create Fortune" />
+    </form>
+
+Zaczynamy od ustawienia takiego samego fontu dla elementów *input[type=text]* oraz *textarea*:
+
+    :::css public/stylesheets/applications.css
+    input[type="text"], textarea {
+      font: inherit;
+    }
+
+Inaczej, elementy te przyd takiej samej liczbie kolumn, bądą miały
+różną szerokość.
+
+    :::css public/stylesheets/applications.css
+    input, textarea {
+      font: inherit;
+    }
 
 
-## TODO: Responders
+
+
+
+<blockquote>
+  <p>
+    [Kiedy Babbage nie był w stanie dojrzeć ciemnych
+    linii Fraunhofera]
+    Często nie widzimy czegoś dlatego, że
+    <b>nie wiemy jak to zobaczyć</b>, a nie na skutek
+    jakichś braków w organie widzenia…
+    Nauczę cię jak je dostrzec.
+  </p>
+  <p class="author">Herschel do Babbage’a</p>
+</blockquote>
+
+## Responders
 
 Zaczynamy od zorientowania się w temacie:
 [Responders](https://github.com/plataformatec/responders)
