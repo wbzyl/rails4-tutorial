@@ -548,20 +548,22 @@ Sama konsola to za mało!
 
 ## Formularze z *simple_form*
 
-Dlaczego [simple_form](https://github.com/plataformatec/simple_form)?
-Odpowiedź autorów tego gemu: Forms made easy!
-To co opisano w samouczku [Rails Form helpers](http://edgeguides.rubyonrails.org/form_helpers.html)
-nie jest „easy”.
+Jak pisać formularze w aplikacjach Rails opisano w samouczku
+[Rails Form helpers](http://edgeguides.rubyonrails.org/form_helpers.html).
+Po lekturze tego samouczka jedna sprawa jest jasna: formularze nie
+są „easy”.
+Za to autorzy [simple_form](https://github.com/plataformatec/simple_form)
+obiecują, że z ich gemem „forms are easy!”.
 
-Zaczynamy od:
+Sprawdźmy to!
 
     rails generate simple_form:install
       create  config/initializers/simple_form.rb
       create  config/locales/simple_form.en.yml
       create  lib/templates/erb/scaffold/_form.html.erb
 
-Dostępne Opcje konfigurujemy w pliku *simple_form.rb*. Poniżej
-jest kilka opcji:
+Dostępne opcje konfigurujemy w pliku *simple_form.rb*, dla przykładu
+możemy zmienić generowane znaczniki HTML:
 
     :::ruby config/initializers/simple_form.rb
     # Default tag used on errors.
@@ -571,7 +573,9 @@ jest kilka opcji:
     # When false, do not use translations for labels, hints or placeholders.
     # config.translate = true
 
-Wszystkie komunikaty generowane przez gem są w pliku *simple_form.en.yml*:
+Łatwo będzie można wymienić wypisywane komunikaty.
+Wszystkie są pobierane z pliku *simple_form.en.yml*.
+Wystarczy je zmienić.
 
     :::yaml
     en:
@@ -597,43 +601,41 @@ Wszystkie komunikaty generowane przez gem są w pliku *simple_form.en.yml*:
         # hints:
         #   username: 'User name to sign in.'
         #   password: 'No special characters, please.'
-
         labels:
           fortune:
-            author: 'who'
-            body: 'what'
+            author: 'author'
+            body: 'said'
         hints:
           fortune:
-            author: 'author of fortune or blank'
-            body: 'no special chars, please!'
+            author: '(optional)'
+            body: '(maximum 128 characters)'
         placeholders:
           fortune:
-            author: 'author'
-            password: 'fortune'
+            author: 'author or blank'
+            body: 'no special chars, please'
 
-Po przejrzeniu pliku README, formularz dla fortunki wpisujemy tak:
+Po przejrzeniu pliku *README*, formularz dla fortunki wpisujemy tak:
 
     :::html_rails
     <%= simple_form_for @fortune do |f| %>
-        <%= f.input :author, :input_html => {:size => 40}, :required => false %>
-        <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
-        <%= f.button :submit %>
+      <%= f.input :author, :input_html => {:size => 40}, :required => false %>
+      <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
+      <%= f.button :submit %>
     <% end %>
 
-Pierwsza próba wystylizowania formularza:
-
+Kod ten generuje taki HTML (usunąłem znacznik *div* z elementami *hidden*):
     :::html
     <form accept-charset="UTF-8" action="/fortunes" class="simple_form fortune" id="new_fortune" method="post">
       <div class="input string optional">
-        <label class="string optional" for="fortune_author"> who</label>
-        <input class="string optional" id="fortune_author" maxlength="255" name="fortune[author]" placeholder="author" size="30" type="text" />
-        <span class="hint">author of fortune or blank</span>
+        <label class="string optional" for="fortune_author"> author</label>
+        <input class="string optional" id="fortune_author" maxlength="255" name="fortune[author]" placeholder="author or blank" size="40" type="text" />
+        <span class="hint">(optional)</span>
       </div>
       <div class="input text required">
-        <label class="text required" for="fortune_body">
-          <abbr title="required">*</abbr> what</label>
-        <textarea class="text required" cols="30" id="fortune_body" name="fortune[body]" required="required" rows="4"></textarea>
-        <span class="hint">no special chars, please!</span>
+        <label class="text required" for="fortune_body"><abbr title="required">*</abbr> said</label>
+        <textarea class="text required" cols="40" id="fortune_body" name="fortune[body]" placeholder="no special chars, please" required="required" rows="4">
+        </textarea>
+        <span class="hint">(maximum 128 characters)</span>
       </div>
       <input class="button" id="fortune_submit" name="commit" type="submit" value="Create Fortune" />
     </form>
@@ -645,44 +647,51 @@ Zaczynamy od ustawienia takiego samego fontu dla elementów *input[type=text]* o
       font: inherit;
     }
 
-Inaczej, elementy te przyd takiej samej liczbie kolumn, bądą miały
-różną szerokość.
+Inaczej, elementy te przy takiej samej liczbie kolumn, bądą miały różną szerokość.
+(Albo można ustawić *width* dla elementów *input* oraz *textarea*.)
+
+Włączamy pływanie:
 
     :::css public/stylesheets/applications.css
-    input, textarea {
-      font: inherit;
+    div.input, input, textarea, label {
+      float: left;
+    }
+    div.input {
+      width: 100%;
     }
 
-
-
+I już! Zostaje tylko wyrównanie w pionie oraz dodanie marginesów.
 
 
 <blockquote>
+  {%= image_tag "/images/fraunhofer-lines.jpg", :alt => "[Fraunhofer lines]" %}
   <p>
-    [Kiedy Babbage nie był w stanie dojrzeć ciemnych
+    [Herschel do Babbage’a, kiedy ten nie był w stanie dojrzeć ciemnych
     linii Fraunhofera]
     Często nie widzimy czegoś dlatego, że
     <b>nie wiemy jak to zobaczyć</b>, a nie na skutek
     jakichś braków w organie widzenia…
     Nauczę cię jak je dostrzec.
   </p>
-  <p class="author">Herschel do Babbage’a</p>
 </blockquote>
+
 
 ## Responders
 
-Zaczynamy od zorientowania się w temacie:
+*Responder* to wg Google hiszpańskie słowo na: odpowiadać/odezwać/odczytać.
+Zaczynamy od zorientowania się w temacie, tutaj:
 [Responders](https://github.com/plataformatec/responders)
+i tutaj: [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/),
+gdzie dowiadujemy się, że mamy do dyspozycji trzy prekonfigurowane respondery:
 
-Problem:
+* FlashResponder (i18n dla komunikatów flash)
+* HttpCacheResponder (dodaje do żądania nagłówek Last-Modified)
+* CollectionResponder (po uaktualnieniu lub zapisaniu rekordu w bazie jesteśmu przekierowywani na index)
 
-* Gdzie należy wpisywać komunikaty flash?
-* Co z i18n?
+co więcej, możemy pisać swoje responders oraz używać ich w zestawach.
 
-Eleganckie rozwiązanie obu probelmów przedstawił i zaimplementował
-w gemie *responders* [José Valim](http://blog.plataformatec.com.br/tag/respond_with/).
 
-Dopisujemy gem do pliku *Gemfile*:
+**TODO:** Dopisujemy gem do pliku *Gemfile*:
 
     gem 'responders'
 
