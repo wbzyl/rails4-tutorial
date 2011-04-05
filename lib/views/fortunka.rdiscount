@@ -678,206 +678,196 @@ I już! Zostaje tylko wyrównanie w pionie oraz dodanie marginesów.
 
 ## Responders
 
-*Responder* to wg Google hiszpańskie słowo na: odpowiadać/odezwać/odczytać.
-Zaczynamy od zorientowania się w temacie, tutaj:
-[Responders](https://github.com/plataformatec/responders)
-i tutaj: [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/),
+Google podpowiada, że *responder* to hiszpańskie słowo na odpowiadać / odezwać / odczytać.
+Zapoznawanie się z tą biblioteką zaczynamy od lektury
+[README](https://github.com/plataformatec/responders),
 gdzie dowiadujemy się, że mamy do dyspozycji trzy prekonfigurowane respondery:
 
-* FlashResponder (i18n dla komunikatów flash)
-* HttpCacheResponder (dodaje do żądania nagłówek Last-Modified)
-* CollectionResponder (po uaktualnieniu lub zapisaniu rekordu w bazie jesteśmu przekierowywani na index)
+* *FlashResponder* (i18n dla komunikatów flash)
+* *HttpCacheResponder* (dodaje do żądania nagłówek Last-Modified)
+* *CollectionResponder* (po uaktualnieniu lub zapisaniu rekordu w bazie jesteśmu przekierowywani na index)
 
-co więcej, możemy pisać swoje responders oraz używać ich w zestawach.
+Co więcej, możemy pisać swoje responders oraz używać ich w zestawach.
+Czego nie będziemy robić. Ale za to zainstalujemy powyższe responders
+i skonfigurujemy Fortunkę tak aby z nich korzystała:
 
-Dopisujemy gem do pliku *Gemfile*:
-
-    gem 'responders'
-
-instalujemy go i responders:
-
-    bundle install
     rails generate responders:install
+      create  lib/application_responder.rb
+     prepend  app/controllers/application_controller.rb
+      insert  app/controllers/application_controller.rb
+      create  config/locales/responders.en.yml
 
-I18N: czyścimy kontroler z flash i sprawdzamy jak to działa.
+Generator ten tworzy plik locales:
 
-
-
-## Konsola
-
-Zacznijmy od przyjrzenia się jak działa **ORM** na konsoli:
-
-    :::ruby
-    Fortune.find_by_id 1
-    Fortune.find 1
-    Fortune.find 1, 4
-    Fortune.find [1, 4]
-    f = Fortune.find(1)
-    f.update_attributes :updated_at => Time.now, :body => 'Hi!'
-
-
-## Szablon dla new i edit
-
-Szablon dla metody *edit* różni się
-tylko nagłówkiem H1 od szablonu dla *new*.
-
-    :::html_rails app/views/fortunes/edit.html.erb
-    <%= title "Edycja fortunki" %>
-    <%= form_for @fortune do |f| %>
-    <p>
-      <%= f.text_area :body %><br>
-      <%= f.submit %>
-    <p>
-    <% end %>
-
-Uwaga: metoda pomocnicza *title* jest zdefiniowana w pliku
-*app/helpers/layout_helper.rb* wygenerowanym przez generator
-nifty:layout.
-
-Pytanie: jak można wyjaśnić, że napis na przycisku *submit* jest *New
-Fortune* albo *Update Fortune*? Co decyduje o tym jaki napis jest na
-przycisku?
-
-Odpowiedź: Napisy, np. na przycisku submit, można samemu zdefiniować.
-Tłumaczenia wpisujemy w jednym pliku albo w kilku
-plikach. Pliki umieszczamy w katalogu *config/locales*.
-
-Tak wygląda plik z polskimi tłumaczeniami dla komunikatów
-wypisywanych przez *Responders*:
-
-    :::yaml config/locales/responders.pl.yml
-    pl:
+    :::yaml config/locales/responders.en.yml
+    en:
       flash:
         actions:
           create:
-            notice: '%{resource_name} was successfully utworzono.'
+            notice: '%{resource_name} was successfully created.'
           update:
-            notice: '%{resource_name} was successfully uaktualniono.'
+            notice: '%{resource_name} was successfully updated.'
           destroy:
-            notice: '%{resource_name} was successfully usunięto.'
-            alert: '%{resource_name} could not be usunąć.'
+            notice: '%{resource_name} was successfully destroyed.'
+            alert: '%{resource_name} could not be destroyed.'
 
-A tak to wygląda dla przycisku *Submit*:
+modyfikuje plik *application_controller.rb*:
 
-    :::yaml config/locales/models.pl.yml
-    pl:
-      helpers:
-        submit:
-          create: "Utwórz %{model}"
-          update: "Uaktualnij %{model}"
-
-
-### Szablony częściowe
-
-Generator rozwiązał problem powtórzonego fragmentu kodu
-w naszych szablonach *new* i *edit*:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def new
-      @fortune = Fortune.new
+    :::ruby app/controllers/application_controller.rb
+    require "application_responder"
+    class ApplicationController < ActionController::Base
+      self.responder = ApplicationResponder
+      respond_to :html, :json
+      protect_from_forgery
     end
 
-Teraz, jeśli w szablonie dla *new* podmienimy *Fortune.new* na
-*@fortune*, to kod formularza będzie taki sam w obu szablonach.
+tworzy plik *application_responder.rb*
 
-Co to jest refaktoryzacja?
+    :::ruby lib/application_responder.rb
+    class ApplicationResponder < ActionController::Responder
+      include Responders::FlashResponder
+      include Responders::HttpCacheResponder
 
-Ciąg dalszy refaktoryzacji: usuwamy kod formularza z szablonów
-i przenosimy go do szablonu *_form.html.erb*:
+      # Uncomment this responder if you want your resources to redirect to the collection
+      # path (index action) instead of the resource path for POST/PUT/DELETE requests.
+      # include Responders::CollectionResponder
+    end
 
-    :::html_rails app/views/fortunes/_form.html.erb
-    <%= form_for @fortune do |f| %>
-    <p>
-      <%= f.text_area :body, :rows => 4 %><br>
-      <%= f.submit %>
-    <p>
-    <% end %>
+Jak widać, generator zostawił nam do konfiguracji tylko locales.
 
-Zamiast usuniętego kodu wpisujemy w szablonach:
+Zaglądamy do pliku z kontrolerem:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def create
+      @fortune = Fortune.new(params[:fortune])
+      flash[:notice] = 'Fortune was successfully created.' if @fortune.save
+      respond_with(@fortune)
+    end
+    def update
+      @fortune = Fortune.find(params[:id])
+      flash[:notice] = 'Fortune was successfully updated.' if @fortune.update_attributes(params[:fortune])
+      respond_with(@fortune)
+    end
+
+Jak widać możemy usunąć zbędne już wiadomości flash:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def create
+      @fortune = Fortune.new(params[:fortune])
+      @fortune.save
+      respond_with(@fortune)
+    end
+    def update
+      @fortune = Fortune.find(params[:id])
+      @fortune.update_attributes(params[:fortune])
+      respond_with(@fortune)
+    end
+
+Dopiero teraz możemy powiedzieć, że naprawdę **osuszyliśmy**
+kod kontrolera.
+
+Dodajemy nowe, krótsze, komunikaty dla Fortunki:
+
+    :::yaml config/locales/responders.en.yml
+    flash:
+      fortunes:
+        create:
+          notice: '%{resource_name} was added.'
+        update:
+          notice: '%{resource_name} was changed.'
+        destroy:
+          notice: '%{resource_name} was removed.'
+
+Dopisujemy do pliku z layoutem aplikacji element *div*
+na wiadomości flash:
 
     :::html_rails
+    <% flash.each do |name, msg| %>
+      <%= content_tag :div, msg, :id => "#{name}" %>
+    <% end %>
+
+(Pamiętamy, aby usunąć wiadomość flash z widoku *show.html.erb*.)
+Dopiero teraz sprawdzamy jak to działa!
+No tak, nie wygląda to ładnie! Na razie, trochę
+takiego CSS:
+
+    :::css
+    #notice, #alert {
+      padding: 5px 8px;
+      margin: 10px 0;
+    }
+    #notice {
+      background-color: #CFC;
+      border: solid 1px #6C6;
+    }
+    #alert {
+      background-color: #FCC;
+      border: solid 1px #C66;
+    }
+
+Teraz flash powinien wyglądać tak jak to było w Rails 2.
+
+
+## Łączymy luźne końce – widoki new, edit, index
+
+Cały czas widoki nie są prawidłowe, na przykład
+przycisk *submit* nachodzi na linki.
+Trzeba będzie to kiedyś poprawić.
+
+Na razie poprawimy tytuły. W taki oto sposób:
+
+    :::html_rails app/views/fortunes/new.html.erb
+    <%= title "New fortune" %>
     <%= render 'form' %>
+    <p class="clear"><%= link_to 'Back', fortunes_path %></p>
 
-Szablon *_form.html.erb* nazywamy szablonem częściowym (ang. *partial template*).
+Uwaga: metoda pomocnicza *title* jest zdefiniowana w pliku
+*layout_helper.rb* wygenerowanym przez generator nifty:layout.
+*_form.html.erb* to tzw. *szablon częściowym* (ang. *partial template*).
 
-Co to jest zasada DRY – Don’t repeat yourself.
+W kodzie stosujemy się zawsze do zasady DRY, co oznacza „Don’t Repeat Yourself”.
 Dlaczego „osuszanie” kodu jest ważne?
 
-
-## Linkujemy widoki
-
-W wygenerowanych szablonach generator wstawił odsyłacze.
-Na przykład w widoku *index*:
+**TODO** Refaktoryzacja! Przy okazji zrobimy refaktoryzację kodu widoku *index.html.erb*:
+Przejdziemy z tabelki na inne znaczniki!
 
     :::html_rails app/views/fortunes/index.html.erb
-    <% @fortunes.each do |fortune| %>
-    <p>
-     <%= fortune.body %>
-     <%= link_to "Edit", edit_fortune_path(fortune) %>
-    </p>
-    <% end %>
+    <div id="fortunes">
+      <%= render @fortunes %>
+    </div>
     <p><%= link_to "New Fortune", new_fortune_path %></p>
 
-Wejdźmy na stronę:
+Po co wkładamy fortunki do pojemnika *div*. Przyda się wkrótce!
 
-    htttp://localhost:3000/fortunes
+W szablonie częściowym *_fortune.html.erb* nie potrzebujemy pętli
+(dlaczego?):
 
-i sprawdźmy czy linki działają. Klikamy w jakikolwiek link 'Edit'.
-Działa?
-
-Przy okazji, zwróćmy uwagę, że metody *update* i *create* nie mają
-powiązanych widoków.
-
-
-### Usuwanie rekordów z tabel
-
-W aktualnej wersji można utworzyć „pustą” fortunkę. Jak? Klikamy link
-'New Fortune', następnie przycisk 'New Fortune'.
-Oczywiście nie ma sensu umieszczanie pustych fortunek w bazie.
-
-Na następnym wykładzie zaimplementujemy mechanizm zabezpieczający
-przed zapisywaniem pustych fortunek w tabeli *fortunes* (walidacja).
-
-Teraz zajmiemy się usuwaniem pustych fortunek z bazy.
-
-    :::html_rails app/views/fortunes/index.html.erb
-    <% @fortunes.each do |fortune| %>
+    :::html_rails app/views/fortunes/_fortune.html.erb
     <p>
      <%= fortune.body %>
-     <%= link_to "Edit", edit_fortune_path(fortune) %>
-     <%= link_to "Delete", fortune_path(fortune), :confirm = "Are you sure?", :method => :delete %>
+     <%= link_to "Show", fortune_path(fortune) %> |
+     <%= link_to "Edit", edit_fortune_path(fortune) %> |
+     <%= link_to "Delete", fortune_path(fortune), :confirm => "Are you sure?", :method => :delete %>
     </p>
-    <% end %>
-    <%= link_to "New Fortune", new_fortune_path %>
+
+**TODO** Dlaczego refaktoryzacje są ważne?
 
 
-### Pozostała tylko implementacja *show*
+Przy okazji zmienimmy napisy na przyciskach *submit*
+oraz zlokalizujemy napis „Are you sure?”:
 
-Został tylko do omówienia widok *show* i powiązana z nim metoda
-kontrolera.
+    :::yaml config/locales/en.yml
+    helpers:
+      submit:
+        create: "Create %{model}"
+        update: "Change %{model}"
+      data:
+        sure: "What are you going to do! Are you sure?"
 
-    :::html_rails app/views/fortunes/show.html.erb
-    <h1>Fortunka #<%= @fortune.id %></h1>
-    <p>
-      <%= @fortune.body %>
-    </p>
-    <p><%= link_to "All Fortunes", fortunes_path %></p>
-
-Kontroler:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def show
-      @fortune = Fortune.find(params[:id])
-      respond_with @fortune
-    end
-
-W widoku *index* dopisujemy link:
+Musimy jeszcze poprawić to w widoku:
 
     :::html_rails app/views/fortunes/index.html.erb
-    <%= fortune.body %>
-    <%= link_to "Show", fortune_path(fortune) %>
-
-**Inne propozycje olinkowania zasobów?**
+    <td><%= link_to 'Destroy', fortune, :confirm => t('helpers.data.sure'), :method => :delete %></td>
 
 
 ## Atom
@@ -899,87 +889,30 @@ Widok:
       end
     end
 
-W layout dopisujemy w znaczniku *HEAD*:
+W layout dopisujemy w znaczniku *head*:
 
     :::html_rails app/views/layouts/application.html.erb
     <%= auto_discovery_link_tag(:atom, fortunes_path(:atom)) %>
 
 
-## Przechodzimy z Prototype na jQuery
 
-Kopiujemy do katalogu *public/javascripts* plik *rails.js* z:
+# Dodajemy wyszukiwanie Fortunek
 
-    http://github.com/rails/jquery-ujs
-
-zmienając jego nazwę na *jquery.rails.js*.
-
-Zmieniamy w layoucie wiersz z *javascript_include_tag* na:
-
-    :::html_rails app/views/layouts/application.html.erb
-    <%= javascript_include_tag
-      "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
-      "jquery.rails.js" %>
-
-i usuwamy z katalogu *public/javascripts* następujące pliki:
-*controls.js*, *dragdrop.js*, *effects.js*, *prototype.js* i *rails.js*.
-
-Zamiast zręcznie ręcznie zmieniać źródła możemy skorzystać z generatora
-który zrobi to za nas.
-
-Dopisujemy do *Gemfile*:
-
-    :::ruby Gemfile
-    group :development do
-      # automate using jQuery: http://github.com/indirect/jquery-rails
-      gem 'jquery-rails'
-    end
-
-Po wykonaniu polecenia
-
-    rails generate jquery:install
-
-
-## Dodajemy wyszukiwanie (AJAX)
+Co to oznacza? Po :body
 
 Co oznacza „unobtrusive Javascript”?
 
 Do szablonu *index.html.erb* dodamy formularz do wyszukiwania
-fortunek. Wyszukane fortunki umieścimy w elemencie *DIV*.
+fortunek. Wyszukane fortunki umieścimy w elemencie *div*.
 Dlaczego potrzebujemy pojemnika na fortunki?
 
-Przy okazji zrobimy refaktoryzację kodu:
-
     :::html_rails app/views/fortunes/index.html.erb
-    <% title "Wszystkie fortunki" %>
     <%= form_tag fortunes_path, :method => :get, :remote => true do %>
       <p>
         <%= text_field_tag :search, params[:search] %>
         <%= submit_tag "Search", :name => nil %>
       </p>
     <% end %>
-    <div id="fortunes">
-      <%= render @fortunes %>
-    </div>
-    <p><%= link_to "New Fortune", new_fortune_path %></p>
-
-W szablonie częściowym *_fortune.html.erb* nie potrzebujemy pętli
-(dlaczego?):
-
-    :::html_rails app/views/fortunes/_fortune.html.erb
-    <p>
-     <%= fortune.body %>
-     <%= link_to "Show", fortune_path(fortune) %> |
-     <%= link_to "Edit", edit_fortune_path(fortune) %> |
-     <%= link_to "Delete", fortune_path(fortune), :confirm => "Are you sure?", :method => :delete %>
-    </p>
-
-Oto fragment źródła strony wygenerowanej z powyższego szablonu:
-
-    :::html_rails
-    <form action="/fortunes" data-remote="true" method="get">
-
-Do czego służą atrybuty *data-\** ?
-Czy elementy z takimi atrybutami się walidują?
 
 Wchodzimy na stronę:
 
