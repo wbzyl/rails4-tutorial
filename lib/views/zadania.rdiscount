@@ -157,6 +157,17 @@ Użyć w Fortunce dokumentowej bazy danych MongoDB.
 Zacząć od obejrzenia screencastu R. Batesa, [Mongoid](http://railscasts.com/episodes/238-mongoid).
 
 
+## Faye
+
+„Faye is a subscription/publishing server which makes it easy to do
+push notifications within a Rails app.”
+
+* Uruchomić aplikację przedstawioną na screencaście R. Batesa,
+  [Messaging with Faye](http://railscasts.com/episodes/260-messaging-with-faye)
+* dodać nieco prywatności do aplikacji, np. korzystając z [private_pub](https://github.com/ryanb/private_pub) –
+  handle pub/sub messaging through private channels in Rails.
+
+
 <blockquote>
  <p>
   {%= image_tag "/images/wesole_kontakty.jpg", :alt => "[wesołe kontakty]" %}

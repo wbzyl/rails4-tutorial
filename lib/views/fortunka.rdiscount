@@ -690,8 +690,7 @@ gdzie dowiadujemy się, że mamy do dyspozycji trzy prekonfigurowane respondery:
 
 co więcej, możemy pisać swoje responders oraz używać ich w zestawach.
 
-
-**TODO:** Dopisujemy gem do pliku *Gemfile*:
+Dopisujemy gem do pliku *Gemfile*:
 
     gem 'responders'
 
