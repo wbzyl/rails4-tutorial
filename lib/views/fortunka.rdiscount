@@ -700,6 +700,9 @@ instalujemy go i responders:
     bundle install
     rails generate responders:install
 
+I18N: czyścimy kontroler z flash i sprawdzamy jak to działa.
+
+
 
 ## Konsola
 

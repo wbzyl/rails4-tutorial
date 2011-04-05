@@ -33,14 +33,25 @@ Do katalogu głównego aplikacji należy dodać plik
     rvm use 1.9.2
 
 
-# Sciaga z Githuba
+<blockquote>
+{%= image_tag "/images/ralph-waldo-emerson.jpg", :alt => "[Ralph Waldo Emerson]" %}
+<p>
+  Jeśli ktoś potrafi napisać lepszą książkę, wygłosić lepsze kazanie,
+  albo sporządzić lepszą pułapkę na myszy niż jego sąsiad, to choćby
+  zbudował swój dom w lesie, świat wydepcze ścieżkę do jego drzwi.
+</p>
+<p class="author">— Ralph Waldo Emerson (1803–1882)</p>
+</blockquote>
 
-Przedstawiamy sie Gitowi:
+# Ściąga z Githuba
+
+Podajemy swoje dane Gitowi:
 
     git config --global user.name "Wlodek Bzyl"
     git config --global user.email matwb@univ.gda.pl
 
-Nastepnie wykonujemy kolejno:
+A tak zakładamy nowe repozytorium, które nastepnie
+umieszczamy na Githubie:
 
     mkdir sw
     cd sw
@@ -50,6 +61,10 @@ Nastepnie wykonujemy kolejno:
     git commit -m 'first commit'
     git remote add origin git@github.com:wbzyl/sw.git
     git push -u origin master
+
+Oczywiście wcześniej musimy mieć tam konto,
+oraz klucz publiczny z komputera z którego wykonujemy
+„push” też tam musi być.
 
 
 # Egzamin
