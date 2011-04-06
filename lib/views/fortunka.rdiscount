@@ -288,7 +288,7 @@ wywołanie *Fortune.all* na:
 pomocniczej *paginate*, np. u dołu strony:
 
     :::html_rails app/views/fortunes/index.html.erb
-    <%= paginate @fortunes, :window => 4, :outer_window => 1 %>
+    <%= paginate @fortunes %>
 
 I już możemy sprawdzić jak działa paginacja. Paginacja jest
 renderowana w elemencie **nav**.  Poprawiamy nieco jego wygląd:
@@ -717,7 +717,7 @@ modyfikuje plik *application_controller.rb*:
     require "application_responder"
     class ApplicationController < ActionController::Base
       self.responder = ApplicationResponder
-      respond_to :html, :json
+      respond_to :html, :js
       protect_from_forgery
     end
 
@@ -818,42 +818,59 @@ Na razie poprawimy tytuły. W taki oto sposób:
 
     :::html_rails app/views/fortunes/new.html.erb
     <%= title "New fortune" %>
-    <%= render 'form' %>
+    <%= render :partial => 'form' %>
     <p class="clear"><%= link_to 'Back', fortunes_path %></p>
 
-Uwaga: metoda pomocnicza *title* jest zdefiniowana w pliku
-*layout_helper.rb* wygenerowanym przez generator nifty:layout.
-*_form.html.erb* to tzw. *szablon częściowym* (ang. *partial template*).
+Powyżej korzystamy z metody pomocniczej *title* z *nifty:layout*.
 
 W kodzie stosujemy się zawsze do zasady DRY, co oznacza „Don’t Repeat Yourself”.
-Dlaczego „osuszanie” kodu jest ważne?
+Refaktoryzacja, to też sposób na „osuszanie” kodu.
+Pomaga zachować separację części systemu, daje czystą strukturę.
 
-**TODO** Refaktoryzacja! Przy okazji zrobimy refaktoryzację kodu widoku *index.html.erb*:
-Przejdziemy z tabelki na inne znaczniki!
+### Refaktoryzacja *index.html.erb*
+
+Przejdziemy z tabelki na inne znaczniki oraz skorzystamy
+z *implicit loop*. Zaczynamy od kodu:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <table>
+      <tr>
+        <th>Author</th><th>Body</th><th></th><th></th><th></th>
+      </tr>
+      <% @fortunes.each do |fortune| %>
+       <tr>
+        <td><%= fortune.author %></td><td><%= fortune.body %></td>
+        <td><%= link_to 'Show', fortune %></td>
+        <td><%= link_to 'Edit', edit_fortune_path(fortune) %></td>
+        <td><%= link_to 'Destroy', fortune, :confirm => t('helpers.data.sure'), :method => :delete %></td>
+      </tr>
+    <% end %>
+    </table>
+
+Po refaktoryzacji, zamiast tabelki wpisujemy:
 
     :::html_rails app/views/fortunes/index.html.erb
     <div id="fortunes">
-      <%= render @fortunes %>
+      <%= render :partial => 'fortune', :collection => @fortunes %>
     </div>
     <p><%= link_to "New Fortune", new_fortune_path %></p>
 
-Po co wkładamy fortunki do pojemnika *div*. Przyda się wkrótce!
-
-W szablonie częściowym *_fortune.html.erb* nie potrzebujemy pętli
-(dlaczego?):
+Szablon częściowy *_fortune.html.erb* renderowany jest wielokrotnie,
+w pętli po zmiennej *fortune* (konwencja *@fortunes* → *fortune*):
 
     :::html_rails app/views/fortunes/_fortune.html.erb
     <p>
-     <%= fortune.body %>
+     <b><%= fortune.body %></b><br><%= fortune.author %>
+    </p>
+    <p class="links">
      <%= link_to "Show", fortune_path(fortune) %> |
      <%= link_to "Edit", edit_fortune_path(fortune) %> |
      <%= link_to "Delete", fortune_path(fortune), :confirm => "Are you sure?", :method => :delete %>
     </p>
 
-**TODO** Dlaczego refaktoryzacje są ważne?
+Po co wkładamy fortunki do pojemnika *div*? Przyda się to przy stylizacji.
 
-
-Przy okazji zmienimmy napisy na przyciskach *submit*
+Aha, przy okazji zmienimmy napisy na przyciskach *submit*
 oraz zlokalizujemy napis „Are you sure?”:
 
     :::yaml config/locales/en.yml
@@ -864,7 +881,7 @@ oraz zlokalizujemy napis „Are you sure?”:
       data:
         sure: "What are you going to do! Are you sure?"
 
-Musimy jeszcze poprawić to w widoku:
+Musimy jeszcze użyć *i18n.translate* w widoku:
 
     :::html_rails app/views/fortunes/index.html.erb
     <td><%= link_to 'Destroy', fortune, :confirm => t('helpers.data.sure'), :method => :delete %></td>
@@ -895,57 +912,74 @@ W layout dopisujemy w znaczniku *head*:
     <%= auto_discovery_link_tag(:atom, fortunes_path(:atom)) %>
 
 
+# Dodajemy wyszukiwanie do Fortunek
 
-# Dodajemy wyszukiwanie Fortunek
-
-Co to oznacza? Po :body
-
-Co oznacza „unobtrusive Javascript”?
-
-Do szablonu *index.html.erb* dodamy formularz do wyszukiwania
-fortunek. Wyszukane fortunki umieścimy w elemencie *div*.
-Dlaczego potrzebujemy pojemnika na fortunki?
+Na stronie z listą fortunek dodamy formularz, który będzie filtrował dane po polu *body*:
 
     :::html_rails app/views/fortunes/index.html.erb
-    <%= form_tag fortunes_path, :method => :get, :remote => true do %>
+    <%= form_tag fortunes_path, :method => :get, :id => "fortunes_search" do %>
       <p>
         <%= text_field_tag :search, params[:search] %>
         <%= submit_tag "Search", :name => nil %>
       </p>
     <% end %>
 
-Wchodzimy na stronę:
-
-    http://localhost:3000/
-
-Pozostało napisać szablon *index.js.erb*.
-Co oznacza rozszerzenie *.js.erb*?
-
-    :::jquery_javascript app/views/fortunes/index.js.erb
-    $("#fortunes").html("<%= escape_javascript(render(@fortunes)) %>");
-
-Pytanie: co powinniśmy dopisać / zmienić w kontrolerze
-*FortunesController*? Jakąś metodę? Jeśli tak, to jaką?
-
-Odpowiedzi. Zmieniamy kod metody *index*
+Aby odfiltrować zbędne rekordy, musimy w *FortunesController*
+w metodzie *index* przekazać tekst, który wpisano w formularzu
+(użyjemy metody *search*, refaktoryzacja):
 
     :::ruby app/controllers/fortunes_controller.rb
     def index
-      @fortunes = Fortune.search(params[:search]).order("created_at desc")
-      respond_with @fortunes
+      @fortunes = Fortune.search(params[:search]).order(:author).page(params[:page]).per(4)
+      respond_with(@fortunes)
     end
 
-A użytą powyżej metodę klasową *search* implementujemy w modelu
-*Fortune* tak:
+kod metody wpisujemy w klasie *Fortune*:
 
     :::ruby app/models/fortune.rb
-    def self.search(query)
-      where("body like ?", "%#{query}%")
+    def self.search(search)
+      if search
+        where('body LIKE ?', "%#{search}%")
+      else
+        scoped
+      end
     end
 
 Metoda *search* jest wykonywana zawsze po wejściu na stronę *index*,
-nawet jak nic nie wyszukujemy. Dlaczego nie generuje ona błędu?
-Dlaczego wyszukiwanie działa?
+nawet jak nic nie wyszukujemy. (Prześledzić jak ona wtedy działa?
+Co to jest *scoped*?)
+
+
+## Ajaxujemy filtrowanie
+
+Trzeba wykonać kilka nieoczywistych rzeczy. Wszystkie szczegóły opisano
+w [Search, Sort, Paginate with AJAX](http://asciicasts.com/episodes/240).
+Niestety, niektóre rzeczy tam opisane są zbędne albo już nieaktualne
+(bo, na przykład, dotyczą *will_paginate*).
+
+Wyszukane fortunki umieścimy w elemencie *div* z id *fortunes*,
+a paginator w elemencie *div* z id *paginator*
+(po co? zob. kod szablonu poniżej):
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <div id="paginator">
+      <%= paginate @fortunes, :remote => true %>
+    </div>
+
+Podstawowa rzecz: „To make the paging work with AJAX we need
+**to modify the pagination links** so that they make an AJAX
+request when clicked instead of linking to another page.”
+
+W tym celu utwórzmy szablon *index.js.erb*, w którym wpisujemy:
+
+    :::jquery_javascript app/views/fortunes/index.js.erb
+    $("#fortunes").html("<%= escape_javascript(render(@fortunes)) %>");
+    $('#paginator').html('<%= escape_javascript(paginate(@fortunes, :remote => true).to_s) %>');
+
+Sam „search” formularz należy też zajaxować:
+
+    :::html_rails app/views/fortunes/index.html.erb
+    <%= form_tag fortunes_path, :remote => true, :method => :get, :id => "fortunes_search" do %>
 
 
 ## Dodajemy tagowanie
