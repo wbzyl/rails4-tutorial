@@ -1023,10 +1023,63 @@ Warto przyjrzeć się wygenerowanej migracji:
       end
     end
 
+[Polimorficzne powiązanie](http://edgeguides.rubyonrails.org/association_basics.html#polymorphic-associations)
+oznacza, że jeden model może być w relacji *belongs_to*
+do więcej niż jednego modelu:
+
+    :::ruby
+    t.references :taggable, :polymorphic => true
+
+co tłumaczy się na:
+
+    :::ruby
+    t.integer :taggable_id
+    t.string  :taggable_type
+
+Innymi słowy mamy następujące powiązania między modelami:
+
+* *Tagging* belongs to *Fortune*
+* *Fortune* has many *Taggings*
+
+Na konsoli wygląda to tak:
+
+    :::ruby
+    f = Fortune.find 1
+    f.tag_list = "everything nothing always"            # proxy
+    # f.tag_list = ['everything', 'nothing', 'always']  # tak też można
+    f.save
+    f.tags
+    f.taggings
 
 
+### Dodajemy losowe tagi do fortunek
 
-## Zmiany w kodzie
+Poprawiamy *seeds.rb*:
+
+    :::ruby db/seeds.rb
+    platitudes = File.readlines(Rails.root.join('db', 'platitudes.u8'), "\n%\n")
+    tags = ['always', 'always', 'sometimes', 'never', 'maybe', 'ouch', 'wow', 'nice', 'wonderful']
+    platitudes.map do |p|
+      reg = /\t?(.+)\n\t\t--\s*(.*)\n%\n/m
+      m = p.match(reg)
+      if m
+        f = Fortune.new :body => m[1], :author => m[2]
+      else
+        f = Fortune.new :body => p[0..-4], :author => Faker::Name.name
+      end
+      f.tag_list = tags.sample(rand(tags.size - 3))
+      f.save
+    end
+
+Teraz, kasujemy bazę i wrzucamy jeszcze raz cytaty, ale tym razem
+z tagami:
+
+    rake db:drop
+    rake db:migrate
+    rake db:seed
+
+
+## Zmiany w kodzie modelu
 
 Do modelu dopisujemy:
 
@@ -1035,24 +1088,24 @@ Do modelu dopisujemy:
       acts_as_taggable_on :tags
       ActsAsTaggableOn::TagList.delimiter = " "
 
-Przy okazji, zmieniamy domyślny znak do oddzielania tagów z przecinka
+Przy okazji, zmieniliśmy domyślny znak do oddzielania tagów z przecinka
 na spację.
 
-W formularzu zmieniamy i dopisujemy:
+W widoku częściowym dopisujemy:
 
     :::html_rails app/views/fortunes/_form.html.erb
-    <p>Body:<br/><%= f.text_area :body, :cols => 60, :rows => 8 %></p>
-    <p><%= f.label :tag_list %>: <%= f.text_field :tag_list, :size => 60 %></p>
+    <%= f.input :tag_list, :input_html => {:size => 40} %></p>
 
 a w widoku *index*:
 
     :::html_rails app/views/fortunes/index.html.erb
-    <p>Tags: <%= fortune.tag_list %></p>
-
-Pozsotaje jeszcze dopisać wyświetlanie tagów tu i ówdzie (gdzie?).
+    <p><i>Tags:</i> <%= fortune.tag_list %></p>
 
 
-### Chmurka tagów
+**TODO:** Dokończyć! Pozostaje jeszcze dopisać wyświetlanie tagów tu i ówdzie (gdzie?).
+
+
+## TODO: Chmurka tagów
 
 Aby utworzyć chmurkę tagów dopisujemy do widoku *index*:
 
