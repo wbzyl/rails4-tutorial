@@ -1081,7 +1081,7 @@ z tagami:
 
 ## Zmiany w kodzie modelu
 
-Do modelu dopisujemy:
+Dopisujemy do modelu:
 
     :::ruby app/models/fortune.rb
     class Fortune < ActiveRecord::Base
@@ -1102,10 +1102,13 @@ a w widoku *index*:
     <p><i>Tags:</i> <%= fortune.tag_list %></p>
 
 
-**TODO:** Dokończyć! Pozostaje jeszcze dopisać wyświetlanie tagów tu i ówdzie (gdzie?).
+**TODO:** Dokończyć! Pozostaje jeszcze dopisać wyświetlanie tagów tu
+i ówdzie (ale gdzie?).
 
 
 ## TODO: Chmurka tagów
+
+{%= image_tag "/images/wordly.png", :alt => "[chmurka tagów]" %}
 
 Aby utworzyć chmurkę tagów dopisujemy do widoku *index*:
 
