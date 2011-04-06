@@ -955,7 +955,8 @@ Co to jest *scoped*?)
 Trzeba wykonać kilka nieoczywistych rzeczy. Wszystkie szczegóły opisano
 w [Search, Sort, Paginate with AJAX](http://asciicasts.com/episodes/240).
 Niestety, niektóre rzeczy tam opisane są zbędne albo już nieaktualne
-(bo, na przykład, dotyczą *will_paginate*).
+(bo, na przykład, dotyczą *will_paginate*). Ale jest za to
+kilka zadań jak dodać **sortowanie**.
 
 Wyszukane fortunki umieścimy w elemencie *div* z id *fortunes*,
 a paginator w elemencie *div* z id *paginator*
@@ -969,42 +970,63 @@ a paginator w elemencie *div* z id *paginator*
 Podstawowa rzecz: „To make the paging work with AJAX we need
 **to modify the pagination links** so that they make an AJAX
 request when clicked instead of linking to another page.”
-
 W tym celu utwórzmy szablon *index.js.erb*, w którym wpisujemy:
 
     :::jquery_javascript app/views/fortunes/index.js.erb
+    // render _fortune.html.erb partial
     $("#fortunes").html("<%= escape_javascript(render(@fortunes)) %>");
+    // modify pagination links
     $('#paginator').html('<%= escape_javascript(paginate(@fortunes, :remote => true).to_s) %>');
 
-Sam „search” formularz należy też zajaxować:
+Sam „search” formularz też należy zajaxować:
 
     :::html_rails app/views/fortunes/index.html.erb
     <%= form_tag fortunes_path, :remote => true, :method => :get, :id => "fortunes_search" do %>
 
 
-## Dodajemy tagowanie
+# Tagowanie
 
 Tagowanie dodamy, korzystając z gemu
 [acts-as-taggable-on](http://github.com/mbleigh/acts-as-taggable-on).
-
-Korzystając z tego co napisano w *README.rdoc* dokonujemy
-następujących zmian w aplikacji.
-
-Zgodnie z README ze strony git projektu, dopisujemy gem do pliku *Gemfile*:
-
-    :::ruby Gemfile
-    gem 'acts-as-taggable-on'
-
-i instalujemy go w systemie za pomocą:
-
-    bundle install
-
-Po instalacji wykonujemy polecenia:
+Po instalacji gemu, zgodnie z tym o co napisano w *README* wykonujemy
+polecenia:
 
     rails generate acts_as_taggable_on:migration
     rake db:migrate
 
-### Zmiany w kodzie
+Warto przyjrzeć się wygenerowanej migracji:
+
+    :::ruby
+    class ActsAsTaggableOnMigration < ActiveRecord::Migration
+      def self.up
+        create_table :tags do |t|
+          t.string :name
+        end
+        create_table :taggings do |t|
+          t.references :tag
+
+          # You should make sure that the column created is
+          # long enough to store the required class names.
+          t.references :taggable, :polymorphic => true
+          t.references :tagger, :polymorphic => true
+
+          t.string :context
+          t.datetime :created_at
+        end
+        add_index :taggings, :tag_id
+        add_index :taggings, [:taggable_id, :taggable_type, :context]
+      end
+
+      def self.down
+        drop_table :taggings
+        drop_table :tags
+      end
+    end
+
+
+
+
+## Zmiany w kodzie
 
 Do modelu dopisujemy:
 
