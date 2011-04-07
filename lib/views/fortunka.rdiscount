@@ -1247,6 +1247,9 @@ Gotowe! Przyjrzeć się jak to działa.
 
 
 <blockquote>
+ <p>
+  {%= image_tag "/images/surgery.jpg", :alt => "[surgery.com]" %}
+ </p>
  <p>Software is invisible and <b>unvisualizable</b>. Geometric abstractions are
   powerful tools. The floor plan of a building helps both architect and
   client evaluate spaces, traffic flows, views. Contradictions and
@@ -1261,16 +1264,26 @@ Gotowe! Przyjrzeć się jak to działa.
 
 # Fortunki z komentarzami
 
-Dodajemy do każdej fortunki możliwość dopisywania komentarzy.
+W widoku *show.html.erb* fortunki powinna być możliwość dopisywania
+własnych komentarzy, dodawania obrazków kojarzących się nam
+z fortunką. Na początek zabierzemy się za komentarze.
 
-Zaczynamy od wygenerowania rusztowania dla zasobu *Comment* oraz
-wykonania migracji:
+Przygotujemy sobie też stronę ze wszystkimi komentarzami.
+Przyda się adminowi przy usuwaniu, edycji komentarzy.
+
+Będziemy pracować na nowej gałęzi:
+
+    git checkout -b comments
+
+Dopiero po sprawdzeniu, że wszystkie zmiany są OK,
+wykonamy rebase na master.
+
+Zaczynamy od wygenerowania rusztowania dla zasobu *Comment*:
 
     rails g resource Comment fortune:references \
         author:string body:string
-    rake db:migrate
 
-Zagnieżdżamy zasoby i sprawdzamy jak to zmienia routing:
+Zagnieżdżamy zasoby i sprawdzamy jak wygląda teraz routing:
 
     :::ruby
     resources :fortunes do
@@ -1326,171 +1339,133 @@ Nie zapominamy o migracji:
 
     rake db:migrate
 
-Jeśli na konsoli uruchomimy kod:
+Teraz wykonanie na konsoli:
 
     :::ruby
     Fortune.first.comments  #=> []
 
-to przekonamy się, że komentarze pierwszej fortunki tworzą pustą tablicę.
+pokazuje, że komentarze pierwszej fortunki tworzą pustą tablicę.
 Aby dodać komentarz możemy postąpić tak:
 
     :::ruby
     Fortune.first.comments << Comment.new(:author=>"Ja", :body=>"Fajne!")
+    Comment.all
 
 
-### Gdzie wyświetlać komentarze?
+### Gdzie będziemy wyświetlać komentarze?
 
-Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*
-(**inne propozycje?**). Dopiszemy taki kod:
+Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*:
 
     :::html_rails app/views/fortunes/show.html.erb
     <% if @fortune.comments.any? %>
-      <h2>Komentarze</h2>
+      <h2>Comments</h2>
       <% @fortune.comments.each do |comment| %>
        <p>Autor:<br><%= comment.author %></p>
        <div class="comment">
          <b>Body:</b> <%= comment.body %>
        </div>
-       <%= link_to "Delete", [@fortune, comment], :confirm => "Are you sure?", :method => :delete %>
+       <p>
+         <%= link_to "Delete", [@fortune, comment], :confirm => t('helpers.data.sure'), :method => :delete %>
+       </p>
       <% end %>
     <% end %>
 
-Jakie nowe rzeczy pojawiły się powyższym kodzie?
+**Jakie nowe rzeczy pojawiły się powyższym kodzie?**
 
 
-### Gdzie wpisywać nowe komentarze?
+### Gdzie będziemy dodawać nowe komentarze?
 
-Najwygodniej byłoby dodać też formularz do widoku *show*
-(**dlaczego?**):
+Najwygodniej byłoby dodać też formularz do widoku *show*:
 
     :::html_rails app/views/fortunes/show.html.erb
-    <h2>Dodaj komentarz</h2>
-    <%= form_for [@fortune, @fortune.comments.build] do |f| %>
-      <%= f.error_messages %>
-      <p>
-        <%= f.label :author, "Author" %><br>
-        <%= f.text_field :author %>
-      </p>
-      <p><%= f.text_area :body, :rows => 4 %></p>
-      <p><%= f.submit %></p>
+    <h2>Add new comment</h2>
+    <%= simple_form_for [@fortune, @fortune.comments.build] do |f| %>
+      <%= f.input :author, :input_html => {:size => 40} %>
+      <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
+      <%= f.button :submit %>
     <% end %>
 
-Nowe rzeczy w kodzie? Dlaczego taki pokrętny kod: **@fortune.comments.build**?
-Czy samo *Comment.new* nie wystarczy?
-Gdzie jest zdefiniowana metoda *error_messages*?
+**Nowe rzeczy w kodzie?**
+Dlaczego kod ten jest taki pokrętny: **@fortune.comments.build** ?
+Czy samo *Comment.new* nie wystarczyłoby?
 
 
-### Tworzenie i usuwanie komentarzy
+## Kontroler dla komentarzy
 
 W pustym *CommentsController* wpisujemy:
 
     :::ruby app/controllers/comments_controller.rb
     class CommentsController < ApplicationController
       before_filter do
-        @fortune = Fortune.find params[:fortune_id]
-      end
-
-      def new
-        respond_with @comment
+        @fortune = Fortune.find(params[:fortune_id])
       end
 
       def create
-        @comment = @fortune.comments.new params[:comment]
+        @comment = @fortune.comments.build(params[:comment])
         @comment.save
-        respond_with @comment, :location => fortunes_url
+        respond_with(@fortune, @comment, :location => @fortune)
       end
 
       def destroy
-        @comment = @fortune.comments.find params[:id]
+        @comment = @fortune.comments.find(params[:id])
         @comment.destroy
-        respond_with @fortune
+        respond_with(@fortune, @comment, :location => @fortune)
       end
     end
 
-Dodajemy nowy widok *new* dla komentarzy (dlaczego?):
+Powyżej, po zapisaniu nowej fortunki lub jej usunięciu,
+wymuszamy za pomocą *:location* przeładowanie strony z fortunką.
 
-    :::html_rails app/views/comments/new.html.erb
-    <% title "Nowy komentarz" %>
-    <%= render 'form' %>
-    <%= link_to 'Back', fortunes_path %>
+Musimy jeszcze pomyślić o *update* komentarzy oraz
+gdzie to będziemy robić!
+Ale teraz zabierzemy się za refaktoryzację kodu.
 
 
-## Refaktoryzacja widoku „show” dla fortunek
+## Refaktoryzacja widoku „show”
 
-Tworzymy dwa szablony częściowe dla komentarzy: *_form.html.erb*:
+Tworzymy dwa szablony częściowe dla komentarzy: *_form.html.erb*
+(usuwamy cały kod pod znacznikiem *h2\#Add new comments*):
 
     :::html_rails app/views/comments/_form.html.erb
-    <%= form_for [@fortune, @fortune.comments.build] do |f| %>
-      <%= f.error_messages %>
-      <p>
-        <%= f.label :author, "Author" %><br>
-        <%= f.text_field :author %>
-      </p>
-      <p><%= f.text_area :body, :rows => 4 %></p>
-      <p><%= f.submit %></p>
+    <%= simple_form_for [@fortune, @fortune.comments.build] do |f| %>
+      <%= f.input :author, :input_html => {:size => 40} %>
+      <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
+      <%= f.button :submit %>
     <% end %>
 
-oraz *_comment.html.erb*::
+oraz szablon *_comment.html.erb* (ciało pętla pod *h2\#Comments*):
 
     :::html_rails app/views/comments/_comment.html.erb
     <p>Autor:<br><%= comment.author %></p>
     <div class="comment">
       <b>Body:</b> <%= comment.body %>
     </div>
-    <%= link_to "Delete", [comment.fortune, comment], :confirm => "Are you sure?", :method => :delete %>
+    <p>
+      <%= link_to "Delete", [@fortune, comment], :confirm => t('helpers.data.sure'), :method => :delete %>
+    </p>
 
-Interesujący kod w *link_to* powyżej!
-
-Poprawiamy kod widoku *show*, tak aby korzystał z tych szablonów:
+Na koniec poprawiamy kod widoku *show*, tak aby korzystał
+nowych szablonów częściowych:
 
     :::html_rails app/views/fortunes/show.html.erb
-    <h2>Dodaj komentarz</h2>
-    <%= render 'comments/form' %>
+    <h2>Add new comment</h2>
+    <%= render :partial => 'comments/form' %>
 
     <% if @fortune.comments.any? %>
-      <h2>Komentarze</h2>
+      <h2>Comments</h2>
       <%= render @fortune.comments %>
     <% end %>
 
 
-## I18N: error_messages
+## Reszta obiecanego kodu
 
-Kod wygenerowany przez generator nifty:layout:
+Czyli uaktualnianie komentarzy!
 
-    :::ruby app/helpers/error_messages_helper.rb
-    module ErrorMessagesHelper
-      # Render error messages for the given objects. The :message and :header_message options are allowed.
-      def error_messages_for(*objects)
-        options = objects.extract_options!
-        options[:header_message] ||= "Invalid Fields"
-        options[:message] ||= "Correct the following errors and try again."
-        ...
-
-Jak to zlokalizować? Jaki dodać prefix? Zobacz
-[Support Rails built in i18n system for easy translations](http://github.com/ryanb/nifty-generators/issues#issue/22).
-
-Może tak:
-
-    :::ruby
-    options[:header_message] ||= I18n.t(errors.template.header_message), :default => "Invalid Fields"
-    options[:message] ||= I18n.t(errors.template.message), :default => "Correct the following errors and try again."
-
-Plik z polskim tłumaczeniem:
-
-    errors:
-      template:
-        header_message:
-          "Nieprawidłowo wypełniony formularz"
-        message:
-          "Popraw poniższe błędy i spróbuj jeszcze raz:"
 
 
 # Szlifowanie kodu
 
-1\. Fortunka jest olinkowana byle jak, brakuje odsyłaczy etc.
-Znależć wszystkie te miejsca i poprawić kod.
-
-2\. Dopisać logowanie via *authenticate_or_request_with_http_basic* tak jak to jest
+1\. Dopisać logowanie via *authenticate_or_request_with_http_basic* tak jak to jest
 opisane w samouczku [Getting Started with Rails](http://edgeguides.rubyonrails.org/getting_started.html).
 
 
