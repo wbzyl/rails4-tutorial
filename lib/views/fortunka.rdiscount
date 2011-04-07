@@ -316,7 +316,7 @@ Zwiększamy rozmiar fontu, dodajemy ramkę, marginesy,…:
     :::css public/stylesheets/applications.css
     html {
       margin-top: 22px;
-      background-color: #FCEC0A; /* żółty */
+      background-color: #EDE574;  /* jasnożółty */
     }
     /* 1.375 * 16px = 22px */
     body { font:16px/1.375 sans-serif; *font-size:small; }
@@ -1023,6 +1023,12 @@ Warto przyjrzeć się wygenerowanej migracji:
       end
     end
 
+<blockquote>
+ <p>
+  A little inaccuracy saves a world of explanation.
+ </p>
+</blockquote>
+
 [Polimorficzne powiązanie](http://edgeguides.rubyonrails.org/association_basics.html#polymorphic-associations)
 oznacza, że jeden model może być w relacji *belongs_to*
 do więcej niż jednego modelu:
@@ -1157,7 +1163,10 @@ a wygenrowany link, to:
     :::html
     <a href="/fortunes" class="css3">sometimes</a>
 
-Taki CSS:
+Nie jest to to o co nam chodzi.
+Później zamienimy ten link na link do tagów.
+
+Tagi powinny mieć wielkość zależną od częstości występowania:
 
     :::css public/stylesheets/application.css
     .css1 { font-size: 1.0em; }
@@ -1165,19 +1174,17 @@ Taki CSS:
     .css3 { font-size: 1.4em; }
     .css4 { font-size: 1.6em; }
 
-da linki różnej wielkości.
-
-Tyle debuggowania. Usuwamy kod z *debug*.
-Wstawiamy linki do pojemnika *div\#tag_cloud* szerokości,
-powiedzmy 300px, pozycjonujemy go abolutnie w prawym
-górnym rogu, gdzie jest trochę wolnego miejsca:
+Tyle debuggowania – usuwamy zbędny kod z *debug*. Opakowujemy *tag_cloud*
+elementem *div\#tag_cloud*, ustawiamy jego szerokość, powiedzmy na
+250px i pozycjonujemy abolutnie w prawym górnym rogu, gdzie jest
+trochę wolnego miejsca:
 
     :::css public/stylesheets/application.css
     body {
       position: relative;
     }
     #tag_cloud {
-      background-color: #DDDDDD;
+      background-color: #E1F5C4; /* jasnozielony */
       padding: 1em;
       width: 250px;
       position: absolute;
@@ -1185,21 +1192,16 @@ górnym rogu, gdzie jest trochę wolnego miejsca:
       top: 1em;
     }
 
+I już możemy obejrzeć rezultaty naszej pracy!
 
-## Dodajemy własne akcje do REST
 
-Potrzebne? W pliku na metody pomocnicze dopisujemy;
-
-    :::ruby app/helpers/fortunes_helper.rb
-    module FortunesHelper
-      include ActsAsTaggableOn::TagsHelper
-    end
+## Dodajemy własną akcję do REST
 
 Mając chmurkę z tagami, wypadałoby olinkować tagi tak, aby
 po kliknięciu na nazwę wyświetliły się fortunki otagowane
 tą nazwą.
 
-Spróbujemy zrobić. Zaczniemy od zmian w routingu. Usuwamy
+Zaczniemy od zmian w routingu. Usuwamy
 wiersz z `resources :fortunes`. Zamiast niego wklejamy:
 
     :::ruby config/routes.rb
@@ -1213,11 +1215,11 @@ Sprawdzamy routing:
 
     rake routes
 
-i widzimy, że mamy **jednen* dodatkowy uri:
+i widzimy, że mamy **jeden** dodatkowy uri:
 
     tags_fortunes GET /fortunes/tags(.:format) {:action=>"tags", :controller=>"fortunes"}
 
-Zmienimay link w_chmurce tagów na::
+Na koniec, zamieniamy link w chmurce tagów na:
 
     :::ruby
     <%= link_to tag.name, tags_fortunes_path(:name=>tag.name), :class => css_class %>
