@@ -396,8 +396,6 @@ Nieco Railsowej archeologii:
 * [Odpowiedź J. Adamsa](http://article.gmane.org/gmane.comp.lang.ruby.rails/29166)
 
 
-## Poprawki w layoucie
-
 {%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
 (źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
 
@@ -1248,9 +1246,6 @@ Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
 Gotowe! Przyjrzeć się jak to działa.
 
 
-
-# Dodajemy komentarze do fortunek
-
 <blockquote>
  <p>Software is invisible and <b>unvisualizable</b>. Geometric abstractions are
   powerful tools. The floor plan of a building helps both architect and
@@ -1263,6 +1258,8 @@ Gotowe! Przyjrzeć się jak to działa.
   mind, it severely hinders communication among minds.</p>
  <p class="author">— Frederick P. Brooks, Jr.</p>
 </blockquote>
+
+# Fortunki z komentarzami
 
 Dodajemy do każdej fortunki możliwość dopisywania komentarzy.
 
