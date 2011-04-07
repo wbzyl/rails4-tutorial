@@ -1091,26 +1091,25 @@ Dopisujemy do modelu:
 Przy okazji, zmieniliśmy domyślny znak do oddzielania tagów z przecinka
 na spację.
 
-W widoku częściowym dopisujemy:
+W widoku częściowym *_form.html.erb* dopisujemy:
 
     :::html_rails app/views/fortunes/_form.html.erb
-    <%= f.input :tag_list, :input_html => {:size => 40} %></p>
+    <%= f.input :tag_list, :input_html => {:size => 40} %>
 
-a w widoku *index*:
+w widoku częściowym *_fortune.html.erb* (część widoku *index.html.erb*),
+oraz w widoku *show.html.erb* (2 razy):
 
-    :::html_rails app/views/fortunes/index.html.erb
-    <p><i>Tags:</i> <%= fortune.tag_list %></p>
-
-
-**TODO:** Dokończyć! Pozostaje jeszcze dopisać wyświetlanie tagów tu
-i ówdzie (ale gdzie?).
+    :::html_rails app/views/fortunes/_fortune.html.erb
+    <p><i>Tags:</i> <%= @fortune.tag_list %></p>
 
 
-## TODO: Chmurka tagów
+## Chmurka tagów
+
+Aby utworzyć chmurkę tagów, niestety nie tak ładną jak ta poniżej:
 
 {%= image_tag "/images/wordly.png", :alt => "[chmurka tagów]" %}
 
-Aby utworzyć chmurkę tagów dopisujemy do widoku *index*:
+dopisujemy do widoku *index*:
 
     :::html_rails app/views/fortunes/index.html.erb
     <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
@@ -1121,30 +1120,44 @@ Aby ten kod zadziałał musimy zdefiniować zmienną *@tags*, wczytać kod
 metody pomocniczej *tag_cloud*, wystylizować chmurkę tagów oraz
 podmienić *LINK_DO_CZEGO?* na coś sensownego.
 
-Na razie możemy wypróbować coś takiego:
+Zaczniemy od zmiennej *@tags*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def index
+      @fortunes = Fortune.search(params[:search]).order(:author).page(params[:page]).per(4)
+      @tags = Fortune.tag_counts
+      respond_with(@fortunes)
+    end
+
+Teraz spróbujemy przyjrzeć się bliżej, debugging, zmiennej *tag*:
 
     :::html_rails
     <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
       <%= link_to tag.name, fortunes_path, :class => css_class %>
+      <%= debug(tag.class) %>
       <%= debug(tag) %>
     <% end %>
 
-Jakieś rozwiązanie jest w następnej sekcji.
+Po ponownym wczytaniu strony *fortunes\#index* widzimy, że
+zmienna *tag*, to obiekt klasy:
 
-W metodzie *index* kontrolera *FortunesController* przed dopisujemy:
+    :::ruby
+    ActsAsTaggableOn::Tag(id: integer, name: string)
 
-    :::ruby app/controllers/fortunes_controller.rb
-    @tags = Fortune.tag_counts
-    respond_with @fortunes  # bez zmian
+na przykład:
 
-W pliku na metody pomocnicze dopisujemy;
+    :::yaml
+    attributes:
+      id: 1
+      name: sometimes
+      count: 151
 
-    :::ruby app/helpers/fortunes_helper.rb
-    module FortunesHelper
-      include ActsAsTaggableOn::TagsHelper
-    end
+a wygenrowany link, to:
 
-Na koniec dopisujemy do pliku CSS aplikacji:
+    :::html
+    <a href="/fortunes" class="css3">sometimes</a>
+
+Taki CSS:
 
     :::css public/stylesheets/application.css
     .css1 { font-size: 1.0em; }
@@ -1152,14 +1165,42 @@ Na koniec dopisujemy do pliku CSS aplikacji:
     .css3 { font-size: 1.4em; }
     .css4 { font-size: 1.6em; }
 
+da linki różnej wielkości.
 
-### Dodajemy własne akcje do REST
+Tyle debuggowania. Usuwamy kod z *debug*.
+Wstawiamy linki do pojemnika *div\#tag_cloud* szerokości,
+powiedzmy 300px, pozycjonujemy go abolutnie w prawym
+górnym rogu, gdzie jest trochę wolnego miejsca:
+
+    :::css public/stylesheets/application.css
+    body {
+      position: relative;
+    }
+    #tag_cloud {
+      background-color: #DDDDDD;
+      padding: 1em;
+      width: 250px;
+      position: absolute;
+      right: 1em;
+      top: 1em;
+    }
+
+
+## Dodajemy własne akcje do REST
+
+Potrzebne? W pliku na metody pomocnicze dopisujemy;
+
+    :::ruby app/helpers/fortunes_helper.rb
+    module FortunesHelper
+      include ActsAsTaggableOn::TagsHelper
+    end
 
 Mając chmurkę z tagami, wypadałoby olinkować tagi tak, aby
 po kliknięciu na nazwę wyświetliły się fortunki otagowane
 tą nazwą.
 
-Spróbujemy zrobić to tak. Zaczniemy od routingu:
+Spróbujemy zrobić. Zaczniemy od zmian w routingu. Usuwamy
+wiersz z `resources :fortunes`. Zamiast niego wklejamy:
 
     :::ruby config/routes.rb
     resources :fortunes do
@@ -1172,36 +1213,41 @@ Sprawdzamy routing:
 
     rake routes
 
-i widzimy, że mamy dodatkowo:
+i widzimy, że mamy **jednen* dodatkowy uri:
 
-    tags_fortunes GET /fortunes/tags {:action=>"tags", :controller=>"fortunes"}
+    tags_fortunes GET /fortunes/tags(.:format) {:action=>"tags", :controller=>"fortunes"}
 
-Teraz dopisujemy co trzeba w kontrolerze (plus mała refaktoryzacja; jaka?):
-
-    :::ruby app/controllers/fortunes_controller.rb
-    before_filter :only => [:index, :tags] do
-      @tags = Fortune.tag_counts  # for tag clouds
-    end
-
-    def index
-      @fortunes = Fortune.search(params[:search]).order("created_at desc")
-      respond_with @fortunes
-    end
-
-    def tags
-      @fortunes = Fortune.tagged_with(params[:name])
-      render 'index'
-    end
-
-Na koniec podmieniamy `LINK_DO_CZEGO?` powyżej:
+Zmienimay link w_chmurce tagów na::
 
     :::ruby
     <%= link_to tag.name, tags_fortunes_path(:name=>tag.name), :class => css_class %>
 
-Przyjrzeć się jak to działa!
+Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    before_filter :only => [:index, :tags] do
+      @tags = Fortune.tag_counts
+    end
+
+    def index
+      @fortunes = Fortune.search(params[:search]).order(:author).page(params[:page]).per(4)
+      respond_with(@fortunes)
+    end
+
+    # respond_with nic nie wie o tags
+    def tags
+      @fortunes = Fortune.tagged_with(params[:name]).order(:author).page(params[:page]).per(4)
+      respond_with(@fortunes) do |format|
+        format.html { render :action => 'index' }
+        format.js   { render :action => 'index' }
+      end
+    end
+
+Gotowe! Przyjrzeć się jak to działa.
 
 
-## Dodajemy komentarze do fortunek
+
+# Dodajemy komentarze do fortunek
 
 <blockquote>
  <p>Software is invisible and <b>unvisualizable</b>. Geometric abstractions are
