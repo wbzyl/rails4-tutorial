@@ -11,7 +11,7 @@
 </blockquote>
 
 
-[18.03.2011] Czas na Rails for Zombies!
+**[18.03.2011]** Czas na Rails for Zombies!
 [What Is This?](http://railsforzombies.org/):
 „Learning Rails for the first time should be fun, and Rails for
 Zombies allows you to get your feet wet without having to worry about
@@ -21,8 +21,7 @@ where you'll be programming Rails in your browser.”
 Jeśli nie czujesz się pewnie z Ruby,
 to [Try Ruby!](http://tryruby.org/) w przeglądarce!
 
-
-[28.02.2011] Projektami Rails będziemy zarządzać za pomocą systemu kontroli wersji
+**[28.02.2011]** Projektami Rails będziemy zarządzać za pomocą systemu kontroli wersji
 Git. Dlatego, jeśli tego
 nie zrobiliśmy wcześniej, powinniśmy go skonfigurować. Zaczynamy od
 podania swoich danych Gitowi:
@@ -47,14 +46,12 @@ poprawnie (dwa sposoby):
 1. {%= link_to "Konsola aplikacji Rails", "/konsola" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
-1. {%= link_to "Dwa modele", "/2models" %}
-1. {%= link_to "Mobile apps", "/mobile" %}
+1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}
+1. {%= link_to "Podstawy emailowania w Ruby", "/mail" %}
+1. {%= link_to "Autentykacja z Devise", "/devise" %}
+1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
 1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
-1. {%= link_to "I18n", "/i18n" %}
-1. {%= link_to "Majlujemy", "/mail" %}
-1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
-1. {%= link_to "Autoryzacja z Cancan", "/cancan" %}
 
 <!--
 
@@ -63,7 +60,6 @@ TODO:
 1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %}
 1. {%= link_to "Hello Fortune", "/fortunka" %}
 1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
-1. {%= link_to "Autentykacja z Devise", "/authentication-devise" %}
 1. {%= link_to "Aplikacja „Todo”", "/todo" %}
 1. {%= link_to "Aplikacja „Blog”", "/blog" %}
 1. {%= link_to "Aplikacja „Store”", "/store" %}
@@ -72,9 +68,12 @@ TODO:
 1. {%= link_to "Bezpieczeństwo", "/security" %}
 1. {%= link_to "Caching", "/caching" %}
 1. {%= link_to "Walidacja", "/walidacja" %}
+1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
+1. {%= link_to "Autoryzacja z Cancan", "/cancan" %}
 -->
 
 <!--
+1. {%= link_to "Mobile apps", "/mobile" %}
 1. {%= link_to "Autoryzacja I", "/authorization" %}
 1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
 -->

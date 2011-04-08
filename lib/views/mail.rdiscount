@@ -1,6 +1,11 @@
-#### {% title "Majlujemy" %}
+#### {% title "Podstawy emailowania w Ruby" %}
 
-# Majlujemy
+# TODO: Podstawy emailowania w Ruby
+
+Przerobić kilka skryptów.
+
+
+# eMailowanie w Rails
 
 Jak wysyłać email z aplikacji można obejrzeć na screencaście
 Ryana Batesa [Action Mailer in Rails 3](http://railscasts.com/episodes/206-action-mailer-in-rails-3).
@@ -28,7 +33,7 @@ Teraz kolej na (dodałem pola: password oraz password_confirmation):
     rake db:migrate
     rails s thin
 
-Po wejściu na stronę 
+Po wejściu na stronę
 
     http://localhost:3000/users/new**
 
@@ -75,10 +80,10 @@ coś takiego (przykład konfigurowacji konto na Gmailu):
       password: sekret
       authentication: plain
       host: localhost:3000
-    
+
     test:
       domain: localhost:3000
-    
+
     production:
       domain: sigma.ug.edu.pl
       user_name: wbzyl
@@ -104,7 +109,7 @@ Zmieniamy wygenerowany kod na:
     class UserMailer < ActionMailer::Base
       def registration_confirmation(user)
         mail(:to => user.email, :subject => "Registered", :from => "matwb@ug.edu.pl")
-      end  
+      end
     end
 
 a po krótkim zastanowieniu na:
@@ -112,19 +117,19 @@ a po krótkim zastanowieniu na:
     :::ruby app/mailers/user_mailer.rb
     class UserMailer < ActionMailer::Base
       default :from => "matwb@ug.edu.pl"
-      
+
       def registration_confirmation(user)
-        @user = user 
+        @user = user
         attachments["rails.png"] = File.read("#{Rails.root}/public/images/rails.png")
         mail(:to => user.email, :subject => "Registered")
-      end  
+      end
     end
 
 Treść wysyłanego emaila umieszczamy w pliku:
 
     :::html_rails /app/views/user_mailer/registration_confirmation.text.erb
     <%= @user.username %>,
-    Thank you for registering! 
+    Thank you for registering!
     Edit Profile: <%= edit_user_url(@user, :host => MAIL_CONFIG[:host]) %>
 
 Uwaga: *Mail* nic nie wie na jakim hoście uruchomiona jest aplikacja.
@@ -136,7 +141,7 @@ Kod wysyłający pocztę umieścimy dopisując w metodzie *create* kontrolera
     def create
       @user = User.new(params[:user])
       if @user.save
-        UserMailer.registration_confirmation(@user).deliver 
+        UserMailer.registration_confirmation(@user).deliver
         ... dalej bez zmian ...
 
 ## Mail interceptors
@@ -155,3 +160,77 @@ konfiguracyjnym aplikacji:
 
     :::ruby config/application.rb
     config.autoload_paths += %W(#{config.root}/lib)
+
+
+
+# Stare notatki
+
+Może się to do czegoś przyda.
+
+## Przypominanie hasła – korzystamy z poczty
+
+Konfiguracja:
+
+    :::yaml config/mailer_config.yml
+    development:
+      domain: localhost:3000
+      host: localhost:3000
+      address: smtp.gmail.com
+      port: 587
+      user_name: <login>
+      password: <password>
+      authentication: plain
+
+    test:
+      domain: localhost:3000
+
+    production:
+      domain: localhost:3000
+      host: sigma.ug.edu.pl:3000
+      address: inf.ug.edu.pl
+      port: 25
+      user_name: <login>
+      password: <password>
+      authentication: login
+
+**Dlaczego zmienne wpisujemy w osobnym pliku?**
+
+Używamy stałej globalnej:
+
+    :::ruby config/initializers/load_mailer_config.rb
+    raw_config = File.read("#{Rails.root}/config/mailer_config.yml")
+    MAILER_CONFIG = YAML.load(raw_config)[Rails.env].symbolize_keys
+
+Konfigurujemy SMTP:
+
+    :::ruby config/initializers/setup_mail.rb
+    ActionMailer::Base.smtp_settings = {
+      :address              => MAILER_CONFIG[:address],
+      :port                 => MAILER_CONFIG[:port],
+      :domain               => MAILER_CONFIG[:domain],
+      :user_name            => MAILER_CONFIG[:user_name],
+      :password             => MAILER_CONFIG[:password],
+      :authentication       => MAILER_CONFIG[:authentication],
+      :enable_starttls_auto => true
+    }
+    ActionMailer::Base.default_url_options[:host] = MAILER_CONFIG[:host]
+
+Wygodne w development:
+
+    :::ruby lib/development_mail_interceptor.rb
+    class FortuneMailInterceptor
+      def self.delivering_email(message)
+        message.subject = "[#{message.to}] #{message.subject}"
+        message.to = "matwb@ug.edu.pl"
+      end
+    end
+    ActionMailer::Base.register_interceptor(FortuneMailInterceptor) if Rails.env.development?
+
+Musimy jeszcze dodać katalog *lib* do ścieżki wyszukiwania:
+
+    :::ruby config/application.rb
+    module Fortunka
+      class Application < Rails::Application
+        # Custom directories with classes and modules you want to be autoloadable.
+        # config.autoload_paths += %W(#{config.root}/extras)
+        config.autoload_paths += %W(#{config.root}/lib)

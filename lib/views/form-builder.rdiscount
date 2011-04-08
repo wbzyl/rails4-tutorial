@@ -1,56 +1,10 @@
 #### {% title "FormBuilder v. simple_form gem" %}
 
-# FormBuilder v. simple_form gem
+# FormBuilder
 
-Dlaczego? Zaczniemy od gotowca. Następnie roboty ręczne.
+Dlaczego? Kiedy *simple_form* nie wystarcza?
 
 Wspomnieć o gemie *ActiveScaffold*. Jaki problem on rozwiązuje?
-
-
-## Korzystamy z gemu simple_form
-
-Na początek instalujemy rozszerzenie View Source Chart do Firefoksa:
-
-    https://addons.mozilla.org/en-US/firefox/addon/655/
-
-Użycie: right + click -> View Source Chart
-
-Dopisujemy gem do *Gemfile*:
-
-    gem 'simple_form', :git => 'git://github.com/plataformatec/simple_form.git'
-
-i wykonujemy dwa polecenia:
-
-    bundle update
-    rails generate simple_form:install
-
-      create  config/initializers/simple_form.rb
-      create  config/locales/simple_form.en.yml
-      create  lib/templates/erb/scaffold/_form.html.erb
-
-Zamieniamy formularz na:
-
-    <%= simple_form_for(@task) do |f| %>
-      <%= f.error_notification %>
-
-      <div class="inputs">
-        <%= f.input :name, :placeholder => 'wpisz co najmniej cztery znaki' %>
-      </div>
-
-      <div class="actions">
-        <%= f.button :submit %>
-      </div>
-    <% end %>
-
-i już!
-
-
-## TODO: CSS
-
-Podrasować CSS!
-
-
-# FormBuilder
 
 Na początek instalujemy rozszerzenie View Source Chart do Firefoksa:
 
