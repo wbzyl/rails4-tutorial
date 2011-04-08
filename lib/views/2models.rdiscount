@@ -69,7 +69,6 @@ będziemy potrzebować następujących szablonów:
 
     views/
     |-- comments
-    |   |-- edit.html.erb
     |   |-- new.html.erb
     |   |-- _comment.html.erb
     |   `-- _form.html.erb
