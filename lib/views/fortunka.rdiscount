@@ -1321,14 +1321,15 @@ oraz stary routing, który też obowiązuje:
 
              root        /                  {:controller=>"fortunes", :action=>"index"}
 
-Przechodzimy do modelu *Comment*, gdzie znajdujemy dopisane powiązanie:
+Przechodzimy do modelu *Comment*, gdzie znajdujemy dopisane
+przez generator powiązanie:
 
     :::ruby app/models/comment.rb
     class Comment < ActiveRecord::Base
       belongs_to :fortune
     end
 
-Przechodzimy do modelu *Fortune*, gdzie dopisujemy drugą stronę powiązania:
+Przechodzimy do modelu *Fortune*, gdzie sami dopisujemy drugą stronę powiązania:
 
     :::ruby app/models/fortune.rb
     class Fortune < ActiveRecord::Base
@@ -1392,7 +1393,7 @@ Czy samo *Comment.new* nie wystarczyłoby?
 
 ## Kontroler dla komentarzy
 
-W pustym *CommentsController* wpisujemy:
+W pustym kontrolerze utworzonym przez generator **uważnie** wpisujemy:
 
     :::ruby app/controllers/comments_controller.rb
     class CommentsController < ApplicationController
@@ -1413,63 +1414,135 @@ W pustym *CommentsController* wpisujemy:
       end
     end
 
-Powyżej, po zapisaniu nowej fortunki lub jej usunięciu,
-wymuszamy za pomocą *:location* przeładowanie strony z fortunką.
+W powyższym kodzie wymuszamy za pomocą konstrukcji z *location*,
+przeładowanie strony z fortunką po zapisaniu w bazie
+nowej fortunki lub jej usunięciu.
 
-Musimy jeszcze pomyślić o *update* komentarzy oraz
-gdzie to będziemy robić!
+To jeszcze nie wszystko! Musimy napisać metody *edit* oraz *update*.
+Należy pomyślić też o widoku do edycji komentarzy!
+
 Ale teraz zabierzemy się za refaktoryzację kodu.
 
 
 ## Refaktoryzacja widoku „show”
 
-Tworzymy dwa szablony częściowe dla komentarzy: *_form.html.erb*
-(usuwamy cały kod pod znacznikiem *h2\#Add new comments*):
+Usuwamy kod formularza pod znacznikiem *h2\#Add new comments* powyżej.
+Tworzymy z usuniętego kodu szablon częściowy *comments/_form.html.erb*:
 
     :::html_rails app/views/comments/_form.html.erb
-    <%= simple_form_for [@fortune, @fortune.comments.build] do |f| %>
+    <%= simple_form_for [@fortune, @comment] do |f| %>
       <%= f.input :author, :input_html => {:size => 40} %>
       <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
       <%= f.button :submit %>
     <% end %>
 
-oraz szablon *_comment.html.erb* (ciało pętla pod *h2\#Comments*):
+**Uwaga:** W usuniętym kodzie należy fragment *@fortune.comments.build*
+zamienić na *@comment*, a zmienną *@comment* – zdefiniować
+w metodzie *show* kontrolera *FortunesController*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def show
+      @fortune = Fortune.find(params[:id])
+      @comment = Comment.new
+      respond_with(@fortune)
+    end
+
+Następnie usuwamy pętlę pod *h2\#Comments* powyżej. Z ciała tej
+pętli tworzymy drugi szablon częściowy *comments/_comment.html.erb*:
 
     :::html_rails app/views/comments/_comment.html.erb
-    <p>Autor:<br><%= comment.author %></p>
-    <div class="comment">
-      <b>Body:</b> <%= comment.body %>
+    <p><i>Autor:</i> <%= comment.author %></p>
+    <div class="comment"><i>Body:</i>
+      <%= comment.body %>
     </div>
     <p>
       <%= link_to "Delete", [@fortune, comment], :confirm => t('helpers.data.sure'), :method => :delete %>
     </p>
 
-Na koniec poprawiamy kod widoku *show*, tak aby korzystał
-nowych szablonów częściowych:
+Na koniec poprawiamy kod widoku *show*, wstawiając nowe szablony częściowe:
 
     :::html_rails app/views/fortunes/show.html.erb
-    <h2>Add new comment</h2>
-    <%= render :partial => 'comments/form' %>
-
     <% if @fortune.comments.any? %>
       <h2>Comments</h2>
-      <%= render @fortune.comments %>
+      <%= render :partial => 'comments/comment', :collection => @fortune.comments %>
     <% end %>
+
+    <h2>Add new comment</h2>
+    <%= render :partial => 'comments/form' %>
 
 
 ## Reszta obiecanego kodu
 
-Czyli uaktualnianie komentarzy!
+…czyli metody *edit* oraz *update*:
+
+    :::ruby app/controllers/comments_controller.rb
+    def edit
+      @comment = @fortune.comments.find(params[:id])
+    end
+
+    def update
+      @comment = @fortune.comments.find(params[:id])
+      @comment.update_attributes(params[:comment])
+      respond_with(@fortune, @comment, :location => @fortune)
+    end
+
+oraz brakujący link do edycji fortunki:
+
+    :::html_rails app/views/comments/_comment.html.erb
+    <%= link_to 'Edit', edit_fortune_comment_path(@fortune, comment) %>
+
+no i szablon widoku – *comments/edit.html.erb*:
+
+    :::html_rails app/views/comments/edit.html.erb
+    <% title "Editing comment" %>
+    <%= render :partial => 'form' %>
+    <p class="links clear">
+      <%= link_to 'Show Fortune', @comment.fortune %>
+    </p>
 
 
+## Walidacja komentarzy
 
-# Szlifowanie kodu
+Będziemy wymagać aby każde pole było niepuste:
 
-1\. Dopisać logowanie via *authenticate_or_request_with_http_basic* tak jak to jest
+    :::ruby app/models/comment.rb
+    class Comment < ActiveRecord::Base
+      belongs_to :fortune
+      validates :author, :presence => true
+      validates :body, :presence => true
+    end
+
+Musimy też utworzyć widok *comments/new.html.erb*:
+
+    :::html_rails app/views/comments/new.html.erb
+    <% title "New comment" %>
+    <%= render :partial => 'form' %>
+    <p class="links clear"><%= link_to 'Back', @comment.fortune %></p>
+
+Będziemy go potrzebować jak użytkownik kilknie przycisk
+„Create Comment” przy jednym z pól pustym.
+
+**BUG:** W Chromie ten kod nie działa. Zamiast Railsów
+poprawność danych sprawdza Chrome –
+uaktywnia sprawdzanie zawartości pól formularza.
+
+Pojawiaja się komunikat po angielsku:
+
+    Please fill out this field.
+
+Często nie w tym polu co trzeba. Gdzie się tłumaczy te komunikaty?
+Jak to wyłączyć?
+
+
+# TODO: Szlifowanie kodu
+
+TODO: przenieść do innych (nowych?) rozdziałów.
+
+Dopisać logowanie via *authenticate_or_request_with_http_basic* tak jak to jest
 opisane w samouczku [Getting Started with Rails](http://edgeguides.rubyonrails.org/getting_started.html).
 
 
-## Dodać autentykacja
+## Dodać autentykację
 
 * [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise).
 * [Customizing Devise](http://asciicasts.com/episodes/210-customizing-devise).
