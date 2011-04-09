@@ -349,6 +349,8 @@ będziemy tego robić, ponieważ to już było przy okazji „Fortunki v1.0”.
 Dopisać logowanie via *authenticate_or_request_with_http_basic* tak jak to jest
 opisane w samouczku [Getting Started with Rails](http://edgeguides.rubyonrails.org/getting_started.html).
 
+[Blog w mongo](http://asciicasts.com/episodes/238-mongoid), zamiast w sqlite.
+
 * Zajaxowana Fortunka: sklonować repozytorium git *hello/rails3-ajax*.
   Jak to działa? Źródło
   [Creating a 100% ajax CRUD using rails 3 and unobtrusive javascript](http://stjhimy.com/posts/7).
