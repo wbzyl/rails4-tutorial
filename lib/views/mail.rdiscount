@@ -1,8 +1,78 @@
 #### {% title "Podstawy emailowania w Ruby" %}
 
-# TODO: Podstawy emailowania w Ruby
+# Podstawy emailowania w Ruby
 
-Przerobić kilka skryptów.
+Wysyłając pocztę musimy programowi pocztowemu podać swoje dane: login
+i hasło. Jeśli pocztę wysyłamy z aplikacji Rails, to musimy wcześniej
+nasze dane umieścić gdzieś w kodzie. Jeśli kod trzymamy w repozytorium,
+to musimy zadbać, aby nasze dane nie znalazły się gdzieś w chmurze,
+na przykład na Githubie.
+
+W przykładach poniżej swoje dane będę czytał z pliku *smtp.yml*,
+który umieszczę poza repozytorium
+w katalogu *$HOME/.credentials/* albo (dla aplikacji Rails)
+nazwę pliku dodam do pliku *.gitignore*, a sam plik skopiuję
+do katalogu *config/initializers/*.
+
+Do wysyłania poczty użyję programu *sendmail*.
+
+Oto przykładowy plik z danymi (w formacie [YAML](http://www.yaml.org/)),
+dla konta pocztowego na *gmail.com* i konta – na *sigmie*):
+
+    :::yaml smtp.yml
+    development:
+      address: smtp.gmail.com
+      domain: gmail.com
+      port: 587
+      user_name: ‹login›
+      password: ‹hasło›
+      authentication: plain
+      host: localhost:3000
+
+    production:
+      address: inf.ug.edu.pl
+      domain: ug.edu.pl
+      port: 25
+      user_name: ‹login›
+      password: ‹hasło›
+      authentication: login
+      host: sigma.ug.edu.pl:3000
+
+Do wysłania poczty, możemy użyć takiego skryptu:
+
+    :::ruby gmail.rb
+    # -*- coding: utf-8 -*-
+    require 'mail'
+    require 'yaml'
+
+    raw_config = File.read("#{ENV['HOME']}/.credentials/smtp.yml")
+    SMTP_CONFIG = YAML.load(raw_config)['development'].symbolize_keys
+
+    Mail.defaults do
+      delivery_method :smtp, {
+        :address => SMTP_CONFIG[:address],
+        :port => SMTP_CONFIG[:port],
+        :domain => SMTP_CONFIG[:domain],
+        :user_name => SMTP_CONFIG[:user_name],
+        :password => SMTP_CONFIG[:password],
+        :authentication => SMTP_CONFIG[:authentication],
+        :enable_starttls_auto => true
+      }
+    end
+
+    mail = Mail.new do
+      to 'matwb@ug.edu.pl'
+      from 'wlodek.bzyl@gmail.com'
+      subject 'Tę wiadomość wysłano z Gmail'
+      body File.read('body.txt')
+      add_file :filename => 'butterfly.jpg', :content => File.read('images/butterfly.jpg')
+    end
+
+    mail.deliver!
+
+**Uwaga:** Jeśli na *localhost* działa *sendmail*,
+to możemy pominąć całą konfigurację SMTP
+(zob. {%= link_to "localhost.rb", "/mail/localhost.rb" %}).
 
 
 # eMailowanie w Rails
@@ -12,35 +82,37 @@ Ryana Batesa [Action Mailer in Rails 3](http://railscasts.com/episodes/206-acti
 
 Poniżej ten przykład z dodatkami wspomnianymi przez Ryana.
 
-Zaczynamy:
+Zaczynamy od wygenerowania rusztowania dla aplikacji Rails:
 
     rails new mailit
     cd mailit
 
-Do pliku *Gemfile* dopisujemy:
+Użyjemy pliku *Gemfile* z Fortunki v1.0 do którego dopiszemy:
 
     :::ruby
     gem "mail"
-    gem "nifty-generators"
-    gem "thin"
 
-
-Teraz kolej na (dodałem pola: password oraz password_confirmation):
+Teraz kolej na model:
 
     bundle install
     rails g nifty:layout
-    rails g nifty:scaffold user username:string email:string password:string password_confirmation:string
+    rails g scaffold user username:string email:string password:string password_confirmation:string
     rake db:migrate
-    rails s thin
+
+
+## Co chcemy osiągnąć?
 
 Po wejściu na stronę
 
-    http://localhost:3000/users/new**
+    http://localhost:3000/users/new
 
 wpisaniu danych do formularza i kliknięciu przycisku „Create User”
 aplikacja ma wysłać na podany email email.
 
-## JTZ – konfiguracja
+
+## Konfiguracja SMTP
+
+Wygląda to nieco inaczej w Rails niż w samym Ruby.
 
 Zaczynamy od inicjalizacji zmiennych z których korzysta program do
 wysłania poczty:
@@ -146,6 +218,23 @@ Kod wysyłający pocztę umieścimy dopisując w metodzie *create* kontrolera
 
 ## Mail interceptors
 
+W tym pliku wstawiamy interceptor:
+
+    :::ruby cat hello/rails3-authlogic/config/initializers/setup_mail.rb
+    ActionMailer::Base.smtp_settings = {
+      :address              => MAIL_CONFIG[:address],
+      :port                 => MAIL_CONFIG[:port],
+      :domain               => MAIL_CONFIG[:domain],
+      :user_name            => MAIL_CONFIG[:user_name],
+      :password             => MAIL_CONFIG[:password],
+      :authentication       => MAIL_CONFIG[:authentication],
+      :enable_starttls_auto => true
+    }
+    ActionMailer::Base.default_url_options[:host] = MAIL_CONFIG[:host]
+    ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor) if Rails.env.development?
+
+A nie w tym!
+
     :::ruby lib/development_mail_interceptor.rb
     class FortuneMailInterceptor
       def self.delivering_email(message)
@@ -153,6 +242,7 @@ Kod wysyłający pocztę umieścimy dopisując w metodzie *create* kontrolera
         message.to = "matwb@ug.edu.pl"
       end
     end
+    # tutaj psuje i18n!
     ActionMailer::Base.register_interceptor(FortuneMailInterceptor) if Rails.env.development?
 
 Ponieważ katalog *lib* nie jest w ścieżce *$LOAD_PATH* dopisujemy go w pliku
@@ -160,77 +250,3 @@ konfiguracyjnym aplikacji:
 
     :::ruby config/application.rb
     config.autoload_paths += %W(#{config.root}/lib)
-
-
-
-# Stare notatki
-
-Może się to do czegoś przyda.
-
-## Przypominanie hasła – korzystamy z poczty
-
-Konfiguracja:
-
-    :::yaml config/mailer_config.yml
-    development:
-      domain: localhost:3000
-      host: localhost:3000
-      address: smtp.gmail.com
-      port: 587
-      user_name: <login>
-      password: <password>
-      authentication: plain
-
-    test:
-      domain: localhost:3000
-
-    production:
-      domain: localhost:3000
-      host: sigma.ug.edu.pl:3000
-      address: inf.ug.edu.pl
-      port: 25
-      user_name: <login>
-      password: <password>
-      authentication: login
-
-**Dlaczego zmienne wpisujemy w osobnym pliku?**
-
-Używamy stałej globalnej:
-
-    :::ruby config/initializers/load_mailer_config.rb
-    raw_config = File.read("#{Rails.root}/config/mailer_config.yml")
-    MAILER_CONFIG = YAML.load(raw_config)[Rails.env].symbolize_keys
-
-Konfigurujemy SMTP:
-
-    :::ruby config/initializers/setup_mail.rb
-    ActionMailer::Base.smtp_settings = {
-      :address              => MAILER_CONFIG[:address],
-      :port                 => MAILER_CONFIG[:port],
-      :domain               => MAILER_CONFIG[:domain],
-      :user_name            => MAILER_CONFIG[:user_name],
-      :password             => MAILER_CONFIG[:password],
-      :authentication       => MAILER_CONFIG[:authentication],
-      :enable_starttls_auto => true
-    }
-    ActionMailer::Base.default_url_options[:host] = MAILER_CONFIG[:host]
-
-Wygodne w development:
-
-    :::ruby lib/development_mail_interceptor.rb
-    class FortuneMailInterceptor
-      def self.delivering_email(message)
-        message.subject = "[#{message.to}] #{message.subject}"
-        message.to = "matwb@ug.edu.pl"
-      end
-    end
-    ActionMailer::Base.register_interceptor(FortuneMailInterceptor) if Rails.env.development?
-
-Musimy jeszcze dodać katalog *lib* do ścieżki wyszukiwania:
-
-    :::ruby config/application.rb
-    module Fortunka
-      class Application < Rails::Application
-        # Custom directories with classes and modules you want to be autoloadable.
-        # config.autoload_paths += %W(#{config.root}/extras)
-        config.autoload_paths += %W(#{config.root}/lib)
