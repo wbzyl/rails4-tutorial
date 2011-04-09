@@ -80,6 +80,8 @@ to możemy pominąć całą konfigurację SMTP
 Trochę podręcznych linków:
 
 * [Mailer Models](http://api.rubyonrails.org/classes/ActionMailer/Base.html)
+* [Observers](file:///home/wbzyl/github.com/rails/railties/guides/output/active_record_validations_callbacks.html#callbacks-overview)
+* [ActionMailer::Base](http://apidock.com/rails/ActionMailer/Base)
 
 Railsy Gem *mail*
 
