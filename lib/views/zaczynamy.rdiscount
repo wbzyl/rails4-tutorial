@@ -372,7 +372,7 @@ Następnie z generatora *nifty:scaffold*:
 
     bundle install
 
-A tak wyglada wygenerowany kontroller, siedem metod i mniej kodu:
+A tak wygląda wygenerowany kontroller, siedem metod i mniej kodu:
 
     :::ruby app/controllers/fortunes_controller.rb
     class FortunesController < ApplicationController

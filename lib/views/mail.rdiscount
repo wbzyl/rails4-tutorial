@@ -77,6 +77,13 @@ to możemy pominąć całą konfigurację SMTP
 
 # eMailowanie w Rails
 
+Trochę podręcznych linków:
+
+* [Mailer Models](http://api.rubyonrails.org/classes/ActionMailer/Base.html)
+
+Railsy Gem *mail*
+
+
 Jak wysyłać email z aplikacji można obejrzeć na screencaście
 Ryana Batesa [Action Mailer in Rails 3](http://railscasts.com/episodes/206-action-mailer-in-rails-3).
 
