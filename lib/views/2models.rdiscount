@@ -118,14 +118,25 @@ W *_form.html.erb* przechodzimy na *simple_form_for*:
       <div class="actions"><%= f.button :submit %></div>
     <% end %>
 
-Konfiguracja generowanych elementów formularza:
+
+## Ładniejsze formularze z *simple_form*
+
+Poprawimy nieco domyślny wygląd formularza.
+
+Zaczniemy od konfiguracji generowanych elementów formularza:
 
     :::ruby config/initializers/simple_form.rb
     config.error_tag = :div
 
-I kilka dodatków do pliku CSS:
+Nastepnie ustawimy marginesy, wielkość fontu:
 
-    :::css
+    :::css public/stylesheets/simple_form.css
+    body {
+      background-color: #7BA1A4;
+      font-family: Verdana, Helvetica, Arial;
+      font-size: 18px;
+    }
+
     input[type="text"], textarea {
       font: inherit;
       font-size: 100%;
@@ -143,8 +154,13 @@ I kilka dodatków do pliku CSS:
       margin: 1.0em 0;
     }
 
+Na koniec, dodajemy powyższy arkusz css do layoutu aplikacji:
 
-### Refaktoryzacja widoku *index*
+    :::css app/views/layouts/application.html.erb
+    <%= stylesheet_link_tag "application", "simple_form" %>
+
+
+## Refaktoryzacja widoku *index*
 
 Wycinamy pętlę z pliku *index.html.erb*.
 Tworzymy z niej szablon częściowy *_post.html.erb*:

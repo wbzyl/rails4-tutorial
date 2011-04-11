@@ -82,22 +82,35 @@ Zaczynamy od wygenerowania rusztowania dla aplikacji Rails:
     rails new mailit
     cd mailit
 
-Użyjemy pliku *Gemfile* z Fortunki v1.0 do którego dopiszemy:
+W aplikacji „Mail it” użyjemy pliku *Gemfile* z Fortunki v1.0.
 
-Teraz kolej na model:
+Teraz wykonujemy kolejno polecenia:
 
     bundle install --path=.bundle/gems
     rails g jquery:install
-    rails g simple_form:install
     rails g nifty:layout
+    rails g simple_form:install
     rails g scaffold user username:string email:string password:string password_confirmation:string
     rake db:migrate
 
-Wchodzimy na stronę:
+Poprawiamy layout formularzy, tak jak to opisano w rozdziale
+„Ładniejsze formularze z *simple_form*”
+(z wykładu „»Blog« na dwóch modelach”).
 
-    localhost:3000/users/new
+Sprawdzamy, czy coś poszło nie tak. Wchodzimy na stronę:
 
-gdzie dodajemy jedengo użytkownika.
+    http://localhost:3000/users/new
+
+gdzie dodajemy nowego użytkownika.
+
+Teraz pora na walidację:
+
+    :::ruby app/models/user.rb
+    class User < ActiveRecord::Base
+      validates :username, :length => {:in => 2..12}, :allow_blank => true
+      validates :email, :format => /\A[-@.a-z0-9]\z/, :uniqueness => true
+      validates :password,  :length => {:in => 2..12}, :confirmation => true
+    end
 
 
 ## Co chcemy osiągnąć?
@@ -106,25 +119,28 @@ Po wejściu na stronę
 
     http://localhost:3000/users/new
 
-wpisaniu danych do formularza i kliknięciu przycisku „Create User”
-aplikacja ma wysłać na podany email.
+wpisaniu danych do formularza, kliknięciu przycisku „Create User”
+i walidacji wpisanych danych, aplikacja „Mail it” ma wysłać
+na wpisany adres email wiadomość z potwierdzeniem rejestracji.
 
 
-## Konfiguracja *ActionMailer*
+## Konfiguracja programu pocztowego
 
-Zaczynamy od konfiguracji programu pocztowego:
+Zaczynamy od konfiguracji programu pocztowego. Będziemy korzystać
+z SMTP. Na początek coś na ukrycie loginu i hasła
+do programu pocztowego (ja korzystam z *Gmail*):
 
     rails g nifty:config mail
       create  config/initializers/load_mail_config.rb
       create  config/mail_config.yml
 
-Dopisujemy do pliku *.gitignore*:
+Plik, w którym wpiszemy swoje dane dopisujemy do pliku *.gitignore*:
 
     config/mail_config.yml
 
-Następnie wpisujemy do niego nasze dane.
+Dopiero teraz wpisujemy do niego swoje dane.
 
-Konfiguracja SMTP:
+Teraz konfiguracja SMTP wyglada tak:
 
     :::ruby config/initializers/load_mail_config.rb
     raw_config = File.read("#{Rails.root}/config/mail_config.yml")
@@ -140,7 +156,8 @@ Konfiguracja SMTP:
       :enable_starttls_auto => true
     }
 
-Konfiguracja hosta:
+Z powodów, które wyjaśnią się za chwilę, musimy jeszcze podać
+uri aplikacji z autentykacją:
 
     :::ruby config/environments/development.rb
     config.action_mailer.raise_delivery_errors = true
@@ -149,17 +166,17 @@ Konfiguracja hosta:
       :port => 3000
     }
 
-(*production.rb* – później)
+(Konfiguracja *production.rb* – później.)
 
 
 ## Stub out a new mailer and its views
 
-Wygląda to tak:
+*Stub out* wygląda tak:
 
     rails generate mailer user_mailer
       create  app/mailers/user_mailer.rb
        invoke  erb
-       create    app/views/user_mailer
+       create  app/views/user_mailer
 
 Wygenerowany kod:
 
@@ -168,26 +185,27 @@ Wygenerowany kod:
       default :from => "from@example.com"
     end
 
-Zmieniamy na:
+zmieniamy na:
 
     :::ruby app/mailers/user_mailer.rb
     class UserMailer < ActionMailer::Base
       default :from => "wbzyl@inf.ug.edu.pl"
+
       def registration_confirmation(user)
-        @user = user # użyjemy w szablonie wiadomosści
+        @user = user # zmiennej instancji użyjemy w szablonie emaila
         attachments["rails.png"] = File.read("#{Rails.root}/public/images/rails.png")
         mail(:to => user.email, :subject => "Registered")
       end
     end
 
-Tworzymy powiązany widok:
+a do metody *registration_confirmation* piszemy powiązany z nią widok:
 
     :::html_rails app/views/user_mailer/registration_confirmation.text.erb
     <%= @user.username %>,
     Thank you for registering!
 
-Powyższą wiadomość aplikacja powinna wysłać po utworzeniu
-nowego użytkownika. Oto kod który to robi:
+Z tego widoku renderowany jest email, który aplikacja powinna wysłać
+po zapisaniu danych nowego użytkownika w bazie. Oto kod który to robi:
 
     :::ruby
     UserMailer.registration_confirmation(@user).deliver
@@ -204,67 +222,95 @@ Należy go wstawić do metody *create* kontrolera *UsersController*:
       respond_with(@user)
     end
 
+O co chodzi w tym kodzie (cytaty Rails Guides)?
+
+„Instead of rendering a view and sending out the HTTP protocol, we
+are just sending it out through the Email protocols instead. Due to
+this, it makes sense to just have your controller tell the mailer to
+send an email when a user is successfully created.”
+
+Na co trzeba zwrócić uwagę?
+
+„Sending out one email should only take a fraction of a second, if you
+are planning on sending out many emails, or you have a slow domain
+resolution service, you might want to investigate using a background
+process like delayed job.”
+
+
 
 ## Przechodzimy na wysyłanie wiadomości HTML
 
-Usuwamy szablon wiadomości tekstowej:
-
-    rm app/views/user_mailer/registration_confirmation.text.erb
-
-i przechodzimy na HTML:
+To jest proste! Piszemy szablon HTML:
 
     :::html_rails app/views/user_mailer/registration_confirmation.html.erb
     <h3><%= @user.username %></h3>
     <p>Thank you for registering!</p>
-    <p>Edit Profile: <%= link_to "Click me!", edit_user_url(@user, :host => MAIL_CONFIG[:host]) %></p>
+    <p>Edit Profile:
+      <%= link_to "Click me!", edit_user_url(@user, :host => MAIL_CONFIG[:host]) %>
+    </p>
 
-Gotowe!
+i usuwamy szablon tekstowy:
 
-*Actionmailer* nic nie wie na jakim hoście uruchomiona jest aplikacja.
-Wysyłanie poczty jest *decoupled* od kodu aplikacji.
-Dlatego, musimy jakoś powiedzieć metodzie pomocniczej
-*edit_usr_url* na jakim hoście działa nasza aplikacja.
+    rm app/views/user_mailer/registration_confirmation.text.erb
 
-W zasadzie, jeśli opiekujemy się kilkoma aplikacjami rails, to
-autentykację moglibyśmy napisac raz. Coś w stylu *simple omniauth*!
-Jeśli by tak było, to zmienna *host* powinna wskazywać na tę
-aplikację.
+(Albo go zostawiamy. Wtedy *ActionMailer* automatycznie wyśle
+post *multipart/alternative*.)
+
+Dlaczego w metodzie pomocniczej *edit_user_url* użyto *host*?
+„Unlike controllers, the mailer instance doesn’t have any context about
+the incoming request so you’ll need to provide the *:host*, *:controller*,
+and *:action*.”
+Innymi słowy, wysyłanie poczty jest *decoupled* od kodu aplikacji.
+Dlatego, musimy jakoś powiedzieć metodzie pomocniczej *edit_user_url*
+na jakim hoście działa nasza aplikacja.
+
+W zasadzie, jeśli opiekujemy się kilkoma aplikacjami Rails, to
+autentykację moglibyśmy napisać raz. Na przykład coś w stylu *simple
+omniauth*. Jeśli tak by było, to zmienna *host* powinna wskazywać na
+tę aplikację.
 
 
 ## Mail interceptors & observers
 
-W trakcie *development*…
+Intercepting mail messages before they’re delivered.
+Co to oznacza? Jakiś hook? Coś innego? Co?
 
-W tym pliku wstawiamy interceptor:
+Do czego może się przydać taki przechwytywacz poczty? Na przykład,
+w trybie development możemy wysyłanym emailom podmienić
+adres na adres swojej skrzynki pocztowej.
+Dlaczego takie zachowanie aplikacji może być użyteczne?
 
-    :::ruby cat hello/rails3-authlogic/config/initializers/setup_mail.rb
+Interceptor „must implement the *delivering_email* method which
+will be called before the email is sent, allowing you to make
+modifications to the email before it hits the delivery agents”:
+
+    :::ruby config/initializers/setup_mail.rb
     class DevelopmentMailInterceptor
       def self.delivering_email(message)
         message.subject = "[#{message.to}] #{message.subject}"
         message.to = "matwb@ug.edu.pl"
       end
     end
-    ActionMailer::Base.default_url_options[:host] = MAIL_CONFIG[:host]
+
     ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor) if Rails.env.development?
 
-Obserwer też się przyda: po wysłaniu poczty możemy sobie,
-tę informacje zapisac w logoach (chociaż już tam jest)
 
-Używamy Obserwers do decoupling wysyłania poczty!
+Observer też się przyda – „*delivered_email* method is called once for
+every email sent after the email has been sent.”:
+
+    :::ruby config/initializers/setup_mail.rb
+    class DevelopmentMailObserver
+      def self.delivered_email(message)
+        Rails.logger.info("====>>>> #{Time.now}: message send to #{message.to}")
+      end
+    end
+
+    ActionMailer::Base.register_observer(DevelopmentMailObserver) if Rails.env.development?
+
+Jakiś lepszy przykład zastosowania dla obserwatora wysłanej poczty?
 
 
-
-Potrzebne? Ponieważ katalog *lib* nie jest w ścieżce *$LOAD_PATH* dopisujemy go w pliku
-konfiguracyjnym aplikacji:
-
-    :::ruby config/application.rb
-    config.autoload_paths += %W(#{config.root}/lib)
-
-
-## Trochę podręcznych linków:
+## Kilka linków
 
 * [ActionMailer::Base](http://apidock.com/rails/ActionMailer/Base)
-* [Observers](file:///home/wbzyl/github.com/rails/railties/guides/output/active_record_validations_callbacks.html#callbacks-overview)
-
-Jak wysyłać email z aplikacji można obejrzeć na screencaście
-Ryana Batesa [Action Mailer in Rails 3](http://railscasts.com/episodes/206-action-mailer-in-rails-3).
+* R. Batesa [Action Mailer in Rails 3](http://railscasts.com/episodes/206-action-mailer-in-rails-3).
