@@ -6,18 +6,24 @@ Dlaczego autentykacja z Devise. Jest wiele argumentów za. Wszystkie
 są wymienione w [README](https://github.com/plataformatec/devise)
 projektu.
 
+R. Bates przedstawił instalację w dwóch screencastach:
+
 * [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise).
 * [Customizing Devise](http://asciicasts.com/episodes/210-customizing-devise).
 
-## Autentykacja od zera
+<blockquote>
+  <p>{%= image_tag "/images/linux-from-scratch.jpg", :alt => "[linux from scratch]" %}</p>
+</blockquote>
 
-Zgodnie z sugestią z sekcji „Starting with Rails?” powinniśmy
+# Autentykacja od zera
+
+Zgodnie z sugestią autorów gemu Devise powinniśmy
 zacząć od samodzielnego napisania od zera prostej autentykacji.
 
-
-Wzorując się screencaście \#250 R. Batesa,
-[Authentication from Scratch ](http://asciicasts.com/episodes/250-authentication-from-scratch),
-dodamy autentykację do aplikacji „Blog”.
+I tak zrobimy. Dodamy autentykację do aplikacji „Blog” przedstawionej
+na jednym z poprzednich wykładów. W przykładzie będziemy się wzorować
+na przykładzie przedstawionym przez R. Batesa
+w [Authentication from Scratch ](http://asciicasts.com/episodes/250-authentication-from-scratch).
 
 
 ## Rejestracja, czyli *Signing in*
@@ -62,22 +68,26 @@ Widok:
 Model *User* nie ma zdefiniowanych atrybutów:
 *password* i *password_confirmation*. Coś z tym trzeba będzie zrobić.
 
-Zmieniamy wygenerowany routing na:
+Zmieniamy wygenerowany routing na bardziej przyjazny:
 
     :::ruby config/routes.rb
     get "register" => "users#new", :as => "register"
-    root :to => "users#new"  # to trzeba będzie zmienić
+    # to trzeba będzie zmienić; teraz tak będzie wygodnie
+    root :to => "users#new"
     resources :users
 
-Teraz po uruchomieniu serwera i wejściu na stronę:
+Uruchomiamy serwer i wchodzimy na dowolny z poniższych uri:
 
-    http://localhost:3000/sign_up
+    http://localhost:3000/
+    http://localhost:3000/register
+    http://localhost:3000/users/new
 
-dostajemy komunikat o błędzie:
+Kończy się to następującym komunikatem o błędzie:
 
     undefined method `password' for #<User:0x0000...>
 
-Dodajemy do modelu accessor, i przy okazji, walidację:
+Dodajemy do modelu *User* brakującą metodę – i przy okazji -
+walidację:
 
     :::ruby app/models/user.rb
     attr_accessor :password
@@ -87,12 +97,7 @@ Dodajemy do modelu accessor, i przy okazji, walidację:
     validates_presence_of :email
     validates_uniqueness_of :email
 
-do zakodowania hasła użyjemy gemu *bcrypt-ruby*:
-
-    :::ruby Gemfile
-    gem 'bcrypt-ruby', :require => 'bcrypt'
-
-Poprawki w modelu:
+Teraz kolej na poprawki w modelu:
 
     :::ruby app/models/user.rb
     class User < ActiveRecord::Base
@@ -114,8 +119,14 @@ Poprawki w modelu:
       end
     end
 
-Teraz możemy się już zalogować.
-Sprawdzamy na konsoli co zostało zapisane w bazie w tabeli *users*:
+Powyżej do zakodowania hasła użyliśmy gemu *bcrypt-ruby*.
+Instalujemy go w aplikacji:
+
+    :::ruby Gemfile
+    gem 'bcrypt-ruby', :require => 'bcrypt'
+
+Dopiero teraz rejestrujemy się. Po rejestracji
+sprawdzamy na konsoli co zostało zapisane w bazie w tabeli *users*:
 
     :::ruby
     User.all
@@ -312,6 +323,45 @@ W CanCanie uprawnienia użytkowników
 
 Oczywiście możemy skorzystać też z innego gemu.
 
+Ale jeśli chcemy aby dodawanie postów i komentarzy ograniczyć
+tylko do zalogowanych użytkowników, to nie będziemy potrzebować
+ąutoryzacji. Wystarczy w kontrolerach dopisać:
 
+    :::ruby
+    class PostsController < ApplicationController
+      before_filter :login_required, :except => [:index, :show]
+
+    class CommentsController < ApplicationController
+      before_filter :login_required
+
+oraz do *ApplicationController* dodać metodę *login_required*:
+
+    :::ruby
+    private
+    def login_required
+      unless current_user
+        flash[:alert] = "You must first log in or register before accessing this page."
+        redirect_to login_url
+      end
+    end
+
+
+<blockquote>
+  <p>{%= image_tag "/images/free_sign.png", :alt => "[its free]" %}</p>
+  <p class="author"><a href="http://www.tonyamoyal.com/2010/07/28/rails-authentication-with-devise-and-cancan-customizing-devise-controllers/">[Read more]</a></p>
+</blockquote>
 
 # Autentykacja z Devise
+
+Wchodzimy jeszcze raz na stronę projektu
+[Devise](https://github.com/plataformatec/devise) aby
+dokończyć lekturę *README*.
+
+Na początek instalacja. Dopisujemy gem *devise* do *Gemfile*.
+Po instalacji, uruchamiamy generator:
+
+    rails generate devise:install
+
+Zgodnie z sugestią z *README* przeglądamy opcje konfiguracji:
+
+
