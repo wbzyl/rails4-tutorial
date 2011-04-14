@@ -2,5 +2,316 @@
 
 # Autentykacja z Devise
 
+Dlaczego autentykacja z Devise. Jest wiele argumentów za. Wszystkie
+są wymienione w [README](https://github.com/plataformatec/devise)
+projektu.
+
 * [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise).
 * [Customizing Devise](http://asciicasts.com/episodes/210-customizing-devise).
+
+## Autentykacja od zera
+
+Zgodnie z sugestią z sekcji „Starting with Rails?” powinniśmy
+zacząć od samodzielnego napisania od zera prostej autentykacji.
+
+
+Wzorując się screencaście \#250 R. Batesa,
+[Authentication from Scratch ](http://asciicasts.com/episodes/250-authentication-from-scratch),
+dodamy autentykację do aplikacji „Blog”.
+
+
+## Rejestracja, czyli *Signing in*
+
+Model:
+
+    rails g model user email:string password_hash:string password_salt:string
+    rake db:migrate
+
+Kontroler:
+
+    :::ruby app/controllers/users_controller.rb
+    class UsersController < ApplicationController
+      def new
+        @user = User.new
+      end
+
+      def create
+        @user = User.new(params[:user])
+        if @user.save
+          redirect_to root_url, :notice => "Registered!"
+        else
+          render "new"
+        end
+      end
+    end
+
+Widok:
+
+    :::ruby app/views/users/new.html.erb
+    <h1>Register</h1>
+
+    <%= simple_form_for @user do |f| %>
+      <div class="inputs">
+        <%= f.input :email %>
+        <%= f.input :password %>
+        <%= f.input :password_confirmation %>
+       </div>
+       <div class="actions"><%= f.submit %></div>
+    <% end %>
+
+Model *User* nie ma zdefiniowanych atrybutów:
+*password* i *password_confirmation*. Coś z tym trzeba będzie zrobić.
+
+Zmieniamy wygenerowany routing na:
+
+    :::ruby config/routes.rb
+    get "register" => "users#new", :as => "register"
+    root :to => "users#new"  # to trzeba będzie zmienić
+    resources :users
+
+Teraz po uruchomieniu serwera i wejściu na stronę:
+
+    http://localhost:3000/sign_up
+
+dostajemy komunikat o błędzie:
+
+    undefined method `password' for #<User:0x0000...>
+
+Dodajemy do modelu accessor, i przy okazji, walidację:
+
+    :::ruby app/models/user.rb
+    attr_accessor :password
+
+    validates_confirmation_of :password
+    validates_presence_of :password, :on => :create
+    validates_presence_of :email
+    validates_uniqueness_of :email
+
+do zakodowania hasła użyjemy gemu *bcrypt-ruby*:
+
+    :::ruby Gemfile
+    gem 'bcrypt-ruby', :require => 'bcrypt'
+
+Poprawki w modelu:
+
+    :::ruby app/models/user.rb
+    class User < ActiveRecord::Base
+      attr_accessor :password
+
+      validates_confirmation_of :password
+      validates_presence_of :password, :on => :create
+      validates_presence_of :email
+      validates_uniqueness_of :email
+
+      before_save :encrypt_password
+
+      private
+      def encrypt_password
+        if password.present?
+          self.password_salt = BCrypt::Engine.generate_salt
+          self.password_hash = BCrypt::Engine.hash_secret(password, password_salt)
+        end
+      end
+    end
+
+Teraz możemy się już zalogować.
+Sprawdzamy na konsoli co zostało zapisane w bazie w tabeli *users*:
+
+    :::ruby
+    User.all
+    wbzyl@sigma.ug.edu.pl|$2a$10$pZSeY.CDAPCoLdO0kTWu8em...|$2a$10$pZSeY.CDAPCo...
+
+OK! Jesteśmy w połowie drogi.
+
+
+## Logowanie, czyli *Logging in*
+
+Informację o zalogowaniu użytkownika będziemy zapisywać w sesji.
+Użyjemy do tego kontrolera o mało odkrywczej nazwie *SessionsController*:
+
+    rails g controller sessions new
+
+Dodajemy do routingu skróty ukrywające przed użytkownikiem
+technologię REST z której bedziemy korzystać:
+
+    :::ruby config/routes.rb
+    get "register" => "users#new",    :as => "register"
+    get "login"    => "sessions#new", :as => "login"
+
+    root :to => "users#new"  # to trzeba będzie zmienić
+
+    resources :users
+    resources :sessions
+
+Użytkownik nie musi wiedzieć czym jest logowanie albo rejestracja.
+Logowanie to REST **bez modelu**. Oznacza to, że
+z walidacją będzie problem.
+I nie będziemy mogli też użyć *simple_form_for* w widoku
+*sessions#new*.
+
+Ale jakoś sobie z tym poradzimy! Teraz zajmiemy się formularzem dla
+*sessions#new*:
+
+    :::html_rails app/views/sessions/new.html.erb
+    <h1>Log in</h1>
+    <%= form_tag sessions_path do %>
+      <div class="inputs">
+        <div class="input">
+          <%= label_tag :email %>
+          <%= text_field_tag :email, params[:email] %>
+        </div>
+        <div class="input">
+          <%= label_tag :password %>
+          <%= password_field_tag :password %>
+        </div>
+      <div class="actions"><%= submit_tag %></div>
+    <% end %>
+
+Po wypełnieniu formularza, kilkamy przycisk „Save changes” i zostajemy
+przekierowani (ponieważ działa routing REST) do metody *create*:
+
+    :::ruby app/controllers/sessions_controller.rb
+    class SessionsController < ApplicationController
+      def new
+      end
+
+      def create
+        user = User.authenticate(params[:email], params[:password])
+        if user
+          session[:user_id] = user.id
+          redirect_to root_url, :notice => "Logged in!"
+        else
+          flash.now.alert = "Invalid email or password"
+          render "new"
+        end
+      end
+    end
+
+Pytanie. Dlaczego jeśli zamienimy powyżej dwa wiersze
+kodu po *else* na:
+
+    :::ruby
+    render "new", :alert => "Invalid email or password"
+
+to nigdy nie zobaczymy tej wiadomości? Kto to wie?
+
+Zanim będziemy mogli się przyjrzeć jak to działa,
+musimy jeszcze napisać metodę *authenticate*:
+
+    :::ruby app/models/user.rb
+    def self.authenticate(email, password)
+      user = find_by_email(email)
+      if user && user.password_hash == BCrypt::Engine.hash_secret(password, user.password_salt)
+        user
+      else
+        nil
+      end
+    end
+
+I już możemy się logować do aplikacji!
+
+
+## Wylogowywanie się z aplikacji
+
+To jest proste! O ile w naszej aplikacji jest jakaś
+strona na którą można będzie przekierować
+wylogowanego użytkownika.
+
+Zaczynamy od routingu:
+
+    :::ruby config/routes.rb
+    get "register" => "users#new",    :as => "register"
+
+    get "login"    => "sessions#new", :as => "login"
+    get "logout"   => "sessions#destroy", :as => "logout"
+
+W metodzie *destroy* zakładamy, że wejście
+na *root_url* nie wymaga logowania:
+
+    :::ruby app/controllers/sessions_controller.rb
+    def destroy
+      session[:user_id] = nil
+      redirect_to root_url, :notice => "Logged out!"
+    end
+
+Jak widać wylogowywanie polega na wpisaniu do sesji
+pod *:user_id* wartości *nil*.
+
+
+## Dodajemy linki
+
+Oczywiście, nie będziemy zmuszać użytkownika
+do wpisywania tych prostych uri: register, login, logout.
+
+Dodamy do layoutu aplikacji linki do kliknięcia:
+
+    :::html_rails app/views/layouts/application.html.erb
+    <nav id="authentication">
+      <% if current_user %>
+        Welcome <%= current_user.email %>!
+        <%= link_to "Log out", logout_path %>
+      <% else %>
+        <%= link_to "Register", register_path %> or
+        <%= link_to "Log in", login_path %>
+      <% end %>
+    </nav>
+
+Powyżej korzystamy z metody pomocniczej o zwyczajowej nazwie
+*current_user*:
+
+    :::ruby app/controllers/application_controller.rb
+    helper_method :current_user # make it visible in views
+
+    private
+    def current_user
+      @current_user ||= User.find(session[:user_id]) if session[:user_id]
+    end
+
+Nie powinniśmy też zapomnieć o zabezpieczeniu się przed „mass assignment”:
+
+    :::ruby app/models/user.rb
+    class User < ActiveRecord::Base
+      attr_accessible :email, :password, :password_confirmation
+      attr_accessor :password
+
+oraz zmianie domyślnej strony aplikacji z powrotem na *posts#index*:
+
+    :::ruby
+    root :to => "posts#index"
+
+Na koniec poprawki w CSS:
+
+    :::css public/stylesheets/application.css
+    #authentication {
+      width: 75%;
+      margin: 0 auto;
+      padding: 20px 40px;
+      text-align: right;
+      background-color: #EBE54D;
+    }
+
+    #container {
+      width: 75%;
+      margin: 0 auto;
+      background-color: #FFF;
+      padding: 20px 40px;
+    }
+
+
+## TODO
+
+Oczwiście sam ten mechanizm do niczego nie jest przydatny!
+Do dopiero początek w przydzielaniu i ograniczaniu uprawnień do
+części naszej aplikacji.
+
+Takie rzeczy to już *autoryzacja* a nie *autentykacja*.
+Autoryzację implementujemy korzystając z gemu
+[CanCan](https://github.com/ryanb/cancan) – authorization for Ruby on Rails.
+W CanCanie uprawnienia użytkowników
+[definiujemy w klasie Ability](https://github.com/ryanb/cancan/wiki/defining-abilities).
+
+Oczywiście możemy skorzystać też z innego gemu.
+
+
+
+# Autentykacja z Devise
