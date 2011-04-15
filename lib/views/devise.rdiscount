@@ -361,7 +361,200 @@ Na początek instalacja. Dopisujemy gem *devise* do *Gemfile*.
 Po instalacji, uruchamiamy generator:
 
     rails generate devise:install
+      create  config/initializers/devise.rb
+      create  config/locales/devise.en.yml
 
-Zgodnie z sugestią z *README* przeglądamy opcje konfiguracji:
+    Some setup you must do manually if you haven't yet:
+
+      1. Setup default url options for your specific environment. Here is an
+         example of development environment:
+
+           config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+
+         This is a required Rails configuration. In production it must be the
+         actual host of your application
+
+      2. Ensure you have defined root_url to *something* in your config/routes.rb.
+         For example:
+
+           root :to => "home#index"
+
+      3. Ensure you have flash messages in app/views/layouts/application.html.erb.
+         For example:
+
+           <p class="notice"><%= notice %></p>
+           <p class="alert"><%= alert %></p>
+
+Czekają nas ręczne robótki:
+
+    :::ruby config/environments/development.rb
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+
+Na moim komputerze działa SMTP i wysyłanie poczty. Nic więcej
+nie muszę konfigurować.
+Ale w wersji produkcyjnej należy skonfigurować pocztę tak jak
+opisałem w „Wysyłanie poczty w Ruby”.
+
+Domyślna strona aplikacji jest ustawiona na:
+
+    :::ruby config/routes.rb
+    root :to => "posts#index"
+
+Zostawiamy jak jest.
+
+W kodzie wypisujący wiadomości flash usuwam w *id*
+elementu *div* prefiks *flash_*:
+
+    :::html_rails app/views/layouts/application.html.erb
+    <% flash.each do |name, msg| %>
+      <%= content_tag :div, msg, :id => "#{name}" %>
+    <% end %>
+
+i to samo w selektorach w *public/stylesheets/application.css*:
+
+Zgodnie z sugestią przeglądamy opcje konfiguracji
+w pliku {%= link_to "config/initializers/devise.rb", "/devise/devise.rb" %}.
+Jest tego sporo! Ale do poprawki jest tylko *mailer_sender*:
+
+    :::ruby config/initializers/devise.rb
+    config.mailer_sender = "matwb@sigma.ug.edu.pl"
+    #   ciekawość to pierwszy… domyślna wartość jest taka
+    # config.email_regexp = /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i
+    #   użyteczna informacja
+    # configure the default scope given to Warden. By default it's the first
+    # devise role declared in your routes (usually :user).
+    # config.default_scope = :user
 
 
+## Creating a devise User Model
+
+Po konfiguracji, musimy się zdecydować jak nazwiemy model
+do obsługi autentykacji. Zwyczajowo wybieramy nazwę *User*:
+
+    rails generate devise User
+        invoke   active_record
+        create     app/models/user.rb
+        create     db/migrate/20110415163428_devise_create_users.rb
+        insert     app/models/user.rb
+          route  devise_for :users
+
+Sprawdzamy wygenerowany model:
+
+    :::ruby
+    class User < ActiveRecord::Base
+      # Include default devise modules. Others available are:
+      # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
+      devise :database_authenticatable, :registerable,
+             :recoverable, :rememberable, :trackable, :validatable
+
+      # Setup accessible (or protected) attributes for your model
+      attr_accessible :email, :password, :password_confirmation, :remember_me
+    end
+
+Zostawiamy go bez zmian. Dlatego migracji też nie musimy zmieniać.
+Pora na migrację:
+
+    rake db:drop
+    rake db:migrate
+    rake db:seed
+
+Od razu poprawiamy routing, na bardziej zrozumiały
+[rdoc](http://rdoc.info/github/plataformatec/devise/master/ActionDispatch/Routing/Mapper#devise_for-instance_method):
+
+    :::ruby config/routes.rb
+    devise_for :users, :path_names => {
+      :sign_in =>  "login",
+      :sign_up =>  "register",
+      :sign_out => "logout"
+    }
+
+(Nawet w programiści Rails nazwy z prefiksem **sign_** używają w różnych znaczeniach;
+na przykład ten rozdział zaczyna się od *sign_in* – *register*, a w Devise – *login*.)
+
+Sprawdzamy nowy routing:
+
+    rake routes
+            new_user_session GET    /users/login          {:action=>"new", :controller=>"devise/sessions"}
+                user_session POST   /users/login          {:action=>"create", :controller=>"devise/sessions"}
+        destroy_user_session GET    /users/logout         {:action=>"destroy", :controller=>"devise/sessions"}
+               user_password POST   /users/password       {:action=>"create", :controller=>"devise/passwords"}
+           new_user_password GET    /users/password/new   {:action=>"new", :controller=>"devise/passwords"}
+          edit_user_password GET    /users/password/edit  {:action=>"edit", :controller=>"devise/passwords"}
+                             PUT    /users/password       {:action=>"update", :controller=>"devise/passwords"}
+    cancel_user_registration GET    /users/cancel         {:action=>"cancel", :controller=>"devise/registrations"}
+           user_registration POST   /users                {:action=>"create", :controller=>"devise/registrations"}
+       new_user_registration GET    /users/register       {:action=>"new", :controller=>"devise/registrations"}
+      edit_user_registration GET    /users/edit           {:action=>"edit", :controller=>"devise/registrations"}
+                             PUT    /users                {:action=>"update", :controller=>"devise/registrations"}
+                             DELETE /users                {:action=>"destroy", :controller=>"devise/registrations"}
+
+Wchodzimy na przykład na stronę:
+
+    http://localhost:3000/users/register
+
+i widzimy napis „Sign up” zamiast „Register”. Layout i widoki są do poprawki.
+Nie mamy wyjścia, wykonujemy:
+
+    rails generate devise:views
+     create  app/views/devise
+      create  app/views/devise/confirmations/new.html.erb
+      create  app/views/devise/mailer/confirmation_instructions.html.erb
+      create  app/views/devise/mailer/reset_password_instructions.html.erb
+      create  app/views/devise/mailer/unlock_instructions.html.erb
+      create  app/views/devise/passwords/edit.html.erb
+      create  app/views/devise/passwords/new.html.erb
+      create  app/views/devise/registrations/edit.html.erb
+      create  app/views/devise/registrations/new.html.erb
+      create  app/views/devise/sessions/new.html.erb
+      create  app/views/devise/shared/_links.erb
+      create  app/views/devise/unlocks/new.html.erb
+
+Na razie zmieniamy w szablonie *registrations/new.html.erb*
+tylko nagłówek i napis na przycisku. Jeszcze raz sprawdzamy
+jak to wygląda po tych poprawkach.
+
+Może być! Po zarejestrowaniu się w aplikacji wyświetlana jest
+wiadomość flash: „Welcome! You have **signed up** successfully.”
+Flash też do poprawki. Wszystkie komunikaty są w pliku
+{%= link_to "config/locales/devise.en.yml", "/devise/devise.en.yml" %}.
+
+
+## Linki – register, log in, log out
+
+Do layoutu aplikacji musimy dodać linki takie jak w tytule:
+
+TODO: sprawdzić *user_signed_in* ->  na co?
+
+    :::html_rails app/views/layouts/application.html.erb
+    <nav id="authentication">
+      <% if user_signed_in? %>
+        Signed in as <%= current_user.email %>. Not you?
+        <%= link_to "Sign out", destroy_user_session_path %>
+      <% else %>
+        <%= link_to "Sign up", new_user_registration_path %> or
+        <%= link_to "Sign in", new_user_session_path %>
+      <% end %>
+    </div>
+
+oraz odrobinę CSS:
+
+    :::css public/stylesheets/application.css
+    #authentication {
+      width: 75%;
+      margin: 0 auto;
+      padding: 20px 40px;
+      text-align: right;
+      background-color: #EBE54D;
+    }
+
+    #container {
+      width: 75%;
+      margin: 0 auto;
+      background-color: #FFF;
+      padding: 20px 40px;
+    }
+
+## Sprawdzamy jak to wszystko działa
+
+m.in. wysylanie poczty z przypominaniem hasła…

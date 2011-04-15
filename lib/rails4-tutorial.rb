@@ -16,19 +16,19 @@ module WB
 
     # disable overriding public and views dirs
     set :app_file, __FILE__
-    set :static, true  
-    
+    set :static, true
+
     # the middleware stack can be used internally as well. I'm using it for
     # sessions, logging, and methodoverride. This lets us move stuff out of
     # Sinatra if it's better handled by a middleware component.
-    set :logging, true  # use Rack::CommonLogger  
-    
+    set :logging, true  # use Rack::CommonLogger
+
     helpers Sinatra::RDiscount
-    
+
     # configure blocks:
     # configure :production do
     # end
-    
+
     #before do
     #  mime :sql, 'text/plain; charset="UTF-8"' # when served by Sinatra itself
     #end
@@ -44,7 +44,7 @@ module WB
     def title(name)
       @title = " // #{name}"
     end
-    
+
     get '/' do
       rdiscount :main
     end
@@ -54,7 +54,7 @@ module WB
       translate = { # to ultraviolet syntax names: uv -l syntax
         'html' => 'html',
         'html.erb' => 'html_rails',
-        'text.erb' => 'html_rails',       
+        'text.erb' => 'html_rails',
         'rb' => 'ruby_experimental',
         'ru' => 'ruby_experimental',
         'css' => 'css_experimental',
@@ -62,7 +62,7 @@ module WB
         'yml' => 'yaml',
         'sh' => 'shell-unix-generic'
       }
-      
+
       content_type 'text/html', :charset => 'utf-8'
 
       dirname = params[:captures][0]
@@ -74,7 +74,7 @@ module WB
       @filename = File.expand_path(File.join(File.dirname(__FILE__), 'doc', dirname, filename))
 
       lang = translate[extname] || 'plain_text'
-      
+
       if File.exists?(@filename) && File.readable?(@filename)
         content = "<pre><code>:::#{lang}\n#{escape_html(File.read @filename)}</code></pre>"
       else
@@ -83,7 +83,7 @@ module WB
 
       erb content, :layout => :code
     end
-    
+
     get '/:section' do
       rdiscount :"#{params[:section]}"
     end
@@ -93,7 +93,7 @@ module WB
       Kernel.puts e.backtrace.join("\n")
       'Application error'
     end
-    
+
     # each Sinatra::Base subclass has its own private middleware stack:
     # use Rack::Lint
   end

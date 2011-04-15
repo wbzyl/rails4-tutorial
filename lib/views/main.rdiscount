@@ -47,8 +47,9 @@ poprawnie (dwa sposoby):
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
 1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}
-1. {%= link_to "Podstawy emailowania w Ruby", "/mail" %}
+1. {%= link_to "Wysyłanie poczty w Ruby", "/mail" %}
 1. {%= link_to "Autentykacja z Devise", "/devise" %}
+1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %}
 1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
 1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
@@ -57,7 +58,6 @@ poprawnie (dwa sposoby):
 
 TODO:
 
-1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %}
 1. {%= link_to "Hello Fortune", "/fortunka" %}
 1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
 1. {%= link_to "Aplikacja „Todo”", "/todo" %}
