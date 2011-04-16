@@ -156,7 +156,7 @@ Nastepnie ustawimy marginesy, wielkość fontu:
 
 Na koniec, dodajemy powyższy arkusz css do layoutu aplikacji:
 
-    :::css app/views/layouts/application.html.erb
+    :::html_rails app/views/layouts/application.html.erb
     <%= stylesheet_link_tag "application", "simple_form" %>
 
 
