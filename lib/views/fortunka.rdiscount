@@ -470,22 +470,23 @@ Edytujemy plik *application.html.erb* (uwaga na końce DOS-owe wierszy):
         <%= content_tag :h1, yield(:title) if show_title? %>
         <%= yield %>
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-        <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/jquery.min.js"%3E%3C/script%3E'))</script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
+        <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/jquery.js"%3E%3C/script%3E'))</script>
 
         <%= javascript_include_tag "rails", "application" %>
 
         <!--[if lt IE 7 ]>
-            <script src="/javascripts/libs/dd_belatedpng.js"></script>
-            <script> DD_belatedPNG.fix('img, .png_bg');</script>
-            <![endif]--></body>
+            <script src="js/libs/dd_belatedpng.js"></script>
+            <script>DD_belatedPNG.fix('img, .png_bg'); // Fix any <img> or .png_bg bg-images. Also, please read goo.gl/mZiyb </script>
+        <![endif]-->
 
-        <%- # change the UA-XXXXX-X to be your site’s ID -%>
         <%- if Rails.env.production? -%>
         <script>
-        <!-- przyda się przy wdrażaniu aplikacji -->
+          <!-- http://mathiasbynens.be/notes/async-analytics-snippet Change UA-XXXXX-X to be your site's ID -->
         </script>
         <%- end -%>
+
+       </body>
     </html>
 
 Google Analytics zajmiemy się przy wdrażaniu aplikacji na Heroku.
@@ -953,22 +954,22 @@ Co to jest *scoped*?)
 Trzeba wykonać kilka nieoczywistych rzeczy. Wszystkie szczegóły opisano
 w [Search, Sort, Paginate with AJAX](http://asciicasts.com/episodes/240).
 Niestety, niektóre rzeczy tam opisane są zbędne albo już nieaktualne
-(bo, na przykład, dotyczą *will_paginate*). Ale jest za to
-kilka zadań jak dodać **sortowanie**.
+(bo, na przykład, dotyczą *will_paginate*). Ale jest za to opisane
+jak dodać **sortowanie**.
 
 Wyszukane fortunki umieścimy w elemencie *div* z id *fortunes*,
 a paginator w elemencie *div* z id *paginator*
-(po co? zob. kod szablonu poniżej):
+(po co? zob. kod szablonu poniżej).
+Podstawowa rzecz: „To make the paging work with AJAX we need
+**to modify the pagination links** so that they make an AJAX
+request when clicked instead of linking to another page.”:
 
     :::html_rails app/views/fortunes/index.html.erb
     <div id="paginator">
       <%= paginate @fortunes, :remote => true %>
     </div>
 
-Podstawowa rzecz: „To make the paging work with AJAX we need
-**to modify the pagination links** so that they make an AJAX
-request when clicked instead of linking to another page.”
-W tym celu utwórzmy szablon *index.js.erb*, w którym wpisujemy:
+Żądanie AJAX korzystają z szablonu **index.js.erb**:
 
     :::jquery_javascript app/views/fortunes/index.js.erb
     // render _fortune.html.erb partial
