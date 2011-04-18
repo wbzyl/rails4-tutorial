@@ -230,7 +230,7 @@ Opisać różnice w pliku README.
 [W3C Geolocation API](http://dev.w3.org/geo/api/spec-source.html).
 Korzystając z któregoś z gemów polecanych na stronie
 [The Ruby Toolbox](http://www.ruby-toolbox.com/categories/geocoding___maps.html)
-dodać geolokację do aplikacji (zob. [Geokit](http://geokit.rubyforge.org/).)
+dodać geolokację do aplikacji.
 
 5\. Dodać możliwośc dodawania tagów.  Na przykład takich: praca,
 rodzina, znajomi, przypadkowi znajomi, uczelnia, wojsko, pizzeria, biblioteka itp.
