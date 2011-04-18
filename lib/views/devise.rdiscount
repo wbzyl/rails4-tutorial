@@ -20,6 +20,11 @@ R. Bates przedstawił instalację w dwóch screencastach:
 Zgodnie z sugestią autorów gemu Devise powinniśmy
 zacząć od samodzielnego napisania od zera prostej autentykacji.
 
+Zaczynamy od lektury krótkiego wprowadzenia w temat:
+
+* [006 RC Ruby on Rails Authentication Basics](http://railscoach.com/006-rc-ruby-on-rails-authentication-basics/)
+
+
 I tak zrobimy. Dodamy autentykację do aplikacji „Blog” przedstawionej
 na jednym z poprzednich wykładów. W przykładzie będziemy się wzorować
 na przykładzie przedstawionym przez R. Batesa

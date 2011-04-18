@@ -1,6 +1,6 @@
-#### {% title "Autoryzacja z Devise + CanCan" %}
+#### {% title "Autoryzacja z CanCan" %}
 
-# TODO na Devise: Autoryzacja Devise + CanCan
+# Autoryzacja z CanCan
 
 <blockquote>
   <p>{%= image_tag "/images/ryan-bates.png", :alt => "[Ryan Bates]" %}</p>
@@ -8,68 +8,98 @@
 </blockquote>
 
 **CanCan is a simple authorization plugin that offers a lot of flexibility.**
-Zamierzamy to sprawdzić, dodając autoryzację do Fortunki z autentykacją.
+Zamierzam to sprawdzić, dodając autoryzację do aplikacji
+„Blog + Devise”.
 
 * [Authorization with CanCan](http://railscasts.com/episodes/192-authorization-with-cancan)
   ([ASCIIcast](http://asciicasts.com/episodes/192-authorization-with-cancan))
 * [CanCan](http://github.com/ryanb/cancan) –
   simple authorization for Rails.
 
-Zaczynamy od sklonowania Fortunki z autentykacja:
+Zaczynamy od sklonowania repozytorium:
 
-    git clone git://sigma.ug.edu.pl/~wbzyl/rails3-authlogic
+    git clone git://sigma.ug.edu.pl/~wbzyl/rails4-blog.git
 
 Teraz zmieniamy katalog:
 
-    cd rails3-authlogic
+    cd rails4-blog
 
-i tak jak to opisano w pliku *README* tworzymy
-„tracking branch” *cancan*:
+tworzymy tzw. *tracking branch*:
 
-    git checkout --track origin/cancan
+    git checkout --track origin/devise
 
-Pora na migrację:
+instalujemy gemy, migrujemy, zapełniamy bazę danymi testowymi:
 
+    bundle install --path=.bundle/gems
     rake db:migrate
+    rake db:seed
+
+Dalej, tak jak to opisałem w „Autentykacja z Devise“ konfigurujemy program pocztowy.
 
 Teraz jesteśmy w miejscu w którym zakończyliśmy
-implementację autentykacji z Authlogic.
-Ale tym razem jesteśmy na gałęzi **cancan**, a nie na **master**.
+implementację autentykacji w Blogu z Devise.
 
-I18n: komunikaty definiowane przez CanCan powinny
-być wypisywane w języku polskim.
-Jak to zrobić jest opisane w dokumentacji kontrolera
-[ControllerAdditions](http://rubydoc.info/github/ryanb/cancan/master/CanCan/ControllerAdditions)
+
+### Git zwyczaje
+
+Autoryzację będziemy implementować na gałęzi **cancan**:
+
+    git checkout -b cancan
+
+Na koniec instalujemy gem *CanCan* (w wersji z repo):
+
+    :::ruby Gemfile
+    gem 'cancan', :git => 'git://github.com/ryanb/cancan.git'
+
+i zmieniamy tytuł aplikacji.
+
+
+### I18N
+
+Komunikaty wypisywane przez CanCan trzeba będzie kiedyś przetłumaczyć na język polski.
+Wszystkie komunikaty znajdziemy w dokumentacji
+[ControllerAdditions](http://rubydoc.info/github/ryanb/cancan/master/CanCan/ControllerAdditions):
+
+    :::yaml config/locales/cancan.en.yml
+    en:
+      unauthorized:
+        manage:
+          all: "Not authorized to %{action} %{subject}!"
+          user: "Not allowed to manage other user accounts!"
+        update:
+          project: "Not allowed to update this project!"
 
 
 ## Autoryzacja na podstawie roli
 
-Wykorzystamy gem *CanCan* do dodania trzech ról do Fortunki.
+Wykorzystamy gem *CanCan* do dodania trzech ról do aplikacji.
 Dopuszczamy sytuację, że użytkownik może być przypisany do kilku ról.
 
-* admin — **może** wszystko
-* moderator — **może**  edytować i usuwać **każdą** fortunkę
-* author — **może** dodawać, edytować i usuwać **swoje** fortunki
+* admin — może wszystko
+* moderator — może  edytować i usuwać **każdą** fortunkę
+* author — może dodawać, edytować i usuwać **swoje** fortunki
+* banned – nic nie może
 
-Zaczynamy od dodania powiązania między modelami *User*
-i *Fortune*. Inaczej role *moderator* i *author* nie
-będą miały sensu.
-
-Ponieważ każdy użytkownik może wpisać wiele fortunek, a każda
-fortunka została wpisana przez jednego użytkownika
-więc między *User* a *Fortune* mamy powiązanie **jeden do wielu**:
+Zaczynamy od dodania powiązania między modelami *User*,
+*Post* (i *Comment*).
+Ponieważ każdy użytkownik może utworzyć wiele postów (i komentarzy),
+więc między *User* a *Post* (i *Comment*) mamy powiązania **jeden do wielu**:
 
     :::ruby
-    class Fortune < ActiveRecord::Base
-      attr_accessible :quotation, :user_id
+    class Post < ActiveRecord::Base
+      belongs_to :user
+
+    class Comment < ActiveRecord::Base
       belongs_to :user
 
     class User < ActiveRecord::Base
-      has_many :fortunes
+      has_many :posts
+      has_many :comments
 
-Kończymy implementację powiązania między modelami dodając
+**TODO** Kończymy implementację powiązania między modelami dodając
 pole *user_id:integer* do tabeli *fortunes*:
 
+    rails g migration AddUserIDToFortune user_id:integer
     rails g migration AddUserIDToFortune user_id:integer
     rake db:migrate
 
