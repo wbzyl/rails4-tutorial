@@ -422,7 +422,7 @@ Jest tego sporo! Ale do poprawki jest tylko *mailer_sender*:
     #   ciekawość to pierwszy… domyślna wartość jest taka
     # config.email_regexp = /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i
     #   użyteczna informacja
-    # configure the default scope given to Warden. By default it's the first
+    # Configure the default scope given to Warden. By default it's the first
     # devise role declared in your routes (usually :user).
     # config.default_scope = :user
 
@@ -522,20 +522,18 @@ Flash też do poprawki. Wszystkie komunikaty są w pliku
 
 ## Linki – register, log in, log out
 
-Do layoutu aplikacji musimy dodać linki takie jak w tytule:
-
-TODO: sprawdzić *user_signed_in* ->  na co?
+Do layoutu aplikacji musimy dodać linki do autentykacji:
 
     :::html_rails app/views/layouts/application.html.erb
     <nav id="authentication">
       <% if user_signed_in? %>
-        Signed in as <%= current_user.email %>. Not you?
-        <%= link_to "Sign out", destroy_user_session_path %>
+        Logged as <%= current_user.email %>. Not you?
+        <%= link_to "Logout", destroy_user_session_path %>
       <% else %>
-        <%= link_to "Sign up", new_user_registration_path %> or
-        <%= link_to "Sign in", new_user_session_path %>
+        <%= link_to "Register", new_user_registration_path %> or
+        <%= link_to "Login", new_user_session_path %>
       <% end %>
-    </div>
+    </nav>
 
 oraz odrobinę CSS:
 
@@ -555,6 +553,23 @@ oraz odrobinę CSS:
       padding: 20px 40px;
     }
 
-## Sprawdzamy jak to wszystko działa
+i zmienić generowane komunikaty flash w pliku *config/locales/devise.en.yml*.
 
-m.in. wysylanie poczty z przypominaniem hasła…
+
+## Jak działa przypominanie hasła
+
+Zaczynamy od konfiguracji programu pocztowego:
+
+    rails g nifty:config smtp
+
+I dalej postępujemy tak jak do opisano w notatkach „Wysyłanie poczty”.
+
+**Uwaga:** W wersji 1.3.0 Devise nie działa przypominanie hasła.
+Po kliknięciu „Change my password” pojawia się komunikat:
+
+    Reset password token is invalid.
+
+W wersji 1.2.1 nie ma tego problemu.
+Ustawiamy wersję gemu w *Gemfile*:
+
+    gem 'devise' , '= 1.2.1'

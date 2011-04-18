@@ -572,6 +572,27 @@ możemy zmienić generowane znaczniki HTML:
     # When false, do not use translations for labels, hints or placeholders.
     # config.translate = true
 
+Ustawiamy walidację HTML5 na *false*:
+
+    :::ruby config/initializers/simple_form.rb
+    # Tell browsers whether to use default HTML5 validations.
+    config.disable_browser_validations = false
+
+    # Determines whether HTML5 types (:email, :url, :search, :tel) and attributes
+    # (e.g. required) are used or not. True by default.
+    # Having this on in non-HTML5 compliant sites can cause odd behavior in HTML5-aware browsers such as Chrome.
+    # config.use_html5 = true
+    config.use_html5 = false
+
+Dlaczego? jest wyjaśnione powyżej oraz w *README*:
+„In many cases it can break existing UI’s.”
+
+**[2011.04.18]** Na razie te opcje są w źródłach. Dlatego w *Gemfile*
+dopisujemy:
+
+    :::ruby Gemfile
+    gem 'simple_form', :git => 'git://github.com/plataformatec/simple_form.git'
+
 Łatwo będzie można wymienić wypisywane komunikaty.
 Wszystkie są pobierane z pliku *simple_form.en.yml*.
 Wystarczy je zmienić.

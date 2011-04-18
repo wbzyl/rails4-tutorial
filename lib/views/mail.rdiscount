@@ -1,4 +1,4 @@
-#### {% title "Podstawy emailowania w Ruby" %}
+#### {% title "Wysyłanie poczty" %}
 
 # Wysyłanie poczty w Ruby
 
@@ -130,21 +130,21 @@ Zaczynamy od konfiguracji programu pocztowego. Będziemy korzystać
 z SMTP. Na początek coś na ukrycie loginu i hasła
 do programu pocztowego (ja korzystam z *Gmail*):
 
-    rails g nifty:config mail
-      create  config/initializers/load_mail_config.rb
-      create  config/mail_config.yml
+    rails g nifty:config smtp
+      create  config/initializers/load_smtp_config.rb
+      create  config/smtp_config.yml
 
 Plik, w którym wpiszemy swoje dane dopisujemy do pliku *.gitignore*:
 
-    config/mail_config.yml
+    config/smtp_config.yml
 
 Dopiero teraz wpisujemy do niego swoje dane.
 
 Teraz konfiguracja SMTP wyglada tak:
 
-    :::ruby config/initializers/load_mail_config.rb
-    raw_config = File.read("#{Rails.root}/config/mail_config.yml")
-    MAIL_CONFIG = YAML.load(raw_config)[Rails.env].symbolize_keys
+    :::ruby config/initializers/load_smtp_config.rb
+    raw_config = File.read("#{Rails.root}/config/smtp_config.yml")
+    SMTP_CONFIG = YAML.load(raw_config)[Rails.env].symbolize_keys
 
     ActionMailer::Base.smtp_settings = {
       :address => SMTP_CONFIG[:address],

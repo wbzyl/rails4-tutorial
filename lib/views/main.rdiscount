@@ -11,6 +11,10 @@
 </blockquote>
 
 
+**[18.04.2011]** Co nowego w Rails 3.1:
+[Rails 3.1 Adopts CoffeeScript, jQuery, Sass and.. Controversy](http://www.rubyinside.com/rails-3-1-adopts-coffeescript-jquery-sass-and-controversy-4669.html),
+[Exploring Rails 3.1 - ActiveModel::SecurePassword](http://bcardarella.com/post/4668842452/exploring-rails-3-1-activemodel-securepassword).
+
 **[18.03.2011]** Czas na Rails for Zombies!
 [What Is This?](http://railsforzombies.org/):
 „Learning Rails for the first time should be fun, and Rails for
@@ -47,9 +51,9 @@ poprawnie (dwa sposoby):
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
 1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}
-1. {%= link_to "Wysyłanie poczty w Ruby", "/mail" %}
+1. {%= link_to "Wysyłanie poczty", "/mail" %}
 1. {%= link_to "Autentykacja z Devise", "/devise" %}
-1. {%= link_to "Autoryzacja z CanCan", "/authorization-cancan" %}
+1. {%= link_to "Autoryzacja z CanCan", "/cancan" %}
 1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
 1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
@@ -204,6 +208,10 @@ Konferencja odbyła się w Krakowie, 29–30 maja:
 * [Rails Dispatch](http://www.railsdispatch.com/) – Rails
   news delivered fresh
   ([linki do wszystkich postów](http://www.railsdispatch.com/posts))
+* [Rails Engines](http://edgeapi.rubyonrails.org/classes/Rails/Engine.html) –
+[How to build a rails 3 engine and set up test with rspec](http://olympiad.posterous.com/how-to-building-a-rails-3-engine-and-set-up-t),
+[Rails 3 Plugins - Part 2 - Writing an Engine](http://www.themodestrubyist.com/2010/03/05/rails-3-plugins---part-2---writing-an-engine/),
+[Create your own Rails3 engine (part 1)](http://ror-e.com/info/videos/5)
 
 Najświeższe posty:
 
