@@ -69,19 +69,8 @@ Wszystkie komunikaty znajdziemy w dokumentacji
         update:
           project: "Not allowed to update this project!"
 
+## Dodajemy powiązania między modelami
 
-## Autoryzacja na podstawie roli
-
-Wykorzystamy gem *CanCan* do dodania trzech ról do aplikacji.
-Dopuszczamy sytuację, że użytkownik może być przypisany do kilku ról.
-
-* admin — może wszystko
-* moderator — może  edytować i usuwać **każdą** fortunkę
-* author — może dodawać, edytować i usuwać **swoje** fortunki
-* banned – nic nie może
-
-Zaczynamy od dodania powiązania między modelami *User*,
-*Post* (i *Comment*).
 Ponieważ każdy użytkownik może utworzyć wiele postów (i komentarzy),
 więc między *User* a *Post* (i *Comment*) mamy powiązania **jeden do wielu**:
 
@@ -93,39 +82,47 @@ więc między *User* a *Post* (i *Comment*) mamy powiązania **jeden do wielu*
       belongs_to :user
 
     class User < ActiveRecord::Base
-      has_many :posts
-      has_many :comments
+      has_many :posts, :dependent => :destroy
+      has_many :comments, :dependent => :destroy
 
-**TODO** Kończymy implementację powiązania między modelami dodając
-pole *user_id:integer* do tabeli *fortunes*:
+<!--
+Łatwiej nam będzie odwoływać się do migracji w notatkach:
 
-    rails g migration AddUserIDToFortune user_id:integer
-    rails g migration AddUserIDToFortune user_id:integer
+    :::ruby config/application.rb
+    config.active_record.timestamped_migrations = false
+-->
+
+Pozostaje dodać w tabelach pole *user_id:integer*:
+
+    rails g migration add_user_id_to_post user_id:integer
+    rails g migration add_user_id_to_comment user_id:integer
     rake db:migrate
 
-Dodatkowo będziemy korzystać z gemu *role_model*.
-Dlaczego? Wyjaśni się za chwilę.
 
-Dlatego do pliku *Gemfile* dopisujemy:
+## Autoryzacja na podstawie roli
 
-    :::ruby
-    gem 'cancan'
+Wykorzystamy gem *CanCan* do dodania trzech ról do aplikacji.
+Dopuszczamy sytuację, że użytkownik może być przypisany do kilku ról.
+
+* admin — może wszystko
+* moderator — może  edytować i usuwać **każdą** fortunkę
+* author — może dodawać, edytować i usuwać **swoje** fortunki
+* banned – nic nie może
+
+Będziemy korzystać z gemu *role_model*. Dlaczego? Wyjaśni się to za chwilę.
+
+    :::ruby Gemfile
     gem 'role_model'
 
-i instalujemy nowe gemy wraz z zależnościami:
-
-    bundle install
-
-O „role based authorization” można poczytać na
+Więcej o „role based authorization” można poczytać na
 [CanCan Wiki](http://github.com/ryanb/cancan/wiki/Role-Based-Authorization).
-
 
 ### Zmiany w tabeli *users*
 
 Informację o rolach będziemy zapisywać w tabeli *users*.
 W tym celu dodamy do tabeli nową kolumnę *roles_mask:integer*.
 
-    rails g migration AddRolesMaskToUser roles_mask:integer
+    rails g migration add_rolesmask_to_user roles_mask:integer
     rake db:migrate
 
 Następnie w modelu *User* dopisujemy trochę kodu z README
@@ -143,7 +140,7 @@ gemu *role_model*.
 
       # declare the valid roles -- do not change the order if you add more
       # roles later, always append them at the end!
-      roles :admin, :moderator, :author
+      roles :admin, :moderator, :author, :banned
 
 Przyjrzymy się rolom na konsoli przerabiając przykłady
 z [README](http://github.com/martinrehfeld/role_model):
@@ -194,39 +191,34 @@ see the internal bitmask representation (3 = 0b0011):
 
 ## Umieszczamy przykładowe dane w bazie
 
-Ułatwimy sobie pracę z częściowo zaimplementowaną autoryzacją
-umieszczając w bazie trochę danych.
+Zaczynamy od:
 
-Zaczynamy od zdefiniowania trzech użytkowników:
+    rake db:drop
+    rake db:migrate
+
+Następnie w pliku *seed.rb* wpisujemy:
 
     :::ruby db/seed.rb
-    User.create :username => 'wlodek', :email => 'matwb@ug.edu.pl',
-      :password=> '1234', :password_confirmation => '1234',
+    User.create :email => 'matwb@ug.edu.pl',
+      :password=> '123456', :password_confirmation => '123456',
       :roles => [:admin]
-    User.create :username => 'renia', :email => 'renia@example.pl',
-      :password=> '1234', :password_confirmation => '1234',
+    User.create :email => 'renia@somewhere.com',
+      :password=> '123456', :password_confirmation => '123456',
       :roles => [:moderator]
-    User.create :username => 'bazylek', :email => 'bazylek@cats.com',
-      :password=> '1234', :password_confirmation => '1234',
+    User.create :email => 'bazylek@cats.com',
+      :password=> '123456', :password_confirmation => '123456',
       :roles => [:author]
+    User.create :email => 'devil@hell.com',
+      :password=> '123456', :password_confirmation => '123456',
+      :roles => [:banned]
 
-W tej wersji Fortunki skorzystamy z cytatów ze strony
-[The Quotations Page](http://www.quotationspage.com/subjects/).
-Włodkowi przypiszemy dwa, a Bazylkowi cztery cytaty z tej strony:
+    user_count = User.count
 
-    :::ruby db/seed.rb
-    Fortune.create :quotation => "Men willingly believe what they wish.",
-      :user_id => 1
-    Fortune.create :quotation => "I have often regretted my speech, never my silence.",
-      :user_id => 1
-    Fortune.create :quotation => "All science is either physics or stamp collecting.",
-      :user_id => 3
-    Fortune.create :quotation => "Nothing shocks me. I'm a scientist.",
-      :user_id => 3
-    Fortune.create :quotation => "Science is organized knowledge.",
-      :user_id => 3
-    Fortune.create :quotation => "Security is a kind of death.",
-      :user_id => 3
+    humorists = File.readlines(Rails.root.join('db', 'humorists.u8'), "\n%\n")
+
+    humorists.map do |p|
+      Post.create :content => p[0..-4], :title => Populator.words(2..5), :user_id => (1 + rand(user_count))
+    end
 
 Dane z pliku *db/seeds.rb* „przepiszemy” do bazy za pomocą gotowego
 zadanie *rake*:
@@ -237,10 +229,11 @@ Na konsoli sprawdzamy, czy coś poszło nie tak:
 
     :::ruby
     User.all
-    Fortune.all
+    Post.all
     User.find(1).has_role? :admin
 
-## Podrasowujemy widoki
+
+## TODO: Podrasowujemy widoki
 
 Zaczynamy od widoku częściowego, gdzie dopisujemy:
 
