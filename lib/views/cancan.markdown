@@ -233,16 +233,15 @@ Na konsoli sprawdzamy, czy coś poszło nie tak:
 
 ## Scope it out
 
-Zanim zabierzemy się za autoryzację, musimy jeszcze
-„scoping out” dodawanie postów i komentarzy.
-Oznacza, to że autorem nowego postu lub komentarza
-będzie zalogowany użytkownik.
+Zanim zabierzemy się za autoryzację, musimy jeszcze dopisać nieco
+kodu. Zwyczajowo określa się to zadanie „scope it out”.  Oznacza, to
+że zalogowany użytkownik będzie autorem nowych postów i komentarzy.
 
 W tym celu zmieniamy metodę *create* w obu kontrolerach,
 *PostsController*:
 
     :::ruby app/controllers/posts_controller.rb
-    # porządkujemy po dacie
+    # porządkujemy wpisy po dacie
     def index
       @posts = Post.order('created_at DESC')
       respond_with(@posts)
@@ -301,7 +300,7 @@ incorrect behavior.”
 ## Poprawki w widoku *posts#show*
 
 W szablonie *show.html.erb* dopiszemy email autora postu,
-oraz każdego komentarza:
+oraz email autora każdego komentarza:
 
     :::html_rails app/views/posts/show.html.erb
     <p><b>added by</b>
@@ -311,7 +310,7 @@ oraz każdego komentarza:
 Widok *posts#index* zostawiamy bez zmian. Dlaczego?
 
 
-## Zmiany w edycji fortunek
+## TODO: Zmiany w edycji fortunek
 
 Do widoku częściowego dodamy możliwość edycji
 użytkownika (użyjemy listy rozwijanej), który dodał cytat.
@@ -334,15 +333,17 @@ Na razie każdy zalogowany użytkownik może dodawany przez siebie cytat
 przypisać innemu użytkownikowi. Później ograniczymy możliwość edycji
 użytkownika do admina i moderatora.
 
-Tyle przygotowań i poprawek w aplikacji. Teraz zabieramy się za
-implementację autoryzacji.
-
 
 # Implementujemy autoryzację
 
 <blockquote>
   {%= image_tag "/images/authorization.jpg", :alt => "[Autoryzacja]" %}
 </blockquote>
+
+Tyle przygotowań i poprawek w aplikacji. Dopiero po tych
+poprawkach możemy zabrać się za implementację autoryzacji.
+
+**TODO:** użyć generatora.
 
 Zgodnie z tym co jest napisane w dokumentacji CanCan,
 autoryzację programujemy tworząc nową klasę
