@@ -1,5 +1,3 @@
-#### {% title "Blog na dwóch modelach" %}
-
 # „Blog” na dwóch modelach
 
 Na przykładzie aplikacji „Blog” przyjrzymy się typowym problemom

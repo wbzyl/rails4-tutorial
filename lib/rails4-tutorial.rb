@@ -1,15 +1,12 @@
-gem "sinatra", "< 1.0"
-
-require 'rdiscount'
 require 'sinatra/base'
-require 'sinatra/rdiscount'
 
 require 'sinatra/url_for'
 require 'sinatra/static_assets'
+require 'sinatra/filler'
 
 module WB
   class Rails4 < Sinatra::Base
-    include Rack::Utils
+    # include Rack::Utils
 
     helpers Sinatra::UrlForHelper
     register Sinatra::StaticAssets
@@ -18,12 +15,17 @@ module WB
     set :app_file, __FILE__
     set :static, true
 
+    set :erubis, :pattern => '\{% %\}', :trim => true
+    set :markdown, :layout => false
+
     # the middleware stack can be used internally as well. I'm using it for
     # sessions, logging, and methodoverride. This lets us move stuff out of
     # Sinatra if it's better handled by a middleware component.
     set :logging, true  # use Rack::CommonLogger
 
-    helpers Sinatra::RDiscount
+    # helpers Sinatra::RDiscount
+    # helper methods
+    helpers Sinatra::Filler
 
     # configure blocks:
     # configure :production do
@@ -36,17 +38,22 @@ module WB
     # helper methods
     #attr_reader :title
 
-    def page_title
-      @title || ""
-    end
+    # def page_title
+    #   @title || ""
+    # end
 
-    # def title=(name)... does not work, bug?
-    def title(name)
-      @title = " // #{name}"
-    end
+    # # def title=(name)... does not work, bug?
+    # def title(name)
+    #   @title = " // #{name}"
+    # end
 
     get '/' do
-      rdiscount :main
+      #rdiscount :main
+      erubis(markdown(:main))
+    end
+
+    get '/:section' do
+      erubis(markdown(:"#{params[:section]}"))
     end
 
     get %r{^([-_\w\/]+)\/([-_\w]+)\.((\w{1,4})(\.\w{1,4})?)$} do
@@ -82,10 +89,6 @@ module WB
       end
 
       erb content, :layout => :code
-    end
-
-    get '/:section' do
-      rdiscount :"#{params[:section]}"
     end
 
     error do

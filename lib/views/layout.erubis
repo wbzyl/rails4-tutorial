@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset=utf-8>
+
+{%= stylesheet_link_tag "/stylesheets/screen.css", "/stylesheets/uv.css", "/stylesheets/application.css" %}
+{%= stylesheet_link_tag "/stylesheets/print.css", "/stylesheets/print-rails4.css", :media => "print" %}
+<!--[if IE]>
+{%= stylesheet_link_tag "/stylesheets/ie.css" %}
+<![endif]-->
+
+{%= output_filler_for(:head) -%}
+
+<title>{%= filler_for?(:title) ? "WB@Rails4//" + output_filler_for(:title) : "WB@Rails4" %}</title>
+
+</head>
+
+<body>
+
+<header>
+  <a href="/rails4/">{%= image_tag '/images/rails4.png', :alt => '[WB//Rails4]' %}</a>
+</header>
+
+<div id="content">
+<article>
+{% if filler_for?(:title) && show_title? %}
+<h1>{%= output_filler_for(:title) %}</h1>
+{% end %}
+{%= yield %}
+</article>
+</div>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-20399167-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+<!--
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+{%= javascript_script_tag "/javascripts/application.js" %}
+-->
+
+</body>
+</html>

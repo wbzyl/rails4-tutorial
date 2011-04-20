@@ -1,6 +1,4 @@
-#### {% title "Layouts" %}
-
-# Layouts – czyli układy graficzne
+#### {% title "Layouts – układy graficzne" %}
 
 <blockquote>
  <p>

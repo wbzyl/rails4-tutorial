@@ -1,5 +1,3 @@
-#### {% title "Autoryzacja z CanCan" %}
-
 # Autoryzacja z CanCan
 
 <blockquote>
@@ -220,10 +218,9 @@ Następnie w pliku *seed.rb* wpisujemy:
       Post.create :content => p[0..-4], :title => Populator.words(2..5), :user_id => (1 + rand(user_count))
     end
 
-Dane z pliku *db/seeds.rb* „przepiszemy” do bazy za pomocą gotowego
-zadanie *rake*:
+Dane z pliku *db/seeds.rb* „załadujemy” do bazy za pomocą *rake*:
 
-    rake db:seed  # load the seed data from db/seeds.rb
+    rake db:seed
 
 Na konsoli sprawdzamy, czy coś poszło nie tak:
 
@@ -231,176 +228,87 @@ Na konsoli sprawdzamy, czy coś poszło nie tak:
     User.all
     Post.all
     User.find(1).has_role? :admin
+    User.find(1).has_role? :banned
 
 
-## TODO: Podrasowujemy widoki
+## Scope it out
 
-Zaczynamy od widoku częściowego, gdzie dopisujemy:
+Zanim zabierzemy się za autoryzację, musimy jeszcze
+„scoping out” dodawanie postów i komentarzy.
+Oznacza, to że autorem nowego postu lub komentarza
+będzie zalogowany użytkownik.
 
-    :::html_rails app/models/users/_form.html.erb
-    <p>
-      <%= f.label :roles %><br />
-      <% for role in User.valid_roles %>
-        <%= check_box_tag "user[roles][]", role, @user.roles.include?(role) %>
-        <%= role.to_s.humanize %><br />
-      <% end %>
-    </p>
+W tym celu zmieniamy metodę *create* w obu kontrolerach,
+*PostsController*:
 
-Przy okazji zmieniamy walidację:
+    :::ruby app/controllers/posts_controller.rb
+    # porządkujemy po dacie
+    def index
+      @posts = Post.order('created_at DESC')
+      respond_with(@posts)
+    end
+    def create
+      # klasyczne scoping out
+      @post = current_user.posts.build(params[:post])
+      @post.save
+      respond_with(@post)
+    end
 
-    :::ruby
-    class User < ActiveRecord::Base
-      acts_as_authentic do |c|
-        #c.validates_length_of_password_field_options= {:within => 2..4}
-        #c.validates_length_of_password_confirmation_field_options= {:within => 2..4}
-        c.ignore_blank_passwords= true
-      end
+oraz *CommentsController*:
 
-Dlaczego? Czy poniższy cytat
-z [dokumentacji](http://rubydoc.info/github/binarylogic/authlogic/master/Authlogic/ActsAsAuthentic/Password/Config#ignore_blank_passwords-instance_method)
-coś wyjaśnia?
+    :::ruby app/controllers/comments_controller.rb
+    def create
+      # scoping out
+      params[:comment][:user_id] = current_user.id
+      @comment = @post.comments.build(params[:comment])
+      @comment.save
+      respond_with(@post, @comment, :location => @post)
+    end
 
+
+
+## Wybór roli w formularzach rejestracji
+
+Zaczynamy od widoku częściowego *_roles.erb*
+(*shared* – czy użyjemy go jeszcze gdzie indziej?):
+
+    :::html_rails app/views/devise/shared/_roles.erb
+    <p><%= f.label :roles %><br>
+    <% for role in User.valid_roles %>
+      <%= check_box_tag "user[roles][]", role, @user.roles.include?(role) %>
+      <%= role.to_s.humanize %>
+    <% end %></p>
+
+
+który dodajemy do widoków rejestracji, *new.html.erb*:
+
+    :::html_rails app/views/devise/registrations/new.html.erb
+    <%= render :partial => "devise/shared/roles", :locals => {:f => f} %>
+
+*edit.html.erb*:
+
+    :::html_rails app/views/devise/registrations/edit.html.erb
+    <%= render :partial => "devise/shared/roles", :locals => {:f => f} %>
+
+*Uwaga do widoku edit:*
 „Think about a profile page, where the user can edit all of
 their information, including changing their password. If they do not
 want to change their password they just leave the fields blank. This
 will try to set the password to a blank value, in which case is
-incorrect behavior. As such, Authlogic ignores this.”
-
-Czy taka walidacja jest lepsza?
-
-    :::ruby
-    acts_as_authentic do |c|
-       c.merge_validates_length_of_email_field_options(:allow_blank => true)
-       c.merge_validates_format_of_email_field_options(:allow_blank => true)
-    end
+incorrect behavior.”
 
 
-## Zmiany w layoucie
+## Poprawki w widoku *posts#show*
 
-W główce każdej strony umieścimy login zalogowanego użytkownika.
-Informację o zalogowanym użytkowniku znajdziemy w sesji.
-Jeśli w widoku strony głównej dopiszemy:
+W szablonie *show.html.erb* dopiszemy email autora postu,
+oraz każdego komentarza:
 
-    :::html_rails
-    <%= debug(UserSession.find) %>
-
-albo, lepiej:
-
-    :::html_rails
-    <%= debug(current_user) %>
-
-to po zalogowaniu się do aplikacji i przejściu na stronę główną
-powinniśmy zobaczyć co Authlogic zapisał w sesji:
-
-    :::yaml
-    --- !ruby/object:User
-    attributes:
-      created_at: 2010-09-16 20:21:00.365203
-      last_request_at: &id001 2010-09-16 21:08:31.265948 Z
-      crypted_password: 2e2b....a6ba
-      perishable_token: DtGcInxA8Do0Z2vJcFNX
-      updated_at: &id002 2010-09-16 21:08:31.266530 Z
-      username: wlodek
-      current_login_ip: 127.0.0.1
-      id: 1
-      current_login_at: 2010-09-16 21:03:53.627695
-      password_salt: GCKhdI6rry414DqhhQLY
-      roles_mask: 1
-      login_count: 6
-      persistence_token: ebd3....591d
-      last_login_ip: 127.0.0.1
-      last_login_at: 2010-09-16 20:53:01.460084
-      email: matwb@ug.edu.pl
-    attributes_cache:
-      last_request_at: *id001
-      updated_at: *id002
-    changed_attributes: {}
-
-    destroyed: false
-    marked_for_destruction: false
-    new_record: false
-    new_record_before_save: false
-    password_changed:
-    previously_changed: !map:ActiveSupport::HashWithIndifferentAccess
-      last_request_at:
-      - 2010-09-16 21:05:40.304001 Z
-      - *id001
-      perishable_token:
-      - xUS96rH5cPRMXvSCQZ6
-      - DtGcInxA8Do0Z2vJcFNX
-      updated_at:
-      - 2010-09-16 21:05:40.304566 Z
-      - *id002
-    readonly: false
-    skip_session_maintenance: false
-
-Stąd widzimy, że
-
-    :::ruby
-    current_user.username
-
-to login zalogowanego użytkownika.
-
-Zatem dopisujemy w *layout/application.html.erb*
-poniżej linka *"Logout"*:
-
-    :::html_rails
-    Welcome <em><%= current_user.username %></em>
-
-
-## Zmiany widoków index i show
-
-Wygenerowanny widok to tabelka. Nie wygląda to zbyt ładnie.
-Zamiast tabelki uzyjemy kilku elementów *div*.
-
-W widoku *show* przy każdym cytacie
-dopiszemy login użytkownika który dodał cytat.
-
-Oto oryginalny widok *index*:
-
-    :::html_rails app/views/fortunes/index.html.erb
-    <table>
-      <tr>
-        <th>Quotation</th>
-      </tr>
-      <% for fortune in @fortunes %>
-        <tr>
-          <td><%= fortune.quotation %></td>
-          <td><%= link_to "Show", fortune %></td>
-          <td><%= link_to "Edit", edit_fortune_path(fortune) %></td>
-          <td><%= link_to "Destroy", fortune, :confirm => 'Are you sure?', :method => :delete %></td>
-        </tr>
-      <% end %>
-    </table>
-    <p><%= link_to "New Fortune", new_fortune_path %></p>
-
-A to ten sam widok po „liftingu”:
-
-    :::html_rails app/views/fortunes/index.html.erb
-    <% for fortune in @fortunes %>
-      <p><%= fortune.quotation %>
-      <p><%= link_to "Show", fortune %>
-         <% if logged_in? %>
-           | <%= link_to "Edit", edit_fortune_path(fortune) %>
-           | <%= link_to "Destroy", fortune, :confirm => 'Are you sure?',
-                      :method => :delete %>
-         <% end %>
-      </p>
-    <% end %>
-    <p><%= link_to "New Fortune", new_fortune_path %></p>
-
-Na razie ukrywamy linki do edycji i usuwania przed niezalogowanymi
-użytkownikami. **TODO** Docelowo zastosujemy tutaj role.
-
-A to są poprawki do widoku *show*:
-
-    :::html_rails app/views/fortunes/show.html.erb
-    <p>
-      <strong>Quotation </strong> added by <em><%= @fortune.user.username %></em>
+    :::html_rails app/views/posts/show.html.erb
+    <p><b>added by</b>
+      <em><%= @post.user.email %></em>
     </p>
-    <p>
-      <%= @fortune.quotation %>
-    </p>
+
+Widok *posts#index* zostawiamy bez zmian. Dlaczego?
 
 
 ## Zmiany w edycji fortunek
