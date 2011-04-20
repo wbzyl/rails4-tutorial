@@ -1,10 +1,12 @@
 require 'rubygems'
-#require 'bundler/setup'
+require 'bundler'
+
+Bundler.require
 
 require 'rails4-tutorial'
 
-require 'rack/codehighlighter'
 require 'uv'
+require 'rack/codehighlighter'
 
 #use Rack::ShowExceptions
 #use Rack::Lint
