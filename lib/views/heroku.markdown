@@ -1,7 +1,5 @@
 #### {% title "Krok po kroku odkrywamy Heroku" %}
 
-# Krok po kroku odkrywamy Heroku
-
 <blockquote>
  <p>
   {%= image_tag "/images/heroku-handles-headache.jpg", :alt => "[heroku handles headache]" %}

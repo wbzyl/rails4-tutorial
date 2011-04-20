@@ -1,7 +1,5 @@
 #### {% title "Fortunka v1.0" %}
 
-# „Fortunka” v1.0
-
 <blockquote>
  <p>
   {%= image_tag "/images/new-project.jpg", :alt => "[nowy projekt]" %}

@@ -1,7 +1,5 @@
 #### {% title "Konsola aplikacji Rails" %}
 
-# Konsola aplikacji Rails
-
 To się czyta z dużą przyjemnością:
 
 * [ActiveRecord::Associations::ClassMethods](http://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html)

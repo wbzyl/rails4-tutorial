@@ -1,4 +1,4 @@
-#### {% title "Wysyłanie poczty" %}
+#### {% title "Wysyłanie poczty", false %}
 
 # Wysyłanie poczty w Ruby
 

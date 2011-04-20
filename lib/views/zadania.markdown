@@ -1,7 +1,5 @@
 #### {% title "Laboratorium" %}
 
-# Laboratorium
-
 <blockquote>
 <p>
   Always code as if the guy who ends up maintaining your code will be

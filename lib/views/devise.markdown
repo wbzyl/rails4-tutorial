@@ -1,7 +1,5 @@
 #### {% title "Autentykacja z Devise" %}
 
-# Autentykacja z Devise
-
 Dlaczego autentykacja z Devise. Jest wiele argumentów za. Wszystkie
 są wymienione w [README](https://github.com/plataformatec/devise)
 projektu.

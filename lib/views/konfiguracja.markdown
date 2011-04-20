@@ -1,7 +1,5 @@
 #### {% title "Konfiguracja środowiska dla Rails 3" %}
 
-# Konfiguracja środowiska dla Rails 3
-
 W użyciu jest wiele implementacji i wersji języka Ruby. Dla przykładu:
 Ruby MRI w wersjach 1.8.7, 1.9.2, Ruby Enterprise Edition – 1.8.7,
 jRuby – 1.5.0, Rubinius – 1.0.1, MagLev, IronRuby – 1.0.  Po trosze

@@ -1,8 +1,6 @@
-#### {% title "Ajax & jQuery" %}
+#### {% title "TODO: Ajax & jQuery" %}
 
-# TODO: Ajax & jQuery
-
-**[2011.04] Sporo się zmieniło przez ostatnich kilka miesięcy.**
+**[2011.04] Sporo się działo i dzieje. Sprawdzić co przestało działać!**
 
 W aplikacji „2models” dodawanie nowego i usuwanie **task**
 zaimplementujemy korzystając z Ajaxa.

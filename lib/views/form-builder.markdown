@@ -1,7 +1,5 @@
 #### {% title "FormBuilder v. simple_form gem" %}
 
-# FormBuilder
-
 Dlaczego? Kiedy *simple_form* nie wystarcza?
 
 Wspomnieć o gemie *ActiveScaffold*. Jaki problem on rozwiązuje?

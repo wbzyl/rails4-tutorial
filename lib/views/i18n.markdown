@@ -1,7 +1,5 @@
 #### {% title "i18n & l10n" %}
 
-# I18N & L10N
-
 Co oznacza *i18n*, a co *l10n*?
 Aby to wyjaśnić zaglądamy tutaj:
 [Rails 3 I18n changes](http://blog.plataformatec.com.br/2010/02/rails-3-i18n-changes/)
