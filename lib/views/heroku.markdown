@@ -177,25 +177,30 @@ Sprawdzamy jak to działa na heroku:
 
 ## Istotna uwaga!
 
-Teraz przygotowujemy odpowiednie zadania dla rake
-(utrwalamy konwencję, którą przyjęliśmy):
+Powyżej przyjęliśmy pewne konwencje. Teraz powinniśmy się jakoś
+zabezpieczyć przed błędem omyłkowego wdrożenia kodu
+z gałęzi master na Heroku.
+
+Pomocne może być przygotowanie dwóch zadań rake:
 
     rake sigma:push
-    rake heroku:production
+    rake heroku:push
 
-dla poleceń z push powyżej, na przykład dopisując w pliku *Rakefile*:
+i używanie ich zamiast poleceń git.
+
+W tym celu dopiszemy do pliku *Rakefile*:
 
     :::ruby
     namespace "sigma" do
-      desc "Push zmiany w repo to Sigma"
+      desc "Push zmiany w repo na Sigmę"
       task "push" do
         system("git", "push")
       end
     end
 
     namespace "heroku" do
-      desc "Push zmiany na gałęzi production to Heroku: znajomi.heroku.pl"
-      task "production" do
+      desc "Push zmiany na gałęzi production na Heroku"
+      task "push" do
         system("git", "push", "production", "production:master")
       end
     end
