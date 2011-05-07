@@ -45,21 +45,23 @@ Do wysłania poczty, możemy użyć takiego skryptu:
     require 'mail'
     require 'yaml'
 
+    # konfigurujemy SMTP
     raw_config = File.read("#{ENV['HOME']}/.credentials/smtp.yml")
-    SMTP_CONFIG = YAML.load(raw_config)['development'].symbolize_keys
+    SMTP_CONFIG = YAML.load(raw_config)['development']
 
     Mail.defaults do
       delivery_method :smtp, {
-        :address => SMTP_CONFIG[:address],
-        :port => SMTP_CONFIG[:port],
-        :domain => SMTP_CONFIG[:domain],
-        :user_name => SMTP_CONFIG[:user_name],
-        :password => SMTP_CONFIG[:password],
-        :authentication => SMTP_CONFIG[:authentication],
+        :address => SMTP_CONFIG['address'],
+        :port => SMTP_CONFIG['port'],
+        :domain => SMTP_CONFIG['domain'],
+        :user_name => SMTP_CONFIG['user_name'],
+        :password => SMTP_CONFIG['password'],
+        :authentication => SMTP_CONFIG['authentication'],
         :enable_starttls_auto => true
       }
     end
 
+    # wysyłamy email
     mail = Mail.new do
       to 'matwb@ug.edu.pl'
       from 'wlodek.bzyl@gmail.com'
@@ -71,7 +73,7 @@ Do wysłania poczty, możemy użyć takiego skryptu:
     mail.deliver!
 
 **Uwaga:** Jeśli na *localhost* działa *sendmail*,
-to możemy pominąć całą konfigurację SMTP
+to zazwyczaj możemy pominąć całą konfigurację SMTP
 (zob. {%= link_to "localhost.rb", "/mail/localhost.rb" %}).
 
 

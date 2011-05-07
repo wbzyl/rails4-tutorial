@@ -1,10 +1,14 @@
 # „Blog” na dwóch modelach
 
-Na przykładzie aplikacji „Blog” przyjrzymy się typowym problemom
+Na przykładzie aplikacji „Blog” przyjrzymy się typowym zadaniom
 pojawiającym się w trakcie dodawania drugiego modelu.
 
-Powtórzymy to co było w rozdziale „Fortunka v1.0”, ale tym razem
-bez dodatków – paginacji, tagów. Oto plik *Gemfile* aplikacji:
+Kod do pobrania z repozytorium *public_git/blog* (albo *dydaktyka/rails4-blog*).
+
+Zaczniemy od powtórki tego co było w rozdziale „Fortunka v1.0”.
+Tym razem bez dodatków – paginacji, tagów, itp.
+
+Oto plik *Gemfile* aplikacji:
 
     :::ruby Gemfile
     gem 'rails', '3.0.6'
@@ -16,15 +20,14 @@ bez dodatków – paginacji, tagów. Oto plik *Gemfile* aplikacji:
       gem 'nifty-generators'
       gem 'faker'
       gem 'populator'
-
-      gem 'jquery-rails'
+      gem 'jquery-rails'  # Rails 3.1 jest już w wersji beta1
     end
 
 Budowę bloga zaczniemy od utworzenia modelu *Post*
-z polami *title* i *content*> Następnie dodamy model
+z polami *title* i *content*. Następnie dodamy model
 *Comment* z polami *name* i *content*.
 
-Podsumowując, aplikacja „Blog” składa się dwóch modeli
+Podsumowując, aplikacja „Blog” będzie się składać z dwóch modelów
 powiązanych relacją jeden do wielu:
 
 * *post* has many *comments*
@@ -59,8 +62,7 @@ Ale nie będziemy korzystać metod pomocniczych dla formularzy:
 
     rm app/helpers/error_messages_helper.rb
 
-Zamiast nich użyjemy gemu *simple_form*, który ma *errorr messages*
-wbudowane.
+Zamiast nich użyjemy gemu *simple_form*, który ma wbudowane *errorr messages*.
 
 Ostatnia uwaga. Jak pokazuje przykład Fortunki, najprawdopodobniej
 będziemy potrzebować następujących szablonów:
@@ -83,12 +85,12 @@ będziemy potrzebować następujących szablonów:
 
 # Model *Post*
 
-Na początek, skorzystamy z generatora:
+Skorzystamy z generatora:
 
     rails g scaffold post title:string content:text
     rake db:migrate
 
-Zmienimy routing:
+i zmienimy routing:
 
     :::ruby
     resources :posts
@@ -102,9 +104,9 @@ Dodamy trochę danych do bazy:
       Post.create :content => p[0..-4], :title => Populator.words(2..5)
     end
 
-W szablonie *index.html.erb* przchodzimy z *table* na *article*.
+W szablonie *index.html.erb* zamienimy element *table* na *article*.
 
-W *_form.html.erb* przechodzimy na *simple_form_for*:
+W szablonie *_form.html.erb* użyjemy metody pomocniczej *simple_form_for*:
 
     :::ruby
     <%= simple_form_for(@post) do |f| %>
@@ -126,7 +128,7 @@ Zaczniemy od konfiguracji generowanych elementów formularza:
     :::ruby config/initializers/simple_form.rb
     config.error_tag = :div
 
-Nastepnie ustawimy marginesy, wielkość fontu:
+Ustawimy inne marginesy, zwiększymy domyślną wielkość fontu:
 
     :::css public/stylesheets/simple_form.css
     body {
@@ -158,10 +160,15 @@ Na koniec, dodajemy powyższy arkusz css do layoutu aplikacji:
     <%= stylesheet_link_tag "application", "simple_form" %>
 
 
-## Refaktoryzacja widoku *index*
+## Refaktoryzacja widoku *post#index*
 
-Wycinamy pętlę z pliku *index.html.erb*.
-Tworzymy z niej szablon częściowy *_post.html.erb*:
+Wycinamy pętlę z pliku *index.html.erb*, zastępując ją
+szablonem częściowym:
+
+    :::html_rails app/views/posts/index.html.erb
+    <%= render :partial => 'post', :collection => @posts %>
+
+Z wyciętego kodu tworzymy szablon częściowy *_post.html.erb*:
 
     :::html_rails app/views/posts/_post.html.erb
     <article>
@@ -174,15 +181,10 @@ Tworzymy z niej szablon częściowy *_post.html.erb*:
        </div>
     </article>
 
-Zamiast pętli renderujemy szablon częściowy:
-
-    :::html_rails app/views/posts/index.html.erb
-    <%= render :partial => 'post', :collection => @posts %>
-
 
 # Model Comment
 
-Zaczynamy od wygenerowania
+Generujemy model, następnie migrujemy:
 
     rails g resource comment post:references content:text
     rake db:migrate
@@ -196,6 +198,10 @@ Zagnieżdzamy zasoby:
       end
       root :to => "posts#index"
     end
+
+i sprawdzamy routing:
+
+    rake routes
 
 Dopisujemy do modelu *Post* powiązanie:
 
@@ -227,13 +233,14 @@ Na razie napiszemy tylko metodę *create*:
       end
     end
 
+Czy w powyższym kodzie można się obejść bez *before_filter*?
+
 
 ## Poprawki w widoku *post\#show*
 
 Komentarze dla konkretnego postu będziemy
 tworzyć i wyświetlać w widoku show.
-
-Lista komentarzy:
+Zaczniemy od takiego kodu renderujacego listę komentarzy:
 
     :::ruby app/views/post/show.html.erb
     <% if @post.comments.any? %>
@@ -248,7 +255,8 @@ Lista komentarzy:
       <% end %>
     <% end %>
 
-Nowy komentarz:
+Poniżej (a może powyżej?) dopiszemy kod z formularzem dla nowego
+komentarza:
 
     :::ruby app/views/post/show.html.erb
     <h3>Add new comment</h3>
@@ -281,22 +289,22 @@ Oto rezultat:
       :locale=>[:en, :en]
     } in view paths "/home/.../blog/app/views"
 
-No tak, oznacza to że brakuje szablonu. Coś takiego
-powinno posunąć sprawy do przodu:
+Rails daje nam znać, że brakuje szablonu. Taki
+szablon powinien wystarczyć aby pozbyć się tego błędu:
 
     :::html_rails app/views/comments/new.html.erb
     <% title "New comment" %>
     <%= render :partial => 'form' %>
     <p class="links clear"><%= link_to 'Back', @comment.post %></p>
 
-Oznacza to, że musimy utworzyć szablon częściowy *comments/_form.html.rb*.
-Czyli czeka nas mała refaktoryzacja.
+Oczywiście musimy jeszcze utworzyć szablon częściowy *comments/_form.html.rb*.
+
 
 ### Refaktoryzacja widoku *posts\#show*
 
-Z kodu szablonu *show.html.erb* wydzielamy szablon częściowy *_comment.html.erb*:
+Z szablonu *show.html.erb* wydzielimy szablon częściowy:
 
-    :::html_rails app/views/comments/_comment.html.erb
+    :::html_rails app/views/comments/_form.html.erb
     <%= simple_form_for [@post, @comment] do |f| %>
       <div class="inputs">
         <%= f.input :content, :input_html => {:rows => 4, :cols => 60} %>
@@ -315,9 +323,10 @@ Musimy jeszcze nadać wartość zmiennej *@comment*:
       respond_with(@post)
     end
 
-W tym samym widoku, od razu przystępujemy do następnej refaktoryzacji.
-Tym razem do widoku częściowego przeniesiemy listę komentarzy.
-Wycinamy całą pętlę pod nagłówkiem <b>Comments</b> i wklejamy do
+To jeszcze nie koniec czyszczenia kodu tego widoku.
+
+Przenosimy listę komentarzy do widoku częściowego. W tym celu
+wycinamy całą pętlę pod nagłówkiem <b>Comments</b> i wklejamy do
 szablonu częściowego *comments/_comment.html.erb* ciało wyciętej
 pętli (uff! co za horror):
 
@@ -325,11 +334,11 @@ pętli (uff! co za horror):
     <div class="comment">
       <%= comment.content %>
     </div>
-    <p>s
+    <p>
       <%= link_to "Delete", [@post, comment], :confirm => 'Are you sure?', :method => :delete %>
     </p>
 
-Zamiast wyciętego kodu wklejamy do szablonu:
+Zamiast wyciętego kodu wklejamy:
 
     :::ruby app/views/post/show.html.erb
     <%= render :partial => 'comments/comment', :collection => @post.comments %>
@@ -337,12 +346,12 @@ Zamiast wyciętego kodu wklejamy do szablonu:
 
 ## Usuwanie komentarzy
 
-Teraz kliknięcia linka *Delete* powoduje wypisanie takiego komunikatu:
+Aktualnie kliknięcie *Delete* powoduje wypisanie takiego komunikatu:
 
     Unknown action
     The action 'destroy' could not be found for CommentsController
 
-No, to piszemy tę metodę:
+Oznacza to, że jest do napisania metoda *destroy*. Oto jej kod:
 
     :::ruby app/controllers/comments_controller
     def destroy
@@ -358,7 +367,7 @@ W zasadzie należałoby jeszcze dodać edycję komentarzy.  Ale nie
 będziemy tego robić, ponieważ to już było przy okazji „Fortunki v1.0”.
 
 
-# Coś prostego + dwa linki
+# Coś prostego na koniec + dwa linki
 
 Dopisać logowanie via *authenticate_or_request_with_http_basic* tak jak to jest
 opisane w samouczku [Getting Started with Rails](http://edgeguides.rubyonrails.org/getting_started.html).
