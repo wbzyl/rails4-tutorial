@@ -300,9 +300,15 @@ szablon powinien wystarczyć aby pozbyć się tego błędu:
 Oczywiście musimy jeszcze utworzyć szablon częściowy *comments/_form.html.rb*.
 
 
-### Refaktoryzacja widoku *posts\#show*
+## Refaktoryzacja widoku *posts\#show*
 
-Z szablonu *show.html.erb* wydzielimy szablon częściowy:
+Z  *post/show.html.erb* wytniemy formularz dla komentarzy
+(kod pod nagłówkiem **Add new comment**) i zastąpimy go widokiem częściowym:
+
+    :::html_rails 
+    <%= render :partial => 'comments/form' %>
+
+Wycięty kod przerabiamy na szablon częściowy *comments/form*:
 
     :::html_rails app/views/comments/_form.html.erb
     <%= simple_form_for [@post, @comment] do |f| %>
@@ -314,7 +320,8 @@ Z szablonu *show.html.erb* wydzielimy szablon częściowy:
       </div>
     <% end %>
 
-Musimy jeszcze nadać wartość zmiennej *@comment*:
+W kodzie powyżej pojawiła się nowa zmienna *comment*. 
+Musimy ją zdefiniować:
 
     :::ruby app/controllers/posts_controller.rb
     def show
@@ -323,11 +330,12 @@ Musimy jeszcze nadać wartość zmiennej *@comment*:
       respond_with(@post)
     end
 
-To jeszcze nie koniec czyszczenia kodu tego widoku.
+### To jeszcze nie koniec czyszczenia kodu
 
-Przenosimy listę komentarzy do widoku częściowego. W tym celu
-wycinamy całą pętlę pod nagłówkiem <b>Comments</b> i wklejamy do
-szablonu częściowego *comments/_comment.html.erb* ciało wyciętej
+Przenosimy listę komentarzy z szablonu *posts/show.html.erb*
+do widoku częściowego *comments/_comment.html.erb*. W tym celu
+wycinamy całą pętlę (kod pod nagłówkiem **Comments**) i wklejamy
+do szablonu częściowego *comments/_comment.html.erb* ciało wyciętej
 pętli (uff! co za horror):
 
     :::html_rails app/views/comments/_comment.html.erb
@@ -342,6 +350,25 @@ Zamiast wyciętego kodu wklejamy:
 
     :::ruby app/views/post/show.html.erb
     <%= render :partial => 'comments/comment', :collection => @post.comments %>
+
+Oto rezultat:
+
+    :::html_rails app/views/posts/show.html.erb
+    <h2><%= @post.title %></h2>
+    <article>
+      <%= @post.content %>
+    </article>
+    <div class="links">
+      <%= link_to 'Edit', edit_post_path(@post) %> |
+      <%= link_to 'Back', posts_path %>
+    </div>
+
+    <% if @post.comments.any? %>
+      <h3>Comments</h3>
+      <%= render :partial => 'comments/comment', :collection => @post.comments %>
+    <% end %>
+    <h3>Add new comment</h3>
+    <%= render :partial => 'comments/form' %>
 
 
 ## Usuwanie komentarzy
@@ -361,10 +388,10 @@ Oznacza to, że jest do napisania metoda *destroy*. Oto jej kod:
     end
 
 
-## Zawiązujemy luźne końce?
+## Zawiązujemy luźne końce(?)
 
 W zasadzie należałoby jeszcze dodać edycję komentarzy.  Ale nie
-będziemy tego robić, ponieważ to już było przy okazji „Fortunki v1.0”.
+będziemy tego robić, ponieważ takie rzeczy robiliśmy w „Fortunce v1.0”.
 
 
 # Coś prostego na koniec + dwa linki
