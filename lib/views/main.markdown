@@ -137,6 +137,11 @@ Live Tr8n sample application:
 * [Rubyflow](http://rubyflow.com)
 
 
+### Misc stuff
+
+* [Examples of how to build PDFs in Rails with Prawn and Prawnto](http://prawn.heroku.com/)
+
+
 <blockquote>
   {%= image_tag "/images/samuel-coleridge.jpg", :alt => "[_Why]" %}
   <p>
