@@ -140,6 +140,7 @@ Live Tr8n sample application:
 ### Misc stuff
 
 * [Examples of how to build PDFs in Rails with Prawn and Prawnto](http://prawn.heroku.com/)
+* [Exploring the stdlib: logger](http://rbjl.net/50-exploring-the-stdlib-logger)
 
 
 <blockquote>
