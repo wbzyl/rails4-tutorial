@@ -85,6 +85,7 @@ TODO:
 Konfiguracja – RVM, konsola, dokumentacja online:
 
 * {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}
+* {%= link_to "Szablony aplikacji Rails", "/rails-templates" %}
 
 
 ## Laboratoria
