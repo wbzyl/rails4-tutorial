@@ -216,9 +216,10 @@ Konferencja odbyła się w Krakowie, 29–30 maja:
   news delivered fresh
   ([linki do wszystkich postów](http://www.railsdispatch.com/posts))
 * [Rails Engines](http://edgeapi.rubyonrails.org/classes/Rails/Engine.html) –
-[How to build a rails 3 engine and set up test with rspec](http://olympiad.posterous.com/how-to-building-a-rails-3-engine-and-set-up-t),
-[Rails 3 Plugins - Part 2 - Writing an Engine](http://www.themodestrubyist.com/2010/03/05/rails-3-plugins---part-2---writing-an-engine/),
-[Create your own Rails3 engine (part 1)](http://ror-e.com/info/videos/5)
+  [How to build a rails 3 engine and set up test with rspec](http://olympiad.posterous.com/how-to-building-a-rails-3-engine-and-set-up-t),
+  [Rails 3 Plugins - Part 2 - Writing an Engine](http://www.themodestrubyist.com/2010/03/05/rails-3-plugins---part-2---writing-an-engine/),
+  [Create your own Rails3 engine (part 1)](http://ror-e.com/info/videos/5)
+* [Rails 3: Fully Loaded](http://intridea.com/2011/5/13/rails3-gems) – lista najlepszych gemów dla Rails 3
 
 Najświeższe posty:
 
