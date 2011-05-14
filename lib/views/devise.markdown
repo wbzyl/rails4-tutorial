@@ -89,18 +89,8 @@ Kończy się to następującym komunikatem o błędzie:
 
     undefined method `password' for #<User:0x0000...>
 
-Dodajemy do modelu *User* brakującą metodę – i przy okazji -
-walidację:
-
-    :::ruby app/models/user.rb
-    attr_accessor :password
-
-    validates_confirmation_of :password
-    validates_presence_of :password, :on => :create
-    validates_presence_of :email
-    validates_uniqueness_of :email
-
-Teraz kolej na poprawki w modelu:
+Dodajemy do modelu *User* brakującą metodę i przy okazji – walidację
+oraz trochę kodu:
 
     :::ruby app/models/user.rb
     class User < ActiveRecord::Base
@@ -135,18 +125,20 @@ sprawdzamy na konsoli co zostało zapisane w bazie w tabeli *users*:
     User.all
     wbzyl@sigma.ug.edu.pl|$2a$10$pZSeY.CDAPCoLdO0kTWu8em...|$2a$10$pZSeY.CDAPCo...
 
-OK! Jesteśmy w połowie drogi.
+OK! Jesteśmy w połowie drogi. Przystępujemy do kodowania drugiej połowy.
 
 
 ## Logowanie, czyli *Logging in*
 
 Informację o zalogowaniu użytkownika będziemy zapisywać w sesji.
-Użyjemy do tego kontrolera o mało odkrywczej nazwie *SessionsController*:
+Kod umieścimy w kontrolerze o mało odkrywczej nazwie *SessionsController*:
 
     rails g controller sessions new
 
-Dodajemy do routingu skróty ukrywające przed użytkownikiem
-technologię REST z której bedziemy korzystać:
+Dodajemy do routingu skróty ukrywające przed użytkownikiem technologię
+REST z której będziemy korzystać. Użytkownik nie musi
+wiedzieć/domyślać się jak działa logowanie albo rejestracja.
+
 
     :::ruby config/routes.rb
     get "register" => "users#new",    :as => "register"
@@ -157,7 +149,6 @@ technologię REST z której bedziemy korzystać:
     resources :users
     resources :sessions
 
-Użytkownik nie musi wiedzieć czym jest logowanie albo rejestracja.
 Logowanie to REST **bez modelu**. Oznacza to, że
 z walidacją będzie problem.
 I nie będziemy mogli też użyć *simple_form_for* w widoku
@@ -254,10 +245,9 @@ pod *:user_id* wartości *nil*.
 
 ## Dodajemy linki
 
-Oczywiście, nie będziemy zmuszać użytkownika
-do wpisywania tych prostych uri: register, login, logout.
-
-Dodamy do layoutu aplikacji linki do kliknięcia:
+Oczywiście, nie będziemy zmuszać użytkownika do wpisywania
+w przeglądarce: *register*, *login*, *logout*. Wpisywanie zastąpimy
+klikaniem. W tym celu dodamy do layoutu aplikacji odpowiednie linki:
 
     :::html_rails app/views/layouts/application.html.erb
     <nav id="authentication">
@@ -312,23 +302,22 @@ Na koniec poprawki w CSS:
     }
 
 
-## TODO
+## To jeszcze nie koniec…
 
-Oczwiście sam ten mechanizm do niczego nie jest przydatny!
+Oczwiście sam mechanizm do niczego nie jest przydatny!
 Do dopiero początek w przydzielaniu i ograniczaniu uprawnień do
 części naszej aplikacji.
 
 Takie rzeczy to już *autoryzacja* a nie *autentykacja*.
-Autoryzację implementujemy korzystając z gemu
-[CanCan](https://github.com/ryanb/cancan) – authorization for Ruby on Rails.
+Obecnie najpopularniejszym gemem wspomagajacym tworzenie kodu dla
+*autoryzacji* jest [CanCan](https://github.com/ryanb/cancan).
+
 W CanCanie uprawnienia użytkowników
 [definiujemy w klasie Ability](https://github.com/ryanb/cancan/wiki/defining-abilities).
 
-Oczywiście możemy skorzystać też z innego gemu.
-
-Ale jeśli chcemy aby dodawanie postów i komentarzy ograniczyć
-tylko do zalogowanych użytkowników, to nie będziemy potrzebować
-ąutoryzacji. Wystarczy w kontrolerach dopisać:
+Ale jeśli chcemy tylkoa, aby dodawanie postów i komentarzy ograniczyć
+do zalogowanych użytkowników, to autoryzację możemy zaimpelentować
+samemu. Jest to bardzoa łatwe. Wystarczy w kontrolerach dopisać:
 
     :::ruby
     class PostsController < ApplicationController
@@ -353,6 +342,7 @@ oraz do *ApplicationController* dodać metodę *login_required*:
   <p>{%= image_tag "/images/free_sign.png", :alt => "[its free]" %}</p>
   <p class="author"><a href="http://www.tonyamoyal.com/2010/07/28/rails-authentication-with-devise-and-cancan-customizing-devise-controllers/">[Read more]</a></p>
 </blockquote>
+
 
 # Autentykacja z Devise
 
@@ -421,7 +411,7 @@ w pliku {%= link_to "config/initializers/devise.rb", "/devise/devise.rb" %}.
 Jest tego sporo! Ale do poprawki jest tylko *mailer_sender*:
 
     :::ruby config/initializers/devise.rb
-    config.mailer_sender = "matwb@sigma.ug.edu.pl"
+    config.mailer_sender = "wbzyl@sigma.ug.edu.pl"
     #   ciekawość to pierwszy… domyślna wartość jest taka
     # config.email_regexp = /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i
     #   użyteczna informacja
@@ -440,7 +430,7 @@ do obsługi autentykacji. Zwyczajowo wybieramy nazwę *User*:
         create     app/models/user.rb
         create     db/migrate/20110415163428_devise_create_users.rb
         insert     app/models/user.rb
-          route  devise_for :users
+         route   devise_for :users
 
 Sprawdzamy wygenerowany model:
 
@@ -472,7 +462,7 @@ Od razu poprawiamy routing, na bardziej zrozumiały
       :sign_out => "logout"
     }
 
-(Nawet w programiści Rails nazwy z prefiksem **sign_** używają w różnych znaczeniach;
+(Nawet zawodowi programiści Rails nazwy z prefiksem **sign_** używają w różnych znaczeniach;
 na przykład ten rozdział zaczyna się od *sign_in* – *register*, a w Devise – *login*.)
 
 Sprawdzamy nowy routing:

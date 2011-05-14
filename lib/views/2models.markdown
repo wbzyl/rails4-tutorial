@@ -302,13 +302,14 @@ Oczywiście musimy jeszcze utworzyć szablon częściowy *comments/_form.html.rb
 
 ## Refaktoryzacja widoku *posts\#show*
 
-Z  *post/show.html.erb* wytniemy formularz dla komentarzy
-(kod pod nagłówkiem **Add new comment**) i zastąpimy go widokiem częściowym:
+Z szablonu *post/show.html.erb* wycinamy formularz dla komentarzy
+(kod pod nagłówkiem **Add new comment**) i zastępujemy
+go szablonem częściowym:
 
-    :::html_rails 
+    :::html_rails
     <%= render :partial => 'comments/form' %>
 
-Wycięty kod przerabiamy na szablon częściowy *comments/form*:
+Szablon częściowy *comments/_form.html.erb* tworzymy z wyciętego kodu:
 
     :::html_rails app/views/comments/_form.html.erb
     <%= simple_form_for [@post, @comment] do |f| %>
@@ -320,8 +321,8 @@ Wycięty kod przerabiamy na szablon częściowy *comments/form*:
       </div>
     <% end %>
 
-W kodzie powyżej pojawiła się nowa zmienna *comment*. 
-Musimy ją zdefiniować:
+W kodzie powyżej jest nowa zmienna *@comment* –
+musimy ją zdefiniować. Definiujemy ją w metodzie *show*:
 
     :::ruby app/controllers/posts_controller.rb
     def show
@@ -332,11 +333,12 @@ Musimy ją zdefiniować:
 
 ### To jeszcze nie koniec czyszczenia kodu
 
-Przenosimy listę komentarzy z szablonu *posts/show.html.erb*
-do widoku częściowego *comments/_comment.html.erb*. W tym celu
-wycinamy całą pętlę (kod pod nagłówkiem **Comments**) i wklejamy
-do szablonu częściowego *comments/_comment.html.erb* ciało wyciętej
-pętli (uff! co za horror):
+Przeniesiemy listę komentarzy z szablonu *posts/show.html.erb*
+do widoku częściowego *comments/_comment.html.erb*.
+Teraz kod dotyczący komentarzy będzie w katalogu *comments*.
+
+Wycinamy całą pętlę (kod pod nagłówkiem **Comments**) i wklejamy
+ją do szablonu częściowego *comments/_comment.html.erb*:
 
     :::html_rails app/views/comments/_comment.html.erb
     <div class="comment">
@@ -346,12 +348,16 @@ pętli (uff! co za horror):
       <%= link_to "Delete", [@post, comment], :confirm => 'Are you sure?', :method => :delete %>
     </p>
 
-Zamiast wyciętego kodu wklejamy:
+Zamiast wyciętego kodu użyjemy dopiero co utworzonego
+szablonu częściowego::
 
     :::ruby app/views/post/show.html.erb
     <%= render :partial => 'comments/comment', :collection => @post.comments %>
 
-Oto rezultat:
+
+### Rezultat
+
+Oto jak po tych zmianach wygląda szablon *post\#show.html.erb*:
 
     :::html_rails app/views/posts/show.html.erb
     <h2><%= @post.title %></h2>
@@ -373,7 +379,8 @@ Oto rezultat:
 
 ## Usuwanie komentarzy
 
-Aktualnie kliknięcie *Delete* powoduje wypisanie takiego komunikatu:
+Na tym etapie pisania kodu, kliknięcie *Delete* powoduje wypisanie
+takiego komunikatu:
 
     Unknown action
     The action 'destroy' could not be found for CommentsController
@@ -386,6 +393,16 @@ Oznacza to, że jest do napisania metoda *destroy*. Oto jej kod:
       @comment.destroy
       respond_with(@post, @comment, :location => @post)
     end
+
+Komentarz do usunięcia wyszukujemy między komentarzami
+postu do którego należy usuwany komentarz.
+
+Taki kod też by zadziałał:
+
+    :::ruby
+    @comment = Comment.find(params[:id])
+
+Ale nie jest to dobry pomysł. Dlaczego?
 
 
 ## Zawiązujemy luźne końce(?)
