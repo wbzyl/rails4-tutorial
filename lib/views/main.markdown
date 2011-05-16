@@ -224,6 +224,7 @@ Konferencja odbyła się w Krakowie, 29–30 maja:
   [Rails 3 Plugins - Part 2 - Writing an Engine](http://www.themodestrubyist.com/2010/03/05/rails-3-plugins---part-2---writing-an-engine/),
   [Create your own Rails3 engine (part 1)](http://ror-e.com/info/videos/5)
 * [Rails 3: Fully Loaded](http://intridea.com/2011/5/13/rails3-gems) – lista najlepszych gemów dla Rails 3
+* [Rails 3.0 and 3.1 Example Apps and Tutorials](http://railsapps.github.com/)
 
 Najświeższe posty:
 
