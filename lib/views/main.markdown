@@ -194,6 +194,10 @@ competition in which teams of skilled web application developers get
 one weekend to design, develop, and deploy the best web property that
 they can, using the power of Ruby and Rails.
 
+<blockquote>
+ <p>[telescopictext](http://www.telescopictext.org/)</p>
+</blockquote>
+
 Korzystamy z nierelacyjnych baz danych:
 
 * Jim Neath.
