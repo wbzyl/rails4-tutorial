@@ -195,7 +195,10 @@ one weekend to design, develop, and deploy the best web property that
 they can, using the power of Ruby and Rails.
 
 <blockquote>
- <p><a href="http://www.telescopictext.org/">Telescopic text</a></p>
+ <p>
+  TelescopicText is primarily a set of tools for creating expanding texts in a similar way.
+ </p>
+ <p class="author"><a href="http://www.telescopictext.org/">Telescopic text</a></p>
 </blockquote>
 
 Korzystamy z nierelacyjnych baz danych:
