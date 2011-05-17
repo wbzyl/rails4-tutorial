@@ -16,7 +16,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "rails4-tutorial"
 
   # If you have other dependencies, add them here
-  s.add_dependency "sinatra"
+  s.add_runtime_dependency 'rack'
+  s.add_runtime_dependency 'sinatra'
   s.add_runtime_dependency 'rdiscount'
   s.add_runtime_dependency 'erubis'
 

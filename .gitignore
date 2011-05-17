@@ -1,3 +1,4 @@
+Gemfile.lock
 .bundle
 lib/log/*.log
 lib/tmp/**/*
