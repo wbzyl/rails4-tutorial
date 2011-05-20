@@ -19,47 +19,65 @@ konsolę języka Ruby (**irb**) oraz konsolę frameworka Ruby on Rails
 
 Dlaczego [RVM] [rvm]?
 „RVM helps ensure that all aspects of ruby are completely contained
-within user space, strongly encouraging **non-root usage**. Use of RVM
-rubies provide a higher level of system security and therefore reduce
-risk and overall system downtime. Additionally, since all processes
-run as the user, a compromised ruby process will not be able to
-compromise the entire system.”
+within user space, strongly encouraging **non-root usage**.”
 
 Podstawowe polecenia RVM:
 
     :::shell-unix-generic
-    rvm install ree    # alias ree-1.8.7
-    rvm install 1.9.2  # alias ruby-1.9.2
-    rvm use ree
+    rvm install ree    # alias na ostatnią wersję, np. ree-1.8.7-2011.03
+    rvm install 1.9.2  # alias na ostatnią wersję, np. ruby-1.9.2-p180
     rvm list
-    rvm gemset list
-    rvm gemset use NAZWA_ZESTAWU_GEMÓW
-    rvm gemset name
+    rvm use ree
+    rvm current
 
-Dodatkowo możemy sprawdzić:
+Potrzebujemy więcej szczegółów:
 
     :::shell-unix-generic
+    rvm env
     ruby -v
     which ruby
-    rvm env
+    rvm disk-usage all
+      Downloaded Archives Usage: 4,0K
+      Extracted Source Code Usage: 4,0K
+      Log Files Usage: 4,0K
+      Rubies Usage: 96M
+      Gemsets Usage: 306M
+      Total Disk Usage: 404M
 
-Ustawiamy domyślną wersję:
+Na koniec ustawiamy domyślną wersję Ruby:
 
     :::shell-unix-generic
     rvm --default use 1.9.2
 
-Dla każdego projektu rails powinniśmy w katalogu głównym aplikacji
-umieścić plik *.rvmrc* o następującej zawartości:
+Po instalacji w ścieżce *PATH* powinny pojawić się katalogi:
 
-<pre>rvm use ree  # jeśli zmieniamy wersję na starszą
-rvm --create gemset use NAZWA_ZESTAWU_GEMÓW_DLA_PROJEKTU
+    echo $PATH
+    ...
+    HOME/.rvm/gems/ruby-1.9.2-p180/bin:
+    HOME/.rvm/gems/ruby-1.9.2-p180@global/bin:
+    HOME/.rvm/rubies/ruby-1.9.2-p180/bin:
+    HOME/.rvm/bin:
+    ...
+
+Dla każdego projektu rails powinniśmy w katalogu głównym aplikacji
+umieścić plik *.rvmrc*, na przykład:
+
+<pre>rvm ruby-1.9.2-p180
 </pre>
 
-Dlaczego tak należy postępować opisał J. Lecour,
-[„Advice on using Ruby, RVM, Passenger, Rails, Bundler, … in development”](http://jeremy.wordpress.com/2010/08/19/ruby-rvm-passenger-rails-bundler-in-development/).
+Więcej o konfiguracji:
 
-Więcej na ten temat napisał autor RVM – Wayne E. Segui,
-[RVM: Ruby Version Manager – rvmrc](http://rvm.beginrescueend.com/workflow/rvmrc/).
+* Ryan McGeary.
+  [“Vendor Everything” Still Applies](http://ryan.mcgeary.org/2011/02/09/vendor-everything-still-applies/)
+* Jérémy Lecour.
+  [„Advice on using Ruby, RVM, Passenger, Rails, Bundler, … in development”](http://jeremy.wordpress.com/2010/08/19/ruby-rvm-passenger-rails-bundler-in-development/).
+* Wayne E. Segui.
+  [RVM: Ruby Version Manager – rvmrc](http://rvm.beginrescueend.com/workflow/rvmrc/).
+* Balazs Nagy. [Vendoring gems with style](http://blog.js.hu/2011/05/18/vendoring-gems-with-style/) –
+  z bloga warto zapamiętać te polecenia:
+
+        bundle exec gem install bundler
+        bundle show bundler
 
 
 ## Zestawy gemów
@@ -67,29 +85,32 @@ Więcej na ten temat napisał autor RVM – Wayne E. Segui,
 W trakcie instalacji dla każdej wersji Rubiego
 tworzone są dwa zestawy gemów (ang. *gemset*):
 
-* **default** (bez nazwy)
+* **default** (domyślny, bez nazwy)
 * **global**
 
-Do zestawu *global* dodajemy gemy używane we wszystkich projektach:
+Do zestawu **global** dodajemy gemy używane
+we wszystkich projektach. Na przykład
 
-    rvm use 1.9.2
-    rvm gemset use global
-    gem install bundler rails wirble hirb
-
-I jeszcze raz powtarzamy tę procedurę. Teraz dla *ree*.
+    rvm use ruby-1.9.2-p180@global
+    gem install bundler rack bundler
+    rvm use ruby-1.9.2-p180
 
 
-## Dodatkowa lektura
+## Gemy & Bundler
 
-Należy przeczytać dokumentację pakietów:
+Gemy instalujemy za pomocą polecenia:
 
-* thin
-* unicorn, rainbows (gemy)
-* nginx (serwer www)
-* passenger (moduł dla apache i nginx)
-* jQuery (biblioteka Javascript)
+    :::shell-unix-generic
+    bundle install --path=$HOME/.gems
 
-oraz przejrzeć co Google ma do powiedzenia na temat tych rzeczy.
+Albo lokalnie, w aplikacji:
+
+    :::shell-unix-generic
+    bundle install --path=.bundle/gems
+
+
+Od tej chwili, polecenie *bundle* będzie instalować gemy
+w podanej lokalizacji.
 
 
 # RVM na Sigmie
@@ -106,7 +127,7 @@ takie polecenia:
     strace rails server
 
 Aby temu zaradzić na Sigmie została zainstalowana wersja „system wide RVM”.
-Po przejściu na tę wersję, polecenia powinny się szybko uruchamiać.
+Po przejściu na tę wersję, polecenia powinny się szybciej uruchamiać.
 
 
 ## System wide RVM krok po kroku
@@ -121,24 +142,20 @@ W plikach *~/.bashrc* oraz *~/.bashrc_profile* wykomentowujemy wiersz:
     :::shell-unix-generic
     [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
 
-Zamiast niego wstawiamy:
+Zamiast niego wstawiamy wiersz:
 
     :::shell-unix-generic
     [[ -s /usr/local/lib/rvm ]] && source /usr/local/lib/rvm
 
-Teraz po wygenerowaniu rusztowania nowej aplikacji, dodajemy
-w jej katalogu głównym plik *.rvmrc* o następującej zawartości:
+Dla instalacji „system wide”, powinniśmy mieć w *PATH* katalogi:
 
-    :::shell-unix-generic
-    rvm use 1.9.2  # albo ree
-
-Gemy instalujemy za pomocą polecenia:
-
-    :::shell-unix-generic
-    bundle install --path ~/.gems
-
-Od tej chwili, polecenie *bundle* będzie instalować gemy
-w katalogu *~/.gems* aplikacji.
+    echo $PATH
+    ...
+    /usr/local/rvm/gems/ruby-1.9.2-p180/bin:
+    /usr/local/rvm/gems/ruby-1.9.2-p180@global/bin:
+    /usr/local/rvm/rubies/ruby-1.9.2-p180/bin:
+    /usr/local/rvm/bin:
+    /usr/local/rubyee/bin
 
 
 # Konfiguracja konsoli
@@ -166,9 +183,9 @@ oraz gemów:
     :verbose: true
     :benchmark: false
 
-
-**Uwaga:** oba gemy – *wirble* i *hirb* – należy dopisać do każdego
-pliku *Gemfile* aplikacji Rails.
+**Uwaga:** Niestety, teraz oba gemy – *wirble* i *hirb*
+trzeba będzie dopisywać do każdego pliku *Gemfile* aplikacji Rails.
+Jest to uciążliwe. Ale jak to obejść?
 
 
 ## Dokumentacja online
