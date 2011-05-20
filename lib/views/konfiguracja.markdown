@@ -196,14 +196,17 @@ Instalujemy gemy:
 
 Wykonujemy polecenia:
 
-    rdoc-data --install
-    gem rdoc --all --overwrite
+    rdoc-data
 
 W katalogu *doc* aplikacji Rails tworzymy katalog *rails* z dokumentacją
 API Rails oraz katalog *guides* z samouczkami:
 
-    rake doc:rails
-    rake doc:guides
+    git clone git://github.com/rails/rails.git
+    cd rails
+    ... bundle install ...
+    rake rdoc
+    cd railties
+    rake generate_guides
 
 Zobacz też:
 
