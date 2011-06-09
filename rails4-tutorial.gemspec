@@ -21,14 +21,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'rdiscount'
   s.add_runtime_dependency 'erubis'
 
-  s.add_runtime_dependency 'sinatra-static-assets'
-  s.add_runtime_dependency 'emk-sinatra-url-for'
-  s.add_runtime_dependency 'sinatra-filler'
-
-  # does not work with ruby 1.9.2
-  s.add_dependency "ultraviolet"
-  # s.add_dependency "rack-codehighlighter", "> 0"
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
