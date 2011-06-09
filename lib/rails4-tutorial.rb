@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+require 'rdiscount'
+require 'erubis'
+
 require 'sinatra/base'
 
 require 'sinatra/url_for'
@@ -6,8 +11,6 @@ require 'sinatra/filler'
 
 module WB
   class Rails4 < Sinatra::Base
-    # include Rack::Utils
-
     helpers Sinatra::UrlForHelper
     register Sinatra::StaticAssets
 
@@ -23,7 +26,6 @@ module WB
     # Sinatra if it's better handled by a middleware component.
     set :logging, true  # use Rack::CommonLogger
 
-    # helpers Sinatra::RDiscount
     # helper methods
     helpers Sinatra::Filler
 
@@ -48,7 +50,6 @@ module WB
     # end
 
     get '/' do
-      #rdiscount :main
       erubis(markdown(:main))
     end
 
@@ -77,15 +78,18 @@ module WB
       extname = params[:captures][2]
       filename = name + "." + extname
 
-      @title = filename
+      @title =  'WB@Rails4' + dirname.split('/').join(' » ')
+
       @filename = File.expand_path(File.join(File.dirname(__FILE__), 'doc', dirname, filename))
 
       lang = translate[extname] || 'plain_text'
 
       if File.exists?(@filename) && File.readable?(@filename)
-        content = "<pre><code>:::#{lang}\n#{escape_html(File.read @filename)}</code></pre>"
+        content = "<h1>#{filename}</h1>"
+        content += "<pre><code>:::#{lang}\n#{escape_html(File.read @filename)}</code></pre>"
+        #content += "<pre><code>:::#{lang}\n#{File.read(@filename)}</code></pre>"
       else
-        content = "<h2>oops! couldn't find <em>#{@filename}</em></h2>"
+        content = "<h2>oops! couldn't find <em>#{filename}</em></h2>"
       end
 
       erb content, :layout => :code
@@ -97,7 +101,5 @@ module WB
       'Application error'
     end
 
-    # each Sinatra::Base subclass has its own private middleware stack:
-    # use Rack::Lint
   end
 end

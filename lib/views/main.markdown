@@ -237,15 +237,3 @@ Najświeższe posty:
 
 
 [railsplugins]: http://www.railsplugins.org/ "Is Your Plugin Ready For Rails 3?"
-
-
-<script type="text/javascript">
-$(function () {
- deadline = new Date(2009, 10, 27);
- $('#defaultCountdown').countdown({
-   until: deadline,
-   compact: true,
-   layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
-   format: 'dHMS'});
-});
-</script>

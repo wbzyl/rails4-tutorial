@@ -65,3 +65,19 @@ Przykład linków do *pretty printing*::
 
     {%= link_to "scaffold", "/rails3/scaffold/posts_controller.rb" %}
     {%= link_to "nifty:scaffold", "/rails3/nifty-generators/comments_controller.rb" %}
+
+
+## Problem
+
+Jak to wstawić tylko na stronie main:
+
+    <script>
+    $(function () {
+     deadline = new Date(2009, 10, 27);
+     $('#defaultCountdown').countdown({
+      until: deadline,
+      compact: true,
+      layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
+      format: 'dHMS'});
+    });
+    </script>
