@@ -206,7 +206,7 @@ kiedy wykonujemy operacje CRUD na modelu.
 Z kodu szablonu *tasks\#index* wydzielamy szablon częściowy
 *_task.html.erb*:
 
-    :::html_rails
+    :::rhtml
     <tr>
       <td><%= task.name %></td>
       <td><%= link_to 'Show', task_path(task) %></td>
@@ -217,7 +217,7 @@ Z kodu szablonu *tasks\#index* wydzielamy szablon częściowy
 którym zastępujemy pętlę wypisującą wszystkie zadania
 w szablonie *index.html.erb*:
 
-    :::html_rails
+    :::rhtml
     <table>
       <tr>
         <th>Nazwa</th>
@@ -281,7 +281,7 @@ I podglądamy jak on wygląda:
 Wzorując się na szablonie *tasks\#_form* dopisujemy do szablonu
 **task\#show** formularz dla *todo*:
 
-    :::html_rails
+    :::rhtml
     <h3>New todo</h3>
     <%= form_for([@task, @todo]) do |f| %>
       <% if @todo.errors.any? %>
@@ -303,7 +303,7 @@ Wzorując się na szablonie *tasks\#_form* dopisujemy do szablonu
 
 oraz szablon generujący listę todo składających się na dane task:
 
-    :::html_rails
+    :::rhtml
     <% if @task.todos.any? %>
     <h2>Listing todos</h2>
     <ol>
@@ -371,7 +371,7 @@ Usuwamy kod wypisujący wiadomości flash z widoku *tasks\#show*.
 
 W widoku *tasks\#show* dodajemy linki do usuwania i edycji todo:
 
-    :::html_rails
+    :::rhtml
     <li>
       <%= todo.name %> (<%= link_to 'Edit', edit_task_todo_path(@task, todo) %> |
       <%= link_to 'Destroy', [@task, todo], :confirm => 'Are you sure?', :method => :delete %>)
@@ -408,7 +408,7 @@ Najwyższa pora na trochę refaktoryzacji.
 
 Tworzymy dwa widoki częściowe w widoku *tasks\#show*:
 
-    :::html_rails
+    :::rhtml
     <h2><%= @task.name %></h2>
     <%= link_to 'Edit', edit_task_path(@task) %> |
     <%= link_to 'Back', tasks_path %>
@@ -426,7 +426,7 @@ Tworzymy dwa widoki częściowe w widoku *tasks\#show*:
 Drugi szablon częściowy *todos/_form.html.erb* jest prawie taki sam
 jak szablon dla formularza dla modelu *Task*::
 
-    :::html_rails
+    :::rhtml
     <%= form_for([@task, @todo]) do |f| %>
       <% if @todo.errors.any? %>
         <div id="error_explanation">
@@ -447,7 +447,7 @@ jak szablon dla formularza dla modelu *Task*::
 
 Szablon częściowy *todo/_todo.html.erb* zastępuje pętlę po *todo*:
 
-    :::html_rails
+    :::rhtml
     <li>
       <%= todo.name %>
       (<%= link_to 'Edit', edit_task_todo_path(@task, todo) %> |
@@ -478,7 +478,7 @@ i usuwamy z metod zbędny kod.
 
 Coś takiego powinno wystarczyć(?):
 
-    :::html_rails
+    :::rhtml
     <h1>Editing todo</h1>
     <%= render 'form' %>
     <p><%= link_to 'Back', task_path(@task) %></p>
@@ -488,7 +488,7 @@ Coś takiego powinno wystarczyć(?):
 
 Oto on. Ale czy jest potrzebny?
 
-    :::html_rails
+    :::rhtml
     <h1>New todo</h1>
     <%= render 'form' %>
     <p><%= link_to 'Back', task_path(@task) %></p>

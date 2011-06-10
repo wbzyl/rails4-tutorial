@@ -70,7 +70,7 @@ Pozostałe szczegóły opisano w [jQuery.ajax() API](http://api.jquery.com/jQue
 Samo zajaxowanie formularza jest proste.  Wystarczy dopisać *remote =>
 true* w argumentach metody pomocniczej *form_for*:
 
-    :::html_rails
+    :::rhtml
     <%= form_for(@task, :remote => true) do |f| %>
 
 Mały problem jest tylko z dodaniem zdarzeń do elementów strony.
@@ -96,7 +96,7 @@ Przeorganizowujemy *layout/application.html.erb*.
 
 Zamiast pętli po widomościach flash wstawimy:
 
-    :::html_rails
+    :::rhtml
     <div id="container">
       <%= content_tag :div, "", :id => "flash_notice" %>
       <%= content_tag :div, "", :id => "flash_error" %>
@@ -124,7 +124,7 @@ dostajemy:
 
 Oznacza to, że musimy napisać szablon **views/tasks/create.js.erb**:
 
-    :::html_rails
+    :::rhtml
     $("#flash_notice")
       .html("<%= escape_javascript(flash[:notice])%>")
       .show();
@@ -136,7 +136,7 @@ Po wskazówki przeglądamy *Request Headers* na konsoli Firebuga.
 
 Powyżej korzystamy szablonu częściowego *_task.erb.html*:
 
-    :::html_rails
+    :::rhtml
     <tr>
       <td><%= task.name %></td>
       <td><%= link_to 'Show', task_path(task) %></td>
@@ -184,7 +184,7 @@ I18N+L10N o Javascript. A to, chyba, nie jest takie proste.
 Tak jak w wypadku dodawania dopisujemy *remote => true*.
 Ale tym razem przy linku „Destroy” w *link_to*:
 
-    :::html_rails views/tasks/_task.html.erb
+    :::rhtml views/tasks/_task.html.erb
     <td><%= link_to 'Destroy', task, :confirm=>'Are you sure?', :remote=>true, :method=>:delete %></td>
 
 Po tej zmianie, kliknięcie linku „Destroy” daje błąd (konsola Rails):
@@ -306,7 +306,7 @@ z *id* równym *nil*. Dla takiej zmiennej, *task_path(task)* nie ma sensu.
 
 Poprawimy to zmieniając *create.js.erb*:
 
-    :::html_rails
+    :::rhtml
     <% if @task.valid? %>
       $("#flash_notice")
         .html("<%= escape_javascript(flash[:notice])%>")
@@ -356,7 +356,7 @@ Edycja zadania, chyba bez remote:
 
 I w *_form.html.erb* zamiast *form_for* z *remote* wpisujemy:
 
-    :::html_rails
+    :::rhtml
     <%= remote_form_for(@task) do |f| %>
 
 

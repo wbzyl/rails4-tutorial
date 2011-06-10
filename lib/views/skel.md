@@ -42,7 +42,7 @@ o błędzie:
 Nie pozostaje nam nic innego jak utworzyć szablon **powiązany**
 z metodą *index*:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <h1>Fortunki</h1>
     <% @fortunes.each do |fortune| %>
     <p><%= fortune.body %></p>
@@ -67,7 +67,7 @@ Teraz, dla przykładu zaczniemy od szablonu *new.html.erb*.
 Szablon powinien zawierać formularz umożliwiający
 wpisanie nowej fortunki.
 
-    :::html_rails app/views/fortunes/new.html.erb
+    :::rhtml app/views/fortunes/new.html.erb
     <h1>Nowa fortunka</h1>
     <%= form_for(Fortune.new) do |form| %>
     <p>
@@ -124,7 +124,7 @@ Czytamy to co zostało wypisane na konsoli i piszemy metodę *show*:
 
 Szablon też piszemy „od ręki”:
 
-    :::html_rails app/views/fortunes/show.html.erb
+    :::rhtml app/views/fortunes/show.html.erb
     <p>
       <b>Body:</b>
       <%= @fortune.body %>

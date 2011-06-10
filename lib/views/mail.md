@@ -202,7 +202,7 @@ zmieniamy na:
 
 a do metody *registration_confirmation* piszemy powiązany z nią widok:
 
-    :::html_rails app/views/user_mailer/registration_confirmation.text.erb
+    :::rhtml app/views/user_mailer/registration_confirmation.text.erb
     <%= @user.username %>,
     Thank you for registering!
 
@@ -244,7 +244,7 @@ process like delayed job.”
 
 To jest proste! Piszemy szablon HTML:
 
-    :::html_rails app/views/user_mailer/registration_confirmation.html.erb
+    :::rhtml app/views/user_mailer/registration_confirmation.html.erb
     <h3><%= @user.username %></h3>
     <p>Thank you for registering!</p>
     <p>Edit Profile:

@@ -26,7 +26,7 @@ jest drugi w kategorii „Most Watched Overall Javascript project” na githubi
 Layout aplikacji wygenerowany przez *nifty:layout*, po liftingu
 (pl, utf-8, domyślny tytuł, shiv, cdn jquery, style):
 
-    :::html_rails app/views/layouts/application.html.erb
+    :::rhtml app/views/layouts/application.html.erb
     <!doctype html>
     <html lang="pl">
       <head>
@@ -182,7 +182,7 @@ powinien mieć dodany atrybut **class** ustawiony na **active**.
 
 A tak chcielibyśmy, to wpisać layoucie *views/layouts/application.html.erb*:
 
-    :::html_rails
+    :::rhtml
     <div id="mainMenu">
       <%= navigation ['/home','Homepage'],['/about','About us'],['/contact','Contact'] %>
     </div>
@@ -221,7 +221,7 @@ dla przykładu – kolorem tła.
 Zamiast powielenia i edycji *layouts/application.html.erb* można
 postąpić tak. Tworzymy plik *layouts/about.html.erb* o zawartości:
 
-    :::html_rails
+    :::rhtml
     <% content_for :head do %>
       <style>
         #background { background-color: #956E6F; }

@@ -29,14 +29,14 @@ Zamienimay migrację:
         t.string :email, :null => false
         t.string :crypted_password, :null => false
         t.string :password_salt, :null => false
-        t.string :persistence_token, :null => false      
+        t.string :persistence_token, :null => false
         t.integer :login_count, :default => 0, :null => false
         t.datetime :last_request_at
         t.datetime :last_login_at
         t.datetime :current_login_at
         t.string :last_login_ip
         t.string :current_login_ip
-      
+
         t.timestamps
       end
       add_index :users, :username
@@ -53,9 +53,9 @@ Model *User*:
       # a tak zmieniamy domyślne ustawienia walidacji w Authlogic
       acts_as_authentic do |c|
         c.validates_length_of_password_field_options= {:within => 2..4}
-        c.validates_length_of_password_confirmation_field_options= {:within => 2..4}    
+        c.validates_length_of_password_confirmation_field_options= {:within => 2..4}
       end
-      
+
       attr_accessible :username, :email, :password, :password_confirmation
       attr_accessible :crypted_password, :password_salt, :persistence_token,
         :login_count, :last_request_at, :last_login_at,
@@ -70,15 +70,15 @@ Routing:
       match 'signup' => 'users#new',             :as => :signup
       match 'login'  => 'user_sessions#new',     :as => :login
       match 'logout' => 'user_sessions#destroy', :as => :logout
-      
+
       resources :fortunes
-      
+
       resources :user_sessions
       resources :users
- 
+
 Widok aplikacji:
 
-    :::html_rails
+    :::rhtml
     <div id="user_nav">
       <% if logged_in? %>
         Welcome <%= current_user.username %>! Not you?
@@ -119,31 +119,31 @@ użytych powyżej.
     :::ruby lib/authentication.rb
     # You can also restrict unregistered users from accessing a controller using
     # a before filter. For example.
-    # 
+    #
     #   before_filter :login_required, :except => [:index, :show]
     #
     module Authentication
       def self.included(controller)
-        controller.send :helper_method, 
-          :current_user, :logged_in?, 
+        controller.send :helper_method,
+          :current_user, :logged_in?,
           :login_required, :logout_required,
           :redirect_to_target_or_default
       end
-      
+
       def current_user_session
         return @current_user_session if defined?(@current_user_session)
         @current_user_session = UserSession.find
       end
-      
+
       def current_user
         return @current_user if defined?(@current_user)
         @current_user = current_user_session && current_user_session.record
       end
-      
+
       def logged_in?
         current_user
       end
-      
+
       def login_required
         unless logged_in?
           flash[:error] = "You must first log in or sign up before accessing this page."
@@ -151,7 +151,7 @@ użytych powyżej.
           redirect_to login_url
         end
       end
-      
+
       def logout_required
         if logged_in?
           store_target_location
@@ -160,20 +160,20 @@ użytych powyżej.
           return false
         end
       end
-      
+
       def redirect_to_target_or_default(default)
         redirect_to(session[:return_to] || default)
         session[:return_to] = nil
       end
-      
+
       private
-      
+
       def store_target_location
         session[:return_to] = request.fullpath
       end
     end
 
-Jeszcze musimy poprawić kod tak aby działał routing 
+Jeszcze musimy poprawić kod tak aby działał routing
 generowny przez *Edit Profile*:
 
     /users/wlodek/edit
@@ -196,9 +196,9 @@ Pytanie: dlaczego po tych poprawkach routing działa?
 Czy poprawki te są konieczne?
 
 
-## Le Grande Finale: ograniczamy dostęp 
+## Le Grande Finale: ograniczamy dostęp
 
-Jak zapewnić sobie, aby **tylko** zalogowany użytkownik mógł 
+Jak zapewnić sobie, aby **tylko** zalogowany użytkownik mógł
 dodawać nowe cytaty oraz edytować i usuwać już istniejące cytaty?
 
 Częściowe rozwiązanie: dopisujemy w kontrolerze
@@ -234,10 +234,10 @@ Nazywamy go **perishable_token**. Takie napisy są pamiętane w polu
 
 *Authlogic* zarządza tym tokenem w następujący sposób:
 
-* The token gets set to a unique value before validation, 
+* The token gets set to a unique value before validation,
   which constantly changes the token.
-* After a session is successfully saved (aka logged in) 
-  the the token will be reset. 
+* After a session is successfully saved (aka logged in)
+  the the token will be reset.
 
 Pytanie: Co to daje?
 
@@ -248,15 +248,15 @@ Tworzymy migrację, która doda token to tabeli:
 i modyfikujemy ją w następujący sposób:
 
     :::ruby
-    class AddUsersPasswordResetFields < ActiveRecord::Migration  
-      def self.up  
+    class AddUsersPasswordResetFields < ActiveRecord::Migration
+      def self.up
         add_column :users, :perishable_token, :string, :default => "", :null => false
         add_index :users, :perishable_token
-      end  
-      def self.down  
-        remove_column :users, :perishable_token  
-      end  
-    end  
+      end
+      def self.down
+        remove_column :users, :perishable_token
+      end
+    end
 
 Po tych zmianach migrujemy:
 
@@ -265,7 +265,7 @@ Po tych zmianach migrujemy:
 
 ### Zmiana hasła na sposób REST
 
-Tworzymy resource/zasób o nazwie *password resets* 
+Tworzymy resource/zasób o nazwie *password resets*
 i dopisujemy go do routingu:
 
     :::ruby
@@ -309,11 +309,11 @@ do *controler.send* (definicję już wpisaliśmy wcześniej):
     module Authentication
       def self.included(controller)
         # dopisujemy :logout_required
-        controller.send :helper_method, :current_user, :logged_in?, 
+        controller.send :helper_method, :current_user, :logged_in?,
             :redirect_to_target_or_default, :logout_required
       end
 
-Method *find_using_perishable_token* is a special in *Authlogic*. 
+Method *find_using_perishable_token* is a special in *Authlogic*.
 Here is what it does for extra security:
 
 * Ignores blank tokens
@@ -327,7 +327,7 @@ Widok *new.html.erb* dla tego kontrolera:
 
     :::html
     <h1>Forgot Password</h1>
-    <p>Fill out the form below and instructions 
+    <p>Fill out the form below and instructions
        to reset your password will be emailed to you:
     </p>
     <% form_tag password_resets_path do %>
@@ -365,7 +365,7 @@ do elementu *div#user_nav*
       <% if logged_in? %>
         Welcome <%= current_user.username %>! Not you?
         <%= link_to "Logout", logout_path %> |
-        <%= link_to "Edit Profile", edit_user_path(current_user.username) %> 
+        <%= link_to "Edit Profile", edit_user_path(current_user.username) %>
       <% else %>
         <%= link_to "Register", signup_path %> |
         <%= link_to "Login", login_path %> |
@@ -374,7 +374,7 @@ do elementu *div#user_nav*
     </div>
 
 
-### Email z linkiem do zmiany hasła 
+### Email z linkiem do zmiany hasła
 
 Za wysłanie maila z linkiem będzie odpowiedzialna metoda
 *deliver_password_reset_instructions!*:
@@ -387,7 +387,7 @@ Za wysłanie maila z linkiem będzie odpowiedzialna metoda
         Notifier.password_reset_instructions(self).deliver
       end
 
-Uwagi: 
+Uwagi:
 
 * metoda *reset\_perishable\_token!* jest zdefiniowana w *Authlogic*;
   metoda ta zmienia wartość pola *perishable_token* w tabelce *users*
@@ -397,7 +397,7 @@ Uwagi:
 Teraz zajmiemy się wygenerowaniem gotowca dla *Notifier*:
 
     rails g mailer Notifier
-    
+
       create  app/mailers/notifier.rb
       invoke  erb
       create    app/views/notifier
@@ -409,30 +409,30 @@ Zmieniamy wygenerowany kod na:
       default :from => "matwb@ug.edu.pl"
 
       def password_reset_instructions(user)
-        @user = user 
+        @user = user
         mail(:to => user.email, :subject => "Pasword reset instructions")
-      end  
+      end
     end
 
 I dodajemy szablon tekstowy dla tego maila:
 
-    :::html_rails app/views/notifier/password_reset_instructions.text.erb
-    A request to reset your password has been made. 
-    If you did not make this request, simply ignore this email. 
+    :::rhtml app/views/notifier/password_reset_instructions.text.erb
+    A request to reset your password has been made.
+    If you did not make this request, simply ignore this email.
     If you did make this request just click the link below:
 
       <%= edit_password_reset_url(@user.perishable_token, :host => MAIL_CONFIG[:host]) %>
 
-    If the above URL does not work try copying and pasting 
-    it into your browser. If you continue to have problem 
+    If the above URL does not work try copying and pasting
+    it into your browser. If you continue to have problem
     please feel free to contact us.
- 
+
 
 ### Użytkownik kilka na link w emailu
 
 Link który użytkownik ma kliknąć w emailu będzie wyglądał jakoś tak:
 
-    http://sigma.ug.edu.pl:3000/password_resets/6th8mSFwxvG-v2IbbRdY/edit    
+    http://sigma.ug.edu.pl:3000/password_resets/6th8mSFwxvG-v2IbbRdY/edit
 
 Po kliknięciu wykonana zostanie metoda *edit* klasy *PasswordResetsController*:
 
@@ -442,10 +442,10 @@ Po kliknięciu wykonana zostanie metoda *edit* klasy *PasswordResetsController*:
     end
 
 Powiązany z nią widok jest taki:
-    
+
     :::ruby app/views/password_resets/edit.html.erb
     <h1>Change My Password</h1>
-    
+
     <%= form_for @user, :url => password_reset_path, :method => :put do |f| %>
       <%= f.error_messages %>
       <%= f.label :password %><br />

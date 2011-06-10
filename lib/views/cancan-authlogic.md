@@ -214,7 +214,7 @@ Na konsoli sprawdzamy, czy coś poszło nie tak:
 
 Zaczynamy od widoku częściowego, gdzie dopisujemy:
 
-    :::html_rails app/models/users/_form.html.erb
+    :::rhtml app/models/users/_form.html.erb
     <p>
       <%= f.label :roles %><br />
       <% for role in User.valid_roles %>
@@ -258,12 +258,12 @@ W główce każdej strony umieścimy login zalogowanego użytkownika.
 Informację o zalogowanym użytkowniku znajdziemy w sesji.
 Jeśli w widoku strony głównej dopiszemy:
 
-    :::html_rails
+    :::rhtml
     <%= debug(UserSession.find) %>
 
 albo, lepiej:
 
-    :::html_rails
+    :::rhtml
     <%= debug(current_user) %>
 
 to po zalogowaniu się do aplikacji i przejściu na stronę główną
@@ -321,7 +321,7 @@ to login zalogowanego użytkownika.
 Zatem dopisujemy w *layout/application.html.erb*
 poniżej linka *"Logout"*:
 
-    :::html_rails
+    :::rhtml
     Welcome <em><%= current_user.username %></em>
 
 
@@ -335,7 +335,7 @@ dopiszemy login użytkownika który dodał cytat.
 
 Oto oryginalny widok *index*:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <table>
       <tr>
         <th>Quotation</th>
@@ -353,7 +353,7 @@ Oto oryginalny widok *index*:
 
 A to ten sam widok po „liftingu”:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <% for fortune in @fortunes %>
       <p><%= fortune.quotation %>
       <p><%= link_to "Show", fortune %>
@@ -371,7 +371,7 @@ użytkownikami. **TODO** Docelowo zastosujemy tutaj role.
 
 A to są poprawki do widoku *show*:
 
-    :::html_rails app/views/fortunes/show.html.erb
+    :::rhtml app/views/fortunes/show.html.erb
     <p>
       <strong>Quotation </strong> added by <em><%= @fortune.user.username %></em>
     </p>
@@ -385,7 +385,7 @@ A to są poprawki do widoku *show*:
 Do widoku częściowego dodamy możliwość edycji
 użytkownika (użyjemy listy rozwijanej), który dodał cytat.
 
-    :::html_rails app/views/fortunes/_form.html.erb
+    :::rhtml app/views/fortunes/_form.html.erb
     <% form_for @fortune do |f| %>
       <%= f.error_messages %>
       <p>
@@ -511,7 +511,7 @@ dodaliśmy przy okazji autentykacji. Skorzystamy z metody
 
 Zaczynamy od zmian w widoku *fortunes/index.html.erb*:
 
-    :::html_rails
+    :::rhtml
     <% for fortune in @fortunes %>
       <p><%= fortune.quotation %>
       <p><%= link_to "Show", fortune %>
@@ -530,7 +530,7 @@ Zaczynamy od zmian w widoku *fortunes/index.html.erb*:
 
 Następnie w pliku *show.html.erb* poprawiamy akapit:
 
-    :::html_rails
+    :::rhtml
     <p>
       <% if can? :update, @fortune %>
         <%= link_to "Edit", edit_fortune_path(@fortune) %>
@@ -643,7 +643,7 @@ Sprawdzamy, czy wszystko działa. Jesli tak, to ukrywamy listę
 rozwijaną przed autorami (ale nie adminami i moderatorami). W widoku
 *fortunes/_form.html.erb* podmieniamy akapit z „Zmień użytkownika…” na:
 
-    :::html_rails
+    :::rhtml
     <% if !current_user.role?(:author) %>
     <p>
       Zmień użytkownika: <%= f.collection_select :user_id, User.all, :id, :login %>
@@ -695,7 +695,7 @@ ze strony gemu CanCan?
 
 Pozostaje punkt 2. Można to zrobić tak:
 
-    :::html_rails
+    :::rhtml
     <% for fortune in @fortunes %>
       <p>
         <%=h fortune.quotation %>

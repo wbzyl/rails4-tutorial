@@ -156,7 +156,7 @@ Ustawimy inne marginesy, zwiększymy domyślną wielkość fontu:
 
 Na koniec, dodajemy powyższy arkusz css do layoutu aplikacji:
 
-    :::html_rails app/views/layouts/application.html.erb
+    :::rhtml app/views/layouts/application.html.erb
     <%= stylesheet_link_tag "application", "simple_form" %>
 
 
@@ -165,12 +165,12 @@ Na koniec, dodajemy powyższy arkusz css do layoutu aplikacji:
 Wycinamy pętlę z pliku *index.html.erb*, zastępując ją
 szablonem częściowym:
 
-    :::html_rails app/views/posts/index.html.erb
+    :::rhtml app/views/posts/index.html.erb
     <%= render :partial => 'post', :collection => @posts %>
 
 Z wyciętego kodu tworzymy szablon częściowy *_post.html.erb*:
 
-    :::html_rails app/views/posts/_post.html.erb
+    :::rhtml app/views/posts/_post.html.erb
     <article>
       <h4><%= post.title %></h4>
       <div><%= post.content %></div>
@@ -292,7 +292,7 @@ Oto rezultat:
 Rails daje nam znać, że brakuje szablonu. Taki
 szablon powinien wystarczyć aby pozbyć się tego błędu:
 
-    :::html_rails app/views/comments/new.html.erb
+    :::rhtml app/views/comments/new.html.erb
     <% title "New comment" %>
     <%= render :partial => 'form' %>
     <p class="links clear"><%= link_to 'Back', @comment.post %></p>
@@ -306,12 +306,12 @@ Z szablonu *post/show.html.erb* wycinamy formularz dla komentarzy
 (kod pod nagłówkiem **Add new comment**) i zastępujemy
 go szablonem częściowym:
 
-    :::html_rails
+    :::rhtml
     <%= render :partial => 'comments/form' %>
 
 Szablon częściowy *comments/_form.html.erb* tworzymy z wyciętego kodu:
 
-    :::html_rails app/views/comments/_form.html.erb
+    :::rhtml app/views/comments/_form.html.erb
     <%= simple_form_for [@post, @comment] do |f| %>
       <div class="inputs">
         <%= f.input :content, :input_html => {:rows => 4, :cols => 60} %>
@@ -340,7 +340,7 @@ Teraz kod dotyczący komentarzy będzie w katalogu *comments*.
 Wycinamy całą pętlę (kod pod nagłówkiem **Comments**) i wklejamy
 ją do szablonu częściowego *comments/_comment.html.erb*:
 
-    :::html_rails app/views/comments/_comment.html.erb
+    :::rhtml app/views/comments/_comment.html.erb
     <div class="comment">
       <%= comment.content %>
     </div>
@@ -359,7 +359,7 @@ szablonu częściowego::
 
 Oto jak po tych zmianach wygląda szablon *post\#show.html.erb*:
 
-    :::html_rails app/views/posts/show.html.erb
+    :::rhtml app/views/posts/show.html.erb
     <h2><%= @post.title %></h2>
     <article>
       <%= @post.content %>

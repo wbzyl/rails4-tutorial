@@ -18,12 +18,12 @@ Zobacz *http://plasmarails.org/*, zakładka *ActiveModel/Validations*.
 ## Błędy
 
 Coś wygenerowanego przez generator *scaffold*:
- 
-    :::html_rails
+
+    :::rhtml
     <%= form_for(@fortune) do |f| %>
       <% if @fortune.errors.any? %>
         <div id="error_explanation">
-          <h2><%= pluralize(@fortune.errors.count, "error") %> 
+          <h2><%= pluralize(@fortune.errors.count, "error") %>
               prohibited this fortune from being saved:</h2>
           <ul>
           <% @fortune.errors.full_messages.each do |msg| %>
@@ -54,7 +54,7 @@ Teraz *invalid records* będą w czerwonej ramce.
 Jeśli chcemy zobaczyć szczegóły, to dopisujemy do szablonu
 z formularzem:
 
-    :::html_rails app/views/fortunes/_form.html.erb
+    :::rhtml app/views/fortunes/_form.html.erb
     <%= form_for @fortune do |f| %>
     <%= f.error_messages %>
     ...
@@ -62,7 +62,7 @@ z formularzem:
 
 Aha, dodajemy arkusz stylów *scaffold.css* do layoutu aplikacji:
 
-    :::html_rails public/stylesheets/scaffold.css
+    :::rhtml public/stylesheets/scaffold.css
     <%= stylesheet_link_tag "application", "scaffold" %>
 
 W *application.css* nie została zdefiniowana czerwona ramka

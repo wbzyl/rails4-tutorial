@@ -285,7 +285,7 @@ wywołanie *Fortune.all* na:
 2\. W widoku *index* tego kontrolera dopisujemy wywołanie metody
 pomocniczej *paginate*, np. u dołu strony:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <%= paginate @fortunes %>
 
 I już możemy sprawdzić jak działa paginacja. Paginacja jest
@@ -443,7 +443,7 @@ Przy okazji kopiujemy plik *layout_helper.rb* wygenrowany przez *nifty:scaffold*
 
 Edytujemy plik *application.html.erb* (uwaga na końce DOS-owe wierszy):
 
-    :::html_rails app/views/layouts/application.html.erb
+    :::rhtml app/views/layouts/application.html.erb
     <!doctype html>
     <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]--><!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]--><!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]--><!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]--><!--[if (gt IE 9)|!(IE)]><!--> <html lang="pl" class="no-js"> <!--<![endif]--><head>
         <meta charset="UTF-8">
@@ -634,7 +634,7 @@ Wystarczy je zmienić.
 
 Po przejrzeniu pliku *README*, formularz dla fortunki wpisujemy tak:
 
-    :::html_rails
+    :::rhtml
     <%= simple_form_for @fortune do |f| %>
       <%= f.input :author, :input_html => {:size => 40}, :required => false %>
       <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
@@ -799,7 +799,7 @@ Dodajemy nowe, krótsze, komunikaty dla Fortunki:
 Dopisujemy do pliku z layoutem aplikacji element *div*
 na wiadomości flash:
 
-    :::html_rails
+    :::rhtml
     <% flash.each do |name, msg| %>
       <%= content_tag :div, msg, :id => "#{name}" %>
     <% end %>
@@ -834,7 +834,7 @@ Trzeba będzie to kiedyś poprawić.
 
 Na razie poprawimy tytuły. W taki oto sposób:
 
-    :::html_rails app/views/fortunes/new.html.erb
+    :::rhtml app/views/fortunes/new.html.erb
     <%= title "New fortune" %>
     <%= render :partial => 'form' %>
     <p class="clear"><%= link_to 'Back', fortunes_path %></p>
@@ -850,7 +850,7 @@ Pomaga zachować separację części systemu, daje czystą strukturę.
 Przejdziemy z tabelki na inne znaczniki oraz skorzystamy
 z *implicit loop*. Zaczynamy od kodu:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <table>
       <tr>
         <th>Author</th><th>Body</th><th></th><th></th><th></th>
@@ -867,7 +867,7 @@ z *implicit loop*. Zaczynamy od kodu:
 
 Po refaktoryzacji, zamiast tabelki wpisujemy:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <div id="fortunes">
       <%= render :partial => 'fortune', :collection => @fortunes %>
     </div>
@@ -876,7 +876,7 @@ Po refaktoryzacji, zamiast tabelki wpisujemy:
 Szablon częściowy *_fortune.html.erb* renderowany jest wielokrotnie,
 w pętli po zmiennej *fortune* (konwencja *@fortunes* → *fortune*):
 
-    :::html_rails app/views/fortunes/_fortune.html.erb
+    :::rhtml app/views/fortunes/_fortune.html.erb
     <p>
      <b><%= fortune.body %></b><br><%= fortune.author %>
     </p>
@@ -901,7 +901,7 @@ oraz zlokalizujemy napis „Are you sure?”:
 
 Musimy jeszcze użyć *i18n.translate* w widoku:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <td><%= link_to 'Destroy', fortune, :confirm => t('helpers.data.sure'), :method => :delete %></td>
 
 
@@ -926,7 +926,7 @@ Widok:
 
 W layout dopisujemy w znaczniku *head*:
 
-    :::html_rails app/views/layouts/application.html.erb
+    :::rhtml app/views/layouts/application.html.erb
     <%= auto_discovery_link_tag(:atom, fortunes_path(:atom)) %>
 
 
@@ -934,7 +934,7 @@ W layout dopisujemy w znaczniku *head*:
 
 Na stronie z listą fortunek dodamy formularz, który będzie filtrował dane po polu *body*:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <%= form_tag fortunes_path, :method => :get, :id => "fortunes_search" do %>
       <p>
         <%= text_field_tag :search, params[:search] %>
@@ -983,7 +983,7 @@ Podstawowa rzecz: „To make the paging work with AJAX we need
 **to modify the pagination links** so that they make an AJAX
 request when clicked instead of linking to another page.”:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <div id="paginator">
       <%= paginate @fortunes, :remote => true %>
     </div>
@@ -998,7 +998,7 @@ request when clicked instead of linking to another page.”:
 
 Sam „search” formularz też należy zajaxować:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <%= form_tag fortunes_path, :remote => true, :method => :get, :id => "fortunes_search" do %>
 
 
@@ -1117,13 +1117,13 @@ na spację.
 
 W widoku częściowym *_form.html.erb* dopisujemy:
 
-    :::html_rails app/views/fortunes/_form.html.erb
+    :::rhtml app/views/fortunes/_form.html.erb
     <%= f.input :tag_list, :input_html => {:size => 40} %>
 
 w widoku częściowym *_fortune.html.erb* (część widoku *index.html.erb*),
 oraz w widoku *show.html.erb* (2 razy):
 
-    :::html_rails app/views/fortunes/_fortune.html.erb
+    :::rhtml app/views/fortunes/_fortune.html.erb
     <p><i>Tags:</i> <%= @fortune.tag_list %></p>
 
 
@@ -1135,7 +1135,7 @@ Aby utworzyć chmurkę tagów, niestety nie tak ładną jak ta poniżej:
 
 dopisujemy do widoku *index*:
 
-    :::html_rails app/views/fortunes/index.html.erb
+    :::rhtml app/views/fortunes/index.html.erb
     <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
       <%= link_to tag.name, LINK_DO_CZEGO?, :class => css_class %>
     <% end %>
@@ -1155,7 +1155,7 @@ Zaczniemy od zmiennej *@tags*:
 
 Teraz spróbujemy przyjrzeć się bliżej, debugging, zmiennej *tag*:
 
-    :::html_rails
+    :::rhtml
     <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
       <%= link_to tag.name, fortunes_path, :class => css_class %>
       <%= debug(tag.class) %>
@@ -1377,7 +1377,7 @@ Aby dodać komentarz możemy postąpić tak:
 
 Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*:
 
-    :::html_rails app/views/fortunes/show.html.erb
+    :::rhtml app/views/fortunes/show.html.erb
     <% if @fortune.comments.any? %>
       <h2>Comments</h2>
       <% @fortune.comments.each do |comment| %>
@@ -1398,7 +1398,7 @@ Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*:
 
 Najwygodniej byłoby dodać też formularz do widoku *show*:
 
-    :::html_rails app/views/fortunes/show.html.erb
+    :::rhtml app/views/fortunes/show.html.erb
     <h2>Add new comment</h2>
     <%= simple_form_for [@fortune, @fortune.comments.build] do |f| %>
       <%= f.input :author, :input_html => {:size => 40} %>
@@ -1449,7 +1449,7 @@ Ale teraz zabierzemy się za refaktoryzację kodu.
 Usuwamy kod formularza pod znacznikiem *h2\#Add new comments* powyżej.
 Tworzymy z usuniętego kodu szablon częściowy *comments/_form.html.erb*:
 
-    :::html_rails app/views/comments/_form.html.erb
+    :::rhtml app/views/comments/_form.html.erb
     <%= simple_form_for [@fortune, @comment] do |f| %>
       <%= f.input :author, :input_html => {:size => 40} %>
       <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
@@ -1470,7 +1470,7 @@ w metodzie *show* kontrolera *FortunesController*:
 Następnie usuwamy pętlę pod *h2\#Comments* powyżej. Z ciała tej
 pętli tworzymy drugi szablon częściowy *comments/_comment.html.erb*:
 
-    :::html_rails app/views/comments/_comment.html.erb
+    :::rhtml app/views/comments/_comment.html.erb
     <p><i>Autor:</i> <%= comment.author %></p>
     <div class="comment"><i>Body:</i>
       <%= comment.body %>
@@ -1481,7 +1481,7 @@ pętli tworzymy drugi szablon częściowy *comments/_comment.html.erb*:
 
 Na koniec poprawiamy kod widoku *show*, wstawiając nowe szablony częściowe:
 
-    :::html_rails app/views/fortunes/show.html.erb
+    :::rhtml app/views/fortunes/show.html.erb
     <% if @fortune.comments.any? %>
       <h2>Comments</h2>
       <%= render :partial => 'comments/comment', :collection => @fortune.comments %>
@@ -1508,12 +1508,12 @@ Na koniec poprawiamy kod widoku *show*, wstawiając nowe szablony częściowe:
 
 oraz brakujący link do edycji fortunki:
 
-    :::html_rails app/views/comments/_comment.html.erb
+    :::rhtml app/views/comments/_comment.html.erb
     <%= link_to 'Edit', edit_fortune_comment_path(@fortune, comment) %>
 
 no i szablon widoku – *comments/edit.html.erb*:
 
-    :::html_rails app/views/comments/edit.html.erb
+    :::rhtml app/views/comments/edit.html.erb
     <% title "Editing comment" %>
     <%= render :partial => 'form' %>
     <p class="links clear">
@@ -1534,7 +1534,7 @@ Będziemy wymagać aby każde pole było niepuste:
 
 Musimy też utworzyć widok *comments/new.html.erb*:
 
-    :::html_rails app/views/comments/new.html.erb
+    :::rhtml app/views/comments/new.html.erb
     <% title "New comment" %>
     <%= render :partial => 'form' %>
     <p class="links clear"><%= link_to 'Back', @comment.fortune %></p>

@@ -271,7 +271,7 @@ oraz *CommentsController*:
 Zaczynamy od widoku częściowego *_roles.erb*
 (*shared* – czy użyjemy go jeszcze gdzie indziej?):
 
-    :::html_rails app/views/devise/shared/_roles.erb
+    :::rhtml app/views/devise/shared/_roles.erb
     <p><%= f.label :roles %><br>
     <% for role in User.valid_roles %>
       <%= check_box_tag "user[roles][]", role, @user.roles.include?(role) %>
@@ -281,12 +281,12 @@ Zaczynamy od widoku częściowego *_roles.erb*
 
 który dodajemy do widoków rejestracji, *new.html.erb*:
 
-    :::html_rails app/views/devise/registrations/new.html.erb
+    :::rhtml app/views/devise/registrations/new.html.erb
     <%= render :partial => "devise/shared/roles", :locals => {:f => f} %>
 
 *edit.html.erb*:
 
-    :::html_rails app/views/devise/registrations/edit.html.erb
+    :::rhtml app/views/devise/registrations/edit.html.erb
     <%= render :partial => "devise/shared/roles", :locals => {:f => f} %>
 
 *Uwaga do widoku edit:*
@@ -302,7 +302,7 @@ incorrect behavior.”
 W szablonie *show.html.erb* dopiszemy email autora postu,
 oraz email autora każdego komentarza:
 
-    :::html_rails app/views/posts/show.html.erb
+    :::rhtml app/views/posts/show.html.erb
     <p><b>added by</b>
       <em><%= @post.user.email %></em>
     </p>
@@ -315,7 +315,7 @@ Widok *posts#index* zostawiamy bez zmian. Dlaczego?
 Do widoku częściowego dodamy możliwość edycji
 użytkownika (użyjemy listy rozwijanej), który dodał cytat.
 
-    :::html_rails app/views/fortunes/_form.html.erb
+    :::rhtml app/views/fortunes/_form.html.erb
     <% form_for @fortune do |f| %>
       <%= f.error_messages %>
       <p>
@@ -443,7 +443,7 @@ dodaliśmy przy okazji autentykacji. Skorzystamy z metody
 
 Zaczynamy od zmian w widoku *fortunes/index.html.erb*:
 
-    :::html_rails
+    :::rhtml
     <% for fortune in @fortunes %>
       <p><%= fortune.quotation %>
       <p><%= link_to "Show", fortune %>
@@ -462,7 +462,7 @@ Zaczynamy od zmian w widoku *fortunes/index.html.erb*:
 
 Następnie w pliku *show.html.erb* poprawiamy akapit:
 
-    :::html_rails
+    :::rhtml
     <p>
       <% if can? :update, @fortune %>
         <%= link_to "Edit", edit_fortune_path(@fortune) %>
@@ -575,7 +575,7 @@ Sprawdzamy, czy wszystko działa. Jesli tak, to ukrywamy listę
 rozwijaną przed autorami (ale nie adminami i moderatorami). W widoku
 *fortunes/_form.html.erb* podmieniamy akapit z „Zmień użytkownika…” na:
 
-    :::html_rails
+    :::rhtml
     <% if !current_user.role?(:author) %>
     <p>
       Zmień użytkownika: <%= f.collection_select :user_id, User.all, :id, :login %>
@@ -627,7 +627,7 @@ ze strony gemu CanCan?
 
 Pozostaje punkt 2. Można to zrobić tak:
 
-    :::html_rails
+    :::rhtml
     <% for fortune in @fortunes %>
       <p>
         <%=h fortune.quotation %>

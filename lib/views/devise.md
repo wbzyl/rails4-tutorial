@@ -157,7 +157,7 @@ I nie będziemy mogli też użyć *simple_form_for* w widoku
 Ale jakoś sobie z tym poradzimy! Teraz zajmiemy się formularzem dla
 *sessions#new*:
 
-    :::html_rails app/views/sessions/new.html.erb
+    :::rhtml app/views/sessions/new.html.erb
     <h1>Log in</h1>
     <%= form_tag sessions_path do %>
       <div class="inputs">
@@ -249,7 +249,7 @@ Oczywiście, nie będziemy zmuszać użytkownika do wpisywania
 w przeglądarce: *register*, *login*, *logout*. Wpisywanie zastąpimy
 klikaniem. W tym celu dodamy do layoutu aplikacji odpowiednie linki:
 
-    :::html_rails app/views/layouts/application.html.erb
+    :::rhtml app/views/layouts/application.html.erb
     <nav id="authentication">
       <% if current_user %>
         Welcome <%= current_user.email %>!
@@ -399,7 +399,7 @@ Zostawiamy jak jest.
 W kodzie wypisujący wiadomości flash usuwam w *id*
 elementu *div* prefiks *flash_*:
 
-    :::html_rails app/views/layouts/application.html.erb
+    :::rhtml app/views/layouts/application.html.erb
     <% flash.each do |name, msg| %>
       <%= content_tag :div, msg, :id => "#{name}" %>
     <% end %>
@@ -517,7 +517,7 @@ Flash też do poprawki. Wszystkie komunikaty są w pliku
 
 Do layoutu aplikacji musimy dodać linki do autentykacji:
 
-    :::html_rails app/views/layouts/application.html.erb
+    :::rhtml app/views/layouts/application.html.erb
     <nav id="authentication">
       <% if user_signed_in? %>
         Logged as <%= current_user.email %>. Not you?
