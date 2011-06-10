@@ -1,169 +1,0 @@
-
-2models.md,402
-Tym razem bez dodatków – paginacji,9,314
-Tym razem bez dodatków – paginacji, tagótag�9,314
-PodsumowująPodsumowuj�30,822
-Instalujemy lokalnie gemy,48,1238
-Instalujemy lokalnie gemy, przechodzimy na *jQuery*jQuery48,1238
-    bundle install --path=path51,1346
-    input[input140,3650
-Na koniec,157,3939
-    Missing template comments/new with285,7228
-Rails daje nam zna�zna292,7428
-
-ajax-jquery.md,86
-Tak jak w wypadku dodawania dopisujemy *remote remote184,5885
-    Object 244,7876
-
-authlogic.md,24
-    root :to to11,170
-
-code.erb,22
-  <meta charset=4,30
-
-devise.md,1430
-      margin: 0 auto;291,8380
-      padding: 20px 40px;px292,8402
-      text-align: right;293,8428
-      background-color: #EBE54D;EBE54D294,8453
-      margin: 0 auto;299,8528
-      background-color: #FFF;FFF300,8550
-      padding: 20px 40px;px301,8580
-            new_user_session GET    /users/login login471,14314
-                user_session POST   /users/login login472,14421
-        destroy_user_session GET    /users/logout logout473,14531
-               user_password POST   /users/password password474,14642
-           new_user_password GET    /users/password/new new475,14753
-          edit_user_password GET    /users/password/edit edit476,14861
-                             PUT    /users/password password477,14970
-    cancel_user_registration GET    /users/cancel cancel478,15081
-           user_registration POST   /users users479,15196
-       new_user_registration GET    /users/register register480,15311
-      edit_user_registration GET    /users/edit edit481,15423
-                             PUT    /users users482,15536
-                             DELETE /users users483,15651
-    <nav id=521,17271
-      margin: 0 auto;536,17716
-      padding: 20px 40px;px537,17738
-      text-align: right;538,17764
-      background-color: #EBE54D;EBE54D539,17789
-      margin: 0 auto;544,17864
-      background-color: #FFF;FFF545,17886
-      padding: 20px 40px;px546,17916
-
-form-builder.md,207
-Chcemy tak przebudować formularz,15,405
-Poniższy kod,24,632
-Poniższy kod, z Rails Guides,24,632
-        %(#{html_tag}<span span32,1063
-    ActionView::Base.field_error_proc field_error_proc43,1316
-
-fortunka.md,1502
-Zaczynamy przyjrzenia się generatorowi scaffold 141,3792
-Teraz dla porównania generator nifty:scaffold scaffold186,5586
-    config.i18n.default_locale default_locale337,9999
-(źródło M. Pilgrim. <a href=398,11953
-      width: 250px;px1207,38579
-      position: absolute;1208,38599
-      right: 1em;em1209,38625
-      top: 1em;em1210,38643
-    tags_fortunes GET /fortunes/tags(.:format)format1238,39189
-        format.js js1262,40017
- <p p1282,40800
-        fortune_comments POST   /fortunes/:fortune_id/comments comments1323,41876
-     new_fortune_comment GET    /fortunes/:fortune_id/comments/new new1324,41994
-                         GET    /fortunes/:fortune_id/comments/:id id1325,42112
-                         PUT    /fortunes/:fortune_id/comments/:id id1326,42230
-         fortune_comment DELETE /fortunes/:fortune_id/comments/:id id1327,42348
-    edit_fortune_comment GET    /fortunes/:fortune_id/comments/:id/edit edit1328,42466
-    tags_fortunes GET    /fortunes/tags tags1333,42632
-                  GET    /fortunes fortunes1334,42722
-         fortunes POST   /fortunes fortunes1335,42812
-      new_fortune GET    /fortunes/new new1336,42902
-                  GET    /fortunes/:id id1337,42992
-                  PUT    /fortunes/:id id1338,43082
-          fortune DELETE /fortunes/:id id1339,43172
-     edit_fortune GET    /fortunes/:id/edit edit1340,43262
-             root        /                  {:controller=controller1342,43353
-
-heroku.md,130
- <p class="author">źródró7,169
-    bundle install --path=path103,2924
-    cd znajomi.git ; git gc 119,3397
-	url 154,4510
-
-i18n.md,28
-Co oznacza *i18n*i18n3,32
-
-konfiguracja.md,407
-jRuby – 1.5.0, Rubinius – 1.0.1, MagLev,5,204
-Jest to ważne teraz,10,462
-within user space,22,842
-    rvm install ree    # alias na ostatnią wersj�wersj27,959
-    rvm install 1.9.2  # alias na ostatnią wersj�wersj28,1034
-      Downloaded Archives Usage:Usage40,1278
-      Extracted Source Code Usage:Usage41,1316
-      Log Files Usage:Usage42,1356
-umieścić plik *.rvmrc*rvmrc63,1884
-
-layout.erubis,95
-<!--[if lt IE 7 ]> <html lang=2,16
-	<script src=19,978
-<div id=27,1182
-<script src=36,1359
-
-layouty.md,80
- <p class="author">źródró7,151
- <p p63,2142
-        @show_title 73,2505
-
-mail.md,342
-i hasło. Jeśli pocztę wysyłamy z aplikacji Rails,6,147
-nasze dane umieścić gdzieś w kodzie. Jeśli kod trzymamy w repozytorium,7,224
-to musimy zadba�zadba8,301
-to musimy zadbać, aby nasze dane nie znalazły się gdzieś w chmurzw chmur8,301
-W przykładach poniżej swoje dane będę czytał z pliku *smtp.yml*yml11,401
-
-main.md,76
-    When you don’t create things,6,103
-  <p p105,3726
-  <p p154,5295
-
-prezentacje.md,20
-repozytorium,9,159
-
-walidacja.md,155
-Walidacja jest mechanizmem Rails,5,43
-sobie,6,114
-      validates_length_of :body,body12,305
-      validates_length_of :body, :minimum minimum12,305
-
-zaczynamy.md,161
-  version on modern systems is the BSD fortune,8,198
-Pierwszą aplikacj�aplikacj12,320
- <p p38,1588
-    bundle install --path=path118,4615
-<p p146,5408
-
-zadania.md,275
-  Jeśli ktoś potrafi napisać lepszą ksiąksi�37,823
-  Jeśli ktoś potrafi napisać lepszą książkę, wygłosić lepsze kazanie,37,823
-  albo sporządzić lepszą pułapkę na myszy niż jego sąsiasąsi38,902
-  zbudował swój dom w lesie,39,979
- <p p173,5419
-
-task-todo.md,0
-
-skel.md,0
-
-rails-templates.md,0
-
-mobile.md,0
-
-konsola.md,0
-
-cancan.md,0
-
-cancan-authlogic.md,0
-
-2models-task-todos.md,0
