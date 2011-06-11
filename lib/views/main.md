@@ -140,6 +140,8 @@ Live Tr8n sample application:
 
 ### Misc stuff
 
+* [Rails 3 Application Templates](https://github.com/RailsApps/rails3-application-templates)
+* [Rails 3 Apps Composer](https://github.com/RailsApps/rails_apps_composer)
 * [Examples of how to build PDFs in Rails with Prawn and Prawnto](http://prawn.heroku.com/)
 * [Exploring the stdlib: logger](http://rbjl.net/50-exploring-the-stdlib-logger)
 
