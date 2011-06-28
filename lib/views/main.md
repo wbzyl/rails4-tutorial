@@ -13,7 +13,7 @@
 
 **[18.04.2011]** Co nowego w Rails 3.1:
 [Rails 3.1 Adopts CoffeeScript, jQuery, Sass and.. Controversy](http://www.rubyinside.com/rails-3-1-adopts-coffeescript-jquery-sass-and-controversy-4669.html),
-[Exploring Rails 3.1 - ActiveModel::SecurePassword](http://bcardarella.com/post/4668842452/exploring-rails-3-1-activemodel-securepassword).
+[Exploring Rails 3.1 – ActiveModel::SecurePassword](http://bcardarella.com/post/4668842452/exploring-rails-3-1-activemodel-securepassword).
 
 **[18.03.2011]** Czas na Rails for Zombies!
 [What Is This?](http://railsforzombies.org/):
@@ -86,7 +86,7 @@ Konfiguracja – RVM, konsola, dokumentacja online:
 
 * {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}
 * {%= link_to "Szablony aplikacji Rails", "/rails-templates" %}
-
+  (gotowe szablony – [railswizard.org](http://railswizard.org/))
 
 ## Laboratoria
 
