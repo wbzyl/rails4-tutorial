@@ -128,7 +128,6 @@ Live Tr8n sample application:
 
 * [Rails Searchable API Doc](http://railsapi.com/)
 * [Edge API](http://edgeapi.rubyonrails.org/)
-* [Plasmarails](http://plasmarails.org/)
 * [API dock](http://apidock.com/) – Ruby on Rails, RSpec, Ruby
 
 

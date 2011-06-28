@@ -44,10 +44,10 @@ Autoryzację będziemy implementować na gałęzi **cancan**:
 
     git checkout -b cancan
 
-Na koniec instalujemy gem *CanCan* (w wersji z repo):
+Na koniec instalujemy gem *CanCan*:
 
     :::ruby Gemfile
-    gem 'cancan', :git => 'git://github.com/ryanb/cancan.git'
+    gem 'cancan'
 
 i zmieniamy tytuł aplikacji.
 
@@ -67,6 +67,7 @@ Wszystkie komunikaty znajdziemy w dokumentacji
         update:
           project: "Not allowed to update this project!"
 
+
 ## Dodajemy powiązania między modelami
 
 Ponieważ każdy użytkownik może utworzyć wiele postów (i komentarzy),
@@ -75,9 +76,11 @@ więc między *User* a *Post* (i *Comment*) mamy powiązania **jeden do wielu*
     :::ruby
     class Post < ActiveRecord::Base
       belongs_to :user
+      has_many :comments, :dependent => :destroy
 
     class Comment < ActiveRecord::Base
       belongs_to :user
+      belongs_to :post
 
     class User < ActiveRecord::Base
       has_many :posts, :dependent => :destroy
@@ -194,7 +197,7 @@ Zaczynamy od:
     rake db:drop
     rake db:migrate
 
-Następnie w pliku *seed.rb* wpisujemy:
+Następnie w pliku *seed.rb* wpisujemy kilku użytkowników:
 
     :::ruby db/seed.rb
     User.create :email => 'matwb@ug.edu.pl',
@@ -212,6 +215,9 @@ Następnie w pliku *seed.rb* wpisujemy:
 
     user_count = User.count
 
+Dodajemy też sporo (197 dokładnie) postów:
+
+    :::ruby
     humorists = File.readlines(Rails.root.join('db', 'humorists.u8'), "\n%\n")
 
     humorists.map do |p|
@@ -233,19 +239,14 @@ Na konsoli sprawdzamy, czy coś poszło nie tak:
 
 ## Scope it out
 
-Zanim zabierzemy się za autoryzację, musimy jeszcze dopisać nieco
-kodu. Zwyczajowo określa się to zadanie „scope it out”.  Oznacza, to
-że zalogowany użytkownik będzie autorem nowych postów i komentarzy.
+Zanim zabierzemy się za autoryzację musimy jeszcze dopisać kod, który
+spowoduje że zalogowany użytkownik będzie autorem swoich postów
+i swoich komentarzy.
+Zwyczajowo, określa się to co robi taki kod zwrotem **scope it out**.
 
-W tym celu zmieniamy metodę *create* w obu kontrolerach,
-*PostsController*:
+W tym celu zmieniamy metodę *create* w *PostsController*:
 
     :::ruby app/controllers/posts_controller.rb
-    # porządkujemy wpisy po dacie
-    def index
-      @posts = Post.order('created_at DESC')
-      respond_with(@posts)
-    end
     def create
       # klasyczne scoping out
       @post = current_user.posts.build(params[:post])
@@ -253,7 +254,7 @@ W tym celu zmieniamy metodę *create* w obu kontrolerach,
       respond_with(@post)
     end
 
-oraz *CommentsController*:
+oraz w *CommentsController*:
 
     :::ruby app/controllers/comments_controller.rb
     def create
@@ -268,8 +269,7 @@ oraz *CommentsController*:
 
 ## Wybór roli w formularzach rejestracji
 
-Zaczynamy od widoku częściowego *_roles.erb*
-(*shared* – czy użyjemy go jeszcze gdzie indziej?):
+Zaczynamy od widoku częściowego *_roles.erb*:
 
     :::rhtml app/views/devise/shared/_roles.erb
     <p><%= f.label :roles %><br>
@@ -278,13 +278,12 @@ Zaczynamy od widoku częściowego *_roles.erb*
       <%= role.to_s.humanize %>
     <% end %></p>
 
-
 który dodajemy do widoków rejestracji, *new.html.erb*:
 
     :::rhtml app/views/devise/registrations/new.html.erb
     <%= render :partial => "devise/shared/roles", :locals => {:f => f} %>
 
-*edit.html.erb*:
+oraz *edit.html.erb*:
 
     :::rhtml app/views/devise/registrations/edit.html.erb
     <%= render :partial => "devise/shared/roles", :locals => {:f => f} %>
@@ -294,7 +293,8 @@ który dodajemy do widoków rejestracji, *new.html.erb*:
 their information, including changing their password. If they do not
 want to change their password they just leave the fields blank. This
 will try to set the password to a blank value, in which case is
-incorrect behavior.”
+incorrect behavior.” W tej sprawie nic nie musimy robić.
+Devise zrobi to za nas!
 
 
 ## Poprawki w widoku *posts#show*
@@ -310,28 +310,33 @@ oraz email autora każdego komentarza:
 Widok *posts#index* zostawiamy bez zmian. Dlaczego?
 
 
-## TODO: Zmiany w edycji fortunek
+## Zmiany w edycji postów
 
 Do widoku częściowego dodamy możliwość edycji
 użytkownika (użyjemy listy rozwijanej), który dodał cytat.
 
-    :::rhtml app/views/fortunes/_form.html.erb
-    <% form_for @fortune do |f| %>
-      <%= f.error_messages %>
-      <p>
-        <%= f.label :quotation %>:<br />
-        <%= f.text_area :quotation, :cols => 71, :rows => 6 %>
-      </p>
-      <p>
-        Zmień użytkownika: <%= f.collection_select :user_id, User.all, :id, :login %>
-      </p>
-      <p><%= f.submit "Submit" %></p>
+    :::rhtml app/views/posts/_form.html.erb
+    <%= simple_form_for(@post) do |f| %>
+      <%= f.error_notification %>
+      <div class="inputs">
+        <%= f.input :title, :input_html => {:size => 60} %>
+        <%= f.input :content, :input_html => {:rows => 4, :cols => 60} %>
+        <p>
+          Zmień użytkownika:
+          <%= f.collection_select :user_id, User.all, :id, :email %>
+        </p>
+      </div>
+      <div class="actions"><%= f.button :submit %></div>
     <% end %>
 
-Po co to robimy?
-Na razie każdy zalogowany użytkownik może dodawany przez siebie cytat
-przypisać innemu użytkownikowi. Później ograniczymy możliwość edycji
-użytkownika do admina i moderatora.
+Po co to robimy? Przecież teraz każdy zalogowany użytkownik może
+dodawany przez siebie cytat przypisać innemu użytkownikowi –
+a to nie ma sensu.
+
+Ale po dodaniu autoryzacji, ograniczymy możliwość edycji
+użytkownika do admina i moderatora, usuwając element
+z *collection_select* – a to ma sens (chociaż moglibyśmy
+dopisać ten kod później).
 
 
 # Implementujemy autoryzację
@@ -340,10 +345,11 @@ użytkownika do admina i moderatora.
   {%= image_tag "/images/authorization.jpg", :alt => "[Autoryzacja]" %}
 </blockquote>
 
-Tyle przygotowań i poprawek w aplikacji. Dopiero po tych
-poprawkach możemy zabrać się za implementację autoryzacji.
+Tyle przygotowań i poprawek w aplikacji. Dopiero po wprowadzeniu tych
+poprawek możemy zabrać się za implementację autoryzacji.
+Dlaczego? Powinno się to za chwilę wyjaśnić.
 
-**TODO:** użyć generatora.
+**TODO** użyć generatora.
 
 Zgodnie z tym co jest napisane w dokumentacji CanCan,
 autoryzację programujemy tworząc nową klasę
