@@ -15,7 +15,7 @@ Przykład linków do *pretty printing*:
 
 ## Ostateczne terminy oddania projektów
 
-Czasami musze wstawić coś takiego na stronie głównej aplikacji:
+Czasami muszę wstawić coś takiego na stronie głównej aplikacji:
 
     <script>
     $(function () {
