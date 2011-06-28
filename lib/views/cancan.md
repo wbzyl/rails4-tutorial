@@ -322,8 +322,8 @@ użytkownika (użyjemy listy rozwijanej), który dodał cytat.
         <%= f.input :title, :input_html => {:size => 60} %>
         <%= f.input :content, :input_html => {:rows => 4, :cols => 60} %>
         <p>
-          Zmień użytkownika:
           <%= f.collection_select :user_id, User.all, :id, :email %>
+          (select the author of this post)
         </p>
       </div>
       <div class="actions"><%= f.button :submit %></div>
