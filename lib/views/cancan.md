@@ -524,7 +524,7 @@ oraz w widoku częściowym *posts/_post.html.erb*:
        </div>
     </article>
 
-Następnie w pliku *posts/show.html.erb* poprawiamy akapit:
+Następnie w pliku *posts/show.html.erb* poprawiamy dwie rzeczy (które?):
 
     :::rhtml app/views/posts/show.html.erb
     <h2><%= @post.title %></h2>
@@ -547,8 +547,8 @@ Następnie w pliku *posts/show.html.erb* poprawiamy akapit:
       <%= render :partial => 'comments/form' %>
     <% end %>
 
-Z kodu powyżej widać, że pozostał jeszcze do poprawki widok częściowy
-*comments/_comment.html.erb*:
+Z kodu powyżej widać, że musimy jeszcze zajrzeć do widoku częściowego
+*comments/_comment.html.erb*, gdzie mamy jedną rzecz do poprawy:
 
     :::rhtml app/views/comments/_comment.html.erb
     <article>
