@@ -62,7 +62,6 @@ poprawnie (dwa sposoby):
 
 TODO:
 
-1. {%= link_to "Hello Fortune", "/fortunka" %}
 1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
 1. {%= link_to "Aplikacja „Todo”", "/todo" %}
 1. {%= link_to "Aplikacja „Blog”", "/blog" %}
@@ -73,7 +72,6 @@ TODO:
 1. {%= link_to "Caching", "/caching" %}
 1. {%= link_to "Walidacja", "/walidacja" %}
 1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
-1. {%= link_to "Autoryzacja z Cancan", "/cancan" %}
 -->
 
 <!--

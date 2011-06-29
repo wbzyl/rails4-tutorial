@@ -23,7 +23,7 @@ within user space, strongly encouraging **non-root usage**.”
 
 Podstawowe polecenia RVM:
 
-    :::shell-unix-generic
+    :::bash
     rvm install ree    # alias na ostatnią wersję, np. ree-1.8.7-2011.03
     rvm install 1.9.2  # alias na ostatnią wersję, np. ruby-1.9.2-p180
     rvm list
@@ -32,7 +32,7 @@ Podstawowe polecenia RVM:
 
 Potrzebujemy więcej szczegółów:
 
-    :::shell-unix-generic
+    :::bash
     rvm env
     ruby -v
     which ruby
@@ -46,7 +46,7 @@ Potrzebujemy więcej szczegółów:
 
 Na koniec ustawiamy domyślną wersję Ruby:
 
-    :::shell-unix-generic
+    :::bash
     rvm --default use 1.9.2
 
 Po instalacji w ścieżce *PATH* powinny pojawić się katalogi:
@@ -62,8 +62,7 @@ Po instalacji w ścieżce *PATH* powinny pojawić się katalogi:
 Dla każdego projektu rails powinniśmy w katalogu głównym aplikacji
 umieścić plik *.rvmrc*, na przykład:
 
-<pre>rvm ruby-1.9.2-p180
-</pre>
+    rvm use ruby-1.9.2-p180
 
 Więcej o konfiguracji:
 
@@ -92,7 +91,7 @@ Do zestawu **global** dodajemy gemy używane
 we wszystkich projektach. Na przykład
 
     rvm use ruby-1.9.2-p180@global
-    gem install bundler rack bundler
+    gem install rack
     rvm use ruby-1.9.2-p180
 
 
@@ -100,12 +99,12 @@ we wszystkich projektach. Na przykład
 
 Gemy instalujemy za pomocą polecenia:
 
-    :::shell-unix-generic
+    :::bash
     bundle install --path=$HOME/.gems
 
 Albo lokalnie, w aplikacji:
 
-    :::shell-unix-generic
+    :::bash
     bundle install --path=.bundle/gems
 
 
@@ -121,30 +120,29 @@ obserwujemy, że wszystkie polecenia działają **bardzo, bardzo wolno**.
 Jakie jest tego powód łatwo stwierdzić, wykonując na przykład
 takie polecenia:
 
-    :::shell-unix-generic
+    :::bash
     strace rails new slow
     cd slow
     strace rails server
 
-Aby temu zaradzić na Sigmie została zainstalowana wersja „system wide RVM”.
-Po przejściu na tę wersję, polecenia powinny się szybciej uruchamiać.
+Uruchomienie aplikacji Rails to wczytanie około 2000 plików.
 
 
 ## System wide RVM krok po kroku
 
 Usuwamy katalog z instalacją RVM (zwalniamy ok. 250 MB):
 
-    :::shell-unix-generic
+    :::bash
     rm -rf ~/.rvm
 
 W plikach *~/.bashrc* oraz *~/.bashrc_profile* wykomentowujemy wiersz:
 
-    :::shell-unix-generic
+    :::bash
     [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
 
 Zamiast niego wstawiamy wiersz:
 
-    :::shell-unix-generic
+    :::bash
     [[ -s /usr/local/lib/rvm ]] && source /usr/local/lib/rvm
 
 Dla instalacji „system wide”, powinniśmy mieć w *PATH* katalogi:
@@ -166,7 +164,6 @@ Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
     require 'rubygems'
     require 'wirble'
     require 'hirb'
-    # start wirble (with color)
     Wirble.init
     Wirble.colorize
     Hirb.enable
