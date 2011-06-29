@@ -59,12 +59,11 @@ Przegladamy dokumentację powyżej i próbujemy z niej kilka przykładów:
 
 ## Powiązania wiele do wielu: Author & Article
 
-* Utworzyć model *Author* za pomocą generatora. Dodać kilku autorów na konsoli.
-* Jak wyżej, ale utworzyć model *Article*. Dodać kilka artykułów na konsoli.
-* Na koniec, utworzyć model *Bibinfo* – informacja bibliograficzna, na przykład
-  author, article, tags.
+* Utworzyć model *Author* za pomocą generatora.
+* Jak wyżej, ale utworzyć model *Article*.
+* Na koniec, utworzyć model *Bibinfo* – informacja bibliograficzna.
 
-Dodać następujące powiązania:
+Dodać do modeli następujące powiązania:
 
     :::ruby
     class Author < ActiveRecord::Base
@@ -80,7 +79,7 @@ Dodać następujące powiązania:
       belongs_to :article
     end
 
-Zapisać w tabelkach następujące pozycje:
+Przejść na konsolę. Zapisać w tabelkach następujące pozycje:
 
 * David Flanagan, Yukihiro Matsumoto. The Ruby Programming Language, 2008.
 * Dave Thomas, Chad Fowler, Andy Hunt. Programming Ruby 1.9, 2009.
