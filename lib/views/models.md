@@ -1,4 +1,4 @@
-#### {% title "Konsola aplikacji Rails" %}
+#### {% title "Powiązania między modelami" %}
 
 To się czyta z dużą przyjemnością:
 
@@ -6,7 +6,7 @@ To się czyta z dużą przyjemnością:
 * [ActiveRecord::Base](http://api.rubyonrails.org/classes/ActiveRecord/Base.html)
 
 
-### Powiązania jeden do wielu: Post & Comment
+### Powiązanie jeden do wielu: Post & Comment
 
 Zacząć od jednego modelu: *Post*.
 Dodać drugi model *Comments* powiązany z pierwszym relacją
@@ -52,20 +52,19 @@ Teraz pora na:
     comment = Comment.find(1)
     comment.post
 
-Przegladamy dokumentację i próbujemy nowych rzeczy:
+Przegladamy dokumentację powyżej i próbujemy z niej kilka przykładów:
 
-    ... wpisujemy kilka poleceń z palca…
+    ... wpisujemy kilka poleceń z palca ...
 
 
 ## Powiązania wiele do wielu: Author & Article
 
-Zacząć od modelu *Author*. Konsola.
+* Utworzyć model *Author* za pomocą generatora. Dodać kilku autorów na konsoli.
+* Jak wyżej, ale utworzyć model *Article*. Dodać kilka artykułów na konsoli.
+* Na koniec, utworzyć model *Bibinfo* – informacja bibliograficzna, na przykład
+  author, article, tags.
 
-Dodajemy model *Article*. Konsola.
-
-Dodajemy model *Bibinfo*.
-
-Dodać powiązania:
+Dodać następujące powiązania:
 
     :::ruby
     class Author < ActiveRecord::Base
@@ -81,6 +80,13 @@ Dodać powiązania:
       belongs_to :article
     end
 
+Zapisać w tabelkach następujące pozycje:
+
+* David Flanagan, Yukihiro Matsumoto. The Ruby Programming Language, 2008.
+* Dave Thomas, Chad Fowler, Andy Hunt. Programming Ruby 1.9, 2009.
+* Sam Ruby, Dave Thomas, David Heinemeier Hansson. Agile Web Development with Rails, 2011
+* David Flanagan. jQuery Pocket Reference, 2010.
+
 Wypróbować na konsoli poniższe powiązania:
 
     :::ruby
@@ -92,12 +98,14 @@ Wypróbować na konsoli poniższe powiązania:
     bibinfo.article
 
 
+# Powiązania polimorficzne
 
-## Kontrolery na konsoli
+Zaczynamy od lektury:
 
-TODO:
+* [2.9 Polymorphic Associations](http://edgeguides.rubyonrails.org/association_basics.html#polymorphic-associations)
 
-    :::ruby
-    app.class
-    app.get '/fortunes'
-    app.methods.sort.each {|m| puts m } ; nil
+Zastosowania:
+
+* [acts-as-taggable-on](https://github.com/mbleigh/acts-as-taggable-on)
+* [acts_as_commentable](https://github.com/jackdempsey/acts_as_commentable) (tylko ActiveRecord)
+

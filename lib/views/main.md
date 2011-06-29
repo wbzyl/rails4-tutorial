@@ -46,8 +46,8 @@ poprawnie (dwa sposoby):
 ## Rozpiska wykładów
 
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
-1. {%= link_to "Layouts", "/layouty" %}
-1. {%= link_to "Konsola aplikacji Rails", "/konsola" %}
+1. {%= link_to "Makieta aplikacji, czyli layout", "/layouty" %}
+1. {%= link_to "Powiązania między modelami", "/models" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
 1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}

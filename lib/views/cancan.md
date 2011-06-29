@@ -563,29 +563,30 @@ Z kodu powyżej widać, że pozostał jeszcze do poprawki widok częściowy
 
 ## Doprecyzowujemy *Abilities*
 
-Teraz zabierzemy się za doprecyzowanie *abilities* korzystając
-z ról, które dodaliśmy w trakcie wstępnych przygotowań.
+Teraz zabierzemy się za powiązanie *abilities* z wprowadzonymi
+rolami: admin, moderator, author i banned.
 
-Zaczyniemy od admina.
+Zaczyniemy od admina:
 
     :::ruby
     class Ability
       include CanCan::Ability
 
       def initialize(user)
-        user ||= User.new    # guest user
+        user ||= User.new
         if user.has_role? :admin
           can :manage, :all
         else
-          can :read, Fortune
+          can :read, [Post, Comment]
         end
       end
     end
 
-Sprawdzamy, jak to działa logując się jako admin (*wlodek* jest adminem)
-i jako zwykły użytkownik (*bazylek*).
+Po wprowadzeniu poprawek, sprawdzamy jak to działa.  Najpierw logujemy
+się jako admin, a następnie jako zwykły użytkownik.
+W pliku *db/seed.rb* znajdziemy przykładowych użytkowników.
 
-Teraz zabieramy się za autora.
+Teraz kolej na autora.
 Autor może dodawać, edytować i usuwać swoje cytaty:
 
     :::ruby

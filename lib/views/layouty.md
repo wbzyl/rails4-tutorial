@@ -1,4 +1,4 @@
-#### {% title "Layouts – układy graficzne" %}
+#### {% title "Makieta aplikacji, czyli layout" %}
 
 <blockquote>
  <p>
@@ -21,7 +21,7 @@ Projekt [web-app-theme](https://github.com/pilu/web-app-theme) (autor Andrea Fra
 jest drugi w kategorii „Most Watched Overall Javascript project” na githubie.
 
 
-## Layout dla aplikacji
+## Layout aplikacji
 
 Layout aplikacji wygenerowany przez *nifty:layout*, po liftingu
 (pl, utf-8, domyślny tytuł, shiv, cdn jquery, style):
