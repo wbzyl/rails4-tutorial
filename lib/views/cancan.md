@@ -382,8 +382,8 @@ i zaglądamy do wygenerowanego kodu:
       end
     end
 
-gdzie do metody *initialize* przkazywany jest obiekt *user*.
-W metodzie **initialize** określamy, to co może każdy użytkownik.
+gdzie do metody *initialize* przekazywany jest obiekt *user*.
+W metodzie **initialize** określamy, to co może *user*.
 
 Autoryzację będziemy implementować małymi kroczkami.
 Zaczniemy od umożliwienia każdemu użytkownikowi
@@ -396,6 +396,8 @@ z tabeli *posts*:
 
       def initialize(user)
         user ||= User.new  # guest user
+
+        # every user
         can :read, Post
       end
     end
@@ -450,6 +452,10 @@ dopiszemy w pliku *application_controller.rb*:
 
 I sprawdzamy jak to działa klikając ponownie link *Edit*.
 Jest lepiej?
+
+**TODO**
+
+Komentarze j.w. i sprawdzić jak to działa.
 
 **TODO**
 
