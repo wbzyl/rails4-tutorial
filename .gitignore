@@ -7,5 +7,6 @@ pkg
 \#*
 *.sqlite3
 lib/tmp/**/*
+always_restart.txt
 Gemfile.lock
 vendor/cache

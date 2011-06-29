@@ -385,10 +385,13 @@ i zaglądamy do wygenerowanego kodu:
 gdzie do metody *initialize* przekazywany jest obiekt *user*.
 W metodzie **initialize** określamy, to co może *user*.
 
+
+## Guest users
+
 Autoryzację będziemy implementować małymi kroczkami.
 Zaczniemy od umożliwienia każdemu użytkownikowi
-wykonania akcji *index* oraz *show* dla rekordów
-z tabeli *posts*:
+(*guest user*)
+wykonania akcji *index* oraz *show* dla zasobu *Post*:
 
     :::ruby app/models/ability.rb
     class Ability
@@ -398,26 +401,27 @@ z tabeli *posts*:
         user ||= User.new  # guest user
 
         # every user
+        can [:index, :show], Post
         can :read, Post
       end
     end
 
-Co to oznacza? `:read` to użyteczny alias; oto definicje pozostałych
-aliasów:
+Co oznacza `:read` powyżej? Jest to użyteczny alias.
+Oto definicje wszystkich takich aliasów:
 
     :::ruby
     alias_action :index, :show, :to => :read
     alias_action :new, :to => :create
     alias_action :edit, :to => :update
 
-i skrót `:all`:
+i skrótu `:all`:
 
     :::ruby
     can :manage, Post  # has permissions to do anything to posts
     can :manage, :all  # has permission to do anything to any model
 
-
-Uaktywniamy autoryzację dla modelu *Post* dopisując do kodu *PostController*:
+Autoryzację dla modelu *Post* uaktywniamy dopisując do kodu
+*PostController*:
 
     :::ruby app/controllers/posts_controller.rb
     class PostsController < ApplicationController
@@ -440,7 +444,7 @@ powinnismy zobaczyć coś takiego:
     Not authorized to edit post!
 
 Oczywiście, taki wyjątek powinnismy jakoś obsłużyć.
-Tak jak to opisano [3. Handle Unauthorized Access](https://github.com/ryanb/cancan/)
+Zrobimy tak jak to opisano [3. Handle Unauthorized Access](https://github.com/ryanb/cancan/)
 dopiszemy w pliku *application_controller.rb*:
 
     :::ruby app/controllers/application_controller.rb
@@ -455,7 +459,7 @@ Jest lepiej?
 
 **TODO**
 
-Komentarze j.w. i sprawdzić jak to działa.
+To samo co powyżej ale dla komentarzy. Sprawdzić jak to działa.
 
 **TODO**
 
