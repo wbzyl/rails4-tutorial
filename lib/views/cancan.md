@@ -399,7 +399,6 @@ wykonania akcji *index* oraz *show* dla zasobu *Post*:
 
       def initialize(user)
         user ||= User.new  # guest user
-
         # every user
         can :read, Post
       end
@@ -411,15 +410,15 @@ Wiersz ten moglibyśmy wymienić na:
     :::ruby
     can [:index, :show], Post
 
-Ale kod ten jest mniej czytelny. Dlatego CanCan definiuje kilka
-użytecznych aliasów:
+Ale taki kod jest mniej czytelny. Dlatego CanCan definiuje kilka
+czytelniejszych aliasów:
 
     :::ruby
     alias_action :index, :show, :to => :read
     alias_action :new, :to => :create
     alias_action :edit, :to => :update
 
-Alias `:manage` użyty z skrótem `:all` też jest bardziej zrozumiałe:
+Alias `:manage` użyty z skrótem `:all` też jest bardziej zrozumiały:
 
     :::ruby
     can :manage, :all              # has permission to do anything to any model
@@ -442,14 +441,16 @@ ponieważ „resource is already loaded and authorized”.
 
 Teraz możemy sprawdzić jak to działa. Logujemy się
 i próbujemy wyedytować jakiś cytat. Po kliknieciu w link *Edit*
-powinnismy zobaczyć coś takiego:
+powinniśmy zobaczyć taki komunikat:
 
     CanCan::AccessDenied in PostsController#edit
     Not authorized to edit post!
 
-Oczywiście, taki wyjątek powinnismy jakoś obsłużyć.
-Zrobimy tak jak to opisano [3. Handle Unauthorized Access](https://github.com/ryanb/cancan/)
-dopiszemy w pliku *application_controller.rb*:
+Oczywiście, ten wyjątek powinniśmy jakoś obsłużyć.
+Zrobimy to tak, jak zostało to przedstawione
+w [3. Handle Unauthorized Access](https://github.com/ryanb/cancan/),
+czyli dopiszemy w pliku *application_controller.rb*
+obsługę wyjątku:
 
     :::ruby app/controllers/application_controller.rb
     class ApplicationController < ActionController::Base
@@ -458,7 +459,7 @@ dopiszemy w pliku *application_controller.rb*:
       end
     end
 
-I sprawdzamy jak to działa klikając ponownie link *Edit*.
+Teraz sprawdzamy jak to działa klikając ponownie link *Edit*.
 Jest lepiej?
 
 
@@ -494,10 +495,10 @@ z wiadomością flash:
 
 Następną rzeczą, którą zrobimy będzie ukrycie linków *Edit*
 i *Destroy* przed guest users. Nie mają oni uprawnień do edycji
-i usuwania postów i komentarzy więc nic im po takich linkach.
+i usuwania postów lub komentarzy, więc nic im po takich linkach.
 
-W kodzie poniżej będziemy korzystać z metod *can?* i *cannot?*,
-a zaczniemy od zmian w widoku *posts/index.html.erb*:
+W kodzie poniżej będziemy korzystać z metod *can?* i *cannot?*.
+Zaczniemy od zmian w widoku *posts/index.html.erb*:
 
     :::rhtml app/views/posts/index.html.erb
     <h1>Listing posts</h1>
