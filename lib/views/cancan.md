@@ -401,24 +401,28 @@ wykonania akcji *index* oraz *show* dla zasobu *Post*:
         user ||= User.new  # guest user
 
         # every user
-        can [:index, :show], Post
         can :read, Post
       end
     end
 
-Co oznacza `:read` powyżej? Jest to użyteczny alias.
-Oto definicje wszystkich takich aliasów:
+Co oznacza `:read` powyżej?
+Wiersz ten moglibyśmy wymienić na:
+
+    :::ruby
+    can [:index, :show], Post
+
+Ale kod ten jest mniej czytelny. Dlatego CanCan definiuje kilka
+użytecznych aliasów:
 
     :::ruby
     alias_action :index, :show, :to => :read
     alias_action :new, :to => :create
     alias_action :edit, :to => :update
 
-i skrótu `:all`:
+Alias `:manage` użyty z skrótem `:all` też jest bardziej zrozumiałe:
 
     :::ruby
-    can :manage, Post  # has permissions to do anything to posts
-    can :manage, :all  # has permission to do anything to any model
+    can :manage, :all              # has permission to do anything to any model
 
 Autoryzację dla modelu *Post* uaktywniamy dopisując do kodu
 *PostController*:
@@ -457,57 +461,112 @@ dopiszemy w pliku *application_controller.rb*:
 I sprawdzamy jak to działa klikając ponownie link *Edit*.
 Jest lepiej?
 
-**TODO**
 
-To samo co powyżej ale dla komentarzy. Sprawdzić jak to działa.
+### Comments
 
-**TODO**
+Każdy użytkownik może też przeglądać komentarze.
+Tak jak powyżej dopisujemy do *CommentsController*
 
-Następną rzeczą którą zrobimy będzie ukrycie linków *Edit*
-i *Destroy* przed użytkownikami którzy nie mają uprawnień do edycji
-i usuwania fortunek.
+    :::ruby app/controllers/comments_controller.rb
+    class CommentsController < ApplicationController
+      load_and_authorize_resource
 
-Przy okazji będziemy musieli zamienić/usunąć kod, który
-dodaliśmy przy okazji autentykacji. Skorzystamy z metody
-*can?* (*cannot?*):
+oraz w klasie *Ability* zamieniamy wiersz:
 
-Zaczynamy od zmian w widoku *fortunes/index.html.erb*:
+    :::ruby
+    can :read, Post
 
-    :::rhtml
-    <% for fortune in @fortunes %>
-      <p><%= fortune.quotation %>
-      <p><%= link_to "Show", fortune %>
-         <% if can? :update, fortune %>
-           | <%= link_to "Edit", edit_fortune_path(fortune) %>
-         <% end %>
-         <% if can? :destroy, fortune %>
-           | <%= link_to "Destroy", fortune, :confirm => 'Are you sure?', :method => :delete %>
-         <% end %>
-      </p>
+na
+
+    :::ruby
+    can :read, [Post, Comment]
+
+restartujemy aplikację i sprawdzamy jak to wszystko działa.
+Klikamy w jakiś link *Show* i próbujemy usunąć
+lub dodać jakiś komentarz. Powinno się to zakończyć
+przekierowaniem na stronę główną aplikacji
+z wiadomością flash:
+
+    Not authorized to create comment!
+
+
+### Niepotrzebne linki
+
+Następną rzeczą, którą zrobimy będzie ukrycie linków *Edit*
+i *Destroy* przed guest users. Nie mają oni uprawnień do edycji
+i usuwania postów i komentarzy więc nic im po takich linkach.
+
+W kodzie poniżej będziemy korzystać z metod *can?* i *cannot?*,
+a zaczniemy od zmian w widoku *posts/index.html.erb*:
+
+    :::rhtml app/views/posts/index.html.erb
+    <h1>Listing posts</h1>
+    <%= render :partial => 'post', :collection => @posts %>
+    <% if can? :create, Post %>
+      <p class="links bottom"><%= link_to 'New Post', new_post_path %></p>
     <% end %>
 
-    <% if can? :create, fortune %>
-      <p><%= link_to "New Fortune", new_fortune_path %></p>
+oraz w widoku częściowym *posts/_post.html.erb*:
+
+    :::rhtml app/views/posts/_post.html.erb
+    <article>
+      <h4><%= post.title %></h4>
+      <div><%= post.content %></div>
+      <div class="links">
+        <%= link_to 'Show', post %>
+        <% if can? :update, post %>
+          | <%= link_to 'Edit', edit_post_path(post) %>
+        <% end %>
+        <% if can? :destroy, post %>
+          | <%= link_to 'Destroy', post, :confirm => 'Are you sure?', :method => :delete %>
+        <% end %>
+       </div>
+    </article>
+
+Następnie w pliku *posts/show.html.erb* poprawiamy akapit:
+
+    :::rhtml app/views/posts/show.html.erb
+    <h2><%= @post.title %></h2>
+    ...
+    <div class="links">
+      <% if can? :update, @post %>
+        <%= link_to 'Edit', edit_post_path(@post) %> |
+      <% end %>
+      <%= link_to 'Back', posts_path %>
+    </div>
+
+    <% if @post.comments.any? %>
+    <h3>Comments</h3>
+    <article>
+      <%= render :partial => 'comments/comment', :collection => @post.comments %>
+    </article>
+    <% end %>
+    <% if can? :create, Comment %>
+      <h3>Add new comment</h3>
+      <%= render :partial => 'comments/form' %>
     <% end %>
 
-Następnie w pliku *show.html.erb* poprawiamy akapit:
+Z kodu powyżej widać, że pozostał jeszcze do poprawki widok częściowy
+*comments/_comment.html.erb*:
 
-    :::rhtml
-    <p>
-      <% if can? :update, @fortune %>
-        <%= link_to "Edit", edit_fortune_path(@fortune) %>
-      <% end %>
-      <% if can? :destroy, @fortune %>
-        | <%= link_to "Destroy", @fortune, :confirm => 'Are you sure?', :method => :delete %>
-      <% end %>
-    </p>
+    :::rhtml app/views/comments/_comment.html.erb
+    <article>
+      <div class="comment"><%= comment.content %></div>
+      <div class="email"><b>added by</b>
+        <em><%= comment.user.email %></em>
+      </div>
+    </article>
+    <% if can? :destroy, comment %>
+      <p><%= link_to "Delete", [@post, comment], :confirm => 'Are you sure?', :method => :delete %></p>
+    <% end %>
 
-### Doprecyzowujemy *Abilities*
+
+## Doprecyzowujemy *Abilities*
 
 Teraz zabierzemy się za doprecyzowanie *abilities* korzystając
 z ról, które dodaliśmy w trakcie wstępnych przygotowań.
 
-Zaczynamy od admina.
+Zaczyniemy od admina.
 
     :::ruby
     class Ability
