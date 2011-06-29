@@ -346,33 +346,49 @@ dopisać ten kod później).
 </blockquote>
 
 Tyle przygotowań i poprawek w aplikacji. Dopiero po wprowadzeniu tych
-poprawek możemy zabrać się za implementację autoryzacji.
-Dlaczego? Powinno się to za chwilę wyjaśnić.
+poprawek możemy zabrać się za implementację autoryzacji. Dlaczego?
+Powinno się to za chwilę wyjaśnić.
 
-**TODO** użyć generatora.
+Uprawnienia użytkowników (**autoryzację**) definiujemy
+w klasie *Ability*. Uruchamiamy generator:
 
-Zgodnie z tym co jest napisane w dokumentacji CanCan,
-autoryzację programujemy tworząc nową klasę
-i włączając do niej moduł *CanCan::Ability*:
+    rails generate cancan:ability
+      create  app/models/ability.rb
+
+i zaglądamy do wygenerowanego kodu:
 
     :::ruby app/models/ability.rb
     class Ability
       include CanCan::Ability
 
       def initialize(user)
+      # Define abilities for the passed in user here. For example:
+      #   user ||= User.new # guest user (not logged in)
+      #   if user.admin?
+      #     can :manage, :all
+      #   else
+      #     can :read, :all
+      #   end
+      # The first argument to `can` is the action you are giving the user permission to do.
+      # If you pass :manage it will apply to every action. Other common actions here are
+      # :read, :create, :update and :destroy.
+      # The second argument is the resource the user can perform the action on. If you pass
+      # :all it will apply to every resource. Otherwise pass a Ruby class of the resource.
+      # The third argument is an optional hash of conditions to further filter the objects.
+      # For example, here the user can only update published articles.
+      #   can :update, Article, :published => true
+      #
+      # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
       end
     end
 
 gdzie do metody *initialize* przkazywany jest obiekt *user*.
-Następnie w metodzie **initialize** określimy to co może każdy użytkownik.
-
-Autor gemu sugeruje, aby powyższy kod umieścić w folderze
-*app/models*.
+W metodzie **initialize** określamy, to co może każdy użytkownik.
 
 Autoryzację będziemy implementować małymi kroczkami.
 Zaczniemy od umożliwienia każdemu użytkownikowi
 wykonania akcji *index* oraz *show* dla rekordów
-z tabeli *fortunes*:
+z tabeli *posts*:
 
     :::ruby app/models/ability.rb
     class Ability
@@ -380,64 +396,62 @@ z tabeli *fortunes*:
 
       def initialize(user)
         user ||= User.new  # guest user
-        can :read, Fortune
+        can :read, Post
       end
     end
 
-Co to oznacza? CanCan definiuje kilka użytecznych aliasów,
-m.in. alias `:read`:
+Co to oznacza? `:read` to użyteczny alias; oto definicje pozostałych
+aliasów:
 
     :::ruby
     alias_action :index, :show, :to => :read
     alias_action :new, :to => :create
     alias_action :edit, :to => :update
 
-i skrótów:
+i skrót `:all`:
 
     :::ruby
-    can :manage, Fortune  # has permissions to do anything to fortunes
-    can :manage, :all     # has permission to do anything to any model
+    can :manage, Post  # has permissions to do anything to posts
+    can :manage, :all  # has permission to do anything to any model
 
 
-Uaktywniamy autoryzację wykomentowując wiersz z *before_filter*
-i wpisując w kodzie kontrolera *FortunesController*:
+Uaktywniamy autoryzację dla modelu *Post* dopisując do kodu *PostController*:
 
-    :::ruby
-    class FortunesController < ApplicationController
-      #before_filter :require_user, :only => [:new, :edit, :create, :update, :destroy]
+    :::ruby app/controllers/posts_controller.rb
+    class PostsController < ApplicationController
       load_and_authorize_resource
 
-Ponieważ, CanCan jest kontrolerem napisanym w stylu RESTful, więc możemy
-usunąć wszystkie linjki z kodem (tylko liczba pojedyncza):
+CanCan jest kontrolerem napisanym w stylu RESTful, co oznacza że możemy
+usunąć z kodu kontrolera wszystkie linjki zaczynające się od
+(**tylko liczba pojedyncza**):
 
     :::ruby
-    @fortune = ...
+    @post = ...
 
 ponieważ „resource is already loaded and authorized”.
 
-Jest jeszcze jedna rzecz, o której zapomnieliśmy:
-
-    :::ruby
-    def create
-      @fortune.user = current_user # przypisz cytat do zalogowanego użytkownika
-
-Teraz możemy już sprawdzić jak to działa. Logujemy się do Fortunki i
-próbujemy wyedytować jakiś cytat. Po kliknieciu w link *Edit*
+Teraz możemy sprawdzić jak to działa. Logujemy się
+i próbujemy wyedytować jakiś cytat. Po kliknieciu w link *Edit*
 powinnismy zobaczyć coś takiego:
 
-    CanCan::AccessDenied in FortunesController#edit
-      You are not authorized to access this page.
+    CanCan::AccessDenied in PostsController#edit
+    Not authorized to edit post!
 
-Oczywiście, taki wyjątek powinnismy jakoś obsłużyć. Zrobimy to tak.
-Do pliku *application_controller.rb* dopiszemy:
+Oczywiście, taki wyjątek powinnismy jakoś obsłużyć.
+Tak jak to opisano [3. Handle Unauthorized Access](https://github.com/ryanb/cancan/)
+dopiszemy w pliku *application_controller.rb*:
 
-    :::ruby
-    rescue_from CanCan::AccessDenied do |exception|
-      flash[:error] = exception.message
-      redirect_to root_url
+    :::ruby app/controllers/application_controller.rb
+    class ApplicationController < ActionController::Base
+      rescue_from CanCan::AccessDenied do |exception|
+        redirect_to root_url, :alert => exception.message
+      end
     end
 
-Sprawdzamy jak to działa. Klikamy link *Edit*. Jest lepiej?
+I sprawdzamy jak to działa klikając ponownie link *Edit*.
+Jest lepiej?
+
+**TODO**
 
 Następną rzeczą którą zrobimy będzie ukrycie linków *Edit*
 i *Destroy* przed użytkownikami którzy nie mają uprawnień do edycji
