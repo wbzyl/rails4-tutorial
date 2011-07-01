@@ -546,6 +546,7 @@ Dodatkowa lektura:
 
 * [validates :rails_3, :awesome => true](http://lindsaar.net/2010/1/31/validates_rails_3_awesome_is_true)
 * [Creating Custom Validation Methods](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html#creating-custom-validation-methods)
+* [Building Rails 3 custom validators](http://www.perfectline.ee/blog/building-ruby-on-rails-3-custom-validators)
 
 
 ## Formularze z *simple_form*
