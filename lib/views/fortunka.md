@@ -314,7 +314,7 @@ Zwiększamy rozmiar fontu, dodajemy ramkę, marginesy,…:
     :::css public/stylesheets/applications.css
     html {
       margin-top: 22px;
-      background-color: #EDE574;  /* jasnożółty */
+      background-color: #EDE574;
     }
     /* 1.375 * 16px = 22px */
     body { font:16px/1.375 sans-serif; *font-size:small; }
@@ -541,6 +541,11 @@ walidacja dla powiązanego modelu *validates_associated*.
 
 **Ważne:** Powinniśmy sprawdzić jak działa walidacja w przeglądarce.
 Sama konsola to za mało!
+
+Dodatkowa lektura:
+
+* [validates :rails_3, :awesome => true](http://lindsaar.net/2010/1/31/validates_rails_3_awesome_is_true)
+* [Creating Custom Validation Methods](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html#creating-custom-validation-methods)
 
 
 ## Formularze z *simple_form*
