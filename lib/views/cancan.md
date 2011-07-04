@@ -567,7 +567,7 @@ Z kodu powyżej widać, że musimy jeszcze zajrzeć do widoku częściowego
 Teraz zabierzemy się za powiązanie *abilities* z wprowadzonymi
 rolami: admin, moderator, author i banned.
 
-Zaczyniemy od admina:
+Zaczniemy od uprawnień admina, który może wszystko:
 
     :::ruby
     class Ability
@@ -587,8 +587,8 @@ Po wprowadzeniu poprawek, sprawdzamy jak to działa.  Najpierw logujemy
 się jako admin, a następnie jako zwykły użytkownik.
 W pliku *db/seed.rb* znajdziemy przykładowych użytkowników.
 
-Teraz kolej na autora.
-Autor może dodawać, edytować i usuwać swoje cytaty:
+Następnie przydzielimy uprawnienia autorowi, który
+może dodawać, edytować i usuwać swoje posty i komentarze:
 
     :::ruby
     class Ability
@@ -600,129 +600,128 @@ Autor może dodawać, edytować i usuwać swoje cytaty:
         if user.has_role? :admin
           can :manage, :all
         elsif user.has_role? :author
-          can :read, Fortune
-          can :create, Fortune
-          can [:update, :destroy], Fortune, :user_id => user.id
+          can [:read, :create], [Post, Comment]
+          can [:update, :destroy], [Post, Comment], :user_id => user.id
         else
-          can :read, Fortune
+          can :read, [Post, Comment]
         end
       end
     end
 
-Na koniec zostawiliśmy rolę *moderatora*, który może tylko edytować
-i usuwać cytaty.
+Na koniec zajmiemy się uprawnieniami *moderatora*, który może tylko
+edytować i usuwać dowolne posty i komentarze
+(ale nie może dodawać żadnych postów i komentarzy):
 
     :::ruby
-    if user.has_role? :admin
-      can :manage, :all
-    elsif user.has_role? :author
-      can :read, Fortune
-      can :create, Fortune
-      can [:update, :destroy], Fortune, :user_id => user.id
-    elsif user.has_role? :moderator
-      can :read, Fortune
-      can [:update, :destroy], Fortune
-    else
-      can :read, Fortune
+    class Ability
+      include CanCan::Ability
+
+      def initialize(user)
+        user ||= User.new
+
+        if user.has_role? :admin
+          can :manage, :all
+        elsif user.has_role? :author
+          can [:read, :create], [Post, Comment]
+          can [:update, :destroy], [Post, Comment], :user_id => user.id
+        elsif user.has_role? :moderator
+          can [:read, :update, :destroy], [Post, Comment]
+        else
+          can :read, [Post, Comment]
+        end
+      end
     end
 
 
-## TODO
+## „Wiążemy luźne końce”
 
-Powinniśmy jeszcze zadbać o to, aby *autor* nie mógł przypisać nowej
-fortunki innemu użytkownikowi.
+Powinniśmy jeszcze zadbać o to, aby *autor* nie mógł przypisać nowego
+postu lub komentarza innemu użytkownikowi.
 
 Niestety, nie wystarczy ukryć rozwijalnej listy „Zmień użytkownika”
-przed autorami. Użytkownik może przechwycić wysyłany formularz, na
+przed autorami. Autor może przechwycić wysyłany formularz, na
 przykład za pomocą rozszerzenia *Web Developer* lub *Tamper Data*
 przeglądarki Firefox, i zmienić wysyłane dane.
 
 Wydaje się, że najprostszym rozwiązaniem będzie zignorowanie
 przesyłanego id użytkownika w *params[:fortune]* w metodach *update*
-i *create*. Zamiast tego ustawimy dane użytkownika na *current_user*:
+i *create* w kontrolerze *PostsController*
+i ustawienie go na *current_user.id*:
 
     :::ruby
     def update
       if current_user.role? :author
-        # to samo co params[:fortune][:user_id] = current_user.id
-        @fortune.user = current_user
+        params[:post][:user_id] = current_user.id
       end
-      if @fortune.update_attributes(params[:fortune])
+      @post.update_attributes(params[:post])
+      respond_with(@post)
+    end
 
     def create
-      @fortune = Fortune.new(params[:fortune])
-      @fortune.user = current_user  # przebijamy ustawienia z przesłanego formularza
-      ...
+      @post = current_user.posts.build(params[:post])
+      @post.user = current_user  # przebijamy ustawienia z formularza
+      @post.save
+      respond_with(@post)
+    end
 
 Zanim ukryjemy rozwijalną listę select przed autorami, jeszcze jedna
 poprawka w kodzie kontrolera:
 
     :::ruby
     def new
-      @fortune.user = current_user  # ustaw użytkownika na liście select
+      @post.user = current_user  # ustaw użytkownika na liście select
     end
 
-Sprawdzamy, czy wszystko działa. Jesli tak, to ukrywamy listę
-rozwijaną przed autorami (ale nie adminami i moderatorami). W widoku
-*fortunes/_form.html.erb* podmieniamy akapit z „Zmień użytkownika…” na:
+**Uwaga:** Analogiczne zmiany powinniśmy zrobić w kodzie
+kontrolera *CommentsController*.
 
-    :::rhtml
-    <% if !current_user.role?(:author) %>
+Jeśli cały ten kod działa, to zabieramy się za ukrycie listy
+rozwijanej przed autorami (ale nie adminami i moderatorami).
+
+W tym celu w widoku *posts/_form.html.erb* podmieniamy akapit
+z „select the author of this post” na:
+
+    :::rhtml app/views/posts/_form.html.erb
+    <% if !current_user.has_role?(:author) %>
     <p>
-      Zmień użytkownika: <%= f.collection_select :user_id, User.all, :id, :login %>
+      <%= f.collection_select :user_id, User.all, :id, :email %>
+      (select the author of this post)
     </p>
     <% end %>
 
 
-## TODO: Kosmetyka widoków
+## Kosmetyka widoków
 
-Dwie rzeczy należałoby zmienić w widoku *fortunes/index.html.erb*:
+Dwie rzeczy możnaby / należałoby zmienić w widoku *posts/index.html.erb*:
 
 1. Autorzy powinni po zalogowaniu widzieć tylko swoje cytaty.
 2. Admini i moderatorzy powinni po zalogowaniu widzieć kto dodał cytat.
 
-Dlaczego?
+Dlaczego? Argumenty za? Argumenty przeciw?
 
-Na stronie [Upgrading 1.1 – cancan](http://wiki.github.com/ryanb/cancan/upgrading-to-11)
-w sekcji **Fetching Records** jest przykład pokazujący jak
-zaprogramować punkt 1. powyżej. W *fortunes_controller.rb* w metodzie
-*indeks* podmieniamy:
+Punkt 1. zaprogramujemy podmieniając w *posts_controller.rb* metodę *index*:
 
-    :::ruby
-    @fortunes = Fortunes.accessible_by(current_ability)
-
-Ale powyższy kod zwraca to samo co *Fortunes.all* — czyli nie działa (bug?).
-
-Zamiast tego metodę indeks zaprogramujemy tak:
-
-    :::ruby
+    :::ruby app/controllers/posts_controller.rb
     def index
-      @fortunes = current_user.fortunes
-    end
-
-co po uwzględnieniu adminów, moderatorów oraz niezalogowanych
-użytkowników daje:
-
-    :::ruby
-    def index
-      if current_user && current_user.role?(:author)
-        @fortunes = current_user.fortunes
+      if current_user && current_user.has_role?(:author)
+        @posts = current_user.posts.order('created_at DESC')
       else
-        @fortunes = Fortune.all
+        @posts = Posts.order('created_at DESC')
       end
     end
 
-Czy ten kod jest równoważny z rozwiązaniem korzystającym z *accessible_by*
-ze strony gemu CanCan?
+W kodzie powyżej uwaględniamy uprawnienia adminów, moderatorów
+oraz niezalogowanych użytkowników.
 
+Pozostaje punkt 2:
 
-Pozostaje punkt 2. Można to zrobić tak:
-
-    :::rhtml
-    <% for fortune in @fortunes %>
-      <p>
-        <%=h fortune.quotation %>
-        <% if logged_in? && (current_user.role?(:admin) || current_user.role?(:moderator)) %>
-          (added by <em><%= fortune.user.login %></em>)
-        <% end %>
-      </p>
+    :::rhtml app/views/posts/_post.html.erb
+    <article>
+      <h4><%= post.title %></h4>
+      <div>
+         <%= post.content %>
+         <% if current_user && (current_user.has_role?(:admin) || current_user.has_role?(:moderator)) %>
+            <div class="email">added by <em><%= post.user.email %></div>
+         <% end %>
+      </div>
+      ...
