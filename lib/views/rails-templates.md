@@ -27,12 +27,9 @@ Oto prosty i użyteczny przykład:
 
     :::ruby rails-template.rb
     remove_file 'README'
-
     create_file "README.md" do
       "# Fortunka\n\nTODO"
     end
-
-    remove_file "public/index.html"
 
     gem "simple_form"
     generate "simple_form:install"
@@ -40,6 +37,7 @@ Oto prosty i użyteczny przykład:
     generate :scaffold, "fortune body:text"
     rake "db:migrate"
 
+    remove_file "public/index.html"
     route "resources :fortunes"
     route "root :to => 'fortunes#index'"
 
@@ -64,19 +62,21 @@ A tak skorzystamy z tego szablonu:
 
     rails new fortunka -m rails-template.rb -j -f
 
-Powyższy szablon ma kilka wad. Po usunięciu wad, poprawiony szablon
+Powyższy szablon ma kilka wad. Poprawiony szablon
 umieściłem [tutaj](https://gist.github.com/1068461):
 
     https://gist.github.com/1068461
 
 Ponieważ zamiast ścieżki do pliku możemy podać uri szablonu, więc
-nie ma problemu z skorzystaniem z tego szablonu. Musimy
-tylko pamietać, aby podać uri do wersji „raw” kodu:
+nie ma problemu ze skorzystaniem z tego szablonu. Musimy
+tylko pamiętać, aby podać URI do wersji „raw” kodu:
 
     rails new fortunka -j -f \
       -m https://raw.github.com/gist/1068461/ab1f125cd0fac4c497a5356ff78ef0592e971721/rails3-template.rb
 
-Jakie są zmiany? Dlaczego?
+Jakie są zmiany w porównaniu z wersją powyżej?
+Dlaczego należało wprowadzić te zmiany?
+Co można jeszcze poprawić?
 
 
 **TODO**
