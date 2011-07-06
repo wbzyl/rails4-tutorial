@@ -111,15 +111,10 @@ Na początek zaczynamy od przeczytania
 3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
 4. Dalej już według własnego uznania,
    wybieramy kolejny *Przewodnik* do przestudiowania.
+5. [stackoverflow](http://stackoverflow.com/questions/tagged/ruby) –
+  questions tagged with **ruby**
 
 Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
-
-Is Your Plugin Ready For Rails 3? sprawdź na
-[Rails Plugins Compatibility Tracking] [railsplugins]
-
-[Tr8n Translation Engine](https://github.com/berk/tr8n).
-Live Tr8n sample application:
-[Welcome to Tr8n Translation Engine Examples Application](http://www.tr8n.org/).
 
 
 ### API
