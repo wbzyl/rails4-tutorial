@@ -168,14 +168,13 @@ Podstawy REST:
 
 
 <blockquote>
-<p>RFC2235:
-  <a href="http://www.faqs.org/rfcs/rfc2235.html">Hobbes’ Internet Timeline</a>
+<p>
+  While the scaffold generator is great for prototyping, it’s not so great for
+  delivering simple code that is well-tested and works precisely the way we would
+  like it to.
 </p>
-<p>RFC2334:
-  <a href="http://www.faqs.org/rfcs/rfc2324.html">Hyper Text Coffee Pot Control Protocol (HTCPCP/1.0)</a>
-</p>
+<p class="author">— Y. Katz, R. A. Bigg</p>
 </blockquote>
-
 
 ## Generator scaffold
 
