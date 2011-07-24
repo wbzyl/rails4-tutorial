@@ -12,8 +12,8 @@ integration stack.”
 Testujemy:
 
     cd bacon
-    rspec spec/bacon_spec.rb
-
+    rspec --color spec/bacon_spec.rb
+    #rspec --color --format doc spec/bacon_spec.rb
 
 ## Przykłady z Cucumber
 

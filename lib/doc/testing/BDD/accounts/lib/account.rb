@@ -4,4 +4,8 @@ class Account
     @balance = amount
   end
 
+  def balance
+    @balance
+  end
+
 end
