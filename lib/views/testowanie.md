@@ -31,7 +31,12 @@ Instalujemy Rails 3.1, następnie generujemy szkielet aplikacji:
 
 Następnie edytujemy plik *Gemfile*:
 
-    :::ruby Gemfile
+<blockquote>
+{%= image_tag "/images/capybaras.jpg", :alt => "[Capybaras]" %}
+<p class="author">źródło: <a href="http://robots.thoughtbot.com/post/8087279685/use-capybara-on-any-html-fragment-or-page">Use Capybara…</a></p>
+</blockquote>
+
+    :::ruby
     source 'http://rubygems.org'
 
     gem 'rails', '~> 3.1.0.rc4'
