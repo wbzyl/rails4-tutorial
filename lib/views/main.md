@@ -47,6 +47,7 @@ poprawnie (dwa sposoby):
 
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "Makieta aplikacji, czyli layout", "/layouty" %}
+1. {%= link_to "TDD, BDD…", "/testowanie" %}
 1. {%= link_to "Powiązania między modelami", "/models" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
