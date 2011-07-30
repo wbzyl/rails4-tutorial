@@ -231,3 +231,63 @@ przystępujemy do lektury:
 * [Imperative vs Declarative Scenarios in User Stories](http://benmabey.com/2008/05/19/imperative-vs-declarative-scenarios-in-user-stories.html)
 * [Whose domain is it anyway?](http://dannorth.net/2011/01/31/whose-domain-is-it-anyway/)
 * [You're Cuking It Wrong](http://elabs.se/blog/15-you-re-cuking-it-wrong)
+
+
+## Ustawienie tytułu strony
+
+Dodpisujemy dwa nowe kroki:
+
+    :::text
+    And I should be on the project page for "TextMate 2"
+    And I should see "Show - Projects - Ticketee"
+
+*features/step_definitions/web_steps.rb:187*:
+
+    :::ruby
+    Then /^(?:|I )should be on (.+)$/ do |page_name|
+      current_path = URI.parse(current_url).path
+      if current_path.respond_to? :should
+        current_path.should == path_to(page_name)
+      else
+        assert_equal path_to(page_name), current_path
+      end
+    end
+
+Wykonujemy:
+
+    rake cucumber:ok
+
+Wynik:
+
+    And I should be on the project page for "TextMate 2" # features/step_definitions/web_steps.rb:187
+      Can't find mapping from "the project page for "TextMate 2"" to a path.
+      Now, go and add a mapping in /home/wbzyl/repos/dydaktyka/ticketee/features/support/paths.rb (RuntimeError)
+      ./features/support/paths.rb:27:in `rescue in path_to'
+      ./features/support/paths.rb:21:in `path_to'
+      ./features/step_definitions/web_steps.rb:190:in `/^(?:|I )should be on (.+)$/'
+      features/creating_projects.feature:12:in `And I should be on the project page for "TextMate 2"'
+
+Dopisujemy:
+
+    :::ruby features/support/path.rb
+    when /^the home\s?page$/
+      '/'
+    when /the project page for "([^\"]*)"/
+      project_path(Project.find_by_name!($1))
+
+Ponownie wykonujemy:
+
+    rake cucumber:ok
+
+Tym razem, rezultat jest taki:
+
+    And I should see "Show - Projects - Ticketee"        # features/step_definitions/web_steps.rb:105
+      expected there to be content
+          "Show - Projects - Ticketee" in "Ticketee\n\n  \n
+          Project has been created.\n  \n\n
+          TextMate 2\n\n\n" (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/web_steps.rb:107:in `/^(?:|I )should see "([^"]*)"$/'
+      features/creating_projects.feature:13:in `And I should see "Show - Projects - Ticketee"'
+
+gdzie *features/step_definitions/web_steps.rb:13*:
+

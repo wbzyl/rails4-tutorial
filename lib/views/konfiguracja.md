@@ -47,7 +47,7 @@ Potrzebujemy więcej szczegółów:
 Na koniec ustawiamy domyślną wersję Ruby:
 
     :::bash
-    rvm --default use 1.9.2
+    rvm use 1.9.2 --default
 
 Po instalacji w ścieżce *PATH* powinny pojawić się katalogi:
 
@@ -135,25 +135,13 @@ Usuwamy katalog z instalacją RVM (zwalniamy ok. 250 MB):
     :::bash
     rm -rf ~/.rvm
 
-W plikach *~/.bashrc* oraz *~/.bashrc_profile* wykomentowujemy wiersz:
+Wykonujemy poniższe polecenie jako *root*:
 
-    :::bash
-    [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
+    bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
 
-Zamiast niego wstawiamy wiersz:
+Gemy instalujemy, korzystając ze skryptu *rvmsudo*, na przykład
 
-    :::bash
-    [[ -s /usr/local/lib/rvm ]] && source /usr/local/lib/rvm
-
-Dla instalacji „system wide”, powinniśmy mieć w *PATH* katalogi:
-
-    echo $PATH
-    ...
-    /usr/local/rvm/gems/ruby-1.9.2-p180/bin:
-    /usr/local/rvm/gems/ruby-1.9.2-p180@global/bin:
-    /usr/local/rvm/rubies/ruby-1.9.2-p180/bin:
-    /usr/local/rvm/bin:
-    /usr/local/rubyee/bin
+    rvmsudo gem install rails
 
 
 # Konfiguracja konsoli
