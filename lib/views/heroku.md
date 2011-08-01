@@ -14,7 +14,7 @@ który musimy najpierw zainstalować:
 
     gem install heroku
 
-**Rails 3.1:**
+**Uwaga:** przeczytać
 [Deploying to Heroku with Rails 3.1](http://railsapps.github.com/rails-heroku-tutorial.html).
 
 Zanim umieścimy swoją aplikację na *heroku.com*, musimy mieć tam konto (tzw. „free plan”).
