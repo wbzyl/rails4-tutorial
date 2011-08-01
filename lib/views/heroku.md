@@ -10,7 +10,7 @@
 [Heroku](http://heroku.com/) (pronounced her-OH-koo) is a cloud application platform for
 Ruby – a new way of building and deploying web apps.
 Swoje aplikacje Rails będziemy wdrażać na Heroku za pomocą programu *heroku*,
-który musimy najierw zainstalować:
+który musimy najpierw zainstalować:
 
     gem install heroku
 
