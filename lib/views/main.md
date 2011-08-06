@@ -112,8 +112,6 @@ Na początek zaczynamy od przeczytania
 3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
 4. Dalej już według własnego uznania,
    wybieramy kolejny *Przewodnik* do przestudiowania.
-5. [stackoverflow](http://stackoverflow.com/questions/tagged/ruby) –
-  questions tagged with **ruby**
 
 Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
 
@@ -127,6 +125,12 @@ Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
 
 ### Ruby
 
+* [Ruby Programming Language](http://rubylang.info/) –
+  community driven web site, dedicated to helping
+  both new and experienced Ruby developers
+* [stackoverflow](http://stackoverflow.com/questions/tagged/ruby) –
+  questions tagged with **ruby**
+* [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/)
 * [RVM](http://rvm.beginrescueend.com/) – Ruby Version Manager
 * [Rubyflow](http://rubyflow.com)
 
