@@ -133,6 +133,7 @@ Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
 * [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/)
 * [RVM](http://rvm.beginrescueend.com/) – Ruby Version Manager
 * [Rubyflow](http://rubyflow.com)
+* [Hyperpolyglot](http://hyperpolyglot.org/scripting)
 
 
 ### Misc stuff
