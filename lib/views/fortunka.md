@@ -974,6 +974,17 @@ Metoda *search* jest wykonywana zawsze po wejściu na stronę *index*,
 nawet jak nic nie wyszukujemy. (Prześledzić jak ona wtedy działa?
 Co to jest *scoped*?)
 
+Dodatkowa lektura:
+
+* Aaron Patterson.
+  [Texticle](https://github.com/tenderlove/texticle) –
+  full text search capabilities from PostgreSQL
+* Florian R. Hanke.
+  [Picky](https://github.com/floere/picky) –
+  easy to use and fast Ruby semantic search engine.
+  Przykłady: [twixtel](http://www.twixtel.ch/),
+  [picky simple example](http://picky-simple-example.heroku.com/)
+
 
 ## Ajaxujemy filtrowanie
 
