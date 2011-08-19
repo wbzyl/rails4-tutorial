@@ -1570,3 +1570,11 @@ Pojawiaja się komunikat po angielsku:
 
 Często nie w tym polu co trzeba. Gdzie się tłumaczy te komunikaty?
 Jak to wyłączyć?
+
+
+## TODO
+
+* Obrazki w fortunkach: skorzystać z gemu
+  [CarrierWave](https://github.com/jnicklas/carrierwave/)
+  (zob. też Trevor Turk,
+  [A Gentle Introduction to CarrierWave](http://www.engineyard.com/blog/2011/a-gentle-introduction-to-carrierwave/)).
