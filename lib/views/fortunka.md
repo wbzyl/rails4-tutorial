@@ -1564,7 +1564,7 @@ Będziemy go potrzebować jak użytkownik kilknie przycisk
 poprawność danych sprawdza Chrome –
 uaktywnia sprawdzanie zawartości pól formularza.
 
-Pojawiaja się komunikat po angielsku:
+Pojawia się też komunikat po angielsku:
 
     Please fill out this field.
 
@@ -1572,9 +1572,10 @@ Często nie w tym polu co trzeba. Gdzie się tłumaczy te komunikaty?
 Jak to wyłączyć?
 
 
-## TODO
+# TODO
 
 * Obrazki w fortunkach: skorzystać z gemu
   [CarrierWave](https://github.com/jnicklas/carrierwave/)
   (zob. też Trevor Turk,
   [A Gentle Introduction to CarrierWave](http://www.engineyard.com/blog/2011/a-gentle-introduction-to-carrierwave/)).
+* [Multiple files upload with carrierwave and nested_form](http://lucapette.com/rails/multiple-files-upload-with-carrierwave-and-nested_form/)
