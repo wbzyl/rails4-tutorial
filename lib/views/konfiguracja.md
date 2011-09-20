@@ -91,34 +91,30 @@ Do zestawu **global** dodajemy gemy używane
 we wszystkich projektach. Na przykład
 
     rvm use ruby-1.9.2-p180@global
-    gem install rack
+    gem install bundler rails
     rvm use ruby-1.9.2-p180
 
 
 ## Gemy & Bundler
 
-Gemy instalujemy za pomocą polecenia:
+Gemy instalujemy w swoim katalogu domowym:
 
     :::bash
     bundle install --path=$HOME/.gems
 
-Albo lokalnie, w aplikacji:
+albo dla każdej aplikacji osobno:
 
     :::bash
     bundle install --path=.bundle/gems
 
-
-Od tej chwili, polecenie *bundle* będzie instalować gemy
-w podanej lokalizacji.
+Od tej chwili, polecenie *bundle* będzie instalować gemy w podanej lokalizacji.
 
 
-# RVM na Sigmie
+# „Multi-User install” RVM na Sigmie
 
-Po zastosowaniu opisanej powyżej konfiguracji do Sigmy
+Po zastosowaniu powyższej konfiguracji do Sigmy
 obserwujemy, że wszystkie polecenia działają **bardzo, bardzo wolno**.
-
-Jakie jest tego powód łatwo stwierdzić, wykonując na przykład
-takie polecenia:
+Jaki jest tego powód łatwo stwierdzić, wykonując polecenia:
 
     :::bash
     strace rails new slow
@@ -126,22 +122,42 @@ takie polecenia:
     strace rails server
 
 Uruchomienie aplikacji Rails to wczytanie około 2000 plików.
+Ponieważ Ruby nie jest „demonem szybkości” ładowania plików,
+więc zajmuje to zwykle co najmniej kilkanaście sekund.
 
-
-## System wide RVM krok po kroku
-
-Usuwamy katalog z instalacją RVM (zwalniamy ok. 250 MB):
+Daltego postąpimy inaczej.
+Zaczyniemy od usunięcia pozostałości po „single-user installation”:
 
     :::bash
-    rm -rf ~/.rvm
+    rm -f $HOME/.rvm $HOME/.rvmrc
 
-Wykonujemy poniższe polecenie jako *root*:
+Następnie wykonamy polecenie:
 
-    bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
+    sudo bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
 
-Gemy instalujemy, korzystając ze skryptu *rvmsudo*, na przykład
+Zostanie utworzona grupa *rvm*, oraz do plików startowych dodana jest
+ścieżka do programu katalogu */usr/local/rvm/bin*.
 
-    rvmsudo gem install rails
+Teraz instalujemy ostatnią stabilną wersję 1.9.2 programu *ruby** (wrzesień 2011):
+
+    rvm install ruby-1.9.2-p290
+
+*Uwaga:* dodajemy siebie do grupy *rvm*:
+
+    sudo gpasswd --add wbzyl rvm
+
+Podstawowe gemy instalujemy, korzystając ze skryptu *rvmsudo*:
+
+    rvm use ruby-1.9.2-p290 --default
+    rvm use ruby-1.9.2-p290@global
+    gem install rake bundler rails sqlite3 pg wirble hirb
+    rvm use ruby-1.9.2-p290
+
+*Uwaga:* szkielet aplikacji Rails tworzymy w następujący sposób:
+
+    rails new hello_rails --skip-bundle
+    cd hello_rails
+    bundle install $HOME/.gems
 
 
 # Konfiguracja konsoli
