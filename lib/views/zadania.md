@@ -43,13 +43,7 @@ Do katalogu głównego aplikacji należy dodać plik
 
 # Ściąga z Githuba
 
-Podajemy swoje dane Gitowi:
-
-    git config --global user.name "Wlodek Bzyl"
-    git config --global user.email matwb@univ.gda.pl
-
-A tak zakładamy nowe repozytorium, które nastepnie
-umieszczamy na Githubie:
+Tak zakładamy nowe repozytorium i umieszczamy je na Githubie:
 
     mkdir sw
     cd sw
@@ -69,13 +63,16 @@ oraz klucz publiczny z komputera z którego wykonujemy
 
 Na egzamin należy przygotować i uruchomić serwis www wg własnego
 pomysłu. Serwis piszemy w zespołach 4–5 programistów.<br/>
-Prezentacje projektów: styczeń 2011.
+Prezentacje projektów: styczeń 2012.
 
 
 # FAQ
 
 1. Co będzie jak nie oddam projektu w terminie?
    *Odpowiedź:* Ocena z laboratorium zostanie obniżona o 1.
+1. Co będzie jeśli zespół nie zaprezentuje swojego projektu
+   na jednym z wykładów w styczniu.
+   *Odpowiedź:* Maksymalna ocena za taki projekt to 3.
 
 
 ## HTML5 & CSS3 & jQuery
@@ -91,7 +88,7 @@ Dodać do strony przykład z jakąś wtyczką jQuery. Na przykład
 *gMap helps you embed Google Maps into your website.
 With only 2 KB in size it is very flexible and highly customizable.*
 
-Albo użyć gemu [Cartographer](https://github.com/joshuamiller/cartographer).
+Albo użyć gemu [Cartographer](https://github.com/joshuamiller/cartographer) (?)
 
 
 <blockquote>
@@ -368,9 +365,6 @@ Sprawdzamy, czy tak jest. Zaczynamy od instalacji
 
 2\. Node.JS + Redis + Pygments: [Snip](http://bitbucket.org/nikhilm/snip/src/).
 
-
-
-#### Links
 
 [blueprint-css]: http://github.com/joshuaclayton/blueprint-css "A CSS framework"
 [haml]: http://haml-lang.com/ "HAML: markup haiku"

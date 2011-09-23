@@ -1,4 +1,4 @@
-# 27.02.2011 – zaczynamy!
+# 3.10.2011 – zaczynamy!
 
 <blockquote>
   {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
@@ -10,41 +10,32 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
+Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/)
+albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/).
 
-**[18.04.2011]** Co nowego w Rails 3.1:
-[Rails 3.1 Adopts CoffeeScript, jQuery, Sass and.. Controversy](http://www.rubyinside.com/rails-3-1-adopts-coffeescript-jquery-sass-and-controversy-4669.html),
-[Exploring Rails 3.1 – ActiveModel::SecurePassword](http://bcardarella.com/post/4668842452/exploring-rails-3-1-activemodel-securepassword).
+Nigdy nie korzystałeś z frameworka MVC, wejdź na
+[Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies).
 
-**[18.03.2011]** Czas na Rails for Zombies!
-[What Is This?](http://railsforzombies.org/):
-„Learning Rails for the first time should be fun, and Rails for
-Zombies allows you to get your feet wet without having to worry about
-configuration. You'll watch five videos, each followed by exercises
-where you'll be programming Rails in your browser.”
+Wszystkie projekty przygotowywane na zajęciach należy trzymać na swoim
+koncie na *github.com*. (Oczywiście, wcześniej należy założyć tam
+sobie konto.)
 
-Jeśli nie czujesz się pewnie z Ruby,
-to [Try Ruby!](http://tryruby.org/) w przeglądarce!
+Projekty piszemy w **Rails** wersji co najmniej **3.1**.
 
-**[28.02.2011]** Projektami Rails będziemy zarządzać za pomocą systemu kontroli wersji
-Git. Dlatego, jeśli tego
-nie zrobiliśmy wcześniej, powinniśmy go skonfigurować. Zaczynamy od
-podania swoich danych Gitowi:
+Przed utworzeniem pierwszego repozytorium
+należy podać Gitowi swoje **prawdziwe i aktualne** dane:
 
     git config --global user.name "Imię Nazwisko"
-    git config --global user.email "twój_login@sigma.ug.edu.pl"
+    git config --global user.email "twój aktualny email"
 
-Następnie definiujemy kilka użytecznych aliasów, na przykład
-[takich](http://sinatra.inf.ug.edu.pl/sp/git).
 
-Na koniec sprawdzamy, czy powyższe polecenia wykonaliśmy
-poprawnie (dwa sposoby):
-
-    cat ~/.gitconfig
-    git config -l
+<a href="http://wbzyl.inf.ug.edu.pl/sp/git">Parę aliasów dla Gita i Bash’a</a>
+oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
 
 ## Rozpiska wykładów
 
+1. {%= link_to "Zapoznajemy się z Ruby", "/ruby19" %}
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "Makieta aplikacji, czyli layout", "/layouty" %}
 1. {%= link_to "TDD, BDD…", "/testowanie" %}
@@ -92,8 +83,6 @@ Konfiguracja – RVM, konsola, dokumentacja online:
 * {%= link_to "Laboratorium", "/zadania" %}
 
 
-# Dokumentacja
-
 <blockquote>
   <p>
     Jeden z wykładowców powiedział mi, że człowiek
@@ -103,6 +92,8 @@ Konfiguracja – RVM, konsola, dokumentacja online:
   </p>
   <p class="author">— Robert Krool</p>
 </blockquote>
+
+# Dokumentacja
 
 Na początek zaczynamy od przeczytania
 [Rails Guides (Edge)](http://guides.rails.info/):
@@ -115,35 +106,6 @@ Na początek zaczynamy od przeczytania
 
 Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
 
-
-### API
-
-* [Rails Searchable API Doc](http://railsapi.com/)
-* [Edge API](http://edgeapi.rubyonrails.org/)
-* [API dock](http://apidock.com/) – Ruby on Rails, RSpec, Ruby
-
-
-### Ruby
-
-* [Ruby Programming Language](http://rubylang.info/) –
-  community driven web site, dedicated to helping
-  both new and experienced Ruby developers
-* [stackoverflow](http://stackoverflow.com/questions/tagged/ruby) –
-  questions tagged with **ruby**
-* [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/)
-* [RVM](http://rvm.beginrescueend.com/) – Ruby Version Manager
-* [Rubyflow](http://rubyflow.com)
-* [Hyperpolyglot](http://hyperpolyglot.org/scripting)
-
-
-### Misc stuff
-
-* [Rails 3 Application Templates](https://github.com/RailsApps/rails3-application-templates)
-* [Rails 3 Apps Composer](https://github.com/RailsApps/rails_apps_composer)
-* [Examples of how to build PDFs in Rails with Prawn and Prawnto](http://prawn.heroku.com/)
-* [Exploring the stdlib: logger](http://rbjl.net/50-exploring-the-stdlib-logger)
-
-
 <blockquote>
   {%= image_tag "/images/samuel-coleridge.jpg", :alt => "[_Why]" %}
   <p>
@@ -154,6 +116,13 @@ Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
   <p class="author">— Samuel Coleridge (1772–1834)</p>
 </blockquote>
 
+## API
+
+* [Rails Searchable API Doc](http://railsapi.com/)
+* [Edge API](http://edgeapi.rubyonrails.org/)
+* [API dock](http://apidock.com/) – Ruby on Rails, RSpec, Ruby
+
+
 ## Screencasty
 
 * Ryan Bates. [Railscasts](http://railscasts.com/)
@@ -161,30 +130,27 @@ Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
   Expert advice on tuning and optimizing your Rails app
 
 
-## Podręczniki do języka Ruby
-
-* [Why's (Poignant) Guide to Ruby](http://www.rubyinside.com/media/poignant-guide.pdf)
-* [Mr. Neighborly's Humble Little
-  Ruby Book](http://www.humblelittlerubybook.com/book/html/index.html)
-  \([pdf](http://www.humblelittlerubybook.com/book/hlrb.pdf)\)
-
-
 ## Podręczniki do Rails
 
-* Cody Fauser, James MacAulay, Edward Ocampo-Gooding, John Guenin.
-  [Rails in a Nutshell](http://rails-nutshell.labs.oreilly.com/).
 * Michael Hartl.
   [Ruby on Rails Tutorial. Learn Rails by Example](http://www.railstutorial.org/book).
 
 
-## Pomysły na aplikacje WWW
+## Misc stuffisz masz
+
+* [Rails 3 Application Templates](https://github.com/RailsApps/rails3-application-templates)
+* [Examples of how to build PDFs in Rails with Prawn and Prawnto](http://prawn.heroku.com/)
+* [Exploring the stdlib: logger](http://rbjl.net/50-exploring-the-stdlib-logger)
+
 
 <blockquote>
-  <p>
-    Jeśli coś jest do pomyślenia, to jest.
-  </p>
-  <p class="author">— Stanisław Lem</p>
+ <p>
+  TelescopicText is primarily a set of tools for creating expanding texts in a similar way.
+ </p>
+ <p class="author"><a href="http://www.telescopictext.org/">Telescopic text</a></p>
 </blockquote>
+
+## Pomysły na aplikacje WWW
 
 Rails Rumble Leaderboard
 [2009](http://r09.railsrumble.com/entries),
@@ -194,13 +160,6 @@ competition in which teams of skilled web application developers get
 one weekend to design, develop, and deploy the best web property that
 they can, using the power of Ruby and Rails.
 
-<blockquote>
- <p>
-  TelescopicText is primarily a set of tools for creating expanding texts in a similar way.
- </p>
- <p class="author"><a href="http://www.telescopictext.org/">Telescopic text</a></p>
-</blockquote>
-
 Korzystamy z nierelacyjnych baz danych:
 
 * Jim Neath.
@@ -209,13 +168,6 @@ Korzystamy z nierelacyjnych baz danych:
   [Mongoid](http://railscasts.com/episodes/238-mongoid),
   [MongoDB and MongoMapper](http://railscasts.com/episodes/194-mongodb-and-mongomapper)
 
-
-## EuRuKo 2010
-
-Konferencja odbyła się w Krakowie, 29–30 maja:
-
-* [dzień 1](http://nuclearsquid.com/writings/euruko-day1.html)
-* [dzień 2](http://nuclearsquid.com/writings/euruko-day2.html)
 
 ## Rails 3 stuff only
 
