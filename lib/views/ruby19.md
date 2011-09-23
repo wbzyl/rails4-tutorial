@@ -495,3 +495,8 @@ Uruchamiamy `irb`:
     Post.all(:conditions => ['body LIKE ?', '%ub%']) # SQL fragment
     what = 'ub'
     Post.all(:conditions => ['body LIKE ?', '%#{what}%'])
+
+
+# TODO
+
+Python na Ruby: [ten przykład](http://code.google.com/intl/pl-PL/apis/maps/documentation/elevation/#CreatingElevationCharts)
