@@ -481,20 +481,37 @@ Tworzymy plik *ar.rb* o zawartości:
 Uruchamiamy `irb`:
 
     :::ruby
-    require 'ar'
+    require './ar'
+
     Post.all
     Comments.all
-    p1 = Post.find(1)
+
+    // SELECT * FROM posts WHERE (posts.id = 1)
+    p1 = Post.find 1
+    p = Post.find 1, 2
     c1 = Comment.find 1
     c1.body = "xyz"
     c1.save
+    Comment.find [1, 2]
+
     Post.find_by_body "perl"
-    # Post.find(:all, ...
-    Post.all(:conditions =>
     Post.find_all_by_body "perl"
-    Post.all(:conditions => ['body LIKE ?', '%ub%']) # SQL fragment
+    Post.where('body LIKE ?', '%ub%') # SQL fragment
     what = 'ub'
-    Post.all(:conditions => ['body LIKE ?', '%#{what}%'])
+    Post.where('body LIKE ?', "%#{what}%")
+
+    params = {}
+    params[:start_date] = Time.now - 4.days - 5.hours
+    params[:end_date] = Time.now
+    Post.where("created_at >= :start_date AND created_at <= :end_date",
+      {:start_date => params[:start_date], :end_date => params[:end_date]})
+
+    Post.where(:created_at => (Time.now.midnight - 1.day)..Time.now.midnight)
+    Post.order("created_at DESC")
+
+    # Time in Ruby
+    t = Time.parse "2010-02-31 12:00:12 0200"
+    t.class
 
 
 # TODO
