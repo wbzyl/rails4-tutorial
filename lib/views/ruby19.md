@@ -478,7 +478,7 @@ Tworzymy plik *ar.rb* o zawartości:
     r2.comments << c1
 
 
-Uruchamiamy `irb`:
+Poniższy kod wpisujemy i uruchamiamy w powłoce Ruby `irb`:
 
     :::ruby
     require './ar'
@@ -512,8 +512,3 @@ Uruchamiamy `irb`:
     # Time in Ruby
     t = Time.parse "2010-02-31 12:00:12 0200"
     t.class
-
-
-# TODO
-
-Python na Ruby: [ten przykład](http://code.google.com/intl/pl-PL/apis/maps/documentation/elevation/#CreatingElevationCharts)
