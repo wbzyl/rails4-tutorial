@@ -149,7 +149,10 @@ Na koniec, działającą aplikację ocenić za pomocą rozszerzenia
 W swojej aplikacji zamienić relacyjną bazę danych na dokumentową bazę
 danych MongoDB.
 
-Zacząć od obejrzenia screencastu R. Batesa, [Mongoid](http://railscasts.com/episodes/238-mongoid).
+Kilka linków:
+
+* dokumentacja do gemu [Mongo](http://api.mongodb.org/ruby/current/)
+* screencast R. Batesa, [Mongoid](http://railscasts.com/episodes/238-mongoid).
 
 
 # Zadania różne
