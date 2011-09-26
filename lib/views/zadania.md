@@ -71,7 +71,7 @@ Prezentacje projektów: styczeń 2012. Harmonogram: grudzień 2011.
 
 # Zadania
 
-Lista zadań wraz opisem co należy zrobić.
+…wraz opisem o co chodzi i co nalezy zaprogramować.
 
 
 ## Z Pythona na Ruby
