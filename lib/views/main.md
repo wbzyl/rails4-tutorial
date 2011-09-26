@@ -40,6 +40,7 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Makieta aplikacji, czyli layout", "/layouty" %}
 1. {%= link_to "TDD, BDD…", "/testowanie" %}
 1. {%= link_to "Powiązania między modelami", "/models" %}
+1. {%= link_to "ActiveRecord w przykładach", "/active-record" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
 1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}
