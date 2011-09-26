@@ -1,4 +1,4 @@
-#### {% title "Laboratorium" %}
+#### {% title "Zadania" %}
 
 <blockquote>
 <p>
@@ -8,27 +8,21 @@
 <p class="author">— Rick Osborne</p>
 </blockquote>
 
-Na zaliczenie należy oddać następujące projekty:
-
-* Fortunka.<br/>
-  Termin oddania: ??.??.2011.
-* Fortunka + MongoDB.<br/>
-  Termin oddania: ??.??.2011.
-* Kontakty.<br/>
-  Termin oddania: ??.??.2011.
+* Z Pythona na Ruby.<br>
+  Termin oddania: 9.10.11.
+* Prosta aplikacja Rails (Fortunka, Trekking, …)<br>
+  Termin oddania: 23.10.11.
+* Przechodzimy na nierelacyjną bazę danych (MongoDB, …)<br>
+  Termin oddania: 7.11.2011.
+* Projekt zespołowy – wybór tematu projektu (podział na grupy, założenie repozytoriów, …)<br>
+  Termin oddania: 20.11.2011.
+* Rozliczenie projektu zespołowego<br>
+  Termin oddania: 18.12.2011.
+* Prezentacje gotowych projektów<br>
+  Termin: styczeń 2012.
 
 Projekty należy umieścić w osobnych repozytoriach git
-na serwerze Sigma.
-Nazwy repozytoriów na poszczególne projekty to:
-
-* **fortunka**
-* **fortunka-mongo**
-* **kontakty**
-
-Do katalogu głównego aplikacji należy dodać plik
-*.rvmrc* zawierający taki kod:
-
-    rvm use 1.9.2
+na swoim koncie na *github.com*.
 
 
 <blockquote>
@@ -63,7 +57,7 @@ oraz klucz publiczny z komputera z którego wykonujemy
 
 Na egzamin należy przygotować i uruchomić serwis www wg własnego
 pomysłu. Serwis piszemy w zespołach 4–5 programistów.<br/>
-Prezentacje projektów: styczeń 2012.
+Prezentacje projektów: styczeń 2012. Harmonogram: grudzień 2011.
 
 
 # FAQ
@@ -75,92 +69,91 @@ Prezentacje projektów: styczeń 2012.
    *Odpowiedź:* Maksymalna ocena za taki projekt to 3.
 
 
-## HTML5 & CSS3 & jQuery
+# Zadania
 
-[HTML5 Boilerplate](http://html5boilerplate.com/)
-is the professional badass's base HTML/CSS/JS template for a fast,
-robust and future-proof site.
-Sam szablon jest [tutaj](http://github.com/paulirish/html5-boilerplate/).
-
-Przygotować stronę statyczną korzystającą z HTML5 boilerplate.
-Dodać do strony przykład z jakąś wtyczką jQuery. Na przykład
-[gMap](http://gmap.nurtext.de/):
-*gMap helps you embed Google Maps into your website.
-With only 2 KB in size it is very flexible and highly customizable.*
-
-Albo użyć gemu [Cartographer](https://github.com/joshuamiller/cartographer) (?)
+Lista zadań wraz opisem co należy zrobić.
 
 
-<blockquote>
-<p>
-  Blueprint is a CSS framework designed to cut down on your CSS
-  development time.
-</p>
-<p class="author">— Joshua Clayton</p>
-</blockquote>
+## Z Pythona na Ruby
 
-## BlueprintCSS
+Zadanie polega na przetłumaczeniu
+[tego skryptu](http://code.google.com/intl/pl-PL/apis/maps/documentation/elevation/#CreatingElevationCharts)
+na język Ruby.
 
-1\. Przygotować stronę ilustrującą możliwości frameworka
-Blueprint. Zacząć od ściągnięcia
-[repozytorium Blueprint] [blueprint-css] z Githuba.
+Mniej lub bardziej użyteczne linki do tego zadania:
 
-Użyć narzędzia *compress.rb* do wygenerowania własnych
-wersji arkuszy CSS. Przeczytać:
-[Blueprint's compress.rb: A Walkthrough](http://joshuaclayton.github.com/article/2009/05/19/blueprint-css-a-walkthrough.html).
-
-2\. Zainstalować rozszerzenie do Firefoksa:
-[Dust-Me Selectors](https://addons.mozilla.org/en-US/firefox/addon/5392).
-Korzystając z tego rozszerzenia, oczyścić arkusz CSS z nieużywanych
-selektorów.
-
-3\. Zwalidować wygenerowany HTML i CSS.
-
-4\. Zainstalować rozszerzenia do przeglądarki Firefox:
-
-   * [Firebug](https://addons.mozilla.org/en-US/firefox/addon/1843)
-   * [YSlow](http://developer.yahoo.com/yslow/).
-
-Użyć Yslow do oceny strony przygotowanej w 1\.
+* [Elevation](http://code.google.com/intl/pl-PL/apis/maps/documentation/javascript/services.html#Elevation) –
+  dwa proste przykłady.
+* [The Google Elevation API](http://code.google.com/intl/pl-PL/apis/maps/documentation/elevation/).
+* [Google Maps API Family](http://code.google.com/intl/pl-PL/apis/maps/)
+* [Google Maps Javascript API V3 Reference](http://code.google.com/intl/pl-PL/apis/maps/documentation/javascript/reference.html)
 
 
-## Fortunka
+## Prosta aplikacja Rails
 
-Dodać paginację do widoku *index*.
+Aplikacja powinna korzystać z layoutu przygotowanego z szablonu
+[html5-boilerplate](https://github.com/paulirish/html5-boilerplate/blob/master/index.html).
+Kod szablonu jest opisany na stronie [HTML5 Boilerplate](http://html5boilerplate.com/).
+
+Na stronie [Initializr 2](http://www.initializr.com/) można wygenerować
+„a clean customizable template based on Boilerplate with just what you need to start”.
+
+Przykładowy [Rails 3.1+ compatible **Application Template** based on the HTML5 Boilerplate project](https://github.com/russfrisch/h5bp-rails)
+przygotował [Russ Frisch](https://github.com/russfrisch).
+
+
+### Fortunka v2.0
+
+Funkcjonalność aplikacji można zwiększyć dodając na przykład:
+
+1. Paginację do widoku *index*.
 Skorzystać z gemu [kaminari](https://github.com/amatsuda/kaminari).
 Wystylizować linki do kolejnych „stron”.
 Jak to się robi opisał Vitaly Friedman,
 [Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) i Mislav Marohnić,
 [Samples of pagination styling for will_paginate](http://mislav.uniqpath.com/will_paginate/).
-
-Dodać „AJAX rating“ dla komentarzy.
+2. „AJAX rating” dla komentarzy.
 Skorzystać z jakiejś gotowej wtyczki lub gemu
-(wcześniej sprawdzić czy wybrana biblioteka działa z jQuery 1.5.1 + Rails 3.0.4).
-
-Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
-Zamienić wygenerowane formularze na formularze korzystajęce
-z gemu [simple_form](http://github.com/plataformatec/simple_form).
-
-Dodać autentykację do fortunki. Zrobić to tak jak, to
+(wcześniej sprawdzić czy wybrana biblioteka działa z jQuery 1.6+ Rails 3.1+).
+3. Autentykację. Zrobić to tak jak, to
 przedstawił R. Bates w screencaście
 [Simple OmniAuth](http://railscasts.com/episodes/241-simple-omniauth).
+4. Komentarze, tak jak to będzie przedstawione na wykładzie.
+
+Warto już teraz uprościć kod formularzy. Jak?
+Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
+Następnie zamienić wygenerowane formularze na formularze korzystajęce
+z metod [tego gemu](http://github.com/plataformatec/simple_form).
 
 
-## Fortunka MongoDB
+### Trekking
 
-Użyć w Fortunce dokumentowej bazy danych MongoDB.
+O co chodzi w aplikacji Trekking? Najprościej jest przekonać się
+samemu wchodząc na stronę
+[Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html)
+
+Mniej lub bardziej użyteczne linki:
+
+* wtyczka jQuery [gMap](http://gmap.nurtext.de/) –
+  gMap helps you embed Google Maps into your website.
+  With only 2 KB in size it is very flexible and highly customizable
+* gem [Cartographer](https://github.com/joshuamiller/cartographer) (?)
+
+Na koniec, działającą aplikację ocenić za pomocą rozszerzenia
+[YSlow](http://developer.yahoo.com/yslow/).
+
+
+## Przechodzimy na nierelacyjną bazę danych
+
+W swojej aplikacji zamienić relacyjną bazę danych na dokumentową bazę
+danych MongoDB.
+
 Zacząć od obejrzenia screencastu R. Batesa, [Mongoid](http://railscasts.com/episodes/238-mongoid).
 
 
-## Faye
+# Zadania różne
 
-„Faye is a subscription/publishing server which makes it easy to do
-push notifications within a Rails app.”
-
-* Uruchomić aplikację przedstawioną na screencaście R. Batesa,
-  [Messaging with Faye](http://railscasts.com/episodes/260-messaging-with-faye)
-* dodać nieco prywatności do aplikacji, np. korzystając z [private_pub](https://github.com/ryanb/private_pub) –
-  handle pub/sub messaging through private channels in Rails.
+Kilka pomysłów, gemów do wykorzystania w swoich projektach.
 
 
 <blockquote>
@@ -371,3 +364,13 @@ Sprawdzamy, czy tak jest. Zaczynamy od instalacji
 [sass]: http://sass-lang.com/ "Sass makes CSS fun again"
 [asset-packager]: http://github.com/sbecker/asset_packager "CSS and Javascript asset packager"
 [compass]: http://github.com/chriseppstein/compass "A CSS stylesheet authoring environment"
+
+## Faye
+
+„Faye is a subscription/publishing server which makes it easy to do
+push notifications within a Rails app.”
+
+* Uruchomić aplikację przedstawioną na screencaście R. Batesa,
+  [Messaging with Faye](http://railscasts.com/episodes/260-messaging-with-faye)
+* dodać nieco prywatności do aplikacji, np. korzystając z [private_pub](https://github.com/ryanb/private_pub) –
+  handle pub/sub messaging through private channels in Rails.

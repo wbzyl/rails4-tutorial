@@ -80,7 +80,7 @@ Konfiguracja – RVM, konsola, dokumentacja online:
 
 ## Laboratoria
 
-* {%= link_to "Laboratorium", "/zadania" %}
+* {%= link_to "Zadania", "/zadania" %}
 
 
 <blockquote>
