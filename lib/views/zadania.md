@@ -130,7 +130,7 @@ z metod [tego gemu](http://github.com/plataformatec/simple_form).
 
 O co chodzi w aplikacji Trekking? Najprościej jest przekonać się
 samemu wchodząc na stronę
-[Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html)
+[Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html).
 
 Mniej lub bardziej użyteczne linki:
 
