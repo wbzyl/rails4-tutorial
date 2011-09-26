@@ -134,7 +134,7 @@ samemu wchodząc na stronę
 
 Mniej lub bardziej użyteczne linki:
 
-* wtyczka jQuery [gMap](http://gmap.nurtext.de/) –
+* wtyczka jQuery [gMap](http://labs.mario.ec/jquery-gmap/) –
   gMap helps you embed Google Maps into your website.
   With only 2 KB in size it is very flexible and highly customizable
 * [map icons collection](http://mapicons.nicolasmollet.com/)
