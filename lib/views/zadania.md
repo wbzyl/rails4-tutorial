@@ -137,6 +137,7 @@ Mniej lub bardziej użyteczne linki:
 * wtyczka jQuery [gMap](http://gmap.nurtext.de/) –
   gMap helps you embed Google Maps into your website.
   With only 2 KB in size it is very flexible and highly customizable
+* [map icons collection](http://mapicons.nicolasmollet.com/)
 * gem [Cartographer](https://github.com/joshuamiller/cartographer) (?)
 
 Na koniec, działającą aplikację ocenić za pomocą rozszerzenia
