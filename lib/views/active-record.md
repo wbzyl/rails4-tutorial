@@ -4,7 +4,7 @@ Lista przykładów:
 
 1.  Why Associations?
 1.  Badamy powiązanie wiele do wielu na konsoli
-
+1.  Efektywne pobieranie danych – Eager Loading
 
 *TODO*:
 
@@ -146,7 +146,7 @@ Dodatkowo, każdy zasób przypisujemy do jednego z kilku rodzajów zasobów –
 Między zasobem a rodzajem zasobu mamy powiązanie wiele do jednego.
 
 Tak jak poprzednio skorzystamy z generatora do wygenerowania
-**boilerplate code**:
+**boilerplate code**:
 
     rails g model AssetType name:string
     rails g model Asset name:string description:text asset_type:references
@@ -173,8 +173,8 @@ i usuwamy zbędne *timestamps* (też wymagane przez Rails?):
       end
     end
 
-Dopiero teraz migrujemy i usuwamy niepotrzebny model (w dowolnej
-kolejności):
+Dopiero teraz migrujemy i usuwamy niepotrzebny model
+(w dowolnej kolejności):
 
     rm app/models/assets_tags.rb
     rake db:migrate
@@ -258,3 +258,75 @@ Konsola Rails:
     puts aa.to_yaml
 
 Przyjrzeć się uważnie co jest wypisywane na terminalu.
+
+
+## Efektywne pobieranie danych – Eager Loading
+
+Prosty przykład jest opisany w sekcji
+[Eager Loading Associations](http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations)
+przewodnika „Active Record Query Interface”.
+
+Nieco bardziej skomplikowany przykład:
+fotografowie, galerie i zdjęcia.
+Fotograf ma wiele galerii, w galerii jest wiele zdjęć.
+
+Korzystamy z generatora:
+
+    rails g model Photographer name:string
+    rails g model Gallery photographer:references name:string
+    rails g model Photo gallery:references name:string file_path:string
+
+Dopisujemy brakujące powiązania w modelach:
+
+    :::ruby
+    class Photographer < ActiveRecord::Base
+      has_many :galleries
+    end
+
+    class Gallery < ActiveRecord::Base
+      has_many :photos
+      belongs_to :photographer
+    end
+
+Teraz migrujemy:
+
+    rake db:migrate
+
+Dopisujemy kod do pliku *db/seeds.rb* (albo wykonujemy go bezpośrednio
+na konsoli Rails):
+
+    :::ruby db/seeds.rb
+    Photographer.create :name => 'Jan Saudek'
+    Photographer.create :name => 'Stefan Rohner'
+
+    Gallery.create :name => 'Nordic Light', :photographer_id => 1
+    Gallery.create :name => 'Daily Life', :photographer_id => 2
+    Gallery.create :name => 'India', :photographer_id => 2
+
+    Photo.create :name => 'Shadows', :file_path => 'photos/img_1154.jpg', :gallery_id => 1
+    Photo.create :name => 'Ice Formation', :file_path => 'photos/img_6836.jpg', :gallery_id => 1
+    Photo.create :name => 'Unknown', :file_path => 'photos/img_8419.jpg', :gallery_id => 2
+    Photo.create :name => 'Uptown', :file_path => 'photos/img_1243.jpg', :gallery_id => 2
+    Photo.create :name => 'India Sunset', :file_path => 'photos/img_2349.jpg', :gallery_id => 2
+    Photo.create :name => 'Summer', :file_path => 'photos/img_7744.jpg', :gallery_id => 3
+    Photo.create :name => 'Two cats', :file_path => 'photos/img_1440.jpg', :gallery_id => 3
+    Photo.create :name => 'Dogs', :file_path => 'photos/img_1184.jpg', :gallery_id => 3
+
+Na konsoli wykonujemy:
+
+    :::ruby
+    galleries = Gallery.includes(:photographer, :photos).all
+
+Wykonanie tego polecenia skutkuje trzykrotnym odpytaniem bazy:
+
+    Gallery Load (0.2ms)  SELECT "galleries".* FROM "galleries"
+    Photographer Load (0.1ms)  SELECT "photographers".* FROM "photographers" WHERE "photographers"."id" IN (1, 2)
+    Photo Load (0.2ms)  SELECT "photos".* FROM "photos" WHERE "photos"."gallery_id" IN (1, 2, 3)
+
+Teraz polecenia:
+
+    :::ruby
+    galleries[0].photographer
+    galleries[0].photos
+
+nie odpytują bazy – dane zostały wcześniej wczytane (*eager loading*).
