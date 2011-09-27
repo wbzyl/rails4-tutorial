@@ -1,8 +1,13 @@
 #### {% title "ActiveRecord w przykładach" %}
 
-**TODO** Lista przykładów:
+Lista przykładów:
 
+1.  Why Associations?
 1.  Badamy powiązanie wiele do wielu na konsoli
+
+
+*TODO*:
+
 6.  Dopisywanie rekordów do bazy :action => 'authors'
 7.  Pobieranie rekordów za pomocą <i>find</i> :action => 'find'
 8.  Przeglądanie pobranych rekordów :action => 'iterate'
@@ -16,12 +21,12 @@
 XX. Coś prostego: single-table inheritance :action => 'single-table-inheritance'
 
 Zaczniemy od sprawdzenia jakie mamy zainstalowane w systemie
-Rubies oraz zestawy gemów:
+Rubies i zestawy gemów:
 
     rvm list
     rvm list gemsets
 
-Następnie, na potrzeby przykładów z tego wykładu, tworzymy zestaw
+Następnie, na potrzeby przykładów z tego wykładu, utworzymy zestaw
 gemów o nazwie *ar*:
 
     rvm use --create ruby-1.9.2-p290@ar
@@ -36,7 +41,7 @@ Co daje takie podejście?
 
 Przykład z rozdziału 1
 [A Guide to Active Record Associations](http://guides.rubyonrails.org/association_basics.html).
-Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html)
+Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html).
 
 Generujemy przykładową aplikację:
 
@@ -63,6 +68,8 @@ jeszcze jeden atrybut (*foreign key*) do zamówień:
 
 * *Order* (zamówienie) – atrybuty: **customer_id**, order_date, …
 
+Generujemy *boilerplate code*::
+
     rails generate model Customer name:string
     rails generate model Order order_date:datetime order_number:string customer:references
 
@@ -76,8 +83,8 @@ gdzie dodajemy klienta i dwa jego zamówienia:
     :::ruby
     Customer.create :name => 'wlodek'
     @customer = Customer.first  # jakiś klient
-    Order.create :order_date => Time.now, :order_number => '1003/1', :customer_id => @customer.id
-    Order.create :order_date => Time.now, :order_number => '1003/2', :customer_id => @customer.id
+    Order.create :order_date => Time.now, :order_number => '20111003/1', :customer_id => @customer.id
+    Order.create :order_date => Time.now, :order_number => '20111003/2', :customer_id => @customer.id
     Order.all
 
 A tak usuwamy z bazy klienta i wszystkie jego zamówienia:
@@ -106,14 +113,16 @@ tworzenie nowych zamówień dla danego klienta jest łatwiejsze:
     :::ruby
     Customer.create(:name => 'rysiek')
     @customer = Customer.where(:name=> 'rysiek').first
-    @order = @customer.orders.create :order_date => Time.now, :order_number => '1003/3'
-    @order = @customer.orders.create :order_date => Time.now, :order_number => '1003/4'
+    @order = @customer.orders.create :order_date => Time.now, :order_number => '20111003/3'
+    @order = @customer.orders.create :order_date => Time.now, :order_number => '20111003/4'
 
 Usunięcie kilenta wraz z wszystkimi jego zamówieniami jest też proste:
 
     :::ruby
-    @customer = Customer.find 1
+    @customer = Customer.first  # jakiś klient
     @customer.destroy
+
+Tak jest prościej.
 
 
 ## Badamy powiązanie wiele do wielu na konsoli
@@ -126,10 +135,10 @@ Przykład pokazujący o co nam chodzi:
 * *Tag*: tree, organic
 
 Między zasobami i opisującymi je cechami mamy powiązanie wiele do
-wielu. Dlaczego?
+wielu.
 
-Dodatkowo, dla każdego zasobu będziemy określać jego rodzaj –
-*asset_type*.  Przykład:
+Dodatkowo, każdy zasób przypisujemy do jednego z kilku rodzajów zasobów –
+*AssetType*.  Przykład:
 
 * *Asset*: Cypress. A photo of a tree.
 * *AssetType*: Photo
@@ -143,9 +152,9 @@ Tak jak poprzednio skorzystamy z generatora do wygenerowania
     rails g model Asset name:string description:text asset_type:references
     rails g model Tag name:string
 
-Dla powiązania wiele do wielu między *Asset* i *Tag*
-musimy, zgodnie z konwencją Rails, dodać tabelę
-o nazwie *assets_tags*:
+Dla powiązania wiele do wielu między *Asset* i *Tag*, zgodnie
+z konwencją Rails, powinniśmy dodać tabelę o nazwie *assets_tags*
+(nazwy tabel w kolejności alfabetycznej):
 
     rails g model AssetsTags asset:references tag:references
 
@@ -164,10 +173,11 @@ i usuwamy zbędne *timestamps* (też wymagane przez Rails?):
       end
     end
 
-Dopiero teraz migrujemy i usuwamy niepotrzebny model:
+Dopiero teraz migrujemy i usuwamy niepotrzebny model (w dowolnej
+kolejności):
 
-    rake db:migrate
     rm app/models/assets_tags.rb
+    rake db:migrate
 
 Na koniec, dodajemy powiązania.
 
@@ -193,85 +203,58 @@ Na koniec, dodajemy powiązania.
       has_many :assets
     end
 
+Skorzystamy z zadania *rake* o nazwie *db:seed*
+do umieszczenia danych w tabelach:
+
+    :::ruby db/seeds.rb
+    AssetType.create :name => 'Photo'
+    AssetType.create :name => 'Painting'
+    AssetType.create :name => 'Print'
+    AssetType.create :name => 'Drawing'
+    AssetType.create :name => 'Movie'
+    AssetType.create :name => 'CD'
+
+    Asset.create :name => 'Cypress', :description => 'A photo of a tree.', :asset_type_id => 1
+    Asset.create :name => 'Blunder', :description => 'An action file.', :asset_type_id => 5
+    Asset.create :name => 'Snap', :description => 'A recording of a fire.', :asset_type_id => 6
+
+    Tag.create :name => 'hot'
+    Tag.create :name => 'red'
+    Tag.create :name => 'boring'
+    Tag.create :name => 'tree'
+    Tag.create :name => 'organic'
+
+Ale wcześniej usuniemy bazę:
+
+    rake db:drop
+    rake db:schema:load
+
+Powiązania dodamy na konsoli Rails:
+
+    :::ruby
+    a = Asset.find 1
+    t = Tag.find [4, 5]
+    a.tags << t
+    Asset.find(2).tags << Tag.find(3)
+    Asset.find(3).tags << Tag.find([1, 2])
 
 Chcemy zbadać powiązania między powyżej wygenerowanymi modelami.
 Zabadamy powiązania z konsoli Rails.
 
-    :::ruby
-    a = Asset.find 1
-    a.tags
-    t = Tag.find [1, 2]
-    a.tags << t
-
-Wydzielić z migracji *seed.rb*:
-
-    :::ruby
-    class BuildDatabase < ActiveRecord::Migration
-      def self.up
-        create_table :asset_types do |t|
-          t.string :name
-        end
-        create_table :assets do |t|
-          t.integer :asset_type_id
-          t.string :name
-          t.text :description
-        end
-        create_table :ttags do |t|
-          t.string :name
-        end
-        create_table :assets_tags, :id => false do |t|
-          t.integer :asset_id
-          t.integer :keyword_id
-        end
-
-        insert "insert into asset_types values (1, 'Photo')"
-        insert "insert into asset_types values (2, 'Painting')"
-        insert "insert into asset_types values (3, 'Print')"
-        insert "insert into asset_types values (4, 'Drawing')"
-        insert "insert into asset_types values (5, 'Movie')"
-        insert "insert into asset_types values (6, 'CD')"
-
-        insert "insert into assets values (1, 1, 'Cypress', 'A photo of a tree.')"
-        insert "insert into assets values (2, 5, 'Blunder', 'An action file.')"
-        insert "insert into assets values (3, 6, 'Snap', 'A recording of a fire.')"
-
-        insert "insert into tags values (1, 'hot')"
-        insert "insert into tags values (2, 'red')"
-        insert "insert into tags values (3, 'boring')"
-        insert "insert into tags values (4, 'tree')"
-        insert "insert into tags values (5, 'organic')"
-
-        insert "insert into assets_tags values (1, 4)"
-        insert "insert into assets_tags values (1, 5)"
-        insert "insert into assets_tags values (2, 3)"
-        insert "insert into assets_tags values (3, 1)"
-        insert "insert into assets_tags values (3, 2)"
-
-      end
-
-      def self.down
-        drop_table :assets_tags
-        drop_table :assets
-        drop_table :asset_types
-        drop_table :tags
-      end
-    end
-
-
 Konsola Rails:
 
-    :::bash
+    :::ruby
     a = Asset.find(3)
     y a
     a.name
     a.description
     a.asset_type.name
     a.tags
-    a.tags.each { |t| puts t.name }
+    a.tags.each { |t| puts t.name } ; nil
     y a.asset_type
     y a.tags
-    a.tags.each { |t| puts t.name }
-    aa = Asset.find(:first)
+    a.tags.each { |t| puts t.name } ; nil
+    aa = Asset.first
     puts aa.to_yaml
 
-Podejrzeć co jest wypisywane na terminalu.
+Przyjrzeć się uważnie co jest wypisywane na terminalu.
