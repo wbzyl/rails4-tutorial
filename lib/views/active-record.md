@@ -149,8 +149,8 @@ o nazwie *assets_tags*:
 
     rails g model AssetsTags asset:references tag:references
 
-W migracji dopisujemy *:id => false* (dlaczego?)
-i usuwamy niepotrzebne *timestamps*:
+W migracji dopisujemy *:id => false* (dlaczego? konwencja Rails)
+i usuwamy zbędne *timestamps* (też wymagane przez Rails?):
 
     :::ruby
     class CreateAssetsTags < ActiveRecord::Migration
