@@ -8,17 +8,11 @@ Lista przykładów:
 
 *TODO*:
 
-6.  Dopisywanie rekordów do bazy :action => 'authors'
-7.  Pobieranie rekordów za pomocą <i>find</i> :action => 'find'
-8.  Przeglądanie pobranych rekordów :action => 'iterate'
-9.  Efektywne pobieranie rekordów z kliku tabel :action => 'retrieving_data'
-10. Uaktualnianie danych :action => 'updating_data'
-11. Wymuszanie integralności danych :action => 'validation'
 13. Zapobieganie „race conditions” :action => 'transactions'
+21. Powiązania polimorficzne :action => 'polymorphic_associations'
+
 14. Ręczne sortowanie z użyciem acts_as_list :action => 'sorting'
 7.  Sortowanie za pomocą drag &amp; drop :action => 'drag_and_drop'
-21. Powiązania polimorficzne :action => 'polymorphic_associations'
-XX. Coś prostego: single-table inheritance :action => 'single-table-inheritance'
 
 Zaczniemy od sprawdzenia jakie mamy zainstalowane w systemie
 Rubies i zestawy gemów:
