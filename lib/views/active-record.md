@@ -2,10 +2,11 @@
 
 Lista przykładów:
 
-1.  Why Associations?
-1.  Badamy powiązanie wiele do wielu na konsoli
-1.  Efektywne pobieranie danych z kilku tabel – Eager Loading
-1.  Rodzime typy baz danych
+1. Why Associations?
+1. Badamy powiązanie wiele do wielu na konsoli
+1. Efektywne pobieranie danych z kilku tabel – Eager Loading
+1. Rodzime typy baz danych
+1. Sortable List in Ruby on Rails 3.1
 
 *TODO*:
 
@@ -455,3 +456,140 @@ Możemy to zaprogramować korzystając z transakcji i wyjątków:
 Podobnie postępujemy z drugim klientem. Oczywiście, powyższy
 kod zamieniamy na metodę, np. o nazwie *add_item*,
 którą dodajemy do *CartController*.
+
+
+## Sortable List in Ruby on Rails 3.1
+
+Nieco uproszczony przykład
+z [Sortable List in Ruby on Rails 3 – Unobtrusive jQuery](http://webtempest.com/sortable-list-in-ruby-on-rails-3-almost-unobtrusive-jquery/)
+
+    rails g scaffold Todo name:string
+    rails g migration add_position_to_todos position:integer
+    rake db:migrate
+
+dodajemy dane testowe:
+
+    :::ruby db/seed.rb
+    Todo.create([{:name => 'Harry Potter'}, {:name => 'Twilight'}, {:name => 'Bible'}])
+
+Migrujemy:
+
+    rake db:seed
+
+Do pliku *application.js* dopisujemy *jquery-ui.min*:
+
+    :::js
+    //= require jquery
+    //= require jquery-ui.min
+    //= require jquery_ujs
+    //= require_tree .
+
+Plik *jquery-ui.min.js* pobieramy ze strony
+
+    https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js
+
+(1.8.16 – ostatnia wersja na dzień 22.09.2011)
+i zapisujemy go w katalogu *vendor/assets/javascripts/*.
+
+Javascript do *index.html.erb*:
+
+    :::rhtml index.html.erb
+    <h1>Listing todos</h1>
+    <ul id="todos">
+    <% @todos.each do |todo| %>
+      <li id="todo_<%= todo.id %>"><span class="handle">[drag]</span><%= todo.name %></li>
+    <% end %>
+    </ul>
+    <br>
+    <%= link_to 'New Todo', new_todo_path %>
+
+    <% content_for :javascript do %>
+      <%= javascript_tag do %>
+        $('#todos').sortable({
+            axis: 'y',
+            dropOnEmpty: false,
+            handle: '.handle',
+            cursor: 'crosshair',
+            items: 'li',
+            opacity: 0.4,
+            scroll: true,
+            update: function() {
+                $.ajax({
+                    type: 'post',
+                    data: $('#todos').sortable('serialize'),
+                    dataType: 'script',
+                    complete: function(request){
+                        $('#todos').effect('highlight');
+                    },
+                    url: '/todos/sort'})
+            }
+        });
+      <% end %>
+    <% end %>
+
+Do pliku *app/views/layouts/application.html.erb* dopisujemy
+zaraz przed zamykającym znacznikem */body*:
+
+    :::rhtml
+    <%= yield :javascript %>
+
+Kontroler:
+
+    :::ruby
+    class TodosController < ApplicationController
+      def index
+        @todos = Todo.order('todos.position ASC')
+      end
+
+      def sort
+        @todos = Todo.scoped
+        @todos.each do |todo|
+          todo.position = params['todo'].index(todo.id.to_s)
+          todo.save
+        end
+        render :nothing => true
+      end
+
+Jeszcze poprawki w CSS:
+
+    :::css /app/assets/stylesheets/application.css
+    .handle:hover {
+      cursor: move;
+    }
+
+oraz w routingu:
+
+    :::ruby config/routes.rb
+    resources :todos do
+      post :sort, :on => :collection
+    end
+    root to: "todos#index"
+
+Jak to działa? Na konsoli wypisywane są parametry:
+
+    Parameters: {"todo"=>["3", "1", "2"]}
+
+gdzie
+
+    3, 1, 2
+
+to kolejność wyświetlanych na stronie elementów *li*.
+Oznacza to, że todo z:
+
+    id = 3 jest wyświetlane pierwsze (position = 0)
+    id = 1 jest wyświetlane drugie   (position = 1)
+    id = 2 jest wyświetlane trzecie  (position = 2)
+
+Dlatego, taki kod ustawi właściwą kolejność *position*
+wyświetlania:
+
+    :::ruby
+    todo[1].position = ["3", "1", "2"].index("1") = 2
+    todo[2].position = ["3", "1", "2"].index("2") = 3
+    todo[3].position = ["3", "1", "2"].index("3") = 1
+
+Proste? Nie? Podejrzeć na konsoli Javascript, w zakładce Sieć,
+nagłówki w wysyłanych żądaniach.
+
+Zobacz też Demo [Sortable](http://jqueryui.com/demos/sortable/)
+w jQuery-UI.
