@@ -4,7 +4,8 @@ Lista przykładów:
 
 1.  Why Associations?
 1.  Badamy powiązanie wiele do wielu na konsoli
-1.  Efektywne pobieranie danych – Eager Loading
+1.  Efektywne pobieranie danych z kilku tabel – Eager Loading
+1.  Rodzime typy baz danych
 
 *TODO*:
 
@@ -324,3 +325,133 @@ Teraz polecenia:
     galleries[0].photos
 
 nie odpytują bazy – dane zostały wcześniej wczytane (*eager loading*).
+
+
+## Rodzime typy baz danych
+
+I jak są tłumaczone z typów danych języka Ruby.
+Warto też przejrzeć przykłady
+w [dokumentacji metody *column*](http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html)
+
+PostgreSQL:
+
+    :::ruby activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+    NATIVE_DATABASE_TYPES = {
+      :primary_key => "serial primary key",
+      :string      => { :name => "character varying", :limit => 255 },
+      :text        => { :name => "text" },
+      :integer     => { :name => "integer" },
+      :float       => { :name => "float" },
+      :decimal     => { :name => "decimal" },
+      :datetime    => { :name => "timestamp" },
+      :timestamp   => { :name => "timestamp" },
+      :time        => { :name => "time" },
+      :date        => { :name => "date" },
+      :binary      => { :name => "bytea" },
+      :boolean     => { :name => "boolean" },
+      :xml         => { :name => "xml" },
+      :tsvector    => { :name => "tsvector" }
+    }
+
+SQLite:
+
+    :::ruby activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
+    def native_database_types
+      {
+        :primary_key => default_primary_key_type,
+        :string      => { :name => "varchar", :limit => 255 },
+        :text        => { :name => "text" },
+        :integer     => { :name => "integer" },
+        :float       => { :name => "float" },
+        :decimal     => { :name => "decimal" },
+        :datetime    => { :name => "datetime" },
+        :timestamp   => { :name => "datetime" },
+        :time        => { :name => "time" },
+        :date        => { :name => "date" },
+        :binary      => { :name => "blob" },
+        :boolean     => { :name => "boolean" }
+      }
+    end
+
+## Race Conditions
+
+Czyli tzw. sytuacje wyścigu.
+Poniżej przykład race condition w Rails.
+
+Tworzymy dwa modele: magazyn (*Inventory*) i koszyk (*Cart*):
+
+    rails g model Inventory name:string on_hand:integer
+    rails g model Cart name:string quantity:integer
+
+Oto wygenerowane migracje:
+
+    :::ruby
+    class CreateInventories < ActiveRecord::Migration
+      def change
+        create_table :inventories do |t|
+          t.string :name
+          t.integer :on_hand  # na stanie
+        end
+      end
+    end
+
+    class CreateCarts < ActiveRecord::Migration
+      def change
+        create_table :carts do |t|
+          t.string :name
+          t.integer :quantity, :default => 0  # dodane ręcznie
+        end
+      end
+    end
+
+Do modelu *Inventory* dodajemy walidację:
+
+    :::ruby inventory.rb
+    class Inventory < ActiveRecord::Base
+      validate :on_hand_could_not_be_negative
+
+      def on_hand_could_not_be_negative
+        errors.add(:on_hand, "can't be negative") if on_hand < 0
+      end
+    end
+
+na koniec migrujemy:
+
+    rake db:migrate
+
+Przechodzimy na konsolę Ruby:
+
+    :::ruby
+    Inventory.create :name => 'Laptop Eee PC 1000', :on_hand => 10
+
+Przykład pokazujący sytuację race condition.
+Dwóch klientów jednocześnie kupuje po 8 laptopów Eee PC 1000:
+
+    :::ruby
+    c1 = Cart.create :name => 'Laptop Eee PC 1000', :quantity => 8
+    c2 = Cart.create :name => 'Laptop Eee PC 1000', :quantity => 8
+
+Oczywiście, po tym jak pierwszy kilent dodał 8 laptopów do swojego
+koszyka, zabraknie 6 laptopów dla drugiego klienta.
+Dlatego, drugi klient powinien poczekać aż zostanie uaktualniony
+stan magazynu.
+
+Możemy to zaprogramować korzystając z transakcji i wyjątków:
+
+    :::ruby
+    laptop = 'Laptop Eee PC 1000'
+    quantity = 8
+    c1 = Cart.create :name => laptop, :quantity => quantity
+    begin
+      Cart.transaction do
+        item = Inventory.find_by_name laptop
+        item.on_hand -= quantity
+        item.save!
+      end
+    rescue
+      flash[:error] = "Sorry, laptopy właśnie się skończyły!"
+    end
+
+Podobnie postępujemy z drugim klientem. Oczywiście, powyższy
+kod zamieniamy na metodę, np. o nazwie *add_item*,
+którą dodajemy do *CartController*.
