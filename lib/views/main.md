@@ -105,7 +105,10 @@ Na początek zaczynamy od przeczytania
 4. Dalej już według własnego uznania,
    wybieramy kolejny *Przewodnik* do przestudiowania.
 
-Know your options! wejdź na [The Ruby Toolbox](http://ruby-toolbox.com/).
+Know your options! [The Ruby Toolbox](http://ruby-toolbox.com/).
+
+[Is Your Code Ready For Rails 3.1?](http://www.railsplugins.org/).
+
 
 <blockquote>
   {%= image_tag "/images/samuel-coleridge.jpg", :alt => "[_Why]" %}
