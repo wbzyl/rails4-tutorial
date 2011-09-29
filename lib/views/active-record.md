@@ -1,4 +1,4 @@
-#### {% title "ActiveRecord w przykładach" %}
+#### {% title "ActiveRecord na konsoli" %}
 
 Lista przykładów:
 
