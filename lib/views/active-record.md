@@ -593,3 +593,22 @@ nagłówki w wysyłanych żądaniach.
 
 Zobacz też Demo [Sortable](http://jqueryui.com/demos/sortable/)
 w jQuery-UI.
+
+Nowe rekordy nie mają ustawionego atrybutu *position*.
+Dlatego są wyświetlanie na końcu listy.
+Możemy to zmienić, na przykład w taki sposób:
+
+    :::ruby
+    class Todo < ActiveRecord::Base
+      before_create :add_to_list_bottom
+
+      private
+
+      def add_to_list_bottom
+        bottom_position_in_list = Todo.maximum(:position)
+        self.position = bottom_position_in_list.to_i + 1
+      end
+    end
+
+Teraz nowe element pojawią się u dołu wyśwoetlanej listy.
+Niestety, ten kod działa tylko(?) z ActiveRecord.
