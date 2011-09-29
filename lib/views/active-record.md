@@ -4,14 +4,12 @@ Lista przykładów:
 
 1. Why Associations?
 1. Badamy powiązanie wiele do wielu na konsoli
+1. Powiązania polimorficzne
 1. Efektywne pobieranie danych z kilku tabel – Eager Loading
 1. Rodzime typy baz danych
 1. Sytuacje wyścigu, czyli *race conditions*
 1. Sortable List in Ruby on Rails 3.1
 
-*TODO*:
-
-21. Powiązania polimorficzne
 
 Zaczniemy od sprawdzenia jakie mamy zainstalowane w systemie
 Rubies i zestawy gemów:
@@ -251,6 +249,101 @@ Konsola Rails:
     puts aa.to_yaml
 
 Przyjrzeć się uważnie co jest wypisywane na terminalu.
+
+
+## Powiązania polimorficzne
+
+Typowy przykład. Trzy modele:
+
+* *Person* (osoba)
+* *Company* (firma)
+* *PhoneNumber* (numer telefonu)
+
+Osoba ma wiele numerów telefonów. Firma też ma wiele telefonów.
+Niestety, numer telefonu może należeć do Osoby albo do Firmy.
+Takie jest ograniczenie relacji *belongs_to* (należy do).
+
+Możemy to ograniczenie obejść powielając model:
+
+* *PersonPhoneNumber*
+* *CompanyPhoneNumber*
+
+Takie rozwiązanie prowadzi do powielania kodu. Dlatego
+w Rails mamy inne rozwiązanie – *polymorphic associations*.
+
+Zaczynamy od wygenerowania trzech modeli:
+
+    rails g model Person name:string
+    rails g model Company name:string
+    rails g model PhoneNumber tel:string callable:references
+
+Dopisujemy zależności do modeli:
+
+    :::ruby
+    class Person < ActiveRecord::Base
+      has_many :phone_numbers, :as => :callable, :dependent => :destroy
+    end
+    class Company < ActiveRecord::Base
+      has_many :phone_numbers, :as => :callable, :dependent => :destroy
+    end
+
+    class PhoneNumber < ActiveRecord::Base
+      belongs_to :callable, :polymorphic => true
+    end
+
+Poprawiamy migrację wygenerowaną dla *phone_numbers*:
+
+    :::ruby
+    class CreatePhoneNumbers < ActiveRecord::Migration
+      def change
+        create_table :phone_numbers do |t|
+          t.string :tel
+          t.references :callable, :polymorphic => true
+          t.timestamps
+        end
+      end
+    end
+
+*Uwaga:* wiersz kodu z *:polymorphic => true* powyżej, to to samo co:
+
+    :::ruby
+    t.integer :callable_id
+    t.string  :callable_type
+
+Migrujemy:
+
+    rake db:migrate
+
+Teraz już możemy przećwiczyć polimorfizm na konsoli Rails:
+
+    rails c
+
+gdzie wykonujemy następujący kod:
+
+    :::ruby
+    p = Person.create :name => 'wlodek'
+    c = Company.create :name => 'ii'
+    p.phone_numbers << PhoneNumber.create(:tel => '1234')
+    c.phone_numbers << PhoneNumber.create(:tel => '5678')
+    PhoneNumber.all
+      +----+------+-------------+---------------
+      | id | tel  | callable_id | callable_type
+      +----+------+-------------+---------------
+      | 1  | 1234 | 1           | Person
+      +----+------+-------------+---------------
+      | 2  | 5678 | 1           | Company
+      +----+------+-------------+---------------
+    p.phone_numbers
+      +----+------+-------------+---------------
+      | id | tel  | callable_id | callable_type
+      +----+------+-------------+---------------
+      | 1  | 1234 | 1           | Person
+      +----+------+-------------+---------------
+
+Jak działa *p.phone_numbers*?
+
+Podobny przykład znajdziemy w przewodniku
+[A Guide to Active Record Associations](http://guides.rubyonrails.org/association_basics.html#polymorphic-associations).
 
 
 ## Efektywne pobieranie danych – Eager Loading
