@@ -170,26 +170,17 @@ Dopiero teraz migrujemy i usuwamy niepotrzebny model
     rm app/models/assets_tags.rb
     rake db:migrate
 
-Na koniec, dodajemy powiązania.
-
-*Asset*:
-
+Na koniec, dodajemy powiązania do modeli:
     :::ruby
     class Asset < ActiveRecord::Base
       has_and_belongs_to_many :tags
       belongs_to :asset_type
     end
 
-*Tag*:
-
-    :::ruby
     class Tag < ActiveRecord::Base
       has_and_belongs_to_many :assets
     end
 
-*AssetType* (dlaczego nie wystarczy krótsza nazwa *Type*):
-
-    :::ruby
     class AssetType < ActiveRecord::Base
       has_many :assets
     end
