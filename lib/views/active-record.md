@@ -611,4 +611,4 @@ Możemy to zmienić, na przykład w taki sposób:
     end
 
 Teraz nowe element pojawią się u dołu wyśwoetlanej listy.
-Niestety, ten kod działa tylko(?) z ActiveRecord.
+Niestety, ten kod działa tylko(?) z *ActiveRecord*.
