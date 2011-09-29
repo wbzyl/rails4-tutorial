@@ -6,15 +6,12 @@ Lista przykładów:
 1. Badamy powiązanie wiele do wielu na konsoli
 1. Efektywne pobieranie danych z kilku tabel – Eager Loading
 1. Rodzime typy baz danych
+1. Sytuacje wyścigu, czyli *race conditions*
 1. Sortable List in Ruby on Rails 3.1
 
 *TODO*:
 
-13. Zapobieganie „race conditions” :action => 'transactions'
-21. Powiązania polimorficzne :action => 'polymorphic_associations'
-
-14. Ręczne sortowanie z użyciem acts_as_list :action => 'sorting'
-7.  Sortowanie za pomocą drag &amp; drop :action => 'drag_and_drop'
+21. Powiązania polimorficzne
 
 Zaczniemy od sprawdzenia jakie mamy zainstalowane w systemie
 Rubies i zestawy gemów:
