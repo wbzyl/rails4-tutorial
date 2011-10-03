@@ -140,7 +140,7 @@ Mniej lub bardziej użyteczne linki:
 * [map icons collection](http://mapicons.nicolasmollet.com/)
 * gem [Cartographer](https://github.com/joshuamiller/cartographer) (?)
 
-Zainastalować nastepujące rozszerzenia dla przeglądarki Firefox:
+Zainstalować następujące rozszerzenia do przeglądarki Firefox:
 
 * [Firebug](http://getfirebug.com/)
 * [FireQuery](https://addons.mozilla.org/en-US/firefox/addon/firequery/)
