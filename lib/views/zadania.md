@@ -140,8 +140,16 @@ Mniej lub bardziej użyteczne linki:
 * [map icons collection](http://mapicons.nicolasmollet.com/)
 * gem [Cartographer](https://github.com/joshuamiller/cartographer) (?)
 
-Na koniec, działającą aplikację ocenić za pomocą rozszerzenia
-[YSlow](http://developer.yahoo.com/yslow/).
+Zainastalować nastepujące rozszerzenia dla przeglądarki Firefox:
+
+* [Firebug](http://getfirebug.com/)
+* [FireQuery](https://addons.mozilla.org/en-US/firefox/addon/firequery/)
+* [CSS Usage](https://addons.mozilla.org/en-US/firefox/addon/css-usage/)
+* [Yslow](https://addons.mozilla.org/pl/firefox/addon/yslow/)
+  ([z Yahoo](http://developer.yahoo.com/yslow/))
+
+Działającą aplikację ocenić za pomocą rozszerzenia *YSlow*.
+Sprawdzić jakość kodu CSS za pomocą rozszerzenia *CSS Usage*.
 
 
 ## Przechodzimy na nierelacyjną bazę danych
