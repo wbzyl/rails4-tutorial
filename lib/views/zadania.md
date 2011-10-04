@@ -145,11 +145,15 @@ Zainstalować następujące rozszerzenia do przeglądarki Firefox:
 * [Firebug](http://getfirebug.com/)
 * [FireQuery](https://addons.mozilla.org/en-US/firefox/addon/firequery/)
 * [CSS Usage](https://addons.mozilla.org/en-US/firefox/addon/css-usage/)
-* [Yslow](https://addons.mozilla.org/pl/firefox/addon/yslow/)
-  ([z Yahoo](http://developer.yahoo.com/yslow/))
 
-Działającą aplikację ocenić za pomocą rozszerzenia *YSlow*.
+oraz do przgladarki Chrome:
+
+* [PageSpeed](http://code.google.com/intl/pl-PL/speed/page-speed/docs/using_chrome.html)
+* [Yslow](http://developer.yahoo.com/yslow/)
+
+Działającą aplikację ocenić za pomocą rozszerzenia *YSlow* oraz *PageSpeed*.
 Sprawdzić jakość kodu CSS za pomocą rozszerzenia *CSS Usage*.
+**Zacząć** od [Page Speed Online](http://pagespeed.googlelabs.com/pagespeed/).
 
 
 ## Przechodzimy na nierelacyjną bazę danych
