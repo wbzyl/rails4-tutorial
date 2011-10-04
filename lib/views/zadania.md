@@ -155,6 +155,11 @@ Działającą aplikację ocenić za pomocą rozszerzenia *YSlow* oraz *PageSpeed
 Sprawdzić jakość kodu CSS za pomocą rozszerzenia *CSS Usage*.
 **Zacząć** od [Page Speed Online](http://pagespeed.googlelabs.com/pagespeed/).
 
+**Ciekawy ekperyment:**
+[Strona www Instytutu Informatyki](http://inf.ug.edu.pl/) +
+[PageSpeed Online](http://pagespeed.googlelabs.com/pagespeed/) +
+[SpriteMe](http://spriteme.org/).
+
 
 ## Przechodzimy na nierelacyjną bazę danych
 
