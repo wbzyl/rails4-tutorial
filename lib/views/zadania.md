@@ -133,8 +133,13 @@ oraz do przgladarki Chrome:
 * [PageSpeed](http://code.google.com/intl/pl-PL/speed/page-speed/docs/using_chrome.html)
 * [Yslow](http://developer.yahoo.com/yslow/)
 
-Działającą aplikację ocenić za pomocą rozszerzenia *YSlow* oraz *PageSpeed*.
-Sprawdzić jakość kodu CSS za pomocą rozszerzenia *CSS Usage*.
+1\. Działającą aplikację uruchomić w trybie *production*.
+Sprawdzić jaką uzyska ocenę od *YSlow* a jaką od *PageSpeed*.
+
+2\. Powtórzyć ocenę dla aplikacji uruchomionej w trybie *development*.
+
+3\. Sprawdzić jakość kodu CSS za pomocą rozszerzenia *CSS Usage*.
+
 **Zacząć** od [Page Speed Online](http://pagespeed.googlelabs.com/pagespeed/).
 
 **Ciekawy ekperyment:**
