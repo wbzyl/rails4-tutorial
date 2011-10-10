@@ -35,24 +35,6 @@ na swoim koncie na *github.com*.
 <p class="author">— Ralph Waldo Emerson (1803–1882)</p>
 </blockquote>
 
-# Ściąga z Githuba
-
-Tak zakładamy nowe repozytorium i umieszczamy je na Githubie:
-
-    mkdir sw
-    cd sw
-    git init
-    touch README
-    git add README
-    git commit -m 'first commit'
-    git remote add origin git@github.com:wbzyl/sw.git
-    git push -u origin master
-
-Oczywiście wcześniej musimy mieć tam konto,
-oraz klucz publiczny z komputera z którego wykonujemy
-„push” też tam musi być.
-
-
 # Egzamin
 
 Na egzamin należy przygotować i uruchomić serwis www wg własnego
