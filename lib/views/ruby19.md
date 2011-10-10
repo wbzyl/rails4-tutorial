@@ -109,6 +109,35 @@ Strony, gdzie od czasu do czasu warto zajrzeć:
     nums.sort.take_while {|n| n < 3}  # 1.9
 
 
+## Metody, Procs, … (TODO)
+
+Jawne przekazywanie obiektu Proc:
+
+    :::ruby
+    proc = Proc.new {|x| puts x}
+    def sequence(n, m, c, b)
+      i = 0
+      while (i < n)
+        b.call(i*m +c)
+        i += 1
+      end
+    end
+    sequence(3, 2, 2, proc) #=> 2 4 6
+
+Jawny argument (*&b*) Proc pobierający blok:
+
+    :::ruby
+    def sequence(n, m, c, &b)
+      i = 0
+      while (i < n)
+        b.call(i*m +c) if block_given?
+        i += 1
+      end
+    end
+    sequence(3, 2, 2) {|x| puts x} #=> 2 4 6
+    sequence(3, 2, 2)              #=>
+
+
 ## Napisy
 
     :::ruby
