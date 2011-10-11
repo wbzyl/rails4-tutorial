@@ -18,6 +18,12 @@ Podręczniki do języka Ruby:
 * [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/)
 * [Hyperpolyglot](http://hyperpolyglot.org/scripting) – nie tylko Ruby!
 
+Dokumentacja online:
+
+* [Ruby Core](http://www.ruby-doc.org/core/)
+* [Ruby Standard Library](http://www.ruby-doc.org/stdlib/)
+* [Ruby Doc](http://rdoc.info/) – dokumentacja gemów
+
 Strony, gdzie od czasu do czasu warto zajrzeć:
 
 * [RVM](http://rvm.beginrescueend.com/) – Ruby Version Manager
