@@ -1,28 +1,6 @@
 #### {% title "Fortunka v0.0" %}
 
 <blockquote>
- <p>
-  {%= image_tag "/images/ken-arnold.jpg", :alt => "[Ken Arnold]" %}
- </p>
- <p>A fortune program first appeared in Version 7 Unix. The most common
-  version on modern systems is the BSD fortune, originally written by
-  Ken Arnold. [source Wikipedia]</p>
-</blockquote>
-
-Pierwszą aplikacją, którą napiszemy w Ruby on Rails będzie
-[Fortunka](http://en.wikipedia.org/wiki/Fortune_(Unix\))
-z możliwością dopisywania komentarzy.
-
-
-## MVC ≡ Model / Widok / Kontroler
-
-Czym jest Ruby on Rails:
-„Ruby on Rails is an **MVC** framework for web application development.
-MVC is sometimes called a design pattern, but thats not technically
-accurate. It is in fact an amalgamation of design patterns (sometimes
-referred to as an architecture pattern).”
-
-<blockquote>
  {%= image_tag "/images/frederick-brooks.jpg", :alt => "[Frederick P. Brooks, Jr.]" %}
  <p>To see what rate of progress one can expect in software technology,
   let us examine the difficulties of that technology. Following
@@ -37,6 +15,19 @@ referred to as an architecture pattern).”
  </p>
  <p class="author">— Frederick P. Brooks, Jr.</p>
 </blockquote>
+
+Pierwszą aplikacją, którą napiszemy w Ruby on Rails będzie
+[Fortunka](http://en.wikipedia.org/wiki/Fortune_(Unix\))
+z możliwością dopisywania komentarzy.
+
+
+## MVC ≡ Model / Widok / Kontroler
+
+Czym jest Ruby on Rails:
+„Ruby on Rails is an **MVC** framework for web application development.
+MVC is sometimes called a design pattern, but thats not technically
+accurate. It is in fact an amalgamation of design patterns (sometimes
+referred to as an architecture pattern).”
 
 „Gang of Four” („GoF” = E. Gamma, R. Helm, R. Johnson, J. Vlissides) tak definiuje
 MVC w książce [Wzorce Projektowe](http://www.wnt.com.pl/product.php?action=0&prod_id=986)):
@@ -61,6 +52,15 @@ jednego modelu w celu zapewnienia różnych prezentacji tych danych.
 Można także tworzyć nowe widoki dla modelu bez potrzeby modyfikowania
 go.”
 
+
+<blockquote>
+ <p>
+  {%= image_tag "/images/ken-arnold.jpg", :alt => "[Ken Arnold]" %}
+ </p>
+ <p>A fortune program first appeared in Version 7 Unix. The most common
+  version on modern systems is the BSD fortune, originally written by
+  Ken Arnold. [source Wikipedia]</p>
+</blockquote>
 
 # Fortunka
 

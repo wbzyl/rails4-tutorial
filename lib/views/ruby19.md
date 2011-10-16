@@ -429,14 +429,14 @@ nie dużo różni się od implementacji w języku *C*:
 Plik `hello.erb`:
 
     :::rhtml
-    <%% page_title = "Pokaz możliwości szablonów ERB" %>
-    <%% salutation = "Kochany programisto," %>
+    <% page_title = "Pokaz możliwości szablonów ERB" %>
+    <% salutation = "Kochany programisto," %>
     <html>
     <head>
-    <title><%%= page_title %></title>
+    <title><%= page_title %></title>
     </head>
     <body>
-    <p><%%= salutation %></p>
+    <h3><%= salutation %></h3>
     <p>
       Ten przykład demonstruje jak
       działają są szablony ERB.
@@ -451,14 +451,13 @@ Po wykonaniu polecenia:
 Na `STDOUT` dostajemy:
 
     :::rhtml
-    <% page_title = "Pokaz możliwości szablonów ERB" %>
-    <% salutation = "Kochany programisto," %>
+    ... dwa puste wiersze
     <html>
     <head>
-    <title><%= page_title %></title>
+    <title>Pokaz możliwości szablonów ERB</title>
     </head>
     <body>
-    <p><%= salutation %></p>
+    <h3>Kochany programisto,</h3>
     <p>
       Ten przykład demonstruje jak
       działają są szablony ERB.
