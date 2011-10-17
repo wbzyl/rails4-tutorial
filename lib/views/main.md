@@ -10,6 +10,8 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
+[2011.10.18] [DHH](http://www.youtube.com/watch?v=cGdCI2HhfAU)
+
 Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/)
 albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/).
 
