@@ -438,8 +438,7 @@ Plik `hello.erb`:
     <body>
     <h3><%= salutation %></h3>
     <p>
-      Ten przykład demonstruje jak
-      działają są szablony ERB.
+      Ten przykład pokazuje jak działają szablony ERB.
     </p>
     </body>
     </html>
@@ -448,7 +447,11 @@ Po wykonaniu polecenia:
 
     erb hello.erb
 
-Na `STDOUT` dostajemy:
+lub
+
+    erubis hello.erb
+
+na `STDOUT` dostajemy:
 
     :::rhtml
     ... dwa puste wiersze
@@ -459,8 +462,7 @@ Na `STDOUT` dostajemy:
     <body>
     <h3>Kochany programisto,</h3>
     <p>
-      Ten przykład demonstruje jak
-      działają są szablony ERB.
+      Ten przykład pokazuje jak działają szablony ERB.
     </p>
     </body>
     </html>
