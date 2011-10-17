@@ -12,7 +12,8 @@
 
 [2011.10.18] RailsConf 2011,
 [David Heinemeier Hansson](http://www.youtube.com/watch?v=cGdCI2HhfAU)
-opowiada o nowych rzeczach w Rails 3.1.
+opowiada o nowych rzeczach w Rails 3.1
+(styl programowania — *junk drawer*).
 
 Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/)
 albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/).
