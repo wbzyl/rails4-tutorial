@@ -218,6 +218,12 @@ if __FILE__ == $PROGRAM_NAME
   #
   # ale szerokość obrazka skalujemy:
   #    :chs   => "450x200",
+  puts "-" * 40
+  puts "Elevation uri:"
+  puts "-" * 40
+  puts elevation.uri
+
+  puts "-" * 40
 
   puts "Chart uri:"
   puts "-" * 40
