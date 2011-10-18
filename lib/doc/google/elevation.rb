@@ -228,6 +228,7 @@ if __FILE__ == $PROGRAM_NAME
   puts "-" * 40
   puts "Elevation: highest = #{elevation.highest}, lowest = #{elevation.lowest}"
   puts "-" * 40
+
   puts "Static map uri:"
   puts "-" * 40
   puts Elevation.staticmap_uri elevation
