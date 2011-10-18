@@ -67,22 +67,27 @@ class Elevation
 
   ELEVATION_BASE_URL = 'http://maps.googleapis.com/maps/api/elevation/json'
 
-  attr_accessor :array, :path, :distance, :highest, :lowest
+  attr_accessor :locations, :array, :path, :distance, :highest, :lowest, :uri
 
   def initialize(opts={})
     @options = {
-      :path => "49.2710,19.9813|49.2324,19.9817",
+      :locations => "49.2710,19.9813|49.2324,19.9817",
       :samples => 11,
       :sensor => false
     }.merge!(opts)
-    set_path_and_array
-    @highest = @array.max
-    @lowest  = @array.min
+    @locations = @options.delete(:locations)
+    @options[:path] = @locations
+
+    set_path_and_array_and_uri
+
     lon1 = @path[0]['location']['lng']
     lat1 = @path[0]['location']['lat']
     lon2 = @path[1]['location']['lng']
     lat2 = @path[1]['location']['lat']
     @distance = GeoDistance::Haversine.geo_distance(lat1,lon1,lat2,lon2).kms * (@options[:samples]-1)
+
+    @highest = @array.max
+    @lowest  = @array.min
   end
 
   # http://www.damnhandy.com/2011/01/18/url-vs-uri-vs-urn-the-confusion-continues/
@@ -119,11 +124,44 @@ class Elevation
     URI.escape "#{chart_base_url}?#{chart_args.to_params}"
   end
 
+  def self.staticmap_uri(elevation, opts={})
+    map_base_url = 'http://maps.googleapis.com/maps/api/staticmap'
+    #
+    # http://code.google.com/intl/pl-PL/apis/maps/documentation/staticmaps/
+
+    # The Google Static Maps API creates maps in several formats, listed below:
+    # * roadmap (default)
+    # * satellite
+    # * terrain
+    # * hybrid
+
+    # ?maptype=roadmap
+    # &size=512x512
+    # &markers=color:green|label:S|latitude,longitude
+    # &markers=color:red|label:F|latitude,longitude
+    # &sensor=false
+
+    # @locations == 49.2710,19.9813|49.2324,19.9817
+
+    locations = elevation.locations.split("|")
+
+    map_args = {
+      :maptype => "terrain",
+      :size => "400x400",
+      :markers => [
+          "color:green|label:S|#{locations[0]}", "color:red|label:F|#{locations[1]}"
+        ],
+      :sensor => false
+    }
+    URI.escape("#{map_base_url}?#{map_args.to_params}").gsub /\[\d+\]/, ""
+  end
+
   private
 
-  def set_path_and_array
-    url = URI.escape "#{ELEVATION_BASE_URL}?#{@options.to_params}"
-    response = Net::HTTP.get_response(URI.parse(url))
+  def set_path_and_array_and_uri
+    @uri = URI.escape "#{ELEVATION_BASE_URL}?#{@options.to_params}"
+
+    response = Net::HTTP.get_response(URI.parse(@uri))
     @path = JSON.parse(response.body)['results']
     @array = @path.map do |x|
       x['elevation'].to_i
@@ -144,7 +182,9 @@ if __FILE__ == $PROGRAM_NAME
 
   puts "Kuźnice          longtitude: #{lon1}  latitude: #{lat1}"
   puts "Kasprowy Wierch  longtitude: #{lon2}  latitude: #{lat2}"
-  puts GeoDistance::Haversine.geo_distance(lat1, lon1, lat2, lon2).kms
+
+  distance = GeoDistance::Haversine.geo_distance(lat1, lon1, lat2, lon2).kms
+  puts "Odległość między Kużnicami a Kasprowym Wierchem:\n\t#{distance}"
 
   samples = 44
   elevation = Elevation.new :samples => samples
@@ -179,11 +219,17 @@ if __FILE__ == $PROGRAM_NAME
   # ale szerokość obrazka skalujemy:
   #    :chs   => "450x200",
 
+  puts "Chart uri:"
+  puts "-" * 40
   puts Elevation.elevation_chart_uri elevation,
       :chtt  => "Z Kuźnic na Kasprowy Wierch",
       :chxl  => "0:|profil trasy",
       :chs => "800x375"  # = 300,000 max pixels allowable by Google API
-
+  puts "-" * 40
   puts "Elevation: highest = #{elevation.highest}, lowest = #{elevation.lowest}"
+  puts "-" * 40
+  puts "Static map uri:"
+  puts "-" * 40
+  puts Elevation.staticmap_uri elevation
 
 end
