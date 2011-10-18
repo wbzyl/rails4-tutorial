@@ -2,6 +2,8 @@
 
 # Stara wersja jest tutaj:
 #   https://gist.github.com/1295716
+# Nowa wersja:
+#   https://gist.github.com/1295817
 
 # Zamiast Google image graph api
 # użyć biblioteki JavaScript [dygraphs](http://dygraphs.com/)
@@ -179,7 +181,8 @@ if __FILE__ == $PROGRAM_NAME
 
   puts Elevation.elevation_chart_uri elevation,
       :chtt  => "Z Kuźnic na Kasprowy Wierch",
-      :chxl  => "0:|profil trasy"
+      :chxl  => "0:|profil trasy",
+      :chs => "800x375"  # = 300,000 max pixels allowable by Google API
 
   puts "Elevation: highest = #{elevation.highest}, lowest = #{elevation.lowest}"
 
