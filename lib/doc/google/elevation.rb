@@ -22,6 +22,9 @@ require 'pp'
 
 # http://stackoverflow.com/questions/798710/how-to-turn-a-ruby-hash-into-http-params
 
+# metoda 'to_params' w Rails to 'to_query'
+# require 'active_support/core_ext'
+
 class Hash
   def to_params
     params = ''
@@ -99,14 +102,15 @@ class Elevation
     # http://code.google.com/intl/pl-PL/apis/chart/image/docs/chart_params.html
     # http://code.google.com/intl/pl-PL/apis/chart/image/docs/post_requests.html
 
-    width = (elevation.distance * (200/(1.5 * 2))).to_i  # 1.5 = 1500 m
+    margins = 30 # zgrubne przybliżenie; z gimpa
+    width = (distance * (200/(1.5 * 2))).to_i + margins  # 1.5 = 1500 m
     chs = "#{width}x#{200}"
 
     chart_args = {
       :cht   => "lc",
       :chs   => chs,
       # optional margins
-      :chma  => "0,0,0,0|80,20", # nie działa -- dlaczego?
+      :chma  => "0,0,0,0|0,0", # nie działa dolny margines -- dlaczego?
       # optional args
       :chtt  => "Title",
       :chts  => "AA0000,12,c", # 12 == font size
