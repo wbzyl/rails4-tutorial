@@ -10,6 +10,9 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
+[2011.10.21] Poprawioną wersję *Elevation* dla Rails umieściłem
+[tutaj](https://gist.github.com/1303620).
+
 [2011.10.18] RailsConf 2011,
 [David Heinemeier Hansson](http://www.youtube.com/watch?v=cGdCI2HhfAU)
 opowiada o nowych rzeczach w Rails 3.1
