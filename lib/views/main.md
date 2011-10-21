@@ -13,6 +13,9 @@
 [2011.10.21] Poprawioną wersję *Elevation* dla Rails umieściłem
 [tutaj](https://gist.github.com/1303620).
 
+[2011.10.20] Coś do poczytania.
+David Lynch, [XSS is fun!](http://davidlynch.org/blog/2011/10/xss-is-fun/).
+
 [2011.10.18] RailsConf 2011,
 [David Heinemeier Hansson](http://www.youtube.com/watch?v=cGdCI2HhfAU)
 opowiada o nowych rzeczach w Rails 3.1
