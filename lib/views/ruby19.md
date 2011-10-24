@@ -11,6 +11,8 @@ Na sigmie zainstalowany jest ruby-1.9.2-p290.
 
 Podręczniki do języka Ruby:
 
+* [RubyMonk](http://rubymonk.com/) –
+  an interactive platform that helps you master Ruby
 * [Why's (Poignant) Guide to Ruby](http://www.rubyinside.com/media/poignant-guide.pdf)
 * [Mr. Neighborly's Humble Little
   Ruby Book](http://www.humblelittlerubybook.com/book/html/index.html)

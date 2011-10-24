@@ -5,7 +5,6 @@ require 'erubis'
 
 require 'sinatra/base'
 
-#require 'sinatra/url_for'
 require 'sinatra/static_assets'
 require 'sinatra/filler'
 
@@ -17,7 +16,7 @@ module WB
     set :app_file, __FILE__
     set :static, true
 
-    set :erubis, :pattern => '\{% %\}', :trim => true
+    set :erb, :pattern => '\{% %\}', :trim => true
     set :markdown, :layout => false
 
     # the middleware stack can be used internally as well. I'm using it for
@@ -49,11 +48,11 @@ module WB
     # end
 
     get '/' do
-      erubis(markdown(:main))
+      erb(markdown(:main))
     end
 
     get '/:section' do
-      erubis(markdown(:"#{params[:section]}"))
+      erb(markdown(:"#{params[:section]}"))
     end
 
     get %r{^([-_\w\/]+)\/([-_\w]+)\.((\w{1,4})(\.\w{1,4})?)$} do
