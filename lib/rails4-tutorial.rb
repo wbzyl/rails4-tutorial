@@ -13,8 +13,8 @@ module WB
     register Sinatra::StaticAssets
 
     # disable overriding public and views dirs
-    set :app_file, __FILE__
-    set :static, true
+    settings.app_file = __FILE__
+    settings.static = true
 
     set :erb, :pattern => '\{% %\}', :trim => true
     set :markdown, :layout => false

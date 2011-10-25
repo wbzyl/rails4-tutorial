@@ -12,6 +12,8 @@
 
 [2011.10.21] Poprawioną wersję *Elevation* dla Rails umieściłem
 [tutaj](https://gist.github.com/1303620).
+Przygotowałem też szablon aplikacji korzystający z HTML5Boilerplate.
+Na razie jest [tutaj](https://gist.github.com/1304698).
 
 [2011.10.20] Coś do poczytania.
 David Lynch, [XSS is fun!](http://davidlynch.org/blog/2011/10/xss-is-fun/).
