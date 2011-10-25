@@ -5,7 +5,7 @@ require "version"
 
 Gem::Specification.new do |s|
   s.name        = "rails4-tutorial"
-  s.version     = WBRails4::VERSION
+  s.version     = "1.0.0"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Włodek Bzyl"]
   s.email       = ["matwb@ug.edu.pl"]
