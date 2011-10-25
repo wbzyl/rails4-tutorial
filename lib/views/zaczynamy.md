@@ -82,30 +82,53 @@ katalogu z wygenerowanym rusztowaniem:
     rails new fortunka
     cd fortunka
 
+TODO: opisać pozostałe kroki w punktach.
+
+**Uwaga:** Dobrze jest od razu zmienić niebieski kolor domyślnego
+layoutu na inny – tak aby nie myliły się nam różne aplikacje, które
+będziemy tworzyć. W tym celu podmieniamy kolor w pliku
+*application.css*.
+
+Na rzutnikach w laboratoriach, tekst będzie bardziej
+czytelny, gdy zwiększymy też rozmiar fontu:
+
+    :::css
+    body {
+      background-color: #9E09A8;
+      font-family: Verdana, Helvetica, Arial;
+      font-size: 18px;
+    }
+
+Acha, po kolor najlepiej wybrać się na stronę
+[Colourlovers](http://www.colourlovers.com/web).
+
+Teraz też jest właściwy moment na ustawienie domyślnej strony
+aplikacji. W tym celu usuwamy plik *index.html*:
+
+    rm public/index.html
+
+
+Dlaczego należy tę procedurę zautomatyzować?
+
+
+## Rails application templates
+
+Co to jest?
+
+Rails template application: rails-html5boilerplate,
+rails-html5boilerplate + simple_form + faker + populator?
++ responders? Dlaczego?
+
 Z czego składa się wygenerowane rusztowanie?
 
 
 ## Bundler
 
-Będziemy korzystać z gotowych gemów (bibliotek) języka Ruby.
-Gemami użytymi w Fortunce zarządzamy za pomocą programu
-*bundler*. Instrukcje dla tego programu umieszczamy
-w pliku *Gemfile*.
-
-Zaczynamy od modyfikacji wygenerowanego pliku:
+Dlaczego to robimy?
 
     :::ruby Gemfile
-    source 'http://rubygems.org' # domyślna wartość
-    gem 'rails'                  # usuwamy numer wersji; będziemy korzystać zawsze z ostatniej wersji
-    # dla lubiących ryzyko – wersja „(bleeding?) edge”
-    # gem 'rails', :git => 'git://github.com/rails/rails.git'
-
-    gem 'sqlite3'
-    gem 'thin'                   # będziemy używać serwera Thin zamiast – Webrick
-
     # zob. konfiguracja irb ($HOME/.irbrc)
     group :development do
-      gem 'nifty-generators'
       gem 'wirble'
       gem 'hirb'
     end
@@ -117,6 +140,8 @@ w systemie:
 
     bundle install --path=$HOME/.gems
     bundle show rails
+
+Przykład z opciami *local* i *stubs*.
 
 **Uwaga:** Opcji `--path` używamy tylko raz. Następnym razem
 uruchamiamy program *bundle* bez tej opcji
@@ -197,6 +222,8 @@ wykonujemy polecenie:
 Generator dopisał do pliku z routingiem *config/routes.rb*:
 
     resources :fortunes
+
+i być może ustawić root page.
 
 Aby obejrzeć routing aplikacji wykonujemy polecenie:
 
@@ -321,55 +348,13 @@ Dlaczego? Przyjrzymy się temu na wykładzie „Fortunka v1.0”.
  <p class="author">źródło: <a href="http://e-girlfriday.com/blog/">Retro Graphics, WordPress Site</a></p>
 </blockquote>
 
-## Generator nifty:scaffold
-
-Fortunce wystarczy jedna reprezentacja – HTML.
-Zamiast zmieniać kod, skorzystamy z generatora *nifty:scaffold*,
-który generuje prostszy kod.
-
-Do pliku *Gemfile* wcześniej już dopisaliśmy gem *nifty-generators*.
-Dlatego teraz polecenie *rails generators* powinno pokazać nowe generatory:
-
-      nifty:authentication
-      nifty:config
-      nifty:layout
-      nifty:scaffold
-
-Zanim skorzystamy z nowych generatorów, wykonamy UNDO tego co wygenerował *scaffold*:
-
-    rails destroy scaffold fortune
-
-Na początek skorzystamy z generatora *nifty:layout*:
-
-    rails generate nifty:layout
-    rails g nifty:layout
-        conflict  app/views/layouts/application.html.erb
-    Overwrite .../fortunka/app/views/layouts/application.html.erb? (enter "h" for help) [Ynaqdh] Y
-           force  app/views/layouts/application.html.erb
-          create  public/stylesheets/application.css
-          create  app/helpers/layout_helper.rb
-          create  app/helpers/error_messages_helper.rb
-
-Następnie z generatora *nifty:scaffold*:
-
-    rails generate nifty:scaffold fortune body:text
-       gemfile  mocha
-        create  app/models/fortune.rb
-        create  db/migrate/20110304143642_create_fortunes.rb
-        create  app/controllers/fortunes_controller.rb
-        create  app/helpers/fortunes_helper.rb
-        create  app/views/fortunes/index.html.erb
-        create  app/views/fortunes/show.html.erb
-        create  app/views/fortunes/new.html.erb
-        create  app/views/fortunes/edit.html.erb
-        create  app/views/fortunes/_form.html.erb
-         route  resources :fortunes
 
 *Uwaga:* Do *Gemfile* został dopisany nowy gem, dlatego musimy go zainstalować:
 
     bundle install
 
-A tak wygląda wygenerowany kontroller, siedem metod i mniej kodu:
+A tak wygląda wygenerowany z nifty-scaffold kontroller, siedem metod i mniej kodu,
+ale czy działa w Rails 3.1.1?
 
     :::ruby app/controllers/fortunes_controller.rb
     class FortunesController < ApplicationController
@@ -410,36 +395,13 @@ A tak wygląda wygenerowany kontroller, siedem metod i mniej kodu:
 
 Sprawdzamy jak działa aplikacja z nowym kontrolerem:
 
-    rails s thin -p 16000
+    rails s thin -p 3000
 
 Wchodzimy na stronę:
 
-    http://localhost:16000/fortunes
+    http://localhost:3000/fortunes
 
-**Uwaga:** Dobrze jest od razu zmienić niebieski kolor domyślnego
-layoutu na inny – tak aby nie myliły się nam różne aplikacje, które
-będziemy tworzyć. W tym celu podmieniamy kolor w pliku
-*application.css*.
-
-Na rzutnikach w laboratoriach, tekst będzie bardziej
-czytelny, gdy zwiększymy też rozmiar fontu:
-
-    :::css
-    body {
-      background-color: #9E09A8;
-      font-family: Verdana, Helvetica, Arial;
-      font-size: 18px;
-    }
-
-Acha, po kolor najlepiej wybrać się na stronę
-[Colourlovers](http://www.colourlovers.com/web).
-
-Teraz też jest właściwy moment na ustawienie domyślnej strony
-aplikacji. W tym celu usuwamy plik *index.html*:
-
-    rm public/index.html
-
-oraz modyfikujemy plik *routes.rb*:
+Modyfikujemy plik *routes.rb*:
 
     :::ruby config/routes.rb
     Fortunka::Application.routes.draw do
@@ -458,7 +420,7 @@ powinniśmy zobaczyć wyrenderowaną stronę:
     http://localhost:16000/fortunes
 
 
-# Zapełnianie bazy danymi testowymi
+# Zapełnianie bazy danymi testowymi (7.11.2011)
 
 Na tym etapie pisania aplikacji, powinniśmy umieścić w bazie trochę
 fortunek. Łatwiej nam będzie modyfikować **niepuste** widoki.
