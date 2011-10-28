@@ -173,12 +173,13 @@ thin --rackup config.ru start -p <i>numer portu</i>
 
 W aplikacjach Rails prawie zawsze będziemy korzystać z *REST*, czyli
 z **Represenational State Transfer**.
+Dlaczego? Częściowo wyjaśnia to ten cytat:
 
-Dlaczego? Częściowo wyjaśnia to ten cytat:
 „RESTful design really means designing your applications
-to work the way the web was **originally** meant to look.”
-oraz artykuł
-[How REST replaced SOAP on the Web: What it means to you](http://www.infoq.com/articles/rest-soap)
+to work the way the web was **originally** meant to look”
+
+Dodatkowe argumenty za REST znajdziemy w artykule
+[How REST replaced SOAP on the Web: What it means to you](http://www.infoq.com/articles/rest-soap).
 
 Podstawy REST:
 
