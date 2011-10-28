@@ -177,6 +177,8 @@ z **Represenational State Transfer**.
 Dlaczego? Częściowo wyjaśnia to ten cytat:
 „RESTful design really means designing your applications
 to work the way the web was **originally** meant to look.”
+oraz artykuł
+[How REST replaced SOAP on the Web: What it means to you](http://www.infoq.com/articles/rest-soap)
 
 Podstawy REST:
 
