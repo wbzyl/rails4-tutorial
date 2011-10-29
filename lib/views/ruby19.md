@@ -36,6 +36,10 @@ Strony, gdzie od czasu do czasu warto zajrzeć:
   questions tagged with **ruby**
 * [Rubyflow](http://rubyflow.com)
 
+Różne:
+
+* [Leveraging Ruby's Standard Library: Appendix B - Ruby Best Practices](http://oreilly.com/ruby/excerpts/ruby-best-practices/ruby-standard-library.html)
+
 
 ## Hasze
 
