@@ -1,6 +1,34 @@
 #### {% title "Fortunka v0.0" %}
 
 <blockquote>
+ {%= image_tag "/images/ken-arnold.jpg", :alt => "[Ken Arnold]" %}
+ <p>
+  Fortunka (Unix) to program „which will display quotes or
+  witticisms. Fun-loving system administrators can add fortune to users’
+  <i>.login</i> files, so that the users get their dose of wisdom each time
+  they log in.”
+ </p>
+ <p>Autorem najczęściej instalowanej wersji jest Ken Arnold.
+ </p>
+</blockquote>
+
+Prezentację możliwości frameworka *Ruby on Rails* zaczniemy od
+implementacji bazodanowej aplikacji www *hello world*.
+Taka aplikacja powinna implementować interfejs CRUD, czyli
+
+* ***C**reate* (*insert*) — dodanie nowych danych
+* ***R**ead* (*select*) – wyświetlenie istniejących danych
+* ***U**pdate* – edycję istniejących danych
+* ***D**elete* — usuwanie istniejących danych.
+
+Naszą aplikacją *hello world* będzie *Fortunka* w której zaimplementujemy
+interfejs CRUD dla [fortunek](http://en.wikipedia.org/wiki/Fortune_(Unix\)),
+czyli krótkich cytatów:
+
+
+## MVC ≡ Model / Widok / Kontroler
+
+<blockquote>
  {%= image_tag "/images/frederick-brooks.jpg", :alt => "[Frederick P. Brooks, Jr.]" %}
  <p>To see what rate of progress one can expect in software technology,
   let us examine the difficulties of that technology. Following
@@ -16,14 +44,7 @@
  <p class="author">— Frederick P. Brooks, Jr.</p>
 </blockquote>
 
-Pierwszą aplikacją, którą napiszemy w Ruby on Rails będzie
-[Fortunka](http://en.wikipedia.org/wiki/Fortune_(Unix\))
-z możliwością dopisywania komentarzy.
-
-
-## MVC ≡ Model / Widok / Kontroler
-
-Czym jest Ruby on Rails:
+**Czym jest Ruby on Rails:**
 „Ruby on Rails is an **MVC** framework for web application development.
 MVC is sometimes called a design pattern, but thats not technically
 accurate. It is in fact an amalgamation of design patterns (sometimes
@@ -53,95 +74,70 @@ Można także tworzyć nowe widoki dla modelu bez potrzeby modyfikowania
 go.”
 
 
-<blockquote>
- <p>
-  {%= image_tag "/images/ken-arnold.jpg", :alt => "[Ken Arnold]" %}
- </p>
- <p>A fortune program first appeared in Version 7 Unix. The most common
-  version on modern systems is the BSD fortune, originally written by
-  Ken Arnold. [source Wikipedia]</p>
-</blockquote>
+# Fortunka krok po kroku
 
-# Fortunka
-
-Fortune (Unix) to program „which will display quotes or
-witticisms. Fun-loving system administrators can add fortune to users’
-*.login* files, so that the users get their dose of wisdom each time
-they log in.”
-
-Opis funkcjonalności aplikacji webowej *Fortunka*:
-
-* **CRUD** na fortunkach (co to znaczy?)
-* do każdej fortunki będzie można dopisać komentarz
-
-Na razie tyle. Później dodamy jeszcze kilka funkcji.
-
-Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
+1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
 katalogu z wygenerowanym rusztowaniem:
 
     rails new fortunka
     cd fortunka
 
-TODO: opisać pozostałe kroki w punktach.
+Dobrze jest od razu ustawić na większy rozmiar fontu na
+[16 pikseli](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
+„anything less is a costly mistake”.
 
-**Uwaga:** Dobrze jest od razu zmienić niebieski kolor domyślnego
-layoutu na inny – tak aby nie myliły się nam różne aplikacje, które
-będziemy tworzyć. W tym celu podmieniamy kolor w pliku
-*application.css*.
-
-Na rzutnikach w laboratoriach, tekst będzie bardziej
-czytelny, gdy zwiększymy też rozmiar fontu:
-
-    :::css
-    body {
-      background-color: #9E09A8;
-      font-family: Verdana, Helvetica, Arial;
-      font-size: 18px;
-    }
-
-Acha, po kolor najlepiej wybrać się na stronę
-[Colourlovers](http://www.colourlovers.com/web).
-
-Teraz też jest właściwy moment na ustawienie domyślnej strony
-aplikacji. W tym celu usuwamy plik *index.html*:
+2\. Usuwamy domyślną stronę aplikacji:
 
     rm public/index.html
 
-
-Dlaczego należy tę procedurę zautomatyzować?
-
-
-## Rails application templates
-
-Co to jest?
-
-Rails template application: rails-html5boilerplate,
-rails-html5boilerplate + simple_form + faker + populator?
-+ responders? Dlaczego?
-
-Z czego składa się wygenerowane rusztowanie?
-
-
-## Bundler
-
-Dlaczego to robimy?
+3\. Do pliku *Gemfile* dopisujemy gemy z których korzysta
+prawie każda aplikacja:
 
     :::ruby Gemfile
+    # niedopatrzenie autorów Rails 3.1.1
+    gem 'sass'
+    gem 'coffee-script'
+
+    # ułatwiamy sobie korzystanie z formularzy
+    gem 'simple_form'  # rails generate simple_form:install
+    # albo
+    # gem 'formtastic' # rails generate formtastic:install
+
     # zob. konfiguracja irb ($HOME/.irbrc)
+    # prettyprinting zawartości rekordów w bazie
     group :development do
       gem 'wirble'
       gem 'hirb'
     end
 
-Z gemów Wirble i Hirb będziemy korzystać tylko w trybie development.
+    # alternatywa dla serwera WEBrick
+    # gem thin
+    # gem unicorn
+    # gem rainbows
 
-Na koniec instalujemy gemy i sprawdzamy, gdzie zostały zainstalowane
-w systemie:
+[Rainbows!](http://rainbows.rubyforge.org/)
+is an HTTP server for sleepy Rack applications. It is based
+on Unicorn, but designed to handle applications that expect long
+request/response times and/or slow clients.
+
+For Rack applications not heavily bound by slow external network
+dependencies, consider Unicorn instead as it simpler and easier to
+debug.
+
+[Unicorn](http://unicorn.bogomips.org/)
+is an HTTP server for Rack applications designed to only serve
+fast clients on low-latency, high-bandwidth connections and take
+advantage of features in Unix/Unix-like kernels. Slow clients should
+only be served by placing a reverse proxy capable of fully buffering
+both the the request and response in between Unicorn and slow
+clients.
+
+
+Na koniec instalujemy gemy i sprawdzamy, gdzie zostały
+zainstalowane w systemie:
 
     bundle install --path=$HOME/.gems
-    bundle show rails
-
-Przykład z opciami *local* i *stubs*.
+    bundle install --path=$HOME/.gems --local
 
 **Uwaga:** Opcji `--path` używamy tylko raz. Następnym razem
 uruchamiamy program *bundle* bez tej opcji
