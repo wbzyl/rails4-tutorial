@@ -57,16 +57,41 @@ module WB
 
     get %r{^([-_\w\/]+)\/([-_\w]+)\.((\w{1,4})(\.\w{1,4})?)$} do
 
+# clojure.rb:      register_for :clojure
+# cpp.rb:    register_for :cpp
+# c.rb:    register_for :c
+# css.rb:    register_for :css
+# debug.rb:    register_for :debug
+# delphi.rb:    register_for :delphi
+# diff.rb:    register_for :diff
+# erb.rb:    register_for :erb
+# groovy.rb:    register_for :groovy
+# haml.rb:    register_for :haml
+# html.rb:    register_for :html
+# java.rb:    register_for :java
+# java_script.rb:    register_for :java_script
+# json.rb:    register_for :json
+# php.rb:    register_for :php
+# python.rb:    register_for :python
+# raydebug.rb:    register_for :raydebug
+# ruby.rb:    register_for :ruby
+# sql.rb:    register_for :sql
+# text.rb:      register_for :text
+# xml.rb:    register_for :xml
+# yaml.rb:    register_for :yaml
+
+
       translate = { # to ultraviolet syntax names: uv -l syntax
-        'html' => 'html',
-        'html.erb' => 'html_rails',
-        'text.erb' => 'html_rails',
-        'rb' => 'ruby_experimental',
-        'ru' => 'ruby_experimental',
-        'css' => 'css_experimental',
-        'js' => 'jquery_javascript',
+        'html.erb' => 'erb',
+        'text.erb' => 'text',
+        'rb' => 'ruby',
+        'ru' => 'ruby',
+        'js' => 'java_script',
         'yml' => 'yaml',
-        'sh' => 'shell-unix-generic'
+        'sh' => 'bash',
+        'sql' => 'sql',
+        'json' => 'json',
+        'c' => 'c'
       }
 
       content_type 'text/html', :charset => 'utf-8'
