@@ -23,7 +23,7 @@ Taka aplikacja powinna implementować interfejs CRUD, czyli
 
 Naszą aplikacją *hello world* będzie *Fortunka* w której zaimplementujemy
 interfejs CRUD dla [fortunek](http://en.wikipedia.org/wiki/Fortune_(Unix\)),
-czyli krótkich cytatów:
+czyli krótkich cytatów.
 
 
 ## MVC ≡ Model / Widok / Kontroler
@@ -82,7 +82,7 @@ katalogu z wygenerowanym rusztowaniem:
     rails new fortunka
     cd fortunka
 
-Dobrze jest od razu ustawić na większy rozmiar fontu na
+Dobrze jest od razu zmienić rozmiar fontu na co najmniej
 [16 pikseli](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
 „anything less is a costly mistake”.
 
@@ -90,30 +90,120 @@ Dobrze jest od razu ustawić na większy rozmiar fontu na
 
     rm public/index.html
 
-3\. Do pliku *Gemfile* dopisujemy gemy z których korzysta
-prawie każda aplikacja:
+3\. Do pliku *Gemfile* dopisujemy gemy z których będziemy korzystać:
 
     :::ruby Gemfile
-    # niedopatrzenie autorów Rails 3.1.1
+    # Łatwiejsze w użyciu formularze
+    gem 'simple_form'
+    # albo
+    # gem 'formtastic'
+
+    # Alternatywne dla WEBricka serwery WWW
+    gem thin
+    gem unicorn
+    gem rainbows
+
+    # Dopisujemy brakujące gemy (niedopatrzenie autorów Rails 3.1.1)
     gem 'sass'
     gem 'coffee-script'
 
-    # ułatwiamy sobie korzystanie z formularzy
-    gem 'simple_form'  # rails generate simple_form:install
-    # albo
-    # gem 'formtastic' # rails generate formtastic:install
-
-    # zob. konfiguracja irb ($HOME/.irbrc)
-    # prettyprinting zawartości rekordów w bazie
     group :development do
+      # Ładniejsze wypisywanie rekordów na konsoli
+      # (zob. konfiguracja irb w ~/.irbrc)
       gem 'wirble'
       gem 'hirb'
+      # Bezproblemowe zapełnianie bazy danymi testowymi
+      gem 'faker'
+      gem 'populator'
     end
 
-    # alternatywa dla serwera WEBrick
-    # gem thin
-    # gem unicorn
-    # gem rainbows
+4\. Instalujemy gemy lokalnie:
+
+    bundle install --binstubs --path=$HOME/.gems
+
+Albo globalnie jeśli mamy uprawnienia do zapisu w odpowiednich katalogach.
+
+*Uwaga:* Poniższe polecenie wykonuje się dużo szybciej:
+
+    bundle install --local --binstubs --path=$HOME/.gems
+
+(Oczywiście, o ile wymagane gemy są już zainstalowane w systemie.)
+
+Niektóre gemy, do poprawnej instalacji wymagają *post-install*,
+na przykład:
+
+    rails generate simple_form:install  # dla simple_form
+    rails generate formtastic:install   # dla formtastic
+
+5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
+
+    rails g scaffold fortune quotation:text source:string
+
+6\. Tworzymy bazę i w nowej bazie umieszczamy tabelkę *fortunes* –
+krótko mówiąc **migrujemy**:
+
+    rake db:create  # Create the database from config/database.yml for the current Rails.env
+    rake db:migrate # Migrate the database (options: VERSION=x, VERBOSE=false)
+
+7\. Ustawiamy stronę startową (główną?) aplikacji, dopisując, przed
+kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
+
+    :::ruby config/routes.rb
+    root :to => fortunes#index'
+
+8\. Zapełniamy bazę danymi testowymi, dopisując do pliku *db/seeds.rb*:
+
+    :::ruby db/seeds.rb
+    Fortune.create :quotation => 'I hear and I forget. I see and I remember. I do and I understand.'
+    Fortune.create :quotation => 'Everything has its beauty but not everyone sees it.'
+    Fortune.create :quotation => 'It does not matter how slowly you go so long as you do not stop.'
+    Fortune.create :quotation => 'Study the past if you would define the future.'
+
+Następnie umieszczamy fortunki w bazie, wykonujac w terminalu:
+
+    rake db:seed  # Load the seed data from db/seeds.rb
+
+Jeśli kilka rekordów w bazie to za mało:
+{%= link_to "seed.rb", "/database_seed/seeds.rb" %},
+
+
+
+8\. Teraz możemy już uruchomić domyślny serwer Rails:
+
+     rails s -p 3000
+     bin/thin -p 3000 start
+
+
+
+## Serwer WWW
+
+W trakcie pisania kodu aplikację uruchamiamy w trybie **development**.
+Możemy to zrobić na kilka sposobów. Poniżej podaję trzy:
+
+<pre>rails server thin -p <i>numer portu</i>
+passenger start -p <i>numer portu</i>  # nie działa na Sigmie; szkoda
+thin --rackup config.ru start -p <i>numer portu</i>
+</pre>
+
+## Krok 3
+
+
+Konsola Rails:
+
+    :::ruby ~/.irbrc
+    IRB.conf[:PROMPT_MODE] = :SIMPLE
+
+    require 'wirble'
+    require 'hirb'
+
+    Wirble.init
+    Wirble.colorize
+    Hirb.enable
+
+    if ENV.include?('RAILS_ENV') && !Object.const_defined?('RAILS_DEFAULT_LOGGER')
+      require 'logger'
+      RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
+    end
 
 [Rainbows!](http://rainbows.rubyforge.org/)
 is an HTTP server for sleepy Rack applications. It is based
@@ -133,26 +223,10 @@ both the the request and response in between Unicorn and slow
 clients.
 
 
-Na koniec instalujemy gemy i sprawdzamy, gdzie zostały
-zainstalowane w systemie:
+## Krok 4.
 
-    bundle install --path=$HOME/.gems
-    bundle install --path=$HOME/.gems --local
-
-**Uwaga:** Opcji `--path` używamy tylko raz. Następnym razem
-uruchamiamy program *bundle* bez tej opcji
-(możemy też pominąć argument *install*).
-
-
-## Serwer WWW
-
-W trakcie pisania kodu aplikację uruchamiamy w trybie **development**.
-Możemy to zrobić na kilka sposobów. Poniżej podaję trzy:
-
-<pre>rails server thin -p <i>numer portu</i>
-passenger start -p <i>numer portu</i>  # nie działa na Sigmie; szkoda
-thin --rackup config.ru start -p <i>numer portu</i>
-</pre>
+Opcji `--path` używamy tylko raz. Następnym razem uruchamiamy program
+*bundle* bez tej opcji.  Możemy też pominąć argument *install*.
 
 
 ## Co to jest REST?
@@ -167,28 +241,39 @@ thin --rackup config.ru start -p <i>numer portu</i>
 <p class="author">– David Griffiths</p>
 </blockquote>
 
-W aplikacjach Rails prawie zawsze będziemy korzystać z *REST*, czyli
-z **Represenational State Transfer**.
-Dlaczego? Częściowo wyjaśnia to ten cytat:
+Zaczynamy od lektury artykułu:
 
-„RESTful design really means designing your applications
-to work the way the web was **originally** meant to look”
+* [How REST replaced SOAP on the Web: What it means to you](http://www.infoq.com/articles/rest-soap).
 
-Dodatkowe argumenty za REST znajdziemy w artykule
-[How REST replaced SOAP on the Web: What it means to you](http://www.infoq.com/articles/rest-soap).
+Krótka historia World Wide Web:
 
-Podstawy REST:
+* 1990–91 — Tim Berners-Lee wynalazł i zaimplementował:
+  URI, HTTP, HTML, pierwszy serwer WWW, pierwszą przeglądarkę
+  („Nexus”), edytor WYSIWYG dla HTML.
+* 1993 — Roy Fielding (ten od Apacha) zdefiniował
+  *Web’s architectural style WWW*: client-serwer, cache,
+  stateless, uniform interface (resources), layered system, code-on-demand
+* 2000 — po pokonaniu problemów ze **skalowalnością** WWW,
+  Roy Fielding użył nazwy **REST** dla *architectural style* WWW.
+
+Kilka uwag o terminologii:
+
+* The REST architectural style is commonly applied to the design of
+  APIs for modern web services.
+* Having a REST API makes a web service “RESTful.”
+* A REST API consists of an assembly of interlinked resources.
+
+W aplikacjach Rails operacje CRUD wykonujemy korzystając z REST API:
 
 1. Dane są zasobami (ang. *resources*). Fortunka to zbiór
    cytatów, dlatego cytaty są *resources*.
 2. Każdy zasób ma swój unikalny URI.
-3. Na zasobach można wykonywać cztery podstawowe operacje
-   Create, Read, Update i Delete
-   (zwykle skracane do *CRUD*).
-4. Klient i serwer komunikują się ze sobą korzystając
-   protokołu bezstanowego. Oznacza to, że klient
-   zwraca się z żądaniem do serwera. Serwer odpowiada i
-   cała konwersacja się kończy.
+
+Polecenie:
+
+    rake routes
+
+wypisuje szczegóły REST API aplikacji.
 
 
 <blockquote>
@@ -204,7 +289,7 @@ Podstawy REST:
 
 Generujemy rusztowanie dla zasobu (ang. *resource*) *fortune*:
 
-    rails generate scaffold fortune body:text
+    rails generate scaffold fortune quotation:text
 
 Stosujemy się do konwencji frameworka Rails.
 Używamy liczby pojedynczej (generujemy zasób dla modelu).
