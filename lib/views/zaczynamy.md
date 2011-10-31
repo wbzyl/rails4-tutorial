@@ -159,31 +159,25 @@ kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
     Fortune.create :quotation => 'It does not matter how slowly you go so long as you do not stop.'
     Fortune.create :quotation => 'Study the past if you would define the future.'
 
-Następnie umieszczamy fortunki w bazie, wykonujac w terminalu:
+Następnie umieszczamy fortunki w bazie, wykonujac w terminalu
+polecenie:
 
     rake db:seed  # Load the seed data from db/seeds.rb
 
-Jeśli kilka rekordów w bazie to za mało:
-{%= link_to "seed.rb", "/database_seed/seeds.rb" %},
-
-
+Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
+*db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}.
 
 8\. Teraz możemy już uruchomić domyślny serwer Rails:
 
      rails s -p 3000
+
+Albo jeden z alternatywnych serwerów:
+
      bin/thin -p 3000 start
+     bin/unicorn_rails -p 3000
+     bin/rainbows -p 3000       # nie polecam w trybie development
 
 
-
-## Serwer WWW
-
-W trakcie pisania kodu aplikację uruchamiamy w trybie **development**.
-Możemy to zrobić na kilka sposobów. Poniżej podaję trzy:
-
-<pre>rails server thin -p <i>numer portu</i>
-passenger start -p <i>numer portu</i>  # nie działa na Sigmie; szkoda
-thin --rackup config.ru start -p <i>numer portu</i>
-</pre>
 
 ## Krok 3
 
