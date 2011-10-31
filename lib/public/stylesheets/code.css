@@ -3,8 +3,16 @@ body {
   margin: 1em 0 1em 2em;
 }
 
+#code h1 {
+  font-size: 1.6em;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  padding: 0.25em 0.75em
+}
+
 pre {
-  font: bold 100%/1.5 "Anonymous Pro", Monaco, monospace;  
+  font: bold 100%/1.5 "Anonymous Pro", Monaco, monospace;
 }
 
 h2 em {
