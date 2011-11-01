@@ -24,36 +24,54 @@ jest drugi w kategorii „Most Watched Overall Javascript project” na githubi
 ## Layout aplikacji
 
 Przykładowy layout aplikacji, po liftingu
-(pl, utf-8, domyślny tytuł, shiv, cdn jquery, style):
+(pl, utf-8, domyślny tytuł):
 
     :::rhtml app/views/layouts/application.html.erb
     <!doctype html>
-    <html lang="pl">
-      <head>
-        <meta charset="utf-8">
-        <title><%= content_for?(:title) ? yield(:title) : "Fortunka v1.0" %></title>
-        <!--[if lt IE 9]>
-          <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-        <script src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
-        <style>
-          article, aside, details, figcaption, figure, footer, header,
-          hgroup, menu, nav, section { display: block; }
-        </style>
-        <%= stylesheet_link_tag "application" %>
-        <%= javascript_include_tag "application" %>
-        <%= csrf_meta_tag %>
-        <%= yield(:head) %>
-      </head>
-      <body>
-        <div id="container">
-          <% flash.each do |name, msg| %>
-            <%= content_tag :div, msg, :id => "flash_#{name}" %>
-          <% end %>
-          <%= content_tag :h1, yield(:title) if show_title? %>
-          <%= yield %>
-        </div>
-      </body>
+    <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+    <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="pl"> <![endif]-->
+    <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="pl"> <![endif]-->
+    <!--[if IE 8]>    <html class="no-js lt-ie9" lang="pl"> <![endif]-->
+    <!-- Consider adding a manifest.appcache: h5bp.com/d/Offline -->
+    <!--[if gt IE 8]><!--> <html class="no-js" lang="pl"> <!--<![endif]-->
+    <head>
+      <meta charset="utf-8">
+
+      <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+           More info: h5bp.com/b/378 -->
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+      <title><%= content_for?(:title) ? yield(:title) : "Fortunka" %></title>
+      <meta name="description" content="">
+      <meta name="author" content="">
+
+      <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+
+      <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+      <%= stylesheet_link_tag "application" %>
+
+      <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+      <!-- All JavaScript at the bottom, except this Modernizr build incl. Respond.js
+           Respond is a polyfill for min/max-width media queries. Modernizr enables HTML5 elements & feature detects;
+           for optimal performance, create your own custom Modernizr build: www.modernizr.com/download/ -->
+      <%= javascript_include_tag "application" %>
+      <%= csrf_meta_tags %>
+    </head>
+
+    <body>
+      <header>
+         <%= content_tag :h1, "Fortunka" %>
+      </header>
+      <div role="main">
+        <%= content_tag :h1, yield(:title) if show_title? %>
+        <%= yield %>
+      </div>
+      <footer>
+      </footer>
+    </body>
     </html>
 
 <blockquote>
@@ -144,11 +162,11 @@ Wcześniej definiujemy `@fortunes` i dodajemy routing, np.
 
 Na koniec aktywujemy sitemap dopisując w pliku *public/robots.txt*:
 
-    Sitemap: http://sinatra.local/fortunes/sitemap.xml
+    Sitemap: http://wbzyl.inf.ug.edu.pl/fortunes/sitemap.xml
 
 Albo wykonujemy ping:
 
-    www.google.com/webmasters/tools/ping?sitemap=http://sinatra.local/fortunes/sitemap.xml
+    www.google.com/webmasters/tools/ping?sitemap=http://wbzyl.inf.ug.edu.pl/fortunes/sitemap.xml
 
 
 <blockquote>
