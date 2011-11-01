@@ -35,15 +35,10 @@ rusztowaniom generowanym przez generatory:
 Do wygenerowanego pliku *Gemfile* dopisujemy kilka nowych gemów:
 
     :::ruby Gemfile
-    gem 'responders'
     gem 'simple_form'
+
+    gem 'responders'
     gem 'kaminari'
-
-    gem 'thin'
-    gem 'unicorn'
-
-    gem 'sass'
-    gem 'coffee-script'
 
     group :development do
       gem 'wirble'
