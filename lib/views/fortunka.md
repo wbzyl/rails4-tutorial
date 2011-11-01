@@ -1,23 +1,13 @@
 #### {% title "Fortunka v1.0" %}
 
-<blockquote>
- <p>
-  {%= image_tag "/images/new-project.jpg", :alt => "[nowy projekt]" %}
- </p>
- <p class="author"><a href="http://www.eyefetch.com/image.aspx?ID=901780">New project car</a></p>
-</blockquote>
-
 Jednym ze sprawdzonych sposobów kontynuacji projektu jest
 rozpoczęcie go od nowa. Tym razem nie skorzystamy z generatora
-„scaffold”. Dlaczego? Ale będziemy korzystać z „gotowców”
-wygenerowanych dla wersji v0.0 Fortunki.
+„scaffold”. Dlaczego?
 
+Ale rusztowanie aplikacji wygenerujemy korzystając z gotowego szablonu
+aplikacji Rails:
 
-### Przechodzimy na jQuery (2011.03)
-
-Domyślnym frameworkiem javascriptowych aplikacji Rails 3.1 będzie jQuery.
-Dlatego, po wygenerowaniu szablonu nowej aplikacji, od razu przechodzimy na jQuery.
-Oszczędzimy sobie problemów na przyszłość.
+    rails new fortunki -m https://raw.github.com/wbzyl/rails31-html5-boilerplates/master/html5-boilerplate.rb
 
 Formularze będziemy tworzyć korzystając z metod pomocniczych
 z gemu *simple_form*. Dlaczego? Najlepiej wyjaśnili to autorzy:
@@ -27,90 +17,50 @@ form is to not touch your way of defining the layout, letting you find
 the better design for your eyes.”
 
 
+<blockquote>
+ <p>
+  {%= image_tag "/images/new-project.jpg", :alt => "[nowy projekt]" %}
+ </p>
+ <p class="author"><a href="http://www.eyefetch.com/image.aspx?ID=901780">New project car</a></p>
+</blockquote>
+
 ### Robótki ręczne…
 
 Zanim zaczniemy pisać fortunkę, przyjrzymy się bliżej
 rusztowaniom generowanym przez generatory:
 
 * scaffold
-* nifty:scaffold
 * responders
 
-Dlatego wygenerowany plik *Gemfile* wymieniamy na taki:
+Do wygenerowanego pliku *Gemfile* dopisujemy kilka nowych gemów:
 
     :::ruby Gemfile
-    source 'http://rubygems.org'
-
-    gem 'rails', '3.0.5'
-    gem 'sqlite3'
     gem 'responders'
     gem 'simple_form'
+    gem 'kaminari'
+
+    gem 'thin'
+    gem 'unicorn'
+
+    gem 'sass'
+    gem 'coffee-script'
 
     group :development do
-      gem 'nifty-generators'
-      gem 'jquery-rails'
-
-      # już było w Fortunce v0.0
-      gem 'faker'
-      gem 'populator'
-    end
-
-Zawiera on wszystkie gemy z których będziemy korzystać.
-
-No, prawie… Moje aplikacje wdrażam też na Heroku,
-korzystam z gemów *hirb* i *wirble* oraz serwera *passenger*.
-Dlatego mój plik *Gemfile* zawiera więcej gemów:
-
-    :::ruby Gemfile
-    source 'http://rubygems.org'
-
-    gem 'rails', '3.0.5'
-    gem 'sqlite3'
-    gem 'responders'
-    gem 'simple_form'
-
-    group :development do
-      gem 'heroku'
-      gem 'nifty-generators'
-      gem 'hirb'
       gem 'wirble'
-      gem 'file-tail'
-      gem 'daemon_controller'
-
-      # więcej info na http://github.com/indirect/jquery-rails
-      gem 'jquery-rails'
-
-      # już było w Fortunce v0.0
+      gem 'hirb'
       gem 'faker'
       gem 'populator'
     end
 
-Przy okazji usuwamy plik *public/index.html*:
+Będziemy z nich korzystać budując Fortunkę v1.0.
 
-    rm public/index.html
+Instalujemy gemy i wykonujemy procedurę *post-install*:
 
-Po tych zmianach przerzucam repozytoria
-(zamieniajac je wcześniej na *bare repos*)
-na Sigmę, skąd ja (właściciel)
-mogę je sklonować korzystając z protokołu ssh:
-
-    git clone wbzyl@sigma.ug.edu.pl:public_git/scaffold.git
-
-a każdy – korzystając z protokołu git:
-
-    git clone git://sigma.ug.edu.pl/~wbzyl/scaffold.git
-
-Po sklonowaniu szablonu instalujemy gemy w katalogu *.bundle/gems*
-aplikacji:
-
-    bundle install --path=.bundle/gems  # Sigma: $HOME/.gems
-
-oraz przechodzę z Prototype na jQuery:
-
-    rails generate jquery:install
+    rails g simple_form:install
+    rails generate responders:install
 
 
-## Scaffold v. Nifty Scaffold
+## Scaffold v. Responders
 
 Dla przypomnienia, *resource controller* musi definiować
 następujące metody (razem siedem sztuk):
@@ -122,7 +72,7 @@ następujące metody (razem siedem sztuk):
 
 
 <blockquote>
- <h2>Scaffold</h2>
+ <h2>TODO: Scaffold</h2>
  <p>Kontroller:
    {%= link_to "fortunes_controller.rb", "/rails3/scaffold/controllers/fortunes_controller.rb" %}.
  </p>
@@ -140,7 +90,7 @@ następujące metody (razem siedem sztuk):
 
 Zaczynamy przyjrzenia się generatorowi scaffold (bez testów i migracji):
 
-    rails g scaffold fortune author:string body:text
+    rails g scaffold fortune source:string body:text
       invoke  active_record
       create    app/models/fortune.rb
        route  resources :fortunes
@@ -159,7 +109,7 @@ Zaczynamy przyjrzenia się generatorowi scaffold (bez testów i migracji):
       create    public/stylesheets/scaffold.css
 
 <blockquote>
- <h2>Nifty Scaffold</h2>
+ <h2>TODO: Responders</h2>
  <p>Kontroller:
    {%= link_to "fortunes_controller.rb", "/rails3/nifty-generators/controllers/fortunes_controller.rb" %}.
  </p>
@@ -183,30 +133,6 @@ Zaczynamy przyjrzenia się generatorowi scaffold (bez testów i migracji):
  </p>
 </blockquote>
 
-Teraz dla porównania generator nifty:scaffold (bez testów i migracji):
-
-    rails g nifty:layout
-      create  public/stylesheets/application.css
-      create  app/helpers/layout_helper.rb
-      create  app/helpers/error_messages_helper.rb
-
-    rails g nifty:scaffold fortune author:string body:text
-     gemfile  mocha
-      create  app/models/fortune.rb
-      create  app/controllers/fortunes_controller.rb
-      create  app/helpers/fortunes_helper.rb
-      create  app/views/fortunes/index.html.erb
-      create  app/views/fortunes/show.html.erb
-      create  app/views/fortunes/new.html.erb
-      create  app/views/fortunes/edit.html.erb
-      create  app/views/fortunes/_form.html.erb
-       route  resources :fortunes
-
-    bundle install  # mocha
-
-
-### Responders
-
 Więcej informacji o **respond_with** (oraz **respond_to**):
 
 * [Controllers in Rails 3](http://asciicasts.com/episodes/224-controllers-in-rails-3)
@@ -214,37 +140,8 @@ Więcej informacji o **respond_with** (oraz **respond_to**):
 * [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/)
   – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
 
-
-## Wrzucamy do bazy dane testowe
-
-W bazie nie ma jeszcze fortunek. W bazie zapiszemy cytaty
-z pliku *platitudes.u8* (z pakietu *fortune-mod-1.99.1*, Fedora).
-
-Na początek wykonamy migrację:
-
-    rake db:migrate
-
-Następnie wpiszemy do pliku *seeds.rb* kod:
-
-    :::ruby db/seeds.rb
-    platitudes = File.readlines(Rails.root.join('db', 'platitudes.u8'), "\n%\n")
-    platitudes.map do |p|
-      reg = /\t?(.+)\n\t\t--\s*(.*)\n%\n/m
-      m = p.match(reg)
-      if m
-        Fortune.create :body => m[1], :author => m[2]
-      else
-        Fortune.create :body => p[0..-4], :author => Faker::Name.name
-      end
-    end
-
-Teraz po wykonaniu:
-
-    rake seed
-
-„platitudes” zostaną zapisane w bazie (razem 500 sztuk).
-
-Przy okazji zmieniamy routing, tak aby uri
+Zapisujemy w bazie trochę danych testowych,
+zmieniamy routing, tak aby uri
 
     http://localhost:3000
 
@@ -252,11 +149,11 @@ przekierowywał na
 
     http://localhost:3000/fortunes
 
-**Na razie zezwalamy tylko na renderowanie *html*.**
+**Na razie zezwalamy tylko na renderowanie *html**.
 Później to będziemy zmieniać.
 
 
-## Wchodzimy na stronę *index*
+## Wchodzimy na stronę startową aplikacji (*index*)
 
 …i od razu widzimy, że coś jest nie tak!
 Wszystkie cytaty na jednej stronie? Przydałaby się jakaś
@@ -278,7 +175,7 @@ wywołanie *Fortune.all* na:
     :::ruby app/controllers/fortunes_controller.rb
     class FortunesController < ApplicationController
       def index
-        @fortunes = Fortune.order(:author).page(params[:page]).per(8)
+        @fortunes = Fortune.order(:source).page(params[:page]).per(8)
         respond_with(@fortunes)
       end
 
@@ -307,24 +204,6 @@ renderowana w elemencie **nav**.  Poprawiamy nieco jego wygląd:
 
 Musimy jeszcze pozbyć się wielokropków po prawej `…`.
 Zrobimy to za chwilę.
-
-Przy okazji zmieniamy wygląd strony.
-Zwiększamy rozmiar fontu, dodajemy ramkę, marginesy,…:
-
-    :::css public/stylesheets/applications.css
-    html {
-      margin-top: 22px;
-      background-color: #EDE574;
-    }
-    /* 1.375 * 16px = 22px */
-    body { font:16px/1.375 sans-serif; *font-size:small; }
-    /* rbates screencasts style */
-    body {
-      width: 800px;
-      margin: 0 auto;
-      padding: 0 1em;
-      border: 1px solid black;
-    }
 
 
 ### I18n paginacji
@@ -397,95 +276,8 @@ Nieco Railsowej archeologii:
 {%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
 (źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
 
-Do aplikacji dodamy layout [HTML5Boilerplate](http://html5boilerplate.com/).
-Na początek wygenerujemy sobie własną wersję.
-Wchodzimy na stronę [Initializr](http://initializr.com/) i wyklikujemy
-sobie następującą wersję:
 
-* *html & css*: No content plese!
-* *javascript*: I want jQuery minified!
-* *compatibility*: Just html5shiv
-* *server configuration*: No, thanks
-* *analytics*: Nope
-
-Ściągamy wyklikane archiwum. Po rozpakowaniu:
-
-    unzip jverrecchia-initializr-1.1-nocontent-shiv.zip
-      inflating: index.html
-      inflating: css/style.css
-      inflating: js/script.js
-      inflating: js/libs/jquery-1.5.1.min.js
-      inflating: js/libs/dd_belatedpng.js
-      inflating: favicon.ico
-      inflating: apple-touch-icon.png
-      inflating: TODO.txt
-      inflating: apple-touch-icon-precomposed.png
-      inflating: apple-touch-icon-57x57-precomposed.png
-      inflating: apple-touch-icon-72x72-precomposed.png
-      inflating: apple-touch-icon-114x114-precomposed.png
-
-kopiujemy pliki do odpowiednich katalogów aplikacji Rails:
-
-    RAILS_ROOT=...   # ustawiamy na katalog aplikacji
-    cp index.html    $RAILS_ROOT/app/views/layouts/application.html.erb
-    cp TODO.txt      $RAILS_ROOT/public/
-    cp css/style.css $RAILS_ROOT/public/stylesheets/
-    cp -a js/*       $RAILS_ROOT/public/javascripts/
-    rm               $RAILS_ROOT/public/javascripts/jquery.js
-    rm               $RAILS_ROOT/public/javascripts/jquery.min.js
-    rm               $RAILS_ROOT/public/javascripts/script.js
-    cp favicon.ico apple-touch-icon-*  $RAILS_ROOT/public/
-
-Przy okazji kopiujemy plik *layout_helper.rb* wygenrowany przez *nifty:scaffold*
-(zawiera kilka użytecznych metod pomocniczych):
-
-    cp .../layout_helpers.rb    $RAILS_ROOT/app/helpers/
-
-Edytujemy plik *application.html.erb* (uwaga na końce DOS-owe wierszy):
-
-    :::rhtml app/views/layouts/application.html.erb
-    <!doctype html>
-    <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]--><!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]--><!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]--><!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]--><!--[if (gt IE 9)|!(IE)]><!--> <html lang="pl" class="no-js"> <!--<![endif]--><head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
-        <title>Fortunka<%= content_for?(:title) ? " | " + yield(:title) : " na codzień" %></title>
-        <meta name="description" content="fortunki">
-        <meta name="author" content="Włodek Bzyl">
-
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <link rel="shortcut icon" href="/favicon.ico">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
-        <%= stylesheet_link_tag "style", "scaffold", "application" %>
-
-        <!--[if lt IE 9]>
-            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-            <![endif]--></head>
-        <%= csrf_meta_tag %>
-      <body>
-        <%= content_tag :h1, yield(:title) if show_title? %>
-        <%= yield %>
-
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
-        <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/jquery.js"%3E%3C/script%3E'))</script>
-
-        <%= javascript_include_tag "rails", "application" %>
-
-        <!--[if lt IE 7 ]>
-            <script src="js/libs/dd_belatedpng.js"></script>
-            <script>DD_belatedPNG.fix('img, .png_bg'); // Fix any <img> or .png_bg bg-images. Also, please read goo.gl/mZiyb </script>
-        <![endif]-->
-
-        <%- if Rails.env.production? -%>
-        <script>
-          <!-- http://mathiasbynens.be/notes/async-analytics-snippet Change UA-XXXXX-X to be your site's ID -->
-        </script>
-        <%- end -%>
-
-       </body>
-    </html>
+## Google Analytics
 
 Google Analytics zajmiemy się przy wdrażaniu aplikacji na Heroku.
 
@@ -514,8 +306,8 @@ Dopisujemy walidację do modelu *Fortune*:
       # validates_length_of :body, :minimum => 2, :maximum => 128
       validates_uniqueness_of :body, :case_sensitive => false
 
-      # atrybut: author
-      validates :author, :in => 4..64, :allow_blank => true
+      # atrybut: source
+      validates :source, :in => 4..64, :allow_blank => true
     end
 
 Sprawdzamy na konsoli Rails jak to działa:
@@ -529,10 +321,10 @@ Sprawdzamy na konsoli Rails jak to działa:
      => true
     f.save
      => false
-    f.author = "X"
+    f.source = "X"
     f.valid?
     f.errors
-    f.author = ""
+    f.source = ""
     f.valid?
     f.errors
 
@@ -592,12 +384,6 @@ Ustawiamy walidację HTML5 na *false*:
 Dlaczego? jest wyjaśnione powyżej oraz w *README*:
 „In many cases it can break existing UI’s.”
 
-**[2011.04.18]** Na razie te opcje są w źródłach. Dlatego w *Gemfile*
-dopisujemy:
-
-    :::ruby Gemfile
-    gem 'simple_form', :git => 'git://github.com/plataformatec/simple_form.git'
-
 Łatwo będzie można wymienić wypisywane komunikaty.
 Wszystkie są pobierane z pliku *simple_form.en.yml*.
 Wystarczy je zmienić.
@@ -628,22 +414,22 @@ Wystarczy je zmienić.
         #   password: 'No special characters, please.'
         labels:
           fortune:
-            author: 'author'
+            source: 'source'
             body: 'said'
         hints:
           fortune:
-            author: '(optional)'
+            source: '(optional)'
             body: '(maximum 128 characters)'
         placeholders:
           fortune:
-            author: 'author or blank'
+            source: 'source or blank'
             body: 'no special chars, please'
 
 Po przejrzeniu pliku *README*, formularz dla fortunki wpisujemy tak:
 
     :::rhtml
     <%= simple_form_for @fortune do |f| %>
-      <%= f.input :author, :input_html => {:size => 40}, :required => false %>
+      <%= f.input :source, :input_html => {:size => 40}, :required => false %>
       <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
       <%= f.button :submit %>
     <% end %>
@@ -652,8 +438,8 @@ Kod ten generuje taki HTML (usunąłem znacznik *div* z elementami *hidden*):
     :::html
     <form accept-charset="UTF-8" action="/fortunes" class="simple_form fortune" id="new_fortune" method="post">
       <div class="input string optional">
-        <label class="string optional" for="fortune_author"> author</label>
-        <input class="string optional" id="fortune_author" maxlength="255" name="fortune[author]" placeholder="author or blank" size="40" type="text" />
+        <label class="string optional" for="fortune_source"> source</label>
+        <input class="string optional" id="fortune_source" maxlength="255" name="fortune[source]" placeholder="source or blank" size="40" type="text" />
         <span class="hint">(optional)</span>
       </div>
       <div class="input text required">
@@ -860,11 +646,11 @@ z *implicit loop*. Zaczynamy od kodu:
     :::rhtml app/views/fortunes/index.html.erb
     <table>
       <tr>
-        <th>Author</th><th>Body</th><th></th><th></th><th></th>
+        <th>Source</th><th>Body</th><th></th><th></th><th></th>
       </tr>
       <% @fortunes.each do |fortune| %>
        <tr>
-        <td><%= fortune.author %></td><td><%= fortune.body %></td>
+        <td><%= fortune.source %></td><td><%= fortune.body %></td>
         <td><%= link_to 'Show', fortune %></td>
         <td><%= link_to 'Edit', edit_fortune_path(fortune) %></td>
         <td><%= link_to 'Destroy', fortune, :confirm => t('helpers.data.sure'), :method => :delete %></td>
@@ -885,7 +671,7 @@ w pętli po zmiennej *fortune* (konwencja *@fortunes* → *fortune*):
 
     :::rhtml app/views/fortunes/_fortune.html.erb
     <p>
-     <b><%= fortune.body %></b><br><%= fortune.author %>
+     <b><%= fortune.body %></b><br><%= fortune.source %>
     </p>
     <p class="links">
      <%= link_to "Show", fortune_path(fortune) %> |
@@ -955,7 +741,7 @@ w metodzie *index* przekazać tekst, który wpisano w formularzu
 
     :::ruby app/controllers/fortunes_controller.rb
     def index
-      @fortunes = Fortune.search(params[:search]).order(:author).page(params[:page]).per(4)
+      @fortunes = Fortune.search(params[:search]).order(:source).page(params[:page]).per(4)
       respond_with(@fortunes)
     end
 
@@ -1105,9 +891,9 @@ Poprawiamy *seeds.rb*:
       reg = /\t?(.+)\n\t\t--\s*(.*)\n%\n/m
       m = p.match(reg)
       if m
-        f = Fortune.new :body => m[1], :author => m[2]
+        f = Fortune.new :body => m[1], :source => m[2]
       else
-        f = Fortune.new :body => p[0..-4], :author => Faker::Name.name
+        f = Fortune.new :body => p[0..-4], :source => Faker::Name.name
       end
       f.tag_list = tags.sample(rand(tags.size - 3))
       f.save
@@ -1166,7 +952,7 @@ Zaczniemy od zmiennej *@tags*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def index
-      @fortunes = Fortune.search(params[:search]).order(:author).page(params[:page]).per(4)
+      @fortunes = Fortune.search(params[:search]).order(:source).page(params[:page]).per(4)
       @tags = Fortune.tag_counts
       respond_with(@fortunes)
     end
@@ -1268,13 +1054,13 @@ Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
     end
 
     def index
-      @fortunes = Fortune.search(params[:search]).order(:author).page(params[:page]).per(4)
+      @fortunes = Fortune.search(params[:search]).order(:source).page(params[:page]).per(4)
       respond_with(@fortunes)
     end
 
     # respond_with nic nie wie o tags
     def tags
-      @fortunes = Fortune.tagged_with(params[:name]).order(:author).page(params[:page]).per(4)
+      @fortunes = Fortune.tagged_with(params[:name]).order(:source).page(params[:page]).per(4)
       respond_with(@fortunes) do |format|
         format.html { render :action => 'index' }
         format.js   { render :action => 'index' }

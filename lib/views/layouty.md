@@ -23,7 +23,7 @@ jest drugi w kategorii „Most Watched Overall Javascript project” na githubi
 
 ## Layout aplikacji
 
-Layout aplikacji wygenerowany przez *nifty:layout*, po liftingu
+Przykładowy layout aplikacji, po liftingu
 (pl, utf-8, domyślny tytuł, shiv, cdn jquery, style):
 
     :::rhtml app/views/layouts/application.html.erb
@@ -41,7 +41,7 @@ Layout aplikacji wygenerowany przez *nifty:layout*, po liftingu
           hgroup, menu, nav, section { display: block; }
         </style>
         <%= stylesheet_link_tag "application" %>
-        <%= javascript_include_tag :defaults %>
+        <%= javascript_include_tag "application" %>
         <%= csrf_meta_tag %>
         <%= yield(:head) %>
       </head>
@@ -63,16 +63,15 @@ Layout aplikacji wygenerowany przez *nifty:layout*, po liftingu
  <p class="author">źródło: <a href="http://html5doctor.com/designing-a-blog-with-html5/">html5 doctor</a></p>
 </blockquote>
 
-Generator *nifty:layout* dopisuje do pliku
-*app/helpers/layout_helper.rb* kilka użytecznych metod:
+Generator *nifty:layout* definiuje kilka użytecznych metod
+pomocniczych. Warto je dopisać do pliku *app/helpers/layout_helper.rb*:
 
     :::ruby
     module LayoutHelper
       def title(page_title, show_title = true)
-        content_for(:title) { h(page_title.to_s) }
+        content_for(:title) { page_title.to_s }
         @show_title = show_title
       end
-
       def show_title?
         @show_title
       end
@@ -80,7 +79,6 @@ Generator *nifty:layout* dopisuje do pliku
       def stylesheet(*args)
         content_for(:head) { stylesheet_link_tag(*args) }
       end
-
       def javascript(*args)
         content_for(:head) { javascript_include_tag(*args) }
       end

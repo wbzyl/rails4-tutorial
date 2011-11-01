@@ -99,9 +99,9 @@ Dobrze jest od razu zmienić rozmiar fontu na co najmniej
     # gem 'formtastic'
 
     # Alternatywne dla WEBricka serwery WWW
-    gem thin
-    gem unicorn
-    gem rainbows
+    gem 'thin'
+    gem 'unicorn'
+    gem 'rainbows'
 
     # Dopisujemy brakujące gemy (niedopatrzenie autorów Rails 3.1.1)
     gem 'sass'
@@ -121,7 +121,7 @@ Dobrze jest od razu zmienić rozmiar fontu na co najmniej
 
     bundle install --binstubs --path=$HOME/.gems
 
-Albo globalnie jeśli mamy uprawnienia do zapisu w odpowiednich katalogach.
+Albo globalnie, o ile mamy uprawnienia do zapisu w odpowiednich katalogach.
 
 *Uwaga:* Poniższe polecenie wykonuje się dużo szybciej:
 
@@ -145,13 +145,13 @@ krótko mówiąc **migrujemy**:
     rake db:create  # Create the database from config/database.yml for the current Rails.env
     rake db:migrate # Migrate the database (options: VERSION=x, VERBOSE=false)
 
-7\. Ustawiamy stronę startową (główną?) aplikacji, dopisując, przed
+7\. Ustawiamy stronę startową aplikacji, dopisując, przed
 kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
 
     :::ruby config/routes.rb
     root :to => fortunes#index'
 
-8\. Zapełniamy bazę danymi testowymi, dopisując do pliku *db/seeds.rb*:
+8\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
     :::ruby db/seeds.rb
     Fortune.create :quotation => 'I hear and I forget. I see and I remember. I do and I understand.'
@@ -159,7 +159,7 @@ kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
     Fortune.create :quotation => 'It does not matter how slowly you go so long as you do not stop.'
     Fortune.create :quotation => 'Study the past if you would define the future.'
 
-Następnie umieszczamy fortunki w bazie, wykonujac w terminalu
+Następnie umieszczamy powyższe fortunki w bazie, wykonujac w terminalu
 polecenie:
 
     rake db:seed  # Load the seed data from db/seeds.rb
@@ -167,7 +167,7 @@ polecenie:
 Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 *db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}.
 
-8\. Teraz możemy już uruchomić domyślny serwer Rails:
+9\. Teraz możemy już uruchomić domyślny serwer Rails:
 
      rails s -p 3000
 
@@ -177,12 +177,28 @@ Albo jeden z alternatywnych serwerów:
      bin/unicorn_rails -p 3000
      bin/rainbows -p 3000       # nie polecam w trybie development
 
+Pozostaje tylko wejść na stronę aplikacji:
+
+     http://localhost:3000
 
 
-## Krok 3
+# Fortunka – szczegóły
+
+Poniżej przedstawiamy bardziej szczegółowy opis niektórych kroków.
 
 
-Konsola Rails:
+## Krok 1 – rusztowanie aplikacji
+
+Zamiast wykonywać wszystkie kroki, możemy skorzystać z jakiegoś
+szablonu aplikacji Rails.
+
+
+## Krok 3 - dodajemy nowe gemy
+
+Dlaczego dopisaliśmy takie a nie inne gemy?
+
+Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby i konsoli
+Rails:
 
     :::ruby ~/.irbrc
     IRB.conf[:PROMPT_MODE] = :SIMPLE
@@ -199,31 +215,16 @@ Konsola Rails:
       RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
     end
 
-[Rainbows!](http://rainbows.rubyforge.org/)
-is an HTTP server for sleepy Rack applications. It is based
-on Unicorn, but designed to handle applications that expect long
-request/response times and/or slow clients.
 
-For Rack applications not heavily bound by slow external network
-dependencies, consider Unicorn instead as it simpler and easier to
-debug.
-
-[Unicorn](http://unicorn.bogomips.org/)
-is an HTTP server for Rack applications designed to only serve
-fast clients on low-latency, high-bandwidth connections and take
-advantage of features in Unix/Unix-like kernels. Slow clients should
-only be served by placing a reverse proxy capable of fully buffering
-both the the request and response in between Unicorn and slow
-clients.
-
-
-## Krok 4.
+## Krok 4 – instalujemy gemy
 
 Opcji `--path` używamy tylko raz. Następnym razem uruchamiamy program
-*bundle* bez tej opcji.  Możemy też pominąć argument *install*.
+*bundle* bez tej opcji. Możemy też pominąć argument *install*.
 
 
-## Co to jest REST?
+## Krok 5 - generator scaffold dla fortunek
+
+### Co to jest REST?
 
 <blockquote>
 {%= image_tag "/images/hfrails_cover.png", :alt => "[Head First Rails]" %}
@@ -269,7 +270,6 @@ Polecenie:
 
 wypisuje szczegóły REST API aplikacji.
 
-
 <blockquote>
 <p>
   While the scaffold generator is great for prototyping, it’s not so great for
@@ -279,13 +279,14 @@ wypisuje szczegóły REST API aplikacji.
 <p class="author">— Y. Katz, R. A. Bigg</p>
 </blockquote>
 
-## Generator scaffold
+### Generator scaffold
 
-Generujemy rusztowanie dla zasobu (ang. *resource*) *fortune*:
+Rusztowanie dla zasobu (ang. *resource*) *fortune* zostało wygenerowane
+za pomocą polecenia:
 
-    rails generate scaffold fortune quotation:text
+    rails generate scaffold fortune quotation:text source:string
 
-Stosujemy się do konwencji frameworka Rails.
+Stosujemy się do konwencji nazywania frameworka Rails.
 Używamy liczby pojedynczej (generujemy zasób dla modelu).
 
 Co wygenerował generator?
@@ -301,113 +302,24 @@ Generator dopisał do pliku z routingiem *config/routes.rb*:
 
     resources :fortunes
 
-i być może ustawić root page.
+Porównanie kodu kontrolera
+{%= link_to "users_controller.rb", "/rails31/scaffold/users_controller.rb" %}
+wygenerowanego za pomocą polecenia:
 
-Aby obejrzeć routing aplikacji wykonujemy polecenie:
+    rails generate scaffold User login:string email:string
 
-    rake routes
-
-Jak należy rozumieć, to co zostało wypisane przez to polecenie?
-
-Uruchamiamy aplikację:
-
-    rails s thin -p 16000
-
-i sprawdzamy jak działa routing.
-
-Wklejone poniżej obrazek oraz kod wygenerowanego kontrolera, pozwala
-„zobaczyć” jak działa RESTful routing i kontroler.
+z diagramem przedstawionym na poniższym obrazku
+([źródło](http://www.railstutorial.org/images/figures/mvc_detailed-full.png)):
 
 {%= image_tag "/images/mvc_detailed.png", :alt => "[MVC w Rails]" %}<br>
-Rails REST na przykładzie zasobu *users* ([źródło](http://www.railstutorial.org/images/figures/mvc_detailed-full.png))
 
-Rails resource scaffold:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    class FortunesController < ApplicationController
-      # GET /fortunes
-      # GET /fortunes.xml
-      def index
-        @fortunes = Fortune.all
-
-        respond_to do |format|
-          format.html # index.html.erb
-          format.xml  { render :xml => @fortunes }
-        end
-      end
-      # GET /fortunes/1
-      # GET /fortunes/1.xml
-      def show
-        @fortune = Fortune.find(params[:id])
-
-        respond_to do |format|
-          format.html # show.html.erb
-          format.xml  { render :xml => @fortune }
-        end
-      end
-      # GET /fortunes/new
-      # GET /fortunes/new.xml
-      def new
-        @fortune = Fortune.new
-
-        respond_to do |format|
-          format.html # new.html.erb
-          format.xml  { render :xml => @fortune }
-        end
-      end
-      # GET /fortunes/1/edit
-      def edit
-        @fortune = Fortune.find(params[:id])
-      end
-      # POST /fortunes
-      # POST /fortunes.xml
-      def create
-        @fortune = Fortune.new(params[:fortune])
-
-        respond_to do |format|
-          if @fortune.save
-            format.html { redirect_to(@fortune, :notice => 'Fortune was successfully created.') }
-            format.xml  { render :xml => @fortune, :status => :created, :location => @fortune }
-          else
-            format.html { render :action => "new" }
-            format.xml  { render :xml => @fortune.errors, :status => :unprocessable_entity }
-          end
-        end
-      end
-      # PUT /fortunes/1
-      # PUT /fortunes/1.xml
-      def update
-        @fortune = Fortune.find(params[:id])
-
-        respond_to do |format|
-          if @fortune.update_attributes(params[:fortune])
-            format.html { redirect_to(@fortune, :notice => 'Fortune was successfully updated.') }
-            format.xml  { head :ok }
-          else
-            format.html { render :action => "edit" }
-            format.xml  { render :xml => @fortune.errors, :status => :unprocessable_entity }
-          end
-        end
-      end
-      # DELETE /fortunes/1
-      # DELETE /fortunes/1.xml
-      def destroy
-        @fortune = Fortune.find(params[:id])
-        @fortune.destroy
-
-        respond_to do |format|
-          format.html { redirect_to(fortunes_url) }
-          format.xml  { head :ok }
-        end
-      end
-    end
-
+pomaga „zobaczyć” jak RESTful router tłumaczy żądania na kod
+kontrolera.
 
 Zasoby REST mogą mieć różne reprezentacje, na przykład HTML, XML,
 JSON, CSV, PDF, itd.
 
-Wygenerowane metody umożliwiają renderowanie tylko dwóch
-reprezentacji: HTML i XML.
+Wygenerowany kontroler obsługuje tylko dwie reprezentacje: HTML i JSON.
 Ale kiedy będziemy potrzebować dodatkowej reprezentacji danych,
 to możemy zacząć od modyfikacji powyższego kodu.
 
@@ -415,130 +327,74 @@ Po modyfikacji otrzymamy kod który, niestety, nie będzie taki DRY jak mógłob
 Prawdziwie DRY kod otrzymamy korzystając z generatorów
 *responders:install* oraz *responders_controller*
 (zawiera je gem *responders*).
-
 Dlaczego? Przyjrzymy się temu na wykładzie „Fortunka v1.0”.
 
 
-<blockquote>
- <p>
-  {%= image_tag "/images/nifty-secretary.jpg", :alt => "[nifty secretary]" %}
- </p>
- <p class="author">źródło: <a href="http://e-girlfriday.com/blog/">Retro Graphics, WordPress Site</a></p>
-</blockquote>
+Jeśli nie będziemy korzystać z jsonów, to powinniśmy usunąć nieużywany kod
+z kontrolera. Tak powinien wyglądać odchudzony *UsersController*:
 
-
-*Uwaga:* Do *Gemfile* został dopisany nowy gem, dlatego musimy go zainstalować:
-
-    bundle install
-
-A tak wygląda wygenerowany z nifty-scaffold kontroller, siedem metod i mniej kodu,
-ale czy działa w Rails 3.1.1?
-
-    :::ruby app/controllers/fortunes_controller.rb
-    class FortunesController < ApplicationController
+    :::ruby
+    class UsersController < ApplicationController
+      # GET /users
       def index
-        @fortunes = Fortune.all
+        @users = User.all
       end
+      # GET /users/1
       def show
-        @fortune = Fortune.find(params[:id])
+        @user = User.find(params[:id])
       end
+      # GET /users/new
       def new
-        @fortune = Fortune.new
+        @user = User.new
       end
-      def create
-        @fortune = Fortune.new(params[:fortune])
-        if @fortune.save
-          redirect_to @fortune, :notice => "Successfully created fortune."
-        else
-          render :action => 'new'
-        end
-      end
+      # GET /users/1/edit
       def edit
-        @fortune = Fortune.find(params[:id])
+        @user = User.find(params[:id])
       end
-      def update
-        @fortune = Fortune.find(params[:id])
-        if @fortune.update_attributes(params[:fortune])
-          redirect_to @fortune, :notice  => "Successfully updated fortune."
+      # POST /users
+      def create
+        @user = User.new(params[:user])
+        if @user.save
+          redirect_to @user, notice: 'User was successfully created.'
         else
-          render :action => 'edit'
+          render action: "new"
         end
       end
+      # PUT /users/1
+      def update
+        @user = User.find(params[:id])
+        if @user.update_attributes(params[:user])
+          redirect_to @user, notice: 'User was successfully updated.'
+        else
+          render action: "edit"
+        end
+      end
+      # DELETE /users/1
       def destroy
-        @fortune = Fortune.find(params[:id])
-        @fortune.destroy
-        redirect_to fortunes_url, :notice => "Successfully destroyed fortune."
+        @user = User.find(params[:id])
+        @user.destroy
+        redirect_to users_url
       end
     end
 
-Sprawdzamy jak działa aplikacja z nowym kontrolerem:
+Taka edytowanie kodu dla każdego wygenerowanego kontrolera
+byłoby męczące. Unikniemy tego umieszczając w katalogu:
 
-    rails s thin -p 3000
+    lib/templates/rails/scaffold_controller/
 
-Wchodzimy na stronę:
-
-    http://localhost:3000/fortunes
-
-Modyfikujemy plik *routes.rb*:
-
-    :::ruby config/routes.rb
-    Fortunka::Application.routes.draw do
-      resources :fortunes
-      # You can have the root of your site routed with "root"
-      # just remember to delete public/index.html.
-      root :to => "fortunes#index"
-    end
-
-Po zrestartowaniu serwera WWW i po wejściu na stronę:
-
-    http://localhost:16000/
-
-powinniśmy zobaczyć wyrenderowaną stronę:
-
-    http://localhost:16000/fortunes
+plik {%= link_to "controler.rb", "/doc/rails31/scaffold/controller.rb" %}.
 
 
-# Zapełnianie bazy danymi testowymi (7.11.2011)
+## Krok 8 - umieszczamy jakieś dane w bazie
 
-Na tym etapie pisania aplikacji, powinniśmy umieścić w bazie trochę
-fortunek. Łatwiej nam będzie modyfikować **niepuste** widoki.
-
-Przykładowe fortunki możemy sami wpisać w pliku *db/seeds.rb*,
-a następnie zapisać w bazie za pomocą:
-
-    rake db:seed
-
-Ale jeśli wystarczy nam zapełnienie bazy danymi testowymi,
-możemy skorzystać z gemów: *faker* i *populator*.
-Po dopisaniu ich w pliku *Gemfile* w sekcji **development**:
-
-    :::ruby Gemfile
-    group :development do
-      gem 'responders'
-      gem 'nifty-generators'
-      gem 'wirble'
-      gem 'hirb'
-      gem 'faker'
-      gem 'populator'
-    end
-
-i po zainstalowaniu:
-
-    bundle
-
-zaglądamy na te strony:
-
-* [faker](http://faker.rubyforge.org/)
-* [populator]()
-
-szukając przykładów użycia.
-
-Po tej lekturze przećwiczymy coś prostego, na przykład:
+Przećwiczymy proste zastosowania gemóww *Faker*
+i *Populator* (o ile już działa z Rails 3.1)
+korzystając z wygenrowanego kodu:
 
     rails g scaffold friend last_name:string first_name:string phone:string motto:text
     rake db:migrate
 
-Nieco „monkey patching” kodu gemu Faker:
+Zaczynamy od „monkey patching” kodu gemu *Faker*:
 
     :::ruby faker_pl.rb
     module Faker
@@ -554,11 +410,11 @@ Nieco „monkey patching” kodu gemu Faker:
 
 (zob. też [ten gist](https://gist.github.com/165751)).
 
-Przyszła wreszcie pora na wprawki konsolowe:
+Sprawdzamy jak to działa na konsoli:
 
     bundle exec irb
 
-gdzie piszemy:
+gdzie wpisujemy:
 
     :::ruby
     require 'faker'
@@ -568,7 +424,7 @@ gdzie piszemy:
     Faker::Name.last_name
 
 Jeśli wszystko działa tak jak powinno, to w pliku *db/seeds.rb*
-wpisujemy:
+możemy wpisać:
 
     :::ruby db/seeds.rb
     require Rails.root.join('db', 'faker_pl')
@@ -580,13 +436,13 @@ wpisujemy:
       friend.motto = Populator.sentences(1..2)
     end
 
-i wykonujemy:
+Teraz wykonujemy:
 
     rake db:seed
 
-Teraz z zapełniem Fortunki danymi testowymi nie powinno być problemu.
-Chociaż przydałoby się zmodyfikować ten przykład z dokumentacji
-gemu Populator:
+zapełniając tabelę *friends* danymi testowymi.
+
+Chociaż przydałoby się dodać do powyższego kodu coś w stylu:
 
     :::ruby
     Friend.populate(1000..5000) do |friend|
@@ -595,14 +451,35 @@ gemu Populator:
     end
 
 
+<blockquote>
+ <p>
+  {%= image_tag "/images/nifty-secretary.jpg", :alt => "[nifty secretary]" %}
+ </p>
+ <p class="author">źródło: <a href="http://e-girlfriday.com/blog/">Retro Graphics, WordPress Site</a></p>
+</blockquote>
 
-# Poprawiamy wygenerowane szablony
+## Krok 9 - uruchamiamy serwer www
 
-Przechodzimy do katalogu *app/views/fortunes* i edytujemy pliki,
-kolejno według listy:
+Każdy serwer ma swoje mocne i słabe strony.
 
-* *index.html.erb*
-* *show.html.erb*
-* *_form.html.erb*
-* *new.html.erb*
-* *edit.html.erb*
+[Thin](http://code.macournoyer.com/thin/)
+is a Ruby web server that glues together 3 of the best Ruby libraries
+in web history:
+
+* the *Mongrel* parser, the root of *Mongrel* speed and security
+* *Event Machine*, a network I/O library with extremely high scalability,
+  performance and stability
+* *Rack*, a minimal interface between webservers and Ruby frameworks
+
+[Unicorn](http://unicorn.bogomips.org/)
+is an HTTP server for Rack applications designed to only serve
+fast clients on low-latency, high-bandwidth connections and take
+advantage of features in Unix/Unix-like kernels. Slow clients should
+only be served by placing a reverse proxy capable of fully buffering
+both the the request and response in between Unicorn and slow
+clients.
+
+[Rainbows!](http://rainbows.rubyforge.org/)
+is an HTTP server for sleepy Rack applications. It is based
+on Unicorn, but designed to handle applications that expect long
+request/response times and/or slow clients.
