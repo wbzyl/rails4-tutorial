@@ -115,13 +115,18 @@ atrybutów nieobecności i uwagi.
 
 7\. Na koniec importujemy listę studentów do bazy MongoDB:
 
-    mongoimport -d lista_obecnosci_development -c students --headerline --type csv asi2011.csv
+    mongoimport --drop -d lista_obecnosci_development -c students --headerline --type csv wd.csv
 
 Fragment pliku CSV z nagłówkiem:
 
+    :::csv wd.csv
     last_name,first_name,id_number,course
-    "Nowak","Jan",123456,"Algorytmy i struktury danych"
-    "Kowalski","Łukasz",789012,"Aplikacje internetowe i bazy danych"
+    "Kuszelas","Jan",123123,"Aplikacje internetowe i bazy danych"
+    "Klonowski","Felicjan",221321,"Algorytmy i struktury danych"
+    "Korolczyk","Joga",356123,"Aplikacje internetowe i bazy danych"
+    "Grabczyk","Simona",491231,"Algorytmy i struktury danych"
+    "Kamińska","Irena",556123,"Aplikacje internetowe i bazy danych"
+    "Jankowski","Kazimierz",628942,"Algorytmy i struktury danych"
 
 8\. Pozostaje uruchomić serwer www:
 
