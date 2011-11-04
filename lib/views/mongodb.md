@@ -254,23 +254,21 @@ JavaScript (TODO: kod umieścić tylko na stronie */students*):
         $('div[role="main"]').click(function(event) {
           var clicked_element = $(event.target);
           if (clicked_element.hasClass('presence')) {
-            console.log(clicked_element);
             clicked_element.html('☻');
-            //console.log(clicked_element.parent().find('a:eq(0)'));
             var link_element = clicked_element.parent().find('a:eq(0)');
             // url = /students/4eb2f22a329855e103cdcfd0
             var date = new Date();
-            var absent = (date.getMonth() + 1) + '-' + date.getDate();
+            var today = (date.getMonth() + 1) + '-' + date.getDate();
             $.ajax({
               url: link_element.attr('href'),
               type: 'PUT',
-              data: { absent: absent },
+              data: { absent: today },
               success: function(data) {
                 console.log(data);
               }
             });
           };
-          event.stopPropagation();
+          // event.stopPropagation(); deactivates destroy link – bug?
         });
     });
 
