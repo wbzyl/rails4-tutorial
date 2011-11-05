@@ -29,6 +29,13 @@ OmniAuth:
 * [Rails 3.1 with Mongoid and OmniAuth](https://github.com/railsapps/rails3-mongoid-omniauth/wiki/Tutorial)
   – na razie nieaktualne
 
+Hosting:
+
+* [Cloud Hosted MongoDB](https://mongolab.com/home)
+  ([{blog: mongolab}](http://blog.mongolab.com/))
+* [Node.js + MongoDB = Love: Guest Post from MongoLab](http://joyeur.com/2011/10/26/node-js-mongodb-love-guest-post-from-mongolab/?utm_source=NoSQL+Weekly+Newsletter&utm_campaign=4ed79d28a1-NoSQL_Weekly_Issue_49_November_3_2011&utm_medium=email)
+
+
 
 # Lista obecności
 
@@ -48,8 +55,11 @@ Prosta aplikacja implementująca CRUD dla listy obecności studentów.
     :::ruby Gemfile
     gem 'formtastic'
     gem 'kaminari'
+
     gem 'omniauth'
     gem 'omniauth-github', :git => 'git://github.com/intridea/omniauth-github.git'
+    gem 'omniauth-contrib', :git => 'git://github.com/intridea/omniauth-contrib.git'
+
     gem 'mongoid', '~> 2.3'
     gem 'bson_ext', '~> 1.4'
 
@@ -353,12 +363,443 @@ Dodatkowe reguły:
       margin-top: 0.5em; }
 
 
-# OmniAuth v1.0
+# OmniAuth — Github + Twitter
+
+Zaczynamy od zarejestowania aplikacji na [Githubie](https://github.com/account/applications).
+Aplikację rejstrujemy podając następujące dane:
+
+    URL:      http://localhost:3000
+    Callback: http://127.0.0.1:3000
+
+Zamiast URL powyżej można podać na przykład taki:
+
+    URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
+
+czyli miejsce gdzie opisuję tę aplikację.
+
+Następnie ze strony [omniauth-github](https://github.com/intridea/omniauth-github)
+przeklikowujemy do pliku *github.rb* kawałek kodu, który
+dostosowujemy do konwencji Rails:
+
+    :::ruby config/initializers/github.rb
+    # use OmniAuth::Builder do
+    #   provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET']
+    # end
+    Rails.application.config.middleware.use OmniAuth::Builder do
+      provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET']
+    end
+
+Powyżej `GITHUB_KEY`, `GITHUB_SECRET` kopiujemy ze strony
+[Your OAuth Applications](https://github.com/account/applications).
+zakładam, że
+
+    GITHUB_KEY === Client ID
+    GITHUB_SECRET === Client Secret
+
+Same klucze zapisuję w pliku *github.sh*, który dla bezpieczeństwa
+trzymam poza repozytorium:
+
+    :::bash github.sh
+     export GITHUB_KEY="11111111111111111111"
+     export GITHUB_SECRET="1111111111111111111111111111111111111111"
+
+Teraz przed uruchomieniem aplikacji wystarczy wykonać:
+
+    :::bash terminal
+    source github.sh
+
+aby wartości *GITHUB_KEY*, *GITHUB_SECRET* były dostęne dla
+github-strategy.
+
+Konfiguracja OmniAuth dla *Twittera* jest analogiczna.
+Aplikację rejestrujemy [tutaj](https://dev.twitter.com/apps/new):
+
+    URL:      http://localhost:3000
+    Callback: http://127.0.0.1:3000
+
+Klucze zapisujemy w pliku *twitter.sh*, który będziemy trzymać
+poza repozytorium:
+
+    :::bash twitter.sh
+    export TWITTER_KEY="111111111111111111111"
+    export TWITTER_SECRET="111111111111111111111111111111111111111111"
+
+Plik konfiguracyjny dla middlewarwe OmniAuth, to:
+
+    :::ruby config/initializers/twitter.rb
+    Rails.application.config.middleware.use OmniAuth::Builder do
+      provider :twitter, ENV['TWITTER_KEY'], ENV['TWITTER_SECRET']
+    end
 
 
+## Generujemy model dla użytkowników
+
+Po pomyślnej autentykacji, dane użytkownika będziemy zapisywać w bazie:
+
+    rails generate model User provider:string uid:string name:string email:string
 
 
-## Różny misz masz…
+## Generujemy kontroler dla sesji
+
+…na przykład tak (poprawniejszą nazwą byłoby *Session*):
+
+    :::bash terminal
+    rails generate controller Sessions
+
+Dopisujemy do wygenerowanego kodu kilka metod:
+
+    :::ruby app/controllers/sessions_controller.rb
+    class SessionsController < ApplicationController
+      def new
+        redirect_to '/auth/github'
+        # redirect_to '/auth/twitter'
+      end
+      def create
+        raise request.env["omniauth.auth"].to_yaml
+      end
+      def destroy
+        # session[:user_id] = nil
+        reset_session
+        redirect_to root_url, :notice => "User signed out!"
+      end
+      def failure
+        redirect_to root_url, :alert => "Authentication error: #{params[:message].humanize}"
+      end
+    end
+
+Ponieważ każdy provider, po pomyślnej autentykacji, zwraca inne
+informacje my, na razie, w metodzie **create**
+zgłaszamy wyjątek, aby podejrzeć to co przesłał Github.
+
+
+## Routing
+
+OmniAuth ma wbudowany routing dla wspieranych dostawców (*providers*),
+na przykład dla Githuba są to:
+
+    /auth/github          # przekierowanie na Github
+    /auth/github/callback # przekierowanie po pomyślnej autentykacji
+    /auth/failure         # tutaj, w przeciwnym wypadku
+
+W pliku *routes.rb* wpisujemy:
+
+    :::ruby config/routes.rb
+    match '/auth/:provider/callback' => 'sessions#create'
+    match '/auth/failure' => 'sessions#failure'
+
+Przyda się kilka metod pomocniczych: *signout_path*, *signin_path*:
+
+    :::ruby config/routes.rb
+    match '/signout' => 'sessions#destroy', :as => :signout
+    match '/signin' => 'sessions#new', :as => :signin
+
+Przy okazji dodajemy też:
+
+    :::ruby config/routes.rb
+    root :to => 'students#index'
+
+Teraz możemy przetestować jak to działa!
+Ręcznie wpisujemy w przeglądarce następujące uri:
+
+    http://localhost:3000/auth/github
+    http://localhost:3000/auth/twitter
+
+Po pomyślnym zalogowaniu w metodzie *create* zgłaszany
+jest wyjątek, a my widzimy stronę z **RuntimeError** .
+
+Twitter zwraca coś takiego (fragment):
+
+    :::yaml
+    ---
+    provider: twitter
+    uid: '52154495'
+    info:
+      nickname: wbzyl
+      name: Wlodek Bzyl
+      location: ''
+      image: http://a3.twimg.com/profile_images/1272548001/mondrian_normal.png
+      description: ''
+      urls:
+        Website: http://sigma.ug.edu.pl/~wbzyl/
+        Twitter: http://twitter.com/wbzyl
+    credentials:
+      token: 111111111111111111111111111111111111111111111111111111
+      secret: 11111111111111111111111111111111111111111
+    extra:
+      access_token: !ruby/object:OAuth::AccessToken
+
+A Github zwraca coś takiego (wszystko):
+
+    :::yaml
+    ---
+    provider: github
+    uid: 8049
+    info:
+      nickname: wbzyl
+      email: matwb@univ.gda.pl
+      name: Wlodek Bzyl
+      urls:
+        GitHub: https://github.com/wbzyl
+        Blog: !!null
+    credentials:
+      token: 1111111111111111111111111111111111111111
+      expires: false
+    extra: {}
+
+
+## Zapisujemy powyższe dane w bazie MongoDB
+
+Dodajemy metodę do modelu *User*:
+
+    :::ruby app/models/user.rb
+    class User
+      include Mongoid::Document
+      field :provider, :type => String
+      field :uid, :type => String
+      field :name, :type => String
+      field :email, :type => String
+
+      def self.create_with_omniauth(auth)
+        begin
+          create! do |user|
+            user.provider = auth['provider']
+            user.uid = auth['uid']
+            if auth['info']
+              # logger.info("#{auth['info'].to_json}")
+              user.name = auth['info']['name'] || "" # Twitter, GitHub
+              user.email = auth['info']['email'] || ""
+              user.nickname = auth['info']['nickname'] || ""
+            end
+            if auth['extra']['user_hash'] # Facebook -- sprawdzić
+              # user.name = auth['extra']['user_hash']['name'] || ""
+              # user.email = auth['extra']['user_hash']['email'] || ""
+            end
+          end
+        rescue Exception
+          raise Exception, "Cannot create user record!"
+        end
+      end
+
+    end
+
+Modyfikujemy metodę *create* kontrolera:
+
+    :::ruby app/controllers/sessions_controller.rb
+    def create
+      auth = request.env["omniauth.auth"]
+      user = User.where(:provider => auth['provider'], :uid => auth['uid']).first ||
+          User.create_with_omniauth(auth)
+      session[:user_id] = user.id
+      redirect_to root_url, :notice => "User #{user.name} signed in via #{user.provider}"
+    end
+
+Dodajemy wiadomości flash do widoku *index*:
+
+    :::rhtml app/views/students/index.html.erb
+    <% if notice -%>
+    <div id="notice"><%= notice %></div>
+    <% end -%>
+    <% if alert -%>
+    <div id="error"><%= alert %></div>
+    <% end -%>
+
+
+## Kilka zwyczajowych metod pomocniczych
+
+Praktycznie każda implementacja autentykacji implementuje te metody:
+
+    :::ruby app/controllers/application_controller.rb
+    class ApplicationController < ActionController::Base
+      protect_from_forgery
+
+      helper_method :current_user
+      helper_method :user_signed_in?
+      helper_method :correct_user?
+
+      private
+      def current_user
+        begin
+          @current_user ||= User.find(session[:user_id]) if session[:user_id]
+        rescue Mongoid::Errors::DocumentNotFound
+          nil
+        end
+      end
+      def correct_user?                  # a to po co?
+        @user = User.find(params[:id])
+        unless current_user == @user
+          redirect_to root_url, :alert => "Access denied!"
+        end
+      end
+      def authenticate_user!
+        if !current_user
+          redirect_to root_url, :alert => 'You need to sign in for access to this page!'
+        end
+      end
+    end
+
+
+## Strona dla Admin do zarządzania danym użytkowników
+
+Generator:
+
+    rails generate controller admin index
+
+Modyfikujemy kontroller:
+
+    :::ruby controllers/admin_controller.rb
+    def index
+      @users = User.asc(:nickname)
+    end
+
+oraz widok *index*:
+
+    :::ruby app/views/admin/index.html.erb
+    <% title "Admin page" %>
+    <h3>Users list</h3>
+
+    <ol>
+    <% @users.each do |user| %>
+      <li><%= user.name %> <i>via</i> <%= user.provider %></li>
+    <% end %>
+    </ol>
+
+Wchodzimy na stronę:
+
+    http://localhost:3000/admin/index
+
+
+## Poprawiamy layout aplikacji
+
+SASS:
+
+    :::css app//assets/stylesheets/lista_obecnosci.css.scss
+    ul.hmenu {
+      list-style: none;
+      margin: 0 0 2em;
+      padding: 0;
+      li {
+      display: inline; } }
+
+Nawigacja (do poprawki, HTML5):
+
+    :::rhtml app/views/shared/_navigation.html.erb
+    <% if current_user %>
+      <li>
+      Logged in as <%= current_user.name %>
+      </li>
+      <li>
+      <%= link_to('Logout', signout_path) %>
+      </li>
+    <% else %>
+      <li>
+      <%= link_to('Login (via github)', signin_path)  %>
+      </li>
+    <% end %>
+
+Layout (dopisujemy pod znacznikiem *header*):
+
+    :::rhtml app/views/layouts/application.html.erb
+    <header>
+       <ul class="hmenu">
+         <%= render 'shared/navigation' %>
+       </ul>
+       <%= content_tag :h1, "Lista obecności ASI, 2011/12" %>
+
+I sprawdzamy jak wygląda nawigacja w działającej aplikacji.
+CSS do poprawki!
+
+
+## Access Controll
+
+Użyjemy autentykacji do tego aby zalogowany użytkownik mógł
+obejrzeć swoje wszystkie dane (liczba mnoga **users**):
+
+    :::bash terminal
+    rails generate controller users show
+
+Routing:
+
+    :::ruby config/routes.rb
+    # get "users/show"  -- wykomentowujemy
+    resources :users, :only => :show
+    # get "admin/index" -- zmieniamy na
+    match '/admin' => 'admin#index', :as => :admin
+
+Widok *show*:
+
+    :::rhtml app/views/users/show.html.erb
+    <% title "User Profile" %>
+
+    <p>Name: <%= @user.name %></p>
+    <p>Provider: <%= @user.provider %></p>
+    <p>UID: <%= @user.uid %></p>
+    <p>Email: <%= @user.email %></p>
+    <p>Nickname: <%= @user.nickname %></p>
+
+Modyfikujemy widok *admin/index*:
+
+    :::rhtml app/views/admin/index.html.erb
+    <ol>
+      <% @users.each do |user| %>
+      <li><%= link_to user.name, user %> <i>via</i> <%= user.provider %></li>
+      <% end %>
+    </ol>
+
+### Zmiana email
+
+Zmieniamy routing:
+
+    :::ruby config/routes.rb
+    resources :users, :only => [ :show, :edit, :update ]
+
+Kontroller:
+
+    :::ruby controllers/users_controller.rb
+    def edit
+      @user = User.find(params[:id])
+    end
+    def update
+      @user = User.find(params[:id])
+      if @user.update_attributes(params[:user])
+        redirect_to @user
+      else
+        render :edit
+      end
+    end
+
+Widok (TODO: zamienić na formtastic):
+
+    :::rhtml app/views/users/edit.html.erb
+    <%= form_for(@user) do |f| %>
+      <p><%= f.label :email %>
+      <%= f.text_field :email %></p>
+      <p><%= f.submit "Sign in" %></p>
+    <% end %>
+
+Zmiany w kontrolerze sesji:
+
+    :::ruby app/controllers/sessions_controller.rb
+    def create
+      auth = request.env["omniauth.auth"]
+      user = User.where(:provider => auth['provider'], :uid => auth['uid']).first ||
+          User.create_with_omniauth(auth)
+      session[:user_id] = user.id
+      if user.email == ""
+        redirect_to edit_user_path(user), :alert => 'Please enter your email address.'
+      else
+        redirect_to root_url, :notice => 'Signed in!'
+      end
+    end
+
+Zrobione!
+
+
+## Ikonki dla CRUD
+
+**TODO**
+
+
+# Różny misz masz…
 
 * K. Seguin, [The MongoDB Collection](http://mongly.com/)
 * K. Seguin, [Blog](http://openmymind.net/)
