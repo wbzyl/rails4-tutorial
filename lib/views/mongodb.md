@@ -793,6 +793,23 @@ Zmiany w kontrolerze sesji:
 
 Zrobione!
 
+## Usuwanie baz danych aplikacji
+
+**TODO:** Dopisujemy do pliku *seeds.rb*:
+
+    :::ruby db/seeds.rb
+    puts 'Empty the MongoDB database'
+    Mongoid.master.collections.reject { |c| c.name =~ /^system/}.each(&:drop)
+
+Teraz:
+
+    rake db:seed
+
+usuwa kolekcje *students* i *users* z bazy. Dziwne to!
+Lepiej byłoby dodać (osobne dla każdej kolekcji) zadania dla rake.
+
+Ale możnaby wrzucić *mongoimport* do *seeds.rb*.
+
 
 ## Ikonki dla CRUD
 
