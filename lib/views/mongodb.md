@@ -41,6 +41,7 @@ Hosting:
 
 Prosta aplikacja implementująca CRUD dla listy obecności studentów.
 
+**TODO:** Podmienić w szablonie HTML5Boilerplate na [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/).
 
 1\. Generujemy rusztowanie/szkielet aplikacji:
 
