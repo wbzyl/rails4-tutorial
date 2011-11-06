@@ -1,4 +1,4 @@
-#### {% title "Korzystamy z bazy MongoDB" %}
+#### {% title "MongoDB + OmniAuth z githubem i twitterem" %}
 
 Przykładowa aplikacja CRUD korzystająca z bazy MongoDB,
 gemów Mongoid, OmniAuth.
