@@ -126,6 +126,7 @@ atrybutów nieobecności i uwagi.
 
 7\. Na koniec importujemy listę studentów do bazy MongoDB:
 
+    :::bash terminal
     mongoimport --drop -d lista_obecnosci_development -c students --headerline --type csv wd.csv
 
 Fragment pliku CSV z nagłówkiem:
@@ -138,6 +139,26 @@ Fragment pliku CSV z nagłówkiem:
     "Grabczyk","Simona",491231,"Algorytmy i struktury danych"
     "Kamińska","Irena",556123,"Aplikacje internetowe i bazy danych"
     "Jankowski","Kazimierz",628942,"Algorytmy i struktury danych"
+
+Przy okazji kilka sposobów na tworzenie kopii zapasowej bazy:
+
+    :::bash terminal
+    mongoexport -d lista_obecnosci_development -c students -o wd-$(date +%Y-%m-%d).json
+
+Wybieramy format JSON. Teraz odtworzenie bazy z kopii zapasowej
+może wyglądać tak:
+
+    :::bash terminal
+    mongoimport --drop -d lista_obecnosci_development -c students wd-2011-11-08.json
+
+Backup & restore na działającej bazie wykonujemy tak:
+
+    :::bash
+    mongodump -d lista_obecnosci_development -o backup
+    mongorestore -d test --drop backup/lista_obecnosci_development/
+
+W powyższym przykładzie backup wszystkich kolekcji z bazy *lista_obecnosci_development*
+importujemy do bazy *test*.
 
 8\. Pozostaje uruchomić serwer www:
 
@@ -176,9 +197,9 @@ Fragment kodu, tylko to co zmieniamy:
         <div class="value full-name <%= student.group %>"><%= student.full_name %></div>
         <div class="absences"><%= bullets(student.absences) %></div>
         <div class="links">
-          <%= link_to 'Show', student %> |
-          <%= link_to 'Edit', edit_student_path(student) %> |
-          <%= link_to 'Destroy', student, confirm: 'Are you sure?', method: :delete %>
+          <%= link_to '✚', student %>
+          <%= link_to '✎', edit_student_path(student) %>
+          <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
         </div>
       </div>
     </article>
