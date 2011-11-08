@@ -169,6 +169,23 @@ i wejść na stronę z listą obecności:
 
     http://localhost:3000/students
 
+9\. Dodajemy prostą autentykację do aplikacji:
+
+    :::ruby
+    http_basic_authenticate_with :name => ENV['LO_NAME'], :password => ENV['LO_PASSWORD']
+
+„Sensitive data” zapiszemy w pliku *http-authentication.sh*:
+
+    ::bash http-authentication.sh
+    export LO_NAME="wbzyl"
+    export LO_PASSWORD="razdwa"
+
+Teraz przed uruchomieniem aplikacji musimy dodać te zmienne
+do *shell enviroment*:
+
+    ::bash http-authentication.sh
+    source http-authentication.sh
+
 
 ## Formtastic
 
@@ -237,7 +254,8 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
         <%= f.input :full_name, :as => :string %>
         <%= f.input :absences_list, :as => :string %>
         <%= f.input :id_number %>
-        <%= f.input :course %>
+        <%= f.input :course, :as => :select,
+           :collection => ["Aplikacje internetowe i bazy danych", "Algorytmy i struktury danych"] %>
         <%= f.input :group, :as => :select, :collection => ["red", "green", "blue"] %>
         <%= f.input :comment, :as => :text, :input_html => {:rows => 4} %>
       <% end %>
@@ -372,7 +390,11 @@ Dodatkowe reguły:
             position: relative;
             top: -0.1ex; }
          .links {
-            float: right; } } }
+            float: right;
+            a {
+              margin-left: 0.5em;
+              text-decoration: none;
+              color: #E80C7A; } } } }
     .single {
       .attribute {
         .absences {
