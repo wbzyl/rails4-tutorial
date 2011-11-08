@@ -174,7 +174,7 @@ Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 Albo jeden z alternatywnych serwerów:
 
      bin/thin -p 3000 start
-     bin/unicorn_rails -p 3000
+     bin/unicorn -p 3000
      bin/rainbows -p 3000       # nie polecam w trybie development
 
 Pozostaje tylko wejść na stronę aplikacji:
