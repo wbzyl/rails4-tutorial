@@ -58,7 +58,8 @@ Prosta aplikacja implementująca CRUD dla listy obecności studentów.
     gem 'kaminari'
 
     gem 'omniauth'
-    gem 'omniauth-github', :git => 'git://github.com/intridea/omniauth-github.git'
+    gem 'omniauth-github'
+    # 2011.11.10 – nie działa
     gem 'omniauth-contrib', :git => 'git://github.com/intridea/omniauth-contrib.git'
 
     gem 'mongoid', '~> 2.3'
@@ -75,13 +76,13 @@ Następnie je instalujemy:
     cd lista_obecnosci
     bundle install --path=$HOME/.gems --binstubs
 
-3\. I18N. Dodajemy do katalogu *config/initializers* plik *mongoid.rb*
-w którym wpisujemy:
+3\. Dodajemy do katalogu *config/initializers* plik *mongoid.rb*
+w którym wpisujemy (*i18n*):
 
     :::ruby config/initializers/mongoid.rb
     Mongoid.add_language("pl")
 
-4\. Post–install:
+4\. Dokończenie instalacji (*post–install*):
 
     :::bash terminal
     rails g mongoid:config
@@ -157,8 +158,9 @@ Backup & restore na działającej bazie wykonujemy tak:
     mongodump -d lista_obecnosci_development -o backup
     mongorestore -d test --drop backup/lista_obecnosci_development/
 
-W powyższym przykładzie backup wszystkich kolekcji z bazy *lista_obecnosci_development*
-importujemy do bazy *test*.
+**Uwaga:** W powyższym przykładzie backup wszystkich kolekcji z bazy
+*lista_obecnosci_development* importujemy do bazy *test*, a nie
+do *lista_obecnosci_development*!
 
 8\. Pozostaje uruchomić serwer www:
 
@@ -169,28 +171,25 @@ i wejść na stronę z listą obecności:
 
     http://localhost:3000/students
 
-9\. Dodajemy prostą autentykację do aplikacji:
+9\. Dodajemy podstawową autentykację do aplikacji:
 
     :::ruby
     http_basic_authenticate_with :name => ENV['LO_NAME'], :password => ENV['LO_PASSWORD']
 
 „Sensitive data” zapiszemy w pliku *http-authentication.sh*:
 
-    ::bash http-authentication.sh
+    :::bash http-authentication.sh
     export LO_NAME="wbzyl"
     export LO_PASSWORD="razdwa"
 
 Teraz przed uruchomieniem aplikacji musimy dodać te zmienne
 do *shell enviroment*:
 
-    ::bash http-authentication.sh
+    :::bash http-authentication.sh
     source http-authentication.sh
 
-
-## Formtastic
-
-1\. Użyjemy arkusza stylów Formtastic. W tym celu w pliku *application.css.sass*,
-wiersz:
+10\. Do stylizacji formularzy użyjemy arkusza stylów gemu
+*Formtastic*. W tym celu w pliku *application.css.sass*, wiersz:
 
     :::css app/assets/stylesheets/application.css.scss
     @import "simple-scaffold.css.scss";
@@ -202,70 +201,13 @@ zamieniamy na:
     @import "formtastic_ie7";
     @import "lista_obecnosci";
 
-## Zmieniamy widok *index.html.erb*
-
-Fragment kodu, tylko to co zmieniamy:
-
-    :::rhtml app/views/students/index.html.erb
-    <% @students.each do |student| %>
-    <article class="index">
-      <div class="attribute">
-        <div class="presence">☺</div>
-        <div class="value full-name <%= student.group %>"><%= student.full_name %></div>
-        <div class="absences"><%= bullets(student.absences) %></div>
-        <div class="links">
-          <%= link_to '✚', student %>
-          <%= link_to '✎', edit_student_path(student) %>
-          <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
-        </div>
-      </div>
-    </article>
-    <% end %>
-
-Obrazek pokazujący o co nam chodzi w tym widoku:
-
-{%= image_tag "/images/lista-obecnosci.png", :alt => "[lista obecnosci: /index]" %}
+Kod arkusza *lista_obecnosci.css.scss* jest pod koniec tej sekcji.
 
 
-Kod użytej powyżej metody pomocniczej:
+## Zaczynamy od modelu Student
 
-    :::ruby app/helpers/students_helper.rb
-    def bullets(array)
-      time = Time.new
-      today = "#{time.month}-#{time.day}"
-
-      array.to_a.map do |d|
-        today == d ? "<span class='today'>●</span>" : "●"
-      end.join(' ').html_safe
-    end
-
-Zmieniony nowy kod w widoku wymusza kolejne poprawki. Oto one.
-
-
-### Poprawki w wygenerowanym formularzu
-
-1\. Lista wyboru: *red*, *green*, *blue* dla grup,
-element *textarea* dla *comment*, oraz wirtualne atrybuty
-*full_name* i *absences_list*
-
-    :::rhtml app//views/students/_form.html.erb
-    <%= semantic_form_for @student do |f| %>
-      <%= f.inputs do %>
-        <%= f.input :full_name, :as => :string %>
-        <%= f.input :absences_list, :as => :string %>
-        <%= f.input :id_number %>
-        <%= f.input :course, :as => :select,
-           :collection => ["Aplikacje internetowe i bazy danych", "Algorytmy i struktury danych"] %>
-        <%= f.input :group, :as => :select, :collection => ["red", "green", "blue"] %>
-        <%= f.input :comment, :as => :text, :input_html => {:rows => 4} %>
-      <% end %>
-      <%= f.buttons do %>
-        <%= f.commit_button %>
-      <% end %>
-    <% end %>
-
-2\. Dodajemy metody getter i setter dla wirtualnych atrybutów
-oraz ustawiamy domyślną kolejność rekordów:
+Dodajemy metody getter i setter dla **wirtualnych atrybutów**
+oraz ustawiamy domyślne sortowanie rekordów:
 
     :::ruby app/models/student.rb
     class Student
@@ -293,76 +235,93 @@ oraz ustawiamy domyślną kolejność rekordów:
         absences.to_a.join(', ') # .to_a handles nil attribute
       end
       def absences_list=(string)
-        list = string.gsub(/[,\s]+/, ' ').split(' ')
+        list = string.gsub(/[,\s]+/, ' ').split(' ') # najpierw normalizacja
         set(:absences, list)
       end
 
       default_scope asc(:group, :last_name, :first_name)
     end
 
-### Zmiany w kontrolerze
 
-JavaScript (TODO: kod umieścić tylko na stronie */students*):
+## Nowa strona główna aplikacji
 
-    :::javascript app/assets/javascripts/students.js
-    $(document).ready(function() {
-        $('div[role="main"]').click(function(event) {
-          var clicked_element = $(event.target);
-          if (clicked_element.hasClass('presence')) {
-            clicked_element.html('☻');
-            var link_element = clicked_element.parent().find('a:eq(0)');
-            // url = /students/4eb2f22a329855e103cdcfd0
-            var date = new Date();
-            var today = (date.getMonth() + 1) + '-' + date.getDate();
-            $.ajax({
-              url: link_element.attr('href'),
-              type: 'PUT',
-              data: { absent: today },
-              success: function(data) {
-                console.log(data);
-              }
-            });
-          };
-          // event.stopPropagation(); deactivates destroy link – bug?
-        });
-    });
+Obrazek pokazujący o co nam chodzi:
 
-Obsługa żądania ajax (PUT) w kontrolerze:
+{%= image_tag "/images/lista-obecnosci.png", :alt => "[lista obecnosci: /index]" %}
+
+Są trzy grupy studentów: niebieska, zielona i czerwona. Kliknięcie
+w śmieszek dopisuje do dokumentu studenta nieobecność, przeładowuje
+stronę dodając pomarańczową kropkę przy nazwisku. Kropki po prawej
+stronie nazwiska to liczba nieobecności.
+
+Do generowania kropek używamy metody pomocniczej *bullets*. Slider
+pokazuje liczbę punktów zdobytych przez studenta na zajęciach.
+
+Zmiany zaczniemy wprowadzać od dodania do routingu metody
+*not_present*:
+
+    :::ruby config/routes.rb
+    resources :students do
+      member do
+        put 'not_present'
+      end
+    end
+
+Następnie przemodelujemy szablon strony głównej:
+
+    :::rhtml app/views/students/index.html.erb
+    <% @students.each do |student| %>
+    <article class="index">
+      <div class="attribute">
+        <div class="presence"><%= link_to '☺', not_present_student_path(student), method: :put %></div>
+        <div class="full-name <%= student.group %>"><%= student.full_name %></div>
+        <div class="absences"><%= bullets(student.absences) %></div>
+        <div class="links">
+          <%= link_to '✚', student %>
+          <%= link_to '✎', edit_student_path(student) %>
+          <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
+        </div>
+      </div>
+    </article>
+    <% end %>
+
+Kod użytej powyżej metody pomocniczej *bullets*:
+
+    :::ruby app/helpers/students_helper.rb
+    module StudentsHelper
+      def bullets(array)
+        today = today_absence
+        array.to_a.map do |d|
+          today == d ? "<span class='today'>●</span>" : "●"
+        end.join(' ').html_safe
+      end
+    end
+
+i metody *today_absence*:
+
+    :::ruby app/controllers/application_controller.rb
+    helper_method :today_absence
+
+    def today_absence
+      time = Time.new
+      "#{time.month}-#{time.day}"
+    end
+
+oraz metody *not_present*:
 
     :::ruby app/controllers/students_controller.rb
-    class StudentsController < ApplicationController
-      # PUT /students/1
-      def update
-        @student = Student.find(params[:id])
-
-        if params[:absent]
-          logger.info "☻ #{@student.full_name} absent at #{params[:absent]}"
-          @student.add_to_set(:absences, params[:absent])
-        else
-          if @student.update_attributes(params[:student])
-            redirect_to @student, notice: 'Student was successfully updated.'
-          else
-            render action: "edit"
-          end
-        end
-      end
-
-Nie zapominamy o dopisaniu do pliku *application.js*:
-
-    :::javascript app/assets/javascripts/application.js
-    //= require students.js
+    # PUT /students/1/not_present
+    def not_present
+      @student = Student.find(params[:id])
+      logger.info "☻ #{@student.full_name} absent at #{params[:absent]}"
+      @student.add_to_set(:absences, today_absence())
+      redirect_to students_url
+    end
 
 
 ### Zmiany w pozostałych widokach
 
-Aby kod Javascript zadziałał dodajemy nieco kodu do widoków
-oraz tworzymy nowy widok *update.text.erb*.
-
-*update.text.erb*:
-
-    absences for student <%= @student.full_name %> were updated
-
-*show.html.erb* (fragment):
+Zmieniany fragemnt *show.html.erb*:
 
     :::rhtml app/views/students/show.html.erb
     <article class="single">
@@ -370,6 +329,31 @@ oraz tworzymy nowy widok *update.text.erb*.
         <span class="value <%= @student.group %>"><%= @student.full_name %></span>
         <span class="absences"><%= @student.absences_list %></span>
       </div>
+
+**TODO:** Inne widoki? Zmienić teksty na ikonki w *link_to*.
+
+
+## Poprawiamy wygenerowany formularz
+
+Lista wyboru: *red*, *green*, *blue* dla grup,
+element *textarea* dla *comment*, oraz wirtualne atrybuty
+*full_name* i *absences_list*
+
+    :::rhtml app//views/students/_form.html.erb
+    <%= semantic_form_for @student do |f| %>
+      <%= f.inputs do %>
+        <%= f.input :full_name, :as => :string %>
+        <%= f.input :absences_list, :as => :string %>
+        <%= f.input :id_number %>
+        <%= f.input :course, :as => :select,
+           :collection => ["Aplikacje internetowe i bazy danych", "Algorytmy i struktury danych"] %>
+        <%= f.input :group, :as => :select, :collection => ["red", "green", "blue"] %>
+        <%= f.input :comment, :as => :text, :input_html => {:rows => 4} %>
+      <% end %>
+      <%= f.buttons do %>
+        <%= f.commit_button %>
+      <% end %>
+    <% end %>
 
 
 ### Arkusz stylów
@@ -380,13 +364,16 @@ Dodatkowe reguły:
     .index {
       .attribute {
          clear: both;
-         .value, .presence, .absences {
+         .full-name, .presence, .absences {
             float: left; }
          .presence {
             cursor: pointer;
-            margin-right: 1em; }
+            margin-right: 1em;
+            a {
+              text-decoration: none;
+              color: #E82C0C; } }
          .absences {
-            padding-left: 1em;
+            margin-left: 1em;
             position: relative;
             top: -0.1ex; }
          .links {
@@ -873,3 +860,30 @@ W aplikacji jest zaszyty format daty nieobecności:
     miesiąc-dzień
 
 Do poprawki.
+
+### TODO: progressive enhancements
+
+JavaScript (kod umieścić tylko na stronie */students*):
+
+    :::javascript app/assets/javascripts/students.js
+    $(document).ready(function() {
+        $('div[role="main"]').click(function(event) {
+          var clicked_element = $(event.target);
+          if (clicked_element.hasClass('presence')) {
+            clicked_element.html('☻');
+            var link_element = clicked_element.parent().find('a:eq(0)');
+            // url = /students/4eb2f22a329855e103cdcfd0
+            var date = new Date();
+            var today = (date.getMonth() + 1) + '-' + date.getDate();
+            $.ajax({
+              url: link_element.attr('href'),
+              type: 'PUT',
+              data: { absent: today },
+              success: function(data) {
+                console.log(data);
+              }
+            });
+          };
+          // event.stopPropagation(); deactivates destroy link – bug?
+        });
+    });
