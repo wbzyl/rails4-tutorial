@@ -85,7 +85,7 @@ następujące metody (razem siedem sztuk):
 
 Zaczynamy przyjrzenia się generatorowi scaffold (bez testów i migracji):
 
-    rails g scaffold fortune source:string body:text
+    rails g scaffold fortune source:string quotation:text
       invoke  active_record
       create    app/models/fortune.rb
        route  resources :fortunes
@@ -294,12 +294,12 @@ Dopisujemy walidację do modelu *Fortune*:
 
     :::ruby app/models/fortune.rb
     class Fortune < ActiveRecord::Base
-      # atrybut: body
-      validates :body, :presence => true
-      # validates_presence_of :body
-      validates_length_of :body, :in => 2..128
-      # validates_length_of :body, :minimum => 2, :maximum => 128
-      validates_uniqueness_of :body, :case_sensitive => false
+      # atrybut: quotation
+      validates :quotation, :presence => true
+      # validates_presence_of :quotation
+      validates_length_of :quotation, :in => 2..128
+      # validates_length_of :quotation, :minimum => 2, :maximum => 128
+      validates_uniqueness_of :quotation, :case_sensitive => false
 
       # atrybut: source
       validates :source, :in => 4..64, :allow_blank => true
@@ -311,8 +311,8 @@ Sprawdzamy na konsoli Rails jak to działa:
     f.valid?
      => false
     f.errors
-     => {:body=>["can't be blank"]}
-    f.errors[:body].any?
+     => {:quotation=>["can't be blank"]}
+    f.errors[:quotation].any?
      => true
     f.save
      => false
@@ -410,22 +410,22 @@ Wystarczy je zmienić.
         labels:
           fortune:
             source: 'source'
-            body: 'said'
+            quotation: 'said'
         hints:
           fortune:
             source: '(optional)'
-            body: '(maximum 128 characters)'
+            quotation: '(maximum 128 characters)'
         placeholders:
           fortune:
             source: 'source or blank'
-            body: 'no special chars, please'
+            quotation: 'no special chars, please'
 
 Po przejrzeniu pliku *README*, formularz dla fortunki wpisujemy tak:
 
     :::rhtml
     <%= simple_form_for @fortune do |f| %>
       <%= f.input :source, :input_html => {:size => 40}, :required => false %>
-      <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
+      <%= f.input :quotation, :input_html => {:rows => 4, :cols => 40} %>
       <%= f.button :submit %>
     <% end %>
 
@@ -438,8 +438,8 @@ Kod ten generuje taki HTML (usunąłem znacznik *div* z elementami *hidden*):
         <span class="hint">(optional)</span>
       </div>
       <div class="input text required">
-        <label class="text required" for="fortune_body"><abbr title="required">*</abbr> said</label>
-        <textarea class="text required" cols="40" id="fortune_body" name="fortune[body]" placeholder="no special chars, please" required="required" rows="4">
+        <label class="text required" for="fortune_quotation"><abbr title="required">*</abbr> said</label>
+        <textarea class="text required" cols="40" id="fortune_quotation" name="fortune[quotation]" placeholder="no special chars, please" required="required" rows="4">
         </textarea>
         <span class="hint">(maximum 128 characters)</span>
       </div>
@@ -641,11 +641,11 @@ z *implicit loop*. Zaczynamy od kodu:
     :::rhtml app/views/fortunes/index.html.erb
     <table>
       <tr>
-        <th>Source</th><th>Body</th><th></th><th></th><th></th>
+        <th>Source</th><th>Quotation</th><th></th><th></th><th></th>
       </tr>
       <% @fortunes.each do |fortune| %>
        <tr>
-        <td><%= fortune.source %></td><td><%= fortune.body %></td>
+        <td><%= fortune.source %></td><td><%= fortune.quotation %></td>
         <td><%= link_to 'Show', fortune %></td>
         <td><%= link_to 'Edit', edit_fortune_path(fortune) %></td>
         <td><%= link_to 'Destroy', fortune, :confirm => t('helpers.data.sure'), :method => :delete %></td>
@@ -666,7 +666,7 @@ w pętli po zmiennej *fortune* (konwencja *@fortunes* → *fortune*):
 
     :::rhtml app/views/fortunes/_fortune.html.erb
     <p>
-     <b><%= fortune.body %></b><br><%= fortune.source %>
+     <b><%= fortune.quotation %></b><br><%= fortune.source %>
     </p>
     <p class="links">
      <%= link_to "Show", fortune_path(fortune) %> |
@@ -707,7 +707,7 @@ Widok:
       feed.updated @fortunes.first.updated_at
       @fortunes.each do |fortune|
         feed.entry(fortune) do |entry|
-          entry.content fortune.body, :type => "html"
+          entry.content fortune.quotation, :type => "html"
         end
       end
     end
@@ -720,7 +720,7 @@ W layout dopisujemy w znaczniku *head*:
 
 # Dodajemy wyszukiwanie do Fortunek
 
-Na stronie z listą fortunek dodamy formularz, który będzie filtrował dane po polu *body*:
+Na stronie z listą fortunek dodamy formularz, który będzie filtrował dane po polu *quotation*:
 
     :::rhtml app/views/fortunes/index.html.erb
     <%= form_tag fortunes_path, :method => :get, :id => "fortunes_search" do %>
@@ -745,7 +745,7 @@ kod metody wpisujemy w klasie *Fortune*:
     :::ruby app/models/fortune.rb
     def self.search(search)
       if search
-        where('body LIKE ?', "%#{search}%")
+        where('quotation LIKE ?', "%#{search}%")
       else
         scoped
       end
@@ -886,9 +886,9 @@ Poprawiamy *seeds.rb*:
       reg = /\t?(.+)\n\t\t--\s*(.*)\n%\n/m
       m = p.match(reg)
       if m
-        f = Fortune.new :body => m[1], :source => m[2]
+        f = Fortune.new :quotation => m[1], :source => m[2]
       else
-        f = Fortune.new :body => p[0..-4], :source => Faker::Name.name
+        f = Fortune.new :quotation => p[0..-4], :source => Faker::Name.name
       end
       f.tag_list = tags.sample(rand(tags.size - 3))
       f.save
@@ -997,7 +997,7 @@ elementem *div\#tag_cloud*, ustawiamy jego szerokość, powiedzmy na
 trochę wolnego miejsca:
 
     :::css public/stylesheets/application.css
-    body {
+    quotation {
       position: relative;
     }
     #tag_cloud {
@@ -1100,7 +1100,7 @@ wykonamy rebase na master.
 Zaczynamy od wygenerowania rusztowania dla zasobu *Comment*:
 
     rails g resource Comment fortune:references \
-        author:string body:string
+        author:string quotation:string
 
 Zagnieżdżamy zasoby i sprawdzamy jak wygląda teraz routing:
 
@@ -1168,7 +1168,7 @@ pokazuje, że komentarze pierwszej fortunki tworzą pustą tablicę.
 Aby dodać komentarz możemy postąpić tak:
 
     :::ruby
-    Fortune.first.comments << Comment.new(:author=>"Ja", :body=>"Fajne!")
+    Fortune.first.comments << Comment.new(:author=>"Ja", :quotation=>"Fajne!")
     Comment.all
 
 
@@ -1182,7 +1182,7 @@ Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*:
       <% @fortune.comments.each do |comment| %>
        <p>Autor:<br><%= comment.author %></p>
        <div class="comment">
-         <b>Body:</b> <%= comment.body %>
+         <b>Quotation:</b> <%= comment.quotation %>
        </div>
        <p>
          <%= link_to "Delete", [@fortune, comment], :confirm => t('helpers.data.sure'), :method => :delete %>
@@ -1201,7 +1201,7 @@ Najwygodniej byłoby dodać też formularz do widoku *show*:
     <h2>Add new comment</h2>
     <%= simple_form_for [@fortune, @fortune.comments.build] do |f| %>
       <%= f.input :author, :input_html => {:size => 40} %>
-      <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
+      <%= f.input :quotation, :input_html => {:rows => 4, :cols => 40} %>
       <%= f.button :submit %>
     <% end %>
 
@@ -1251,7 +1251,7 @@ Tworzymy z usuniętego kodu szablon częściowy *comments/_form.html.erb*:
     :::rhtml app/views/comments/_form.html.erb
     <%= simple_form_for [@fortune, @comment] do |f| %>
       <%= f.input :author, :input_html => {:size => 40} %>
-      <%= f.input :body, :input_html => {:rows => 4, :cols => 40} %>
+      <%= f.input :quotation, :input_html => {:rows => 4, :cols => 40} %>
       <%= f.button :submit %>
     <% end %>
 
@@ -1271,7 +1271,7 @@ pętli tworzymy drugi szablon częściowy *comments/_comment.html.erb*:
 
     :::rhtml app/views/comments/_comment.html.erb
     <p><i>Autor:</i> <%= comment.author %></p>
-    <div class="comment"><i>Body:</i>
+    <div class="comment"><i>Quotation:</i>
       <%= comment.body %>
     </div>
     <p>
