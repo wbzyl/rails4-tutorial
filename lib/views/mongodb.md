@@ -314,8 +314,22 @@ oraz metody *not_present*:
     def not_present
       @student = Student.find(params[:id])
       logger.info "☻ #{@student.full_name} absent at #{params[:absent]}"
-      @student.add_to_set(:absences, today_absence())
+      @student.add_to_set(:absences, today_absence)
       redirect_to students_url
+    end
+
+Po zapisaniu zmian w bazie przechodzimy na stronę główną:
+
+    :::ruby app/controllers/students_controller.rb
+    # PUT /students/1
+    def update
+      @student = Student.find(params[:id])
+
+      if @student.update_attributes(params[:student])
+        redirect_to students_url, notice: 'Student was successfully updated'
+      else
+        render action: "edit"
+      end
     end
 
 
