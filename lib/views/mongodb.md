@@ -41,7 +41,6 @@ Hosting:
 * [Node.js + MongoDB = Love: Guest Post from MongoLab](http://joyeur.com/2011/10/26/node-js-mongodb-love-guest-post-from-mongolab/?utm_source=NoSQL+Weekly+Newsletter&utm_campaign=4ed79d28a1-NoSQL_Weekly_Issue_49_November_3_2011&utm_medium=email)
 
 
-
 # Lista obecności
 
 Przykładowa aplikacja CRUD listy obecności studentów.
@@ -60,10 +59,10 @@ oraz gemu OmniAuth ze strategiami *github* i *twitter*.
 
     :::ruby Gemfile
     gem 'formtastic'
-    gem 'kaminari'
 
     gem 'omniauth'
     gem 'omniauth-github'
+
     # 2011.11.10 – nie działa
     gem 'omniauth-contrib', :git => 'git://github.com/intridea/omniauth-contrib.git'
 
@@ -117,25 +116,26 @@ Oto wygenerowany plik konfiguracyjny Mongoid:
 
 Póki co zostawiamy go bez zmian.
 
-5\. Replica sets, master/slave, multiple databases
-– na razie pomijamy. Sharding – też.
-OmniAuth zajmiemy się także później.
+Replica sets, master/slave, multiple databases – na razie
+pomijamy. Sharding – też.
 
-6\. Generujemy rusztowanie dla modelu *Student*:
+OmniAuth jest opisany w następnej sekcji.
+
+5\. Oczywiście w aplikacji *Lista Obecności* nie może zabraknąć
+atrybutów nieobecność i uwagi.
+
+Generujemy rusztowanie dla modelu *Student*:
 
     :::bash terminal
     rails generate scaffold Student last_name:String first_name:String \
       id_number:Integer course:String group:String absences:Array comment:String
 
-Oczywiście w aplikacji „lista obecności” nie może zabraknąć
-atrybutów nieobecności i uwagi.
-
-7\. Na koniec importujemy listę studentów do bazy MongoDB:
+6\. Na koniec importujemy listę studentów do bazy MongoDB:
 
     :::bash terminal
     mongoimport --drop -d lista_obecnosci_development -c students --headerline --type csv wd.csv
 
-Fragment pliku CSV z nagłówkiem:
+Oto fragment pliku CSV z nagłówkiem:
 
     :::csv wd.csv
     last_name,first_name,id_number,course
@@ -146,7 +146,9 @@ Fragment pliku CSV z nagłówkiem:
     "Kamińska","Irena",556123,"Aplikacje internetowe i bazy danych"
     "Jankowski","Kazimierz",628942,"Algorytmy i struktury danych"
 
-Przy okazji kilka sposobów na tworzenie kopii zapasowej bazy:
+Przy okazji uzupełnię ten punkt uwagami o robieniu kopii zapasowych bazy.
+
+Eksport do pliku tekstowego:
 
     :::bash terminal
     mongoexport -d lista_obecnosci_development -c students -o wd-$(date +%Y-%m-%d).json
@@ -157,7 +159,7 @@ może wyglądać tak:
     :::bash terminal
     mongoimport --drop -d lista_obecnosci_development -c students wd-2011-11-08.json
 
-Backup & restore na działającej bazie wykonujemy tak:
+Zrzut do plików binarnych wykonujemy na **działającej** bazie:
 
     :::bash
     mongodump -d lista_obecnosci_development -o backup
@@ -167,7 +169,7 @@ Backup & restore na działającej bazie wykonujemy tak:
 *lista_obecnosci_development* importujemy do bazy *test*, a nie
 do *lista_obecnosci_development*!
 
-8\. Pozostaje uruchomić serwer www:
+7\. Pozostaje uruchomić serwer WWW:
 
     :::bash terminal
     rails server -p 3000
@@ -176,9 +178,11 @@ i wejść na stronę z listą obecności:
 
     http://localhost:3000/students
 
-9\. Dodajemy podstawową autentykację do aplikacji:
+Jeśli aplikacja działa, to przechodzimy do nastepnych punktów.
 
-    :::ruby
+8\. Dodajemy podstawową autentykację do aplikacji:
+
+    :::ruby app/controllers/students_controller.rb
     http_basic_authenticate_with :name => ENV['LO_NAME'], :password => ENV['LO_PASSWORD']
 
 „Sensitive data” zapiszemy w pliku *http-authentication.sh*:
@@ -188,12 +192,12 @@ i wejść na stronę z listą obecności:
     export LO_PASSWORD="razdwa"
 
 Teraz przed uruchomieniem aplikacji musimy dodać te zmienne
-do *shell enviroment*:
+do środowiska powłoki:
 
     :::bash http-authentication.sh
     source http-authentication.sh
 
-10\. Do stylizacji formularzy użyjemy arkusza stylów gemu
+9\. Do stylizacji formularzy użyjemy arkusza stylów gemu
 *Formtastic*. W tym celu w pliku *application.css.sass*, wiersz:
 
     :::css app/assets/stylesheets/application.css.scss
@@ -210,6 +214,9 @@ Kod arkusza *lista_obecnosci.css.scss* jest pod koniec tej sekcji.
 
 
 ## Zaczynamy od modelu Student
+
+Co to są wirtualne atrybuty?
+[More on Virtual Attributes](http://railscasts.com/episodes/167-more-on-virtual-attributes?view=asciicast).
 
 Dodajemy metody getter i setter dla **wirtualnych atrybutów**
 oraz ustawiamy domyślne sortowanie rekordów:
@@ -235,12 +242,12 @@ oraz ustawiamy domyślne sortowanie rekordów:
         self.last_name = split.last
       end
 
-      # getter and setter
+      # obróbka tablicy w formularzu
       def absences_list
-        absences.to_a.join(', ') # .to_a handles nil attribute
+        absences.to_a.join(' ') # .to_a handles nil attribute
       end
       def absences_list=(string)
-        list = string.gsub(/[,\s]+/, ' ').split(' ') # najpierw normalizacja
+        list = string.gsub(/[,\s]+/, ' ').split(' ') # najpierw normalizacja, póżniej split
         set(:absences, list)
       end
 
@@ -250,26 +257,26 @@ oraz ustawiamy domyślne sortowanie rekordów:
 
 ## Nowa strona główna aplikacji
 
-Obrazek pokazujący o co nam chodzi:
+Obrazek pokazujący o co nam chodzi (**TODO** do wymiany):
 
 {%= image_tag "/images/lista-obecnosci.png", :alt => "[lista obecnosci: /index]" %}
 
-Są trzy grupy studentów: niebieska, zielona i czerwona. Kliknięcie
-w śmieszek dopisuje do dokumentu studenta nieobecność, przeładowuje
-stronę dodając pomarańczową kropkę przy nazwisku. Kropki po prawej
-stronie nazwiska to liczba nieobecności.
+Są cztery grupy studentów: niebieska, zielona, czerwona oraz
+*unknown*.  Kliknięcie w śmieszek dopisuje do dokumentu studenta
+nieobecność, przeładowuje stronę na której zostaje wypisana
+pomarańczowa kropka przy nazwisku. Kropki po prawej stronie nazwiska
+to liczba nieobecności.
 
-Do generowania kropek używamy metody pomocniczej *bullets*. Slider
-pokazuje liczbę punktów zdobytych przez studenta na zajęciach.
+Do generowania kropek używamy metody pomocniczej *bullets*. Suwak
+pokazuje liczbę punktów, w zakresie 0–100, zdobytych przez studenta na
+laboratorium.
 
 Zmiany zaczniemy wprowadzać od dodania do routingu metody
 *not_present*:
 
     :::ruby config/routes.rb
     resources :students do
-      member do
-        put 'not_present'
-      end
+      put 'not_present', :on => :member
     end
 
 Następnie przemodelujemy szablon strony głównej:
@@ -279,10 +286,9 @@ Następnie przemodelujemy szablon strony głównej:
     <article class="index">
       <div class="attribute">
         <div class="presence"><%= link_to '☺', not_present_student_path(student), method: :put %></div>
-        <div class="full-name <%= student.group %>"><%= student.full_name %></div>
+        <div class="full-name <%= student.group %>"><%= link_to student.full_name, student %></div>
         <div class="absences"><%= bullets(student.absences) %></div>
         <div class="links">
-          <%= link_to '✚', student %>
           <%= link_to '✎', edit_student_path(student) %>
           <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
         </div>
@@ -340,7 +346,7 @@ Po zapisaniu zmian w bazie przechodzimy na stronę główną:
 
 ### Zmiany w pozostałych widokach
 
-Zmieniany fragemnt *show.html.erb*:
+Zmieniany fragment w *show.html.erb*:
 
     :::rhtml app/views/students/show.html.erb
     <article class="single">
@@ -349,12 +355,13 @@ Zmieniany fragemnt *show.html.erb*:
         <span class="absences"><%= @student.absences_list %></span>
       </div>
 
-**TODO:** Inne widoki? Zmienić teksty na ikonki w *link_to*.
+Na co zamienić napisy *Show*, *Edit*, *Back*, *New Student* i *Edit Student*?
+Jakieś pomysły?
 
 
 ## Poprawiamy wygenerowany formularz
 
-Lista wyboru: *red*, *green*, *blue* dla grup,
+Lista wyboru: *unknown*, *red*, *green*, *blue* dla grup,
 element *textarea* dla *comment*, oraz wirtualne atrybuty
 *full_name* i *absences_list*
 
@@ -365,9 +372,10 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
         <%= f.input :absences_list, :as => :string %>
         <%= f.input :id_number %>
         <%= f.input :course, :as => :select,
-           :collection => ["Aplikacje internetowe i bazy danych", "Algorytmy i struktury danych"] %>
-        <%= f.input :group, :as => :select, :collection => ["red", "green", "blue"] %>
-        <%= f.input :comment, :as => :text, :input_html => {:rows => 4} %>
+           :collection => ["Żadna", "Aplikacje internetowe i bazy danych", "Algorytmy i struktury danych"] %>
+        <%= f.input :group, :as => :select,
+           :collection => ["unknown", "red", "green", "blue"] %>
+        <%= f.input :comment, :as => :text, :input_html => {:rows => 8} %>
       <% end %>
       <%= f.buttons do %>
         <%= f.commit_button %>
@@ -377,14 +385,27 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
 
 ### Arkusz stylów
 
-Dodatkowe reguły:
+Obiecany arkusz stylów:
 
     :::css lista_obecnosci.css.scss
+    .red, a.red {
+      color: red; }
+    .green, a.green {
+      color: green; }
+    .blue, a.blue {
+      color: blue; }
+    .unknown, a.unknown {
+      color: cyan; }
+    .today {
+      color: #E82C0C; }
     .index {
       .attribute {
          clear: both;
          .full-name, .presence, .absences {
             float: left; }
+         .full-name {
+            a {
+              text-decoration: none; } }
          .presence {
             cursor: pointer;
             margin-right: 1em;
@@ -411,6 +432,8 @@ Dodatkowe reguły:
       clear: both; }
     .attribute {
       margin-top: 0.5em; }
+
+Jakiś taki nieuporządkowany jest ten arkusz. Powinno się go uporządkować!
 
 
 # OmniAuth — Github + Twitter
@@ -441,7 +464,7 @@ dostosowujemy do konwencji Rails:
 
 Powyżej `GITHUB_KEY`, `GITHUB_SECRET` kopiujemy ze strony
 [Your OAuth Applications](https://github.com/account/applications).
-zakładam, że
+Przyjmuję, że
 
     GITHUB_KEY === Client ID
     GITHUB_SECRET === Client Secret
@@ -467,14 +490,14 @@ Aplikację rejestrujemy [tutaj](https://dev.twitter.com/apps/new):
     URL:      http://localhost:3000
     Callback: http://127.0.0.1:3000
 
-Klucze zapisujemy w pliku *twitter.sh*, który będziemy trzymać
-poza repozytorium:
+Klucze zapisujemy w pliku *twitter.sh*, który będziemy
+też trzymać poza repozytorium:
 
     :::bash twitter.sh
     export TWITTER_KEY="111111111111111111111"
     export TWITTER_SECRET="111111111111111111111111111111111111111111"
 
-Plik konfiguracyjny dla middlewarwe OmniAuth, to:
+Do pliku konfiguracyjny dla OmniAuth wklepujemy:
 
     :::ruby config/initializers/twitter.rb
     Rails.application.config.middleware.use OmniAuth::Builder do
@@ -491,7 +514,8 @@ Po pomyślnej autentykacji, dane użytkownika będziemy zapisywać w bazie:
 
 ## Generujemy kontroler dla sesji
 
-…na przykład tak (poprawniejszą nazwą byłoby *Session*):
+…na przykład tak (używamy liczby mnogiej, chociaż bardziej poprawne
+byłoby *Session*; dlaczego?):
 
     :::bash terminal
     rails generate controller Sessions
@@ -517,27 +541,28 @@ Dopisujemy do wygenerowanego kodu kilka metod:
       end
     end
 
-Ponieważ każdy provider, po pomyślnej autentykacji, zwraca inne
-informacje my, na razie, w metodzie **create**
-zgłaszamy wyjątek, aby podejrzeć to co przesłał Github.
+Po pomyślnej autentykacji każdy provider zwraca nieco inne
+dane, na razie w metodzie **create** zgłaszamy wyjątek,
+po to, by podejrzeć dane przesłane przez Github’a.
 
 
 ## Routing
 
-OmniAuth ma wbudowany routing dla wspieranych dostawców (*providers*),
-na przykład dla Githuba są to:
+OmniAuth ma wbudowany routing dla wspieranych dostawców (*providers*).
+Dla Githuba jest to:
 
     /auth/github          # przekierowanie na Github
     /auth/github/callback # przekierowanie po pomyślnej autentykacji
     /auth/failure         # tutaj, w przeciwnym wypadku
 
-W pliku *routes.rb* wpisujemy:
+Dlatego w pliku *routes.rb* wpisujemy:
 
     :::ruby config/routes.rb
     match '/auth/:provider/callback' => 'sessions#create'
     match '/auth/failure' => 'sessions#failure'
 
-Przyda się kilka metod pomocniczych: *signout_path*, *signin_path*:
+Metody pomocnicze *signout_path*, *signin_path* też zwiększą
+czytelność kodu:
 
     :::ruby config/routes.rb
     match '/signout' => 'sessions#destroy', :as => :signout
@@ -552,12 +577,12 @@ Teraz możemy przetestować jak to działa!
 Ręcznie wpisujemy w przeglądarce następujące uri:
 
     http://localhost:3000/auth/github
-    http://localhost:3000/auth/twitter
+    http://localhost:3000/auth/twitter  # 2011.11.11 – nie działa
 
 Po pomyślnym zalogowaniu w metodzie *create* zgłaszany
-jest wyjątek, a my widzimy stronę z **RuntimeError** .
+jest wyjątek, a my widzimy stronę z **RuntimeError**.
 
-Twitter zwraca coś takiego (fragment):
+Twitter zwraca masę danych. Poniżej, to tylko mały wyjątek:
 
     :::yaml
     ---
@@ -578,7 +603,7 @@ Twitter zwraca coś takiego (fragment):
     extra:
       access_token: !ruby/object:OAuth::AccessToken
 
-A Github zwraca coś takiego (wszystko):
+Dla odmiany Github zwraca tylko tyle:
 
     :::yaml
     ---
@@ -616,13 +641,9 @@ Dodajemy metodę do modelu *User*:
             user.uid = auth['uid']
             if auth['info']
               # logger.info("#{auth['info'].to_json}")
-              user.name = auth['info']['name'] || "" # Twitter, GitHub
+              user.name = auth['info']['name'] || ""          # tylko GitHub, Twitter
               user.email = auth['info']['email'] || ""
               user.nickname = auth['info']['nickname'] || ""
-            end
-            if auth['extra']['user_hash'] # Facebook -- sprawdzić
-              # user.name = auth['extra']['user_hash']['name'] || ""
-              # user.email = auth['extra']['user_hash']['email'] || ""
             end
           end
         rescue Exception
@@ -663,7 +684,6 @@ Praktycznie każda implementacja autentykacji implementuje te metody:
       protect_from_forgery
 
       helper_method :current_user
-      helper_method :user_signed_in?
       helper_method :correct_user?
 
       private
@@ -688,37 +708,44 @@ Praktycznie każda implementacja autentykacji implementuje te metody:
     end
 
 
-## Strona dla Admin do zarządzania danym użytkowników
+## Strona do zarządzania danymi użytkowników
 
-Generator:
+Czyli coś dla administratora.
+Na pierwszy ogień pójdą model i widok:
 
+    :::bash terminal
     rails generate controller admin index
 
-Modyfikujemy kontroller:
+Dopisujemy w modelu:
 
-    :::ruby controllers/admin_controller.rb
-    def index
-      @users = User.asc(:nickname)
-    end
+    :::ruby models/user.rb
+    default_scope asc(:nickname, :provider)
 
-oraz widok *index*:
+oraz w widoku:
 
-    :::ruby app/views/admin/index.html.erb
+    :::rhtml app/views/admin/index.html.erb
     <% title "Admin page" %>
     <h3>Users list</h3>
-
     <ol>
     <% @users.each do |user| %>
       <li><%= user.name %> <i>via</i> <%= user.provider %></li>
     <% end %>
     </ol>
 
-Wchodzimy na stronę:
+Na koniec poprawiamy routing:
 
-    http://localhost:3000/admin/index
+    :::ruby config/routes.rb
+    # get "admin/index" -- zmieniamy na
+    match '/admin' => 'admin#index', :as => :admin
+
+Teraz wchodzimy na stronę:
+
+    http://localhost:3000/admin
 
 
 ## Poprawiamy layout aplikacji
+
+**TODO**
 
 SASS:
 
@@ -728,7 +755,7 @@ SASS:
       margin: 0 0 2em;
       padding: 0;
       li {
-      display: inline; } }
+        display: inline; } }
 
 Nawigacja (do poprawki, HTML5):
 
@@ -756,26 +783,34 @@ Layout (dopisujemy pod znacznikiem *header*):
        <%= content_tag :h1, "Lista obecności ASI, 2011/12" %>
 
 I sprawdzamy jak wygląda nawigacja w działającej aplikacji.
-CSS do poprawki!
 
 
-## Access Controll
+## Dodajemy access control
 
-Użyjemy autentykacji do tego aby zalogowany użytkownik mógł
-obejrzeć swoje wszystkie dane (liczba mnoga **users**):
+Użyjemy autentykacji do tego, aby zalogowany użytkownik mógł obejrzeć
+(**TODO** tylko) swoje wszystkie dane (tutaj używamy liczby mnogiej
+**users**):
 
     :::bash terminal
-    rails generate controller users show
+    rails generate controller users show edit
 
 Routing:
 
     :::ruby config/routes.rb
     # get "users/show"  -- wykomentowujemy
     resources :users, :only => :show
-    # get "admin/index" -- zmieniamy na
-    match '/admin' => 'admin#index', :as => :admin
 
-Widok *show*:
+Dopisujemy w kontrolerze:
+
+    :::ruby controllers/users_controller.rb
+    before_filter :authenticate_user!
+    before_filter :correct_user?
+
+    def show
+      @user = User.find(params[:id])
+    end
+
+Widok *show* (**TODO** też do poprawki):
 
     :::rhtml app/views/users/show.html.erb
     <% title "User Profile" %>
@@ -786,7 +821,7 @@ Widok *show*:
     <p>Email: <%= @user.email %></p>
     <p>Nickname: <%= @user.nickname %></p>
 
-Modyfikujemy widok *admin/index*:
+Na ostatek modyfikujemy widok *index.html.erb*:
 
     :::rhtml app/views/admin/index.html.erb
     <ol>
@@ -795,14 +830,18 @@ Modyfikujemy widok *admin/index*:
       <% end %>
     </ol>
 
-### Zmiana email
 
-Zmieniamy routing:
+### Zmiana adresu email
+
+Użytkownika bez adresu email będziemy przekierowywać
+na stronę, gdzie będzie mógł go wpisać.
+
+W tym celu zmieniamy routing:
 
     :::ruby config/routes.rb
     resources :users, :only => [ :show, :edit, :update ]
 
-Kontroller:
+kontroler użytkownika:
 
     :::ruby controllers/users_controller.rb
     def edit
@@ -817,16 +856,18 @@ Kontroller:
       end
     end
 
-Widok (TODO: zamienić na formtastic):
+oraz widok *edit.html.erb*:
 
     :::rhtml app/views/users/edit.html.erb
-    <%= form_for(@user) do |f| %>
-      <p><%= f.label :email %>
-      <%= f.text_field :email %></p>
-      <p><%= f.submit "Sign in" %></p>
+    <% title "Change Email" %>
+    <%= semantic_form_for @user do |f| %>
+      <%= f.input :email %>
+      <%= f.buttons do %>
+        <%= f.commit_button %>
+      <% end %>
     <% end %>
 
-Zmiany w kontrolerze sesji:
+i kontroler sesji:
 
     :::ruby app/controllers/sessions_controller.rb
     def create
@@ -843,9 +884,14 @@ Zmiany w kontrolerze sesji:
 
 Zrobione!
 
+
+# TODO
+
+Różne rzeczy, które należałoby zaprogramować lub poprawić.
+
 ## Usuwanie baz danych aplikacji
 
-**TODO:** Dopisujemy do pliku *seeds.rb*:
+Dopisujemy do pliku *seeds.rb*:
 
     :::ruby db/seeds.rb
     puts 'Empty the MongoDB database'
@@ -858,29 +904,9 @@ Teraz:
 usuwa kolekcje *students* i *users* z bazy. Dziwne to!
 Lepiej byłoby dodać (osobne dla każdej kolekcji) zadania dla rake.
 
-Ale możnaby wrzucić *mongoimport* do *seeds.rb*.
+Wrzucić *mongoimport* do *seeds.rb*?
 
-
-## Ikonki dla CRUD
-
-**TODO**
-
-
-# Różny misz masz…
-
-* K. Seguin, [The MongoDB Collection](http://mongly.com/)
-* K. Seguin, [Blog](http://openmymind.net/)
-
-
-## TODO
-
-W aplikacji jest zaszyty format daty nieobecności:
-
-    miesiąc-dzień
-
-Do poprawki.
-
-### TODO: progressive enhancements
+## Progressive enhancements
 
 JavaScript (kod umieścić tylko na stronie */students*):
 
@@ -906,3 +932,10 @@ JavaScript (kod umieścić tylko na stronie */students*):
           // event.stopPropagation(); deactivates destroy link – bug?
         });
     });
+
+
+
+# Misz masz do poczytania
+
+* K. Seguin, [The MongoDB Collection](http://mongly.com/)
+* K. Seguin, [Blog](http://openmymind.net/)
