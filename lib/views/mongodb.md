@@ -415,7 +415,7 @@ Zapomniałem o linkach do repozytoriów z projektami na Githubie.
 
 I gotowe!
 
-*TODO* klikalny link do repozytorium?
+*TODO:* Klikalny link do repozytorium? Argumenty za? przeciw?
 
 
 ## Arkusz stylów
@@ -974,7 +974,6 @@ JavaScript (kod umieścić tylko na stronie */students*):
           // event.stopPropagation(); deactivates destroy link – bug?
         });
     });
-
 
 
 # Misz masz do poczytania
