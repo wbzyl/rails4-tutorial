@@ -354,6 +354,14 @@ Zmieniany fragment w *show.html.erb*:
         <span class="value <%= @student.group %>"><%= @student.full_name %></span>
         <span class="absences"><%= @student.absences_list %></span>
       </div>
+    <div class="attribute">
+      <span class="name">Id:</span>
+      <span class="value"><%= @student.id_number %></span>
+    </div>
+    <div class="attribute">
+      <span class="name">Course:</span>
+      <span class="value"><%= @student.course %></span>
+    </div>
 
 Na co zamienić napisy *Show*, *Edit*, *Back*, *New Student* i *Edit Student*?
 Jakieś pomysły?
@@ -383,9 +391,36 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
     <% end %>
 
 
-### Arkusz stylów
+## Samo życie
 
-Obiecany arkusz stylów:
+Zapomniałem o linkach do repozytoriów z projektami na Githubie.
+
+1\. Poprawki w modelu:
+
+    :::ruby app/models/student.rb
+    field :repositories, :type => String
+
+2\. Szablonie formularza:
+
+    :::rhtml app/views/students/_form.html.erb
+    <%= f.input :repositories %>
+
+3\. Szablon widoku *show*:
+
+    :::ruby app/views/students/show.html.erb
+    <div class="attribute">
+      <span class="name">Repository URL:</span>
+      <span class="value uri"><%= @student.repositories %></span>
+    </div>
+
+I gotowe!
+
+*TODO* klikalny link do repozytorium?
+
+
+## Arkusz stylów
+
+Oto obiecany powyżej arkusz stylów:
 
     :::css lista_obecnosci.css.scss
     .red, a.red {
@@ -424,6 +459,8 @@ Obiecany arkusz stylów:
               color: #E80C7A; } } } }
     .single {
       .attribute {
+        .uri {
+           font-style: italic; }
         .absences {
            margin-left: 2em;
            font-weight: bold; } } }
@@ -432,6 +469,17 @@ Obiecany arkusz stylów:
       clear: both; }
     .attribute {
       margin-top: 0.5em; }
+    ul.hmenu {
+      float: right;
+      list-style: none;
+      margin: 0 0 2em;
+      padding: 0;
+      li {
+        padding-left: 1em;
+        display: inline;
+        a {
+          text-decoration: none;
+          color: yellow; } } }
 
 Jakiś taki nieuporządkowany jest ten arkusz. Powinno się go uporządkować!
 
@@ -761,26 +809,20 @@ Nawigacja (do poprawki, HTML5):
 
     :::rhtml app/views/shared/_navigation.html.erb
     <% if current_user %>
-      <li>
-      Logged in as <%= current_user.name %>
-      </li>
-      <li>
-      <%= link_to('Logout', signout_path) %>
-      </li>
+      <li>Logged in <%= current_user.name %>
+      <li><%= link_to('Logout', signout_path) %>
     <% else %>
-      <li>
-      <%= link_to('Login (via github)', signin_path)  %>
-      </li>
+      <li><%= link_to('Login (via github)', signin_path)  %>
     <% end %>
 
 Layout (dopisujemy pod znacznikiem *header*):
 
     :::rhtml app/views/layouts/application.html.erb
     <header>
-       <ul class="hmenu">
-         <%= render 'shared/navigation' %>
-       </ul>
-       <%= content_tag :h1, "Lista obecności ASI, 2011/12" %>
+      <ul class="hmenu">
+        <%= render 'shared/navigation' %>
+      </ul>
+      <%= content_tag :h1, "Lista obecności ASI, 2011/12" %>
 
 I sprawdzamy jak wygląda nawigacja w działającej aplikacji.
 
