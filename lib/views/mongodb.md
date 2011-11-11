@@ -420,8 +420,13 @@ I gotowe!
 
 ## Implementujemy suwak
 
-**TODO**
+Zaczniemy od obejrzenia demo i przejrzenia dokumentacji widgetu *Slider*
+z *jQuery UI*:
 
+* [Slider Demo](http://jqueryui.com/demos/slider/)
+* [UI/API/1.8/Slider](http://docs.jquery.com/UI/Slider)
+
+**TODO**
 
 
 ## Arkusz stylów
@@ -489,7 +494,7 @@ Oto obiecany powyżej arkusz stylów:
           text-decoration: none;
           color: yellow; } } }
 
-Jakiś taki nieuporządkowany jest ten arkusz. Powinno się go uporządkować!
+Jakiś taki nieuporządkowany jest ten arkusz. *TODO:* uporządkować arkusz!
 
 
 # OmniAuth — Github + Twitter
