@@ -1,7 +1,12 @@
 #### {% title "Mongoid + OmniAuth z githubem i twitterem" %}
 
-Przykładowa aplikacja CRUD korzystająca z bazy MongoDB,
-gemów Mongoid, OmniAuth.
+### Uwagi
+
+[2011.11.11] Następna wersja z [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/) ?
+z [Foundation](https://github.com/zurb/foundation) ?
+
+[2011.11.11] Fajne i użyteczne. [Shapecatcher](http://shapecatcher.com/)
+– unicode character recognition.
 
 Mongo links:
 
@@ -39,9 +44,9 @@ Hosting:
 
 # Lista obecności
 
-Prosta aplikacja implementująca CRUD dla listy obecności studentów.
-
-**TODO:** Podmienić w szablonie HTML5Boilerplate na [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/).
+Przykładowa aplikacja CRUD listy obecności studentów.
+W aplikacji korzystamy z bazy MongoDB via gem Mongoid,
+oraz gemu OmniAuth ze strategiami *github* i *twitter*.
 
 1\. Generujemy rusztowanie/szkielet aplikacji:
 
