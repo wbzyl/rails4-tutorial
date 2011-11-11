@@ -418,11 +418,19 @@ I gotowe!
 *TODO:* Klikalny link do repozytorium? Argumenty za? przeciw?
 
 
+## Implementujemy suwak
+
+**TODO**
+
+
+
 ## Arkusz stylów
 
 Oto obiecany powyżej arkusz stylów:
 
     :::css lista_obecnosci.css.scss
+    a {
+      color: black; }
     .red, a.red {
       color: red; }
     .green, a.green {
