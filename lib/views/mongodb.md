@@ -380,7 +380,7 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
         <%= f.input :absences_list, :as => :string %>
         <%= f.input :id_number %>
         <%= f.input :course, :as => :select,
-           :collection => ["Żadna", "Aplikacje internetowe i bazy danych", "Algorytmy i struktury danych"] %>
+           :collection => ["Unknown", "Aplikacje internetowe i bazy danych", "Algorytmy i struktury danych"] %>
         <%= f.input :group, :as => :select,
            :collection => ["unknown", "red", "green", "blue"] %>
         <%= f.input :comment, :as => :text, :input_html => {:rows => 8} %>
