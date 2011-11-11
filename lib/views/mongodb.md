@@ -407,7 +407,7 @@ Zapomniałem o linkach do repozytoriów z projektami na Githubie.
 
 3\. Szablon widoku *show*:
 
-    :::ruby app/views/students/show.html.erb
+    :::rhtml app/views/students/show.html.erb
     <div class="attribute">
       <span class="name">Repository URL:</span>
       <span class="value uri"><%= @student.repositories %></span>
