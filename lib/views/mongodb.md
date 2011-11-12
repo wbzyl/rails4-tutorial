@@ -426,7 +426,95 @@ z *jQuery UI*:
 * [Slider Demo](http://jqueryui.com/demos/slider/)
 * [UI/API/1.8/Slider](http://docs.jquery.com/UI/Slider)
 
-**TODO**
+Następnie tworzymy sobie własny Theme:
+
+* [ThemeRoller](http://jqueryui.com/themeroller/)
+
+albo pobieramy gotowca:
+
+* [Build Your Download](http://jqueryui.com/download)
+
+Wybrałem UI lightness.
+
+Wchodzimy na konsolę Rails, gdzie wykonujemy:
+
+    :::ruby
+    Rails.application.config.assets.paths.each {|p| puts p } ; 0
+    ...
+    /home/wbzyl/repos/dydaktyka/lista-obecnosci-rails-mongoid-omniauth/vendor/assets/stylesheets
+    ...
+
+Rozpakowujemy całość w katalogu w katalogu tymczasowym, z którego
+kopiujemy do katalogu *vendor/assets/stylesheets* plik
+*jquery-ui-1.8.16.custom.css* i katalog *images*.
+
+Dopisujemy *jquery-ui-1.8.16.custom.css* do *application.css.scss*:
+
+    :::css app/assets/stylesheets/application.css.scss
+    /*
+     *= require jquery-ui-1.8.16.custom
+     *= require_self
+     */
+
+Do *layout.css.scss* dopisujemy:
+
+    :::css app/assets/stylesheets/layout.css.scss
+    /* jQuery UI slider */
+    .ui-slider .ui-slider-handle { width: 1em; height: 1em; }
+    .ui-slider-horizontal { margin-top: .25em; height: .6em; }
+    .ui-slider-horizontal .ui-slider-handle { top: -.25em; margin-left: -.5em; }
+
+Podrasowujemy routing:
+
+    :::ruby config/routes.rb
+    resources :students do
+      put 'not_present', :on => :member
+      put 'rating', :on => :member
+    end
+
+Teraz dodajemy suwaki do *index.html.erb*:
+
+    :::rhtml app/views/students/index.html.erb
+    <% @students.each do |student| %>
+    <article class="index">
+      <div class="attribute">
+        <div class="presence"><%= link_to '☺', not_present_student_path(student), method: :put %></div>
+        <div class="full-name"><%= link_to student.full_name, student, :class => student.group %></div>
+        <div class="absences"><%= bullets(student.absences) %></div>
+        <div class="links">
+          <%= link_to '✎', edit_student_path(student) %>
+          <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
+        </div>
+        <div data-rating="<%= rating_student_path(student) %>"></div>
+      </div>
+    </article>
+    <% end %>
+
+    <div class="link">
+      <%= link_to 'New Student', new_student_path %>
+    </div>
+
+Inicjalizacja:
+
+    :::javascript app/assets/javascripts/students.js
+    $(function() {
+      $('div[data-rating]').slider({
+        range: "min"
+
+      });
+    });
+
+Nie zapominamy dopisać tego pliku do:
+
+    :::javascript app/assets/javascripts/application.js
+    //= require jquery
+    //= require jquery-ui
+    //= require jquery_ujs
+    //= require students
+
+Stylizacja w arkuszu stylów poniżej.
+
+**TODO** ajax
 
 
 ## Arkusz stylów
@@ -449,6 +537,10 @@ Oto obiecany powyżej arkusz stylów:
     .index {
       .attribute {
          clear: both;
+         div[data-rating] { // sliders
+            width: 200px;
+            float: right;
+            margin-right: 0.5em; }
          .full-name, .presence, .absences {
             float: left; }
          .full-name {
