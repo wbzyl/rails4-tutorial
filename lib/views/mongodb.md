@@ -1135,7 +1135,9 @@ Dopisujemy do pliku *seeds.rb*:
 
     :::ruby db/seeds.rb
     puts 'Empty the MongoDB database'
-    Mongoid.master.collections.reject { |c| c.name =~ /^system/}.each(&:drop)
+    Mongoid.master.collections.reject do |c|
+      c.name =~ /^system/
+    end.each(&:drop)
 
 Teraz:
 
@@ -1146,9 +1148,10 @@ Lepiej byłoby dodać (osobne dla każdej kolekcji) zadania dla rake.
 
 Wrzucić *mongoimport* do *seeds.rb*?
 
-## Progressive enhancements
 
-JavaScript (kod umieścić tylko na stronie */students*):
+# Co oznacza zwrot *progressive enhancements*
+
+Ściąga (stary kod):
 
     :::javascript app/assets/javascripts/students.js
     $(document).ready(function() {
