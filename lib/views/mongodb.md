@@ -515,7 +515,9 @@ Dodajemy suwaki do strony głównej:
           <%= link_to '✎', edit_student_path(student) %>
           <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
         </div>
-        <div data-rank-student="<%= rank_student_path(student) %>"></div>
+        <div data-student-rank="<%= student.rank.to_i %>"
+             data-rank-student-path="<%= rank_student_path(student) %>">
+        </div>
       </div>
     </article>
     <% end %>
@@ -524,13 +526,21 @@ Dodajemy suwaki do strony głównej:
       <%= link_to 'New Student', new_student_path %>
     </div>
 
-Inicjalizacja suwaków:
+Inicjalizacja suwaków: rodzaj suwaka – *"min"*,
+pozycja uchwytu – wartość atrybutu *data-student-rank*, której
+wcześniej nadaliśmy wartość pobraną z bazy:
 
     :::javascript app/assets/javascripts/students.js
     $(function() {
-      $('div[data-rank-student]').slider({
-        range: "min"
+
+      // Add sliders to div elements
+      $('div[data-student-rank]').slider({
+          range: "min",
+          create: function(event, ui) {
+              $(this).slider({ value: $(this).data("student-rank") });
+          }
       });
+
     });
 
 Dodajemy plik inicjalizujący suwaki pliku *application.js*:
@@ -554,17 +564,48 @@ W tym celu skorzystamy ze zdarzenia *change*.
 Na początek przyjrzymy się czy i jak to działa:
 
     :::javascript app/assets/javascripts/students.js
-    // Add sliders
-    $('div[data-rank-student]').slider({range: "min"});
-    // Move handle and check what is going on
     $('div[role="main"]').bind("slidechange", function(event, ui) {
-      console.log($(ui.handle).parent().data("rank-student"));
+      console.log($(ui.handle).parent().data("rank-student-path"));
       console.log(ui.value);
     });
 
-OK!
+Sprawdzamy logi na konsoli. Jest OK!
 
+Do routingu wstawiliśmy już wcześniej metodę *rank*. Dla przypomnienia:
 
+    :::ruby
+    rank_student PUT  /students/:id/rank  {:action=>"rank", :controller=>"students"}
+
+Teraz przechodzimy do implementacji. Implementujemy kolejno:
+
+zdarzenie *change* suwaka:
+
+    :::javascript app/assets/javascripts/students.js
+    $('div[role="main"]').bind("slidechange", function(event, ui) {
+      $.ajax({
+        url: $(ui.handle).parent().data("rank-student-path"),
+        type: 'PUT',
+        data: { slider_value: ui.value },
+        success: function(data) {
+          console.log(JSON.stringify(data));
+        }
+      });
+    });
+
+metodę *rank* kontrolera, która odpowie na żądanie zgłoszone przez
+suwak:
+
+    :::ruby app/controllers/students_controller.rb
+    # PUT /students/1/rank
+    def rank
+      @student = Student.find(params[:id])
+      logger.info "☻ #{@student.full_name} rank change #{@student.rank} ⟶ #{params[:value]}"
+      if @student.save
+        render json: @student
+      else
+        redirect_to students_url, alert: "There were problems with saving student's rank!"
+      end
+    end
 
 
 ## Arkusz stylów
@@ -587,7 +628,7 @@ Oto obiecany powyżej arkusz stylów:
     .index {
       .attribute {
          clear: both;
-         div[data-rating] { // sliders
+         div[data-student-rank] { // sliders
             width: 200px;
             float: right;
             margin-right: 0.5em; }
