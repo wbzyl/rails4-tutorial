@@ -354,14 +354,24 @@ Zmieniany fragment w *show.html.erb*:
         <span class="value <%= @student.group %>"><%= @student.full_name %></span>
         <span class="absences"><%= @student.absences_list %></span>
       </div>
-    <div class="attribute">
-      <span class="name">Id:</span>
-      <span class="value"><%= @student.id_number %></span>
-    </div>
-    <div class="attribute">
-      <span class="name">Course:</span>
-      <span class="value"><%= @student.course %></span>
-    </div>
+      <div class="attribute">
+        <span class="name">Id:</span>
+        <span class="value"><%= @student.id_number %></span>
+      </div>
+      <div class="attribute">
+        <span class="name">Course:</span>
+        <span class="value"><%= @student.course %></span>
+      </div>
+      <div class="attribute">
+        <div class="name">Comments:</div>
+        <div class="value comments"><%= @student.comment %></div>
+      </div>
+      <div class="link">
+        <%= link_to 'Edit', edit_student_path(@student) %> |
+        <%= link_to 'Back', students_path %>
+      </div>
+    </article>
+
 
 Na co zamienić napisy *Show*, *Edit*, *Back*, *New Student* i *Edit Student*?
 Jakieś pomysły?
@@ -394,28 +404,42 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
 ## Samo życie
 
 Zapomniałem o linkach do repozytoriów z projektami na Githubie.
+Brakuje też bieżącej oceny.
 
 1\. Poprawki w modelu:
 
     :::ruby app/models/student.rb
     field :repositories, :type => String
+    field :rank, :type => Integer
 
-2\. Szablonie formularza:
+2\. Poprawki w szablonie formularza:
 
     :::rhtml app/views/students/_form.html.erb
     <%= f.input :repositories %>
+    <%= f.input :rank %>
 
-3\. Szablon widoku *show*:
+W których miejscach to wkleić?
+
+3\. Poprawki w szablonie widoku:
 
     :::rhtml app/views/students/show.html.erb
+    <% title "#{@student.full_name} \##{@student.rank}", false %>
+    <h2 id="rank"><%= "\##{@student.rank}" %></h2>
+
+    <div class="attribute">
+      <span class="name">Rank:</span>
+      <span class="value rank"><%= @student.ranking %></span>
+    </div>
     <div class="attribute">
       <span class="name">Repository URL:</span>
       <span class="value uri"><%= @student.repositories %></span>
     </div>
 
-I gotowe!
+Jakieś inne pomysły?
 
-*TODO:* Klikalny link do repozytorium? Argumenty za? przeciw?
+Gotowe. Daliśmy sobie radę bez migracji. Odjazd!
+
+*Pytanie:* Klikalny link do repozytorium. Argumenty za? przeciw?
 
 
 ## Implementujemy suwak
@@ -464,7 +488,10 @@ Do *layout.css.scss* dopisujemy:
     .ui-slider-horizontal { margin-top: .25em; height: .6em; }
     .ui-slider-horizontal .ui-slider-handle { top: -.25em; margin-left: -.5em; }
 
-Podrasowujemy routing:
+
+### Ajaxujemy suwak
+
+Zmieniamy routing (po co?):
 
     :::ruby config/routes.rb
     resources :students do
@@ -485,7 +512,7 @@ Teraz dodajemy suwaki do *index.html.erb*:
           <%= link_to '✎', edit_student_path(student) %>
           <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
         </div>
-        <div data-rating="<%= rating_student_path(student) %>"></div>
+        <div data-rating="<%= rank_student_path(student) %>"></div>
       </div>
     </article>
     <% end %>
@@ -569,6 +596,10 @@ Oto obiecany powyżej arkusz stylów:
         .absences {
            margin-left: 2em;
            font-weight: bold; } } }
+
+    #rank {
+      color: #E80C7A; }
+
     .link {
       margin-top: 2em;
       clear: both; }
