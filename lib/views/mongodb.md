@@ -494,14 +494,6 @@ W tym celu wklepujemy w *layout.css.scss*:
 
 ### Dodajemy suwaki do strony
 
-Zmieniamy routing (po co?):
-
-    :::ruby config/routes.rb
-    resources :students do
-      put 'not_present', :on => :member
-      put 'rating', :on => :member
-    end
-
 Dodajemy suwaki do strony głównej:
 
     :::rhtml app/views/students/index.html.erb
@@ -526,9 +518,13 @@ Dodajemy suwaki do strony głównej:
       <%= link_to 'New Student', new_student_path %>
     </div>
 
-Inicjalizacja suwaków: rodzaj suwaka – *"min"*,
-pozycja uchwytu – wartość atrybutu *data-student-rank*, której
-wcześniej nadaliśmy wartość pobraną z bazy:
+Inicjalizacja suwaków:
+
+* rodzaj suwaka ← *"min"*
+* pozycja uchwytu ← wartość atrybutu *data-student-rank*, której
+  wcześniej nadaliśmy wartość pobraną z bazy
+
+A tak to zakodujemy:
 
     :::javascript app/assets/javascripts/students.js
     $(function() {
@@ -543,7 +539,7 @@ wcześniej nadaliśmy wartość pobraną z bazy:
 
     });
 
-Dodajemy plik inicjalizujący suwaki pliku *application.js*:
+Dopisujemy plik inicjalizujący suwaki do pliku *application.js*:
 
     :::javascript app/assets/javascripts/application.js
     //= require jquery
@@ -551,17 +547,17 @@ Dodajemy plik inicjalizujący suwaki pliku *application.js*:
     //= require jquery_ujs
     //= require students
 
-I już możemy sprawdzić jak się one prezentują na stronie.
+I już możemy sprawdzić jak prezentują się suwaki na stronie głównej.
 
 
 ### Ajaxujemy suwaki
 
 Oznacza to, że po przeciągnięciu uchwytu suwaka studenta na inną pozycję,
 powinniśmy uaktualnić jego *rank*, zapisując w bazie aktualną
-wartość suwaka. (Nazsze suwaki używają domyślnego zakresu **0..100**.)
+wartość suwaka. (Nasze suwaki używają domyślnego zakresu **0..100**.)
 
 W tym celu skorzystamy ze zdarzenia *change*.
-Na początek przyjrzymy się czy i jak to działa:
+Na początek przyjrzymy się czy i jak działa to zdarzenie:
 
     :::javascript app/assets/javascripts/students.js
     $('div[role="main"]').bind("slidechange", function(event, ui) {
@@ -569,7 +565,7 @@ Na początek przyjrzymy się czy i jak to działa:
       console.log(ui.value);
     });
 
-Sprawdzamy logi na konsoli. Jest OK!
+Sprawdzamy logi na konsoli przegladarki. Jest OK!
 
 Do routingu wstawiliśmy już wcześniej metodę *rank*. Dla przypomnienia:
 
@@ -587,6 +583,7 @@ zdarzenie *change* suwaka:
         type: 'PUT',
         data: { slider_value: ui.value },
         success: function(data) {
+          delete data._id; delete data.course; delete data.comment;
           console.log(JSON.stringify(data));
         }
       });
@@ -599,7 +596,8 @@ suwak:
     # PUT /students/1/rank
     def rank
       @student = Student.find(params[:id])
-      logger.info "☻ #{@student.full_name} rank change #{@student.rank} ⟶ #{params[:value]}"
+      logger.info "☻ #{@student.full_name} rank change #{@student.rank.to_i} → #{params[:slider_value]}"
+      @student.rank = params[:slider_value]
       if @student.save
         render json: @student
       else
