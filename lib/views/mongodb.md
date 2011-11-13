@@ -50,7 +50,8 @@ oraz gemu OmniAuth ze strategiami *github* i *twitter*.
 1\. Generujemy rusztowanie/szkielet aplikacji:
 
     :::bash terminal
-    rails new lista_obecnosci -m https://raw.github.com/wbzyl/rails31-html5-boilerplates/master/html5-boilerplate.rb \
+
+    rails new lista_obecnosci -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-boilerplate.rb \
       --skip-bundle --skip-active-record --skip-test-unit
 
 *Uwaga:* pomijamy instalację *SimpleForm*. Będziemy korzystać z *Formtastic*.
