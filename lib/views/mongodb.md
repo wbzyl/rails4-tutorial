@@ -428,7 +428,7 @@ W których miejscach to wkleić?
 
     <div class="attribute">
       <span class="name">Rank:</span>
-      <span class="value rank"><%= @student.ranking %></span>
+      <span class="value rank"><%= @student.rank %></span>
     </div>
     <div class="attribute">
       <span class="name">Repository URL:</span>
@@ -437,28 +437,30 @@ W których miejscach to wkleić?
 
 Jakieś inne pomysły?
 
-Gotowe. Daliśmy sobie radę bez migracji. Odjazd!
+Gotowe. Można żyć bez migracji. Odjazd!
 
 *Pytanie:* Klikalny link do repozytorium. Argumenty za? przeciw?
 
 
 ## Implementujemy suwak
 
-Zaczniemy od obejrzenia demo i przejrzenia dokumentacji widgetu *Slider*
-z *jQuery UI*:
+Do pokazania na stronie głównej wartości atrybutu *rank* wykorzystamy
+widżet *jQuery UI* o nazwie *Slider*.
+
+Zanim się do tego zabierzemy, przeanalizujemy demo i dokumentację:
 
 * [Slider Demo](http://jqueryui.com/demos/slider/)
 * [UI/API/1.8/Slider](http://docs.jquery.com/UI/Slider)
 
-Następnie tworzymy sobie własny Theme:
+Do stylizacji suwaka użyję gotowego tematu o nazwie *UI lightness* ze
+strony [Build Your Download](http://jqueryui.com/download).
+
+Można też zrobić własny temat. Wystarczy wejść na stronę.
 
 * [ThemeRoller](http://jqueryui.com/themeroller/)
 
-albo pobieramy gotowca:
 
-* [Build Your Download](http://jqueryui.com/download)
-
-Wybrałem UI lightness.
+### Dodajemy jQuery UI Theme do aplikacji
 
 Wchodzimy na konsolę Rails, gdzie wykonujemy:
 
@@ -468,9 +470,9 @@ Wchodzimy na konsolę Rails, gdzie wykonujemy:
     /home/wbzyl/repos/dydaktyka/lista-obecnosci-rails-mongoid-omniauth/vendor/assets/stylesheets
     ...
 
-Rozpakowujemy całość w katalogu w katalogu tymczasowym, z którego
-kopiujemy do katalogu *vendor/assets/stylesheets* plik
-*jquery-ui-1.8.16.custom.css* i katalog *images*.
+Rozpakowujemy pobrany temat *UI Lightness* w jakimś katalogu tymczasowym.
+Odszukujemy plik *jquery-ui-1.8.16.custom.css* i katalog *images*.
+Kopiujemy je do katalogu *vendor/assets/stylesheets*.
 
 Dopisujemy *jquery-ui-1.8.16.custom.css* do *application.css.scss*:
 
@@ -480,7 +482,8 @@ Dopisujemy *jquery-ui-1.8.16.custom.css* do *application.css.scss*:
      *= require_self
      */
 
-Do *layout.css.scss* dopisujemy:
+Stylizujemy suwak, tak aby pasował do strony głównej.
+W tym celu wklepujemy w *layout.css.scss*:
 
     :::css app/assets/stylesheets/layout.css.scss
     /* jQuery UI slider */
@@ -489,7 +492,7 @@ Do *layout.css.scss* dopisujemy:
     .ui-slider-horizontal .ui-slider-handle { top: -.25em; margin-left: -.5em; }
 
 
-### Ajaxujemy suwak
+### Dodajemy suwaki do strony
 
 Zmieniamy routing (po co?):
 
@@ -499,7 +502,7 @@ Zmieniamy routing (po co?):
       put 'rating', :on => :member
     end
 
-Teraz dodajemy suwaki do *index.html.erb*:
+Dodajemy suwaki do strony głównej:
 
     :::rhtml app/views/students/index.html.erb
     <% @students.each do |student| %>
@@ -512,7 +515,7 @@ Teraz dodajemy suwaki do *index.html.erb*:
           <%= link_to '✎', edit_student_path(student) %>
           <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
         </div>
-        <div data-rating="<%= rank_student_path(student) %>"></div>
+        <div data-rank-student="<%= rank_student_path(student) %>"></div>
       </div>
     </article>
     <% end %>
@@ -521,17 +524,16 @@ Teraz dodajemy suwaki do *index.html.erb*:
       <%= link_to 'New Student', new_student_path %>
     </div>
 
-Inicjalizacja:
+Inicjalizacja suwaków:
 
     :::javascript app/assets/javascripts/students.js
     $(function() {
-      $('div[data-rating]').slider({
+      $('div[data-rank-student]').slider({
         range: "min"
-
       });
     });
 
-Nie zapominamy dopisać tego pliku do:
+Dodajemy plik inicjalizujący suwaki pliku *application.js*:
 
     :::javascript app/assets/javascripts/application.js
     //= require jquery
@@ -539,9 +541,30 @@ Nie zapominamy dopisać tego pliku do:
     //= require jquery_ujs
     //= require students
 
-Stylizacja w arkuszu stylów poniżej.
+I już możemy sprawdzić jak się one prezentują na stronie.
 
-**TODO** ajax
+
+### Ajaxujemy suwaki
+
+Oznacza to, że po przeciągnięciu uchwytu suwaka studenta na inną pozycję,
+powinniśmy uaktualnić jego *rank*, zapisując w bazie aktualną
+wartość suwaka. (Nazsze suwaki używają domyślnego zakresu **0..100**.)
+
+W tym celu skorzystamy ze zdarzenia *change*.
+Na początek przyjrzymy się czy i jak to działa:
+
+    :::javascript app/assets/javascripts/students.js
+    // Add sliders
+    $('div[data-rank-student]').slider({range: "min"});
+    // Move handle and check what is going on
+    $('div[role="main"]').bind("slidechange", function(event, ui) {
+      console.log($(ui.handle).parent().data("rank-student"));
+      console.log(ui.value);
+    });
+
+OK!
+
+
 
 
 ## Arkusz stylów
