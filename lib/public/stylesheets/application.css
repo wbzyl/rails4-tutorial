@@ -189,3 +189,9 @@ table caption {
 #multi p {
   padding: 0 1em 0 1em;
 }
+
+/* CodeRay */
+
+.error {
+  padding: 0;
+}
