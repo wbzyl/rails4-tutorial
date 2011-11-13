@@ -257,7 +257,7 @@ oraz ustawiamy domyślne sortowanie rekordów:
 
 ## Nowa strona główna aplikacji
 
-Obrazek pokazujący o co nam chodzi (**TODO** do wymiany):
+Obrazek pokazujący o co nam chodzi:
 
 {%= image_tag "/images/lista-obecnosci.png", :alt => "[lista obecnosci: /index]" %}
 
@@ -1151,7 +1151,9 @@ Wrzucić *mongoimport* do *seeds.rb*?
 
 # Co oznacza zwrot *progressive enhancements*
 
-Ściąga (stary kod):
+1\. Dodawanie obecności bez przełowdowywania strony głównej.
+
+Na początek można zacząć od modyfikacji tego kodu:
 
     :::javascript app/assets/javascripts/students.js
     $(document).ready(function() {
@@ -1175,6 +1177,8 @@ Wrzucić *mongoimport* do *seeds.rb*?
           // event.stopPropagation(); deactivates destroy link – bug?
         });
     });
+
+2\. Inne propozycje?
 
 
 # Misz masz do poczytania
