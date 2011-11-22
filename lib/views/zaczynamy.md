@@ -80,11 +80,11 @@ go.”
 katalogu z wygenerowanym rusztowaniem:
 
     :::bash
-    rails new fortunka
+    rails new fortunka --skip-bundle
     cd fortunka
 
-Dobrze jest od razu zmienić rozmiar fontu na co najmniej
-[16 pikseli](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
+Dobrze jest od razu zmienić rozmiar fontu na
+[co najmniej 16 pikseli](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
 „anything less is a costly mistake”.
 
 2\. Usuwamy domyślną stronę aplikacji:
@@ -105,7 +105,7 @@ Dobrze jest od razu zmienić rozmiar fontu na co najmniej
     # gem 'unicorn'
     # gem 'rainbows'
 
-    # Dopisujemy brakujące gemy (niedopatrzenie autorów Rails 3.1.1)
+    # Dopisujemy brakujące gemy (niedopatrzenie autorów Rails 3.1.3)
     gem 'sass'
     gem 'coffee-script'
 
@@ -124,36 +124,48 @@ Dobrze jest od razu zmienić rozmiar fontu na co najmniej
     :::bash
     bundle install --binstubs --path=$HOME/.gems
 
-O ile mamy uprawnienia do zapisu w odpowiednich katalogach, tom możemy
-zainstalować gemy globalnie:
+O ile mamy uprawnienia do zapisu w odpowiednich katalogach,
+to możemy zainstalować gemy globalnie (niezalecane, dlaczego?):
 
     :::bash
     bundle install --binstubs
 
-*Uwaga:* Jeśli wymagane gemy mamy zainstalowane w systemie, to
-to polecenie wykona się dużo szybciej:
+*Uwaga:* Jeśli gemy wpisane do *Gemfile* (oraz gemy od nich zależne)
+mamy zainstalowane w systemie, to to polecenie wykona się dużo szybciej:
 
     :::bash
     bundle install --local --binstubs --path=$HOME/.gems
 
-Niektóre gemy, wymagają procedury *post-install*,
-na przykład:
+Niektóre gemy, wymagają procedury *post-install*.
+Przykładowo dla gemu *Formtastic* musimy wykonać polecenie:
 
     :::bash
-    rails generate formtastic:install   # dla formtastic
-    rails generate simple_form:install  # dla simple_form
+    bin/rails generate formtastic:install   # dla formtastic
+      create  config/initializers/formtastic.rb
+      create  lib/templates/erb/scaffold/_form.html.erb
+
+oraz powinniśmy dopisać arkusz CSS tego gemu od pliku *application.css*:
+
+    :::css app/assets/stylesheets/application.css
+    *= require formtastic
+    *= require_self
+    *= require_tree .
+
+*Simple Form*:
+
+    bin/rails generate simple_form:install  # dla simple_form
 
 5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
     :::bash
-    rails g scaffold fortune quotation:text source:string
+    bin/rails g scaffold fortune quotation:text source:string
 
 6\. Tworzymy bazę i w nowej bazie umieszczamy tabelkę *fortunes* –
 krótko mówiąc **migrujemy**:
 
     :::bash
-    rake db:create  # Create the database from config/database.yml for the current Rails.env
-    rake db:migrate # Migrate the database (options: VERSION=x, VERBOSE=false)
+    bin/rake db:create  # Create the database from config/database.yml for the current Rails.env
+    bin/rake db:migrate # Migrate the database (options: VERSION=x, VERBOSE=false)
 
 7\. Ustawiamy stronę startową aplikacji, dopisując, przed
 kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
@@ -172,7 +184,7 @@ kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
 Następnie umieszczamy powyższe fortunki w bazie, wykonujac w terminalu
 polecenie:
 
-    rake db:seed  # Load the seed data from db/seeds.rb
+    bin/rake db:seed  # Load the seed data from db/seeds.rb
 
 Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 *db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
@@ -181,7 +193,7 @@ i ponownie uruchomić powyższe polecenie.
 9\. Teraz możemy już uruchomić domyślny serwer Rails:
 
     :::bash
-     rails s -p 3000
+     bin/rails server -p 3000
 
 Albo jeden z alternatywnych serwerów:
 
@@ -202,13 +214,19 @@ Poniżej przedstawiamy bardziej szczegółowy opis niektórych kroków.
 
 ## Krok 1 – rusztowanie aplikacji
 
-Prawie całą powyższą procedurę można zautomatyzować. Wystarczy
-napisać swój szablon dla aplikacji Rails, albo skorzystać
-z jakiegoś gotowca.
+Prawie całą powyższą procedurę można zautomatyzować.
+Wystarczy napisać swój szablon dla aplikacji Rails
+i następnie go użyć:
+
+    :::bash
+    rails new fortunka -m ⟨url albo ścieżka do szablonu⟩
+
+Oczywiście możemy też skorzystać z jakiegoś gotowego szablonu.
 Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rails31-html5-templates):
 
-* `rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-boilerplate.rb`
-* `rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb`
+    :::bash
+    rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-boilerplate.rb
+    rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb
 
 
 ## Krok 3 - dodajemy nowe gemy
@@ -307,7 +325,129 @@ za pomocą polecenia:
 Stosujemy się do konwencji nazywania frameworka Rails.
 Używamy liczby pojedynczej (generujemy zasób dla modelu).
 
-Co wygenerował generator?
+Oto utworzony przez generator kontroler:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    class FortunesController < ApplicationController
+      # GET /fortunes
+      # GET /fortunes.json
+      def index
+        @fortunes = Fortune.all
+        respond_to do |format|
+          format.html # index.html.erb
+          format.json { render json: @fortunes }
+        end
+      end
+      # GET /fortunes/1
+      # GET /fortunes/1.json
+      def show
+        @fortune = Fortune.find(params[:id])
+        respond_to do |format|
+          format.html # show.html.erb
+          format.json { render json: @fortune }
+        end
+      end
+      # GET /fortunes/new
+      # GET /fortunes/new.json
+      def new
+        @fortune = Fortune.new
+        respond_to do |format|
+          format.html # new.html.erb
+          format.json { render json: @fortune }
+        end
+      end
+      # GET /fortunes/1/edit
+      def edit
+        @fortune = Fortune.find(params[:id])
+      end
+      # POST /fortunes
+      # POST /fortunes.json
+      def create
+        @fortune = Fortune.new(params[:fortune])
+        respond_to do |format|
+          if @fortune.save
+            format.html { redirect_to @fortune, notice: 'Fortune was successfully created.' }
+            format.json { render json: @fortune, status: :created, location: @fortune }
+          else
+            format.html { render action: "new" }
+            format.json { render json: @fortune.errors, status: :unprocessable_entity }
+          end
+        end
+      end
+      # PUT /fortunes/1
+      # PUT /fortunes/1.json
+      def update
+        @fortune = Fortune.find(params[:id])
+        respond_to do |format|
+          if @fortune.update_attributes(params[:fortune])
+            format.html { redirect_to @fortune, notice: 'Fortune was successfully updated.' }
+            format.json { head :ok }
+          else
+            format.html { render action: "edit" }
+            format.json { render json: @fortune.errors, status: :unprocessable_entity }
+          end
+        end
+      end
+      # DELETE /fortunes/1
+      # DELETE /fortunes/1.json
+      def destroy
+        @fortune = Fortune.find(params[:id])
+        @fortune.destroy
+
+        respond_to do |format|
+          format.html { redirect_to fortunes_url }
+          format.json { head :ok }
+        end
+      end
+    end
+
+
+### Rendering response
+
+…czyli renderowaniem odpowiedzi zajmują się takie kawałki kodu:
+
+    :::ruby
+    respond_to do |format|
+      format.html
+      format.js
+      format.json { render json: @fortunes }
+    end
+
+What that says is:
+
+1. If the client wants HTML in response to this
+action, use the default template for this action
+(for *index* it is *index.html.erb*).
+
+2. If the client wants JS, use the default template
+for this action (for *destroy* it is *destroy.js.html*).
+
+3. But if the client wants JSON,
+return the list of fortunes in JSON format.”
+
+Rails determines the desired response format from the HTTP **Accept
+header** submitted by the client.
+
+Klientem może być przeglądarka, ale może też być
+inny program, na przykład *curl*:
+
+    :::bash
+    curl -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/1
+    curl -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/1
+    curl -X DELETE http://localhost:3000/fortunes/1.json
+    curl -X DELETE http://localhost:3000/fortunes/1
+    curl -X POST -H 'Content-Type: application/json' \
+      --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes.json
+    curl -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
+      --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes
+
+Linki do dokumentacji:
+
+* [respond_to](http://api.rubyonrails.org/classes/ActionController/MimeResponds.html#method-i-respond_to)
+* [respond_with](http://api.rubyonrails.org/classes/ActionController/MimeResponds.html#method-i-respond_with)
+
+
+### Migracje
 
 Aby utworzyć bazę danych o nazwie podanej w pliku
 *config/database.yml* oraz tabelę zdefiniowaną w pliku
@@ -348,8 +488,8 @@ Prawdziwie DRY kod otrzymamy korzystając z generatorów
 Dlaczego? Przyjrzymy się temu na wykładzie „Fortunka v1.0”.
 
 
-Jeśli nie będziemy korzystać z jsonów, to powinniśmy usunąć nieużywany kod
-z kontrolera. Tak powinien wyglądać odchudzony *UsersController*:
+Jeśli nie będziemy korzystać z formatu JSON, to powinniśmy usunąć nieużywany kod
+z kontrolera. Tak będzie wyglądał odchudzony *UsersController*:
 
     :::ruby
     class UsersController < ApplicationController
