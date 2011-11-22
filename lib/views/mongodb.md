@@ -609,7 +609,7 @@ suwak:
 
 ## Arkusz stylów
 
-Oto obiecany powyżej arkusz stylów:
+**TODO** Usunąć. Zostawić tylko link. Oto obiecany powyżej arkusz stylów:
 
     :::css lista_obecnosci.css.scss
     a {
@@ -683,7 +683,7 @@ Oto obiecany powyżej arkusz stylów:
 Jakiś taki nieuporządkowany jest ten arkusz. *TODO:* uporządkować arkusz!
 
 
-# OmniAuth — Github + Twitter
+# TODO: OmniAuth — Github + Twitter
 
 Zaczynamy od zarejestowania aplikacji na [Githubie](https://github.com/account/applications).
 Aplikację rejstrujemy podając następujące dane:
@@ -728,8 +728,32 @@ Teraz przed uruchomieniem aplikacji wystarczy wykonać:
     :::bash terminal
     source github.sh
 
-aby wartości *GITHUB_KEY*, *GITHUB_SECRET* były dostęne dla
+aby wartości *GITHUB_KEY*, *GITHUB_SECRET* były dostępne dla
 github-strategy.
+
+### TODO
+
+Zainstalować gem [Foreman](https://github.com/ddollar/foreman),
+przeczytać [Introducing Foreman](http://blog.daviddollar.org/2011/05/06/introducing-foreman.html).
+
+Heroku, Newsletter, November 2011:
+
+*Foreman offers a feature very similar to config vars, but for local
+development. Create a .env file in the root of your app with your
+local config values, for example:*
+
+    DATABASE_URL=postgres://localhost/myapp
+    SESSION_SECRET=foobarbaz
+
+*Now when you run your app with foreman start, it will load these
+config vars into your local environment. Be sure to add .env to your
+*.gitignore* so that it does not get added to your repo.*
+
+Zobacz też Heroku,
+[Configuration and Config Vars](http://devcenter.heroku.com/articles/config-vars).
+
+
+### Twitter
 
 Konfiguracja OmniAuth dla *Twittera* jest analogiczna.
 Aplikację rejestrujemy [tutaj](https://dev.twitter.com/apps/new):

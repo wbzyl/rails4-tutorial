@@ -79,6 +79,7 @@ go.”
 1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
 katalogu z wygenerowanym rusztowaniem:
 
+    :::bash
     rails new fortunka
     cd fortunka
 
@@ -88,20 +89,21 @@ Dobrze jest od razu zmienić rozmiar fontu na co najmniej
 
 2\. Usuwamy domyślną stronę aplikacji:
 
+    :::bash
     rm public/index.html
 
 3\. Do pliku *Gemfile* dopisujemy gemy z których będziemy korzystać:
 
     :::ruby Gemfile
     # Łatwiejsze w użyciu formularze
-    gem 'simple_form'
+    gem 'formtastic'
     # albo
-    # gem 'formtastic'
+    # gem 'simple_form'
 
     # Alternatywne dla WEBricka serwery WWW
-    gem 'thin'
-    gem 'unicorn'
-    gem 'rainbows'
+    # gem 'thin'
+    # gem 'unicorn'
+    # gem 'rainbows'
 
     # Dopisujemy brakujące gemy (niedopatrzenie autorów Rails 3.1.1)
     gem 'sass'
@@ -119,29 +121,37 @@ Dobrze jest od razu zmienić rozmiar fontu na co najmniej
 
 4\. Instalujemy gemy lokalnie:
 
+    :::bash
     bundle install --binstubs --path=$HOME/.gems
 
-Albo globalnie, o ile mamy uprawnienia do zapisu w odpowiednich katalogach.
+O ile mamy uprawnienia do zapisu w odpowiednich katalogach, tom możemy
+zainstalować gemy globalnie:
 
-*Uwaga:* Poniższe polecenie wykonuje się dużo szybciej:
+    :::bash
+    bundle install --binstubs
 
+*Uwaga:* Jeśli wymagane gemy mamy zainstalowane w systemie, to
+to polecenie wykona się dużo szybciej:
+
+    :::bash
     bundle install --local --binstubs --path=$HOME/.gems
 
-(Oczywiście, o ile wymagane gemy są już zainstalowane w systemie.)
-
-Niektóre gemy, do poprawnej instalacji wymagają *post-install*,
+Niektóre gemy, wymagają procedury *post-install*,
 na przykład:
 
-    rails generate simple_form:install  # dla simple_form
+    :::bash
     rails generate formtastic:install   # dla formtastic
+    rails generate simple_form:install  # dla simple_form
 
 5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
+    :::bash
     rails g scaffold fortune quotation:text source:string
 
 6\. Tworzymy bazę i w nowej bazie umieszczamy tabelkę *fortunes* –
 krótko mówiąc **migrujemy**:
 
+    :::bash
     rake db:create  # Create the database from config/database.yml for the current Rails.env
     rake db:migrate # Migrate the database (options: VERSION=x, VERBOSE=false)
 
@@ -165,19 +175,22 @@ polecenie:
     rake db:seed  # Load the seed data from db/seeds.rb
 
 Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
-*db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}.
+*db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
+i ponownie uruchomić powyższe polecenie.
 
 9\. Teraz możemy już uruchomić domyślny serwer Rails:
 
+    :::bash
      rails s -p 3000
 
 Albo jeden z alternatywnych serwerów:
 
+    :::bash
      bin/thin -p 3000 start
      bin/unicorn -p 3000
      bin/rainbows -p 3000       # nie polecam w trybie development
 
-Pozostaje tylko wejść na stronę aplikacji:
+Aby obejrzeć działającą aplikację pozostaje wejść na stronę:
 
      http://localhost:3000
 
@@ -189,8 +202,13 @@ Poniżej przedstawiamy bardziej szczegółowy opis niektórych kroków.
 
 ## Krok 1 – rusztowanie aplikacji
 
-Zamiast wykonywać wszystkie kroki, możemy skorzystać z jakiegoś
-szablonu aplikacji Rails.
+Prawie całą powyższą procedurę można zautomatyzować. Wystarczy
+napisać swój szablon dla aplikacji Rails, albo skorzystać
+z jakiegoś gotowca.
+Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rails31-html5-templates):
+
+* `rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-boilerplate.rb`
+* `rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb`
 
 
 ## Krok 3 - dodajemy nowe gemy
