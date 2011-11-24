@@ -1,14 +1,11 @@
-#### {% title "Mongoid + OmniAuth z githubem i twitterem" %}
+#### {% title "Mongoid + OmniAuth z autoryzacją przez GitHub" %}
 
 ### Uwagi
 
-[2011.11.11] Następna wersja z [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/) ?
-z [Foundation](https://github.com/zurb/foundation) ?
+[2011.11.11] Benjamin Milde. [Shapecatcher](http://shapecatcher.com/)
+– unicode  character recognition ☺☕♥
 
-[2011.11.11] Fajne i użyteczne. [Shapecatcher](http://shapecatcher.com/)
-– unicode character recognition.
-
-Mongo links:
+☸ Mongo links:
 
 * Ryan Bates, [Mongoid](http://railscasts.com/episodes/238-mongoid?view=asciicast) – asciicast
 * Durran Jordan, [Mongoid](http://mongoid.org/docs.html) – dokumentacja gemu
@@ -17,14 +14,14 @@ Mongo links:
   - [MongoDB Geospatial Interactive Tutorial](http://tutorial.mongly.com/geo/index)
   - [The Little MongoDB Book](http://openmymind.net/mongodb.pdf)
 
-Formtastic:
+☸ Formtastic:
 
 * [Github Home](https://github.com/justinfrench/formtastic)
 * [Flexible Formtastic styling with Sass](https://github.com/activestylus/formtastic-sass/blob/master/_formtastic_base.sass)
   – not longer supported
 * [Formtastic without ActiveRecord](http://dondoh.tumblr.com/post/4142258573/formtastic-without-activerecord)
 
-OmniAuth:
+☸ OmniAuth:
 
 * [Demo App](http://www.omniauth.org/), [kod aplikacji](https://github.com/intridea/omniauth.org)
 * [Github Home](https://github.com/intridea/omniauth)
@@ -34,14 +31,14 @@ OmniAuth:
 * [Rails 3.1 with Mongoid and OmniAuth](https://github.com/railsapps/rails3-mongoid-omniauth/wiki/Tutorial)
   – na razie nieaktualne
 
-Hosting:
+☸ Hosting:
 
 * [Cloud Hosted MongoDB](https://mongolab.com/home)
   ([{blog: mongolab}](http://blog.mongolab.com/))
 * [Node.js + MongoDB = Love: Guest Post from MongoLab](http://joyeur.com/2011/10/26/node-js-mongodb-love-guest-post-from-mongolab/?utm_source=NoSQL+Weekly+Newsletter&utm_campaign=4ed79d28a1-NoSQL_Weekly_Issue_49_November_3_2011&utm_medium=email)
 
 
-# Lista obecności
+# Dziennik lekcyjny
 
 Przykładowa aplikacja CRUD listy obecności studentów.
 W aplikacji korzystamy z bazy MongoDB via gem Mongoid,
@@ -50,44 +47,27 @@ oraz gemu OmniAuth ze strategiami *github* i *twitter*.
 1\. Generujemy rusztowanie/szkielet aplikacji:
 
     :::bash terminal
-
-    rails new lista_obecnosci -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-boilerplate.rb \
+    rails new dziennik -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb \
       --skip-bundle --skip-active-record --skip-test-unit
 
-*Uwaga:* pomijamy instalację *SimpleForm*. Będziemy korzystać z *Formtastic*.
-
-2\. Dopisujemy nowe gemy do pliku *Gemfile*:
+2\. Dopisujemy do pliku *Gemfile* dodatkowe gemy z których będziemy korzystać:
 
     :::ruby Gemfile
-    gem 'formtastic'
-
     gem 'omniauth'
     gem 'omniauth-github'
-
-    # 2011.11.10 – nie działa
-    gem 'omniauth-contrib', :git => 'git://github.com/intridea/omniauth-contrib.git'
 
     gem 'mongoid', '~> 2.3'
     gem 'bson_ext', '~> 1.4'
 
-    group :development do
-      gem 'hirb'
-      gem 'wirble'
-    end
-
-Następnie je instalujemy:
+Następnie instalujemy je lokalnie:
 
     :::bash terminal
-    cd lista_obecnosci
+    cd dziennik
     bundle install --path=$HOME/.gems --binstubs
 
-3\. Dodajemy do katalogu *config/initializers* plik *mongoid.rb*
-w którym wpisujemy (*i18n*):
+OmniAuth zostanie opisany w następnej sekcji.
 
-    :::ruby config/initializers/mongoid.rb
-    Mongoid.add_language("pl")
-
-4\. Dokończenie instalacji (*post–install*):
+3\. Dokończenie instalacji:
 
     :::bash terminal
     rails g mongoid:config
@@ -98,10 +78,10 @@ Oto wygenerowany plik konfiguracyjny Mongoid:
     :::yaml config/mongoid.yml
     development:
       host: localhost
-      database: lista_obecnosci_development
+      database: dziennik_development
     test:
       host: localhost
-      database: lista_obecnosci_test
+      database: dziennik_test
     # set these environment variables on your prod server
     production:
       host: <%= ENV['MONGOID_HOST'] %>
@@ -115,60 +95,105 @@ Oto wygenerowany plik konfiguracyjny Mongoid:
       #   - host: slave2.local
       #     port: 27019
 
-Póki co zostawiamy go bez zmian.
+Taki plik konfiguracyjny wymaga, aby przed uruchomieniem aplikacji w trybie
+produkcyjnym były zdefiniowane w środowisku powyższe zmienne.
+Oznacza to, że przed uruchomieniem aplikacji powinniśmy wykonać:
+
+    :::bash terminal
+    export MONGOID_HOST=localhost
+    export MONGOID_PORT=27017
+    export MONGOID_DATABASE=dziennik_production
+
+Najwygodniej jest zapisać wszystkie te polecenia w pliku,
+np. o nazwie *dziennik-config.sh*. Teraz przed uruchomieniem aplikacji
+wystarczy wykonać:
+
+    :::bash
+    source dziennik-config.sh
+
+**Uwaga 1**: Takie podejście jest wygodne, o ile zamierzamy wdrożyć
+aplikację na Heroku. Dlaczego?
+
+**Uwaga 2**: Domyślnie, w trybie produkcyjnym, aplikacja korzysta ze
+skopilowanych *assets*:
+
+    :::bash
+    bin/rake assets:precompile   # Compile all the assets named in config.assets.precompile
+
+Po przejściu do trybu development, powinniśmy usunąć skopilowane pliki.
+(zwykle korzystamy z zadania *rake* o nazwie *assets:clean*).
+Jeśli tego nie zrobimy, to zmiany w plikach Javascript i CSS nie zostaną użyte.
+
+Prawdopodobnie importowane pliki trzeba będzie dopisać do listy
+*config.assets.precompile*, na przykład
+
+    :::ruby config/environments/production.rb
+    # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
+    config.assets.precompile += %w( formtastic-container-app bootstrap-container-app dziennik )
+
+**i18n**: Dodajemy do katalogu *config/initializers* plik *mongoid.rb*
+w którym wpisujemy (*i18n*):
+
+    :::ruby config/initializers/mongoid.rb
+    Mongoid.add_language("pl")
+
+Od razu zmieniamy domyślne locale na polskie (co to znaczy?):
+
+    :::ruby config/application.rb
+    config.i18n.default_locale = :pl
 
 Replica sets, master/slave, multiple databases – na razie
 pomijamy. Sharding – też.
 
-OmniAuth jest opisany w następnej sekcji.
-
-5\. Oczywiście w aplikacji *Lista Obecności* nie może zabraknąć
+4\. Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
 atrybutów nieobecność i uwagi.
 
 Generujemy rusztowanie dla modelu *Student*:
 
     :::bash terminal
     rails generate scaffold Student last_name:String first_name:String \
-      id_number:Integer course:String group:String absences:Array comment:String
+      id_number:Integer nickname:String absences:Array comments:String \
+      class_name:String group:String
 
-6\. Na koniec importujemy listę studentów do bazy MongoDB:
+6\. Na koniec importujemy listę studentów (otrzymaną z sekretatriatu II)
+do bazy MongoDB:
 
     :::bash terminal
-    mongoimport --drop -d lista_obecnosci_development -c students --headerline --type csv wd.csv
+    mongoimport --drop -d dziennik_development -c students --headerline --type csv wd.csv
 
 Oto fragment pliku CSV z nagłówkiem:
 
     :::csv wd.csv
-    last_name,first_name,id_number,course
-    "Kuszelas","Jan",123123,"Aplikacje internetowe i bazy danych"
-    "Klonowski","Felicjan",221321,"Algorytmy i struktury danych"
-    "Korolczyk","Joga",356123,"Aplikacje internetowe i bazy danych"
-    "Grabczyk","Simona",491231,"Algorytmy i struktury danych"
-    "Kamińska","Irena",556123,"Aplikacje internetowe i bazy danych"
-    "Jankowski","Kazimierz",628942,"Algorytmy i struktury danych"
+    last_name,first_name,id_number
+    "Kuszelas","Jan",123123
+    "Klonowski","Felicjan",221321
+    "Korolczyk","Joga",356123
+    "Grabczyk","Simona",491231
+    "Kamińska","Irena",556123
+    "Jankowski","Kazimierz",628942
 
-Przy okazji uzupełnię ten punkt uwagami o robieniu kopii zapasowych bazy.
+7\. Kilka uwag o robieniu kopii zapasowych danych z bazy MongoDB.
 
 Eksport do pliku tekstowego:
 
     :::bash terminal
-    mongoexport -d lista_obecnosci_development -c students -o wd-$(date +%Y-%m-%d).json
+    mongoexport -d dziennik_development -c students -o dziennik-$(date +%Y-%m-%d).json
 
 Wybieramy format JSON. Teraz odtworzenie bazy z kopii zapasowej
 może wyglądać tak:
 
     :::bash terminal
-    mongoimport --drop -d lista_obecnosci_development -c students wd-2011-11-08.json
+    mongoimport --drop -d dziennik_development -c students dziennik-2011-11-08.json
 
 Zrzut do plików binarnych wykonujemy na **działającej** bazie:
 
     :::bash
-    mongodump -d lista_obecnosci_development -o backup
-    mongorestore -d test --drop backup/lista_obecnosci_development/
+    mongodump -d dziennik_development -o backup
+    mongorestore -d test --drop backup/dziennik_development/
 
 **Uwaga:** W powyższym przykładzie backup wszystkich kolekcji z bazy
-*lista_obecnosci_development* importujemy do bazy *test*, a nie
-do *lista_obecnosci_development*!
+*dziennik_development* importujemy do bazy *test*, a nie
+do *dziennik_development*!
 
 7\. Pozostaje uruchomić serwer WWW:
 
@@ -179,39 +204,51 @@ i wejść na stronę z listą obecności:
 
     http://localhost:3000/students
 
-Jeśli aplikacja działa, to przechodzimy do nastepnych punktów.
+Jeśli aplikacja działa, to przechodzimy do następnych punktów.
 
 8\. Dodajemy podstawową autentykację do aplikacji:
 
     :::ruby app/controllers/students_controller.rb
     http_basic_authenticate_with :name => ENV['LO_NAME'], :password => ENV['LO_PASSWORD']
 
-„Sensitive data” zapiszemy w pliku *http-authentication.sh*:
+„Tajne dane” dopiszemy do pliku *dziennik-config.sh*:
 
-    :::bash http-authentication.sh
-    export LO_NAME="wbzyl"
-    export LO_PASSWORD="razdwa"
+    :::bash
+    export LO_NAME="admin"
+    export LO_PASSWORD="sekret"
 
-Teraz przed uruchomieniem aplikacji musimy dodać te zmienne
+Teraz przed pierwszym uruchomieniem aplikacji będziemy musieli wykonać:
 do środowiska powłoki:
 
-    :::bash http-authentication.sh
-    source http-authentication.sh
+    :::bash terminal
+    source dziennik-config.sh
 
-9\. Do stylizacji formularzy użyjemy arkusza stylów gemu
-*Formtastic*. W tym celu w pliku *application.css.sass*, wiersz:
-
-    :::css app/assets/stylesheets/application.css.scss
-    @import "simple-scaffold.css.scss";
-
-zamieniamy na:
+9\. Dodatkowy kod CSS umieścimy w pliku *dziennik.css.scss*.
+Skorzystamy też [CSS3 Social Sign-in Buttons](http://nicolasgallagher.com/lab/css3-social-signin-buttons/).
+Na stronie głównej aplikacji umieścimy suwaki.
+Każdy suwak to widżet *Slider* z *jQuery-UI*.
+Dopisujemy wszystkie te pliki do *application.css.sass*:
 
     :::css app/assets/stylesheets/application.css.scss
-    @import "formtastic";
-    @import "formtastic_ie7";
-    @import "lista_obecnosci";
+    /*
+    *= require bootstrap
+    *= require auth-buttons.css
+    *= require formtastic
+    *= jquery-ui-1.8.16.custom.css
+    *= require_self
+    */
+    @import "formtastic-container-app.css.scss";
+    @import "bootstrap-container-app.css.scss";
+    @import "dziennik";
 
-Kod arkusza *lista_obecnosci.css.scss* jest pod koniec tej sekcji.
+Pliki *auth-buttons.css*, *auth-icons.png*, *jquery-ui-1.8.16.custom.css*
+po ściągnieciu z [GitHuba](https://github.com/necolas/css3-social-signin-buttons)
+oraz [jQuery UI](http://jqueryui.com/download/)
+(widżet *Slider*, efekty *Explode* i *Fade*) zapiszemy w katalogu:
+
+    vendor/assets/stylesheets/
+
+**TODO:** Link do *dziennik.css.scss*.
 
 
 ## Zaczynamy od modelu Student
@@ -228,10 +265,11 @@ oraz ustawiamy domyślne sortowanie rekordów:
       field :last_name, :type => String
       field :first_name, :type => String
       field :id_number, :type => Integer
-      field :course, :type => String
-      field :group, :type => String     # blue, red, green
-      field :comment, :type => String
+      field :nickname, :type => String
       field :absences, :type => Array
+      field :comments, :type => String
+      field :class_name, :type => String
+      field :group, :type => String
 
       # getter and setter
       def full_name
@@ -253,10 +291,21 @@ oraz ustawiamy domyślne sortowanie rekordów:
       end
 
       default_scope asc(:group, :last_name, :first_name)
+
+      set_callback(:save, :before) do |document|
+        if document.class_name.empty?
+          document.class_name = "unknown"
+        end
+        if document.group.empty?
+          document.group = "unknown"
+        end
+      end
     end
 
 
-## Nowa strona główna aplikacji
+## TODO: Nowa strona główna aplikacji
+
+**TODO: uaktualnić** (wskażnik myszki na tle odsyłacza do Edit).
 
 Obrazek pokazujący o co nam chodzi:
 
@@ -611,7 +660,7 @@ suwak:
 
 **TODO** Usunąć. Zostawić tylko link. Oto obiecany powyżej arkusz stylów:
 
-    :::css lista_obecnosci.css.scss
+    :::css dziennik.css.scss
     a {
       color: black; }
     .red, a.red {
@@ -683,19 +732,21 @@ suwak:
 Jakiś taki nieuporządkowany jest ten arkusz. *TODO:* uporządkować arkusz!
 
 
-# TODO: OmniAuth — Github + Twitter
+# OmniAuth + Github
 
 Zaczynamy od zarejestowania aplikacji na [Githubie](https://github.com/account/applications).
-Aplikację rejstrujemy podając następujące dane:
 
-    URL:      http://localhost:3000
-    Callback: http://127.0.0.1:3000
-
-Zamiast URL powyżej można podać na przykład taki:
+Jeśli aplikacja będzie działać na *localhost*, rejstrujemy ją wpisując:
 
     URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
+    Callback: http://127.0.0.1:3000
 
-czyli miejsce gdzie opisuję tę aplikację.
+Jeśli — na *sigma.ug.edu.pl*, to wpisujemy:
+
+    URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
+    Callback: http://sigma.ug.edu.pl:3000
+
+Zamiast portu *3000* podajemy port na którym będzie działać aplikacja.
 
 Następnie ze strony [omniauth-github](https://github.com/intridea/omniauth-github)
 przeklikowujemy do pliku *github.rb* kawałek kodu, który
@@ -709,32 +760,33 @@ dostosowujemy do konwencji Rails:
       provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET']
     end
 
-Powyżej `GITHUB_KEY`, `GITHUB_SECRET` kopiujemy ze strony
+Klucze `GITHUB_KEY`, `GITHUB_SECRET` przeklikujemy ze strony
 [Your OAuth Applications](https://github.com/account/applications).
-Przyjmuję, że
-
-    GITHUB_KEY === Client ID
-    GITHUB_SECRET === Client Secret
-
-Same klucze zapisuję w pliku *github.sh*, który dla bezpieczeństwa
+do pliku *dziennik-config.sh*, który dla bezpieczeństwa
 trzymam poza repozytorium:
 
     :::bash github.sh
      export GITHUB_KEY="11111111111111111111"
      export GITHUB_SECRET="1111111111111111111111111111111111111111"
 
+Powyżej przyjmujemy, że
+
+    GITHUB_KEY === Client ID
+    GITHUB_SECRET === Client Secret
+
 Teraz przed uruchomieniem aplikacji wystarczy wykonać:
 
     :::bash terminal
-    source github.sh
+    source dziennik-config.sh
 
 aby wartości *GITHUB_KEY*, *GITHUB_SECRET* były dostępne dla
-github-strategy.
+*github-strategy*.
 
-### TODO
 
-Zainstalować gem [Foreman](https://github.com/ddollar/foreman),
-przeczytać [Introducing Foreman](http://blog.daviddollar.org/2011/05/06/introducing-foreman.html).
+### To samo z *Foremanem*
+
+Instalujemy gem [Foreman](https://github.com/ddollar/foreman),
+czytamu [Introducing Foreman](http://blog.daviddollar.org/2011/05/06/introducing-foreman.html).
 
 Heroku, Newsletter, November 2011:
 
@@ -745,7 +797,7 @@ local config values, for example:*
     DATABASE_URL=postgres://localhost/myapp
     SESSION_SECRET=foobarbaz
 
-*Now when you run your app with foreman start, it will load these
+*Now when you run your app with **foreman start**, it will load these
 config vars into your local environment. Be sure to add .env to your
 *.gitignore* so that it does not get added to your repo.*
 
@@ -753,7 +805,34 @@ Zobacz też Heroku,
 [Configuration and Config Vars](http://devcenter.heroku.com/articles/config-vars).
 
 
-### Twitter
+### Nginx + Passenger
+
+Powyższe podejście nie działa jeśli aplikację uruchomimy
+za pomocą *Nginx + Passenger*.
+
+W tym przypadku postępuję tak:
+
+Tajne dane, trzymamy poza repozytorium:
+
+    :::yaml config/oauth2_apps_config.yml
+    github:
+      key: 11111111111111111111
+      secret: 1111111111111111111111111111111111111111
+
+Initializer:
+
+    :::ruby config/initializers/github.rb
+    raw_config = File.read("#{Rails.root}/config/oauth2_apps_config.yml")
+    OAUTH2_APPS_CONFIG = YAML.load(raw_config)
+
+    github = OAUTH2_APPS_CONFIG['github']
+
+    Rails.application.config.middleware.use OmniAuth::Builder do
+      provider :github, github['key'], github['secret']
+    end
+
+
+## Omniauth + Twitter (info, nie korzystamy)
 
 Konfiguracja OmniAuth dla *Twittera* jest analogiczna.
 Aplikację rejestrujemy [tutaj](https://dev.twitter.com/apps/new):
@@ -768,7 +847,7 @@ też trzymać poza repozytorium:
     export TWITTER_KEY="111111111111111111111"
     export TWITTER_SECRET="111111111111111111111111111111111111111111"
 
-Do pliku konfiguracyjny dla OmniAuth wklepujemy:
+Do pliku konfiguracyjnego OmniAuth wklepujemy:
 
     :::ruby config/initializers/twitter.rb
     Rails.application.config.middleware.use OmniAuth::Builder do
@@ -776,7 +855,9 @@ Do pliku konfiguracyjny dla OmniAuth wklepujemy:
     end
 
 
-## Generujemy model dla użytkowników
+## TODO: Generujemy model dla użytkowników
+
+**Opisać o co tutaj nam chodzi?**
 
 Po pomyślnej autentykacji, dane użytkownika będziemy zapisywać w bazie:
 
@@ -1020,7 +1101,7 @@ Teraz wchodzimy na stronę:
 
 SASS:
 
-    :::css app//assets/stylesheets/lista_obecnosci.css.scss
+    :::css app//assets/stylesheets/dziennik.css.scss
     ul.hmenu {
       list-style: none;
       margin: 0 0 2em;
