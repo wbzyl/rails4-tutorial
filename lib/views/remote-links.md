@@ -163,6 +163,15 @@ po prawej stronie (element *div[class="span4"]*)…
 jest podana inna kolejność argumentów dla *ajax-success*.
 
 
+☕☕ Przechodzimy na *CoffeeScript* ☕☕ Usuwamy plik *fortunes.js*.
+Zamiast niego wstawiamy plik *fortunes.js.coffee* o zawartości:
+
+    :::js app/assets/javascripts/fortunes.js.coffee
+    jQuery ->
+      $('a[data-type="json"]').bind 'ajax:success', (event, data, status, xhr) ->
+        $(this).closest('article').effect('explode')
+
+
 ### Usuwanie rekordu za pośrednictwem *format.js*
 
 Zmieniony link z *index.html.erb*:
