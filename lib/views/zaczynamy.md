@@ -137,23 +137,23 @@ mamy zainstalowane w systemie, to to polecenie wykona się dużo szybciej:
     bundle install --local --binstubs --path=$HOME/.gems
 
 Niektóre gemy, wymagają procedury *post-install*.
-Przykładowo dla gemu *Formtastic* musimy wykonać polecenie:
+Przykładowo, dla gemu *Formtastic* wykonujemy polecenie:
 
     :::bash
-    bin/rails generate formtastic:install   # dla formtastic
+    bin/rails generate formtastic:install
       create  config/initializers/formtastic.rb
       create  lib/templates/erb/scaffold/_form.html.erb
 
-oraz powinniśmy dopisać arkusz CSS tego gemu od pliku *application.css*:
+oraz powinniśmy dopisać arkusz CSS tego gemu do pliku *application.css*:
 
     :::css app/assets/stylesheets/application.css
     *= require formtastic
     *= require_self
     *= require_tree .
 
-*Simple Form*:
+a dla *Simple Form* – polecenie:
 
-    bin/rails generate simple_form:install  # dla simple_form
+    bin/rails generate simple_form:install
 
 5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
@@ -225,8 +225,8 @@ Oczywiście możemy też skorzystać z jakiegoś gotowego szablonu.
 Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rails31-html5-templates):
 
     :::bash
-    rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-boilerplate.rb
-    rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb
+    rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-boilerplate.rb --skip-bundle
+    rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb --skip-bundle
 
 
 ## Krok 3 - dodajemy nowe gemy
@@ -408,9 +408,9 @@ Oto utworzony przez generator kontroler:
 
     :::ruby
     respond_to do |format|
-      format.html
-      format.js
-      format.json { render json: @fortunes }
+      format.html  { redirect_to fortunes_url }
+      format.js      # destroy.js.erb
+      format.json  { render json: @fortunes }
     end
 
 What that says is:
@@ -432,13 +432,13 @@ Klientem może być przeglądarka, ale może też być
 inny program, na przykład *curl*:
 
     :::bash
-    curl -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/1
-    curl -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/1
-    curl -X DELETE http://localhost:3000/fortunes/1.json
-    curl -X DELETE http://localhost:3000/fortunes/1
-    curl -X POST -H 'Content-Type: application/json' \
+    curl -I -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/1
+    curl    -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/1
+    curl -I -X DELETE http://localhost:3000/fortunes/1.json
+    curl    -X DELETE http://localhost:3000/fortunes/1
+    curl -v -X POST -H 'Content-Type: application/json' \
       --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes.json
-    curl -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
+    curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
       --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes
 
 Linki do dokumentacji:
