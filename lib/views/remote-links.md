@@ -217,4 +217,16 @@ Zamieniamy kod na:
 
 ## Remote modal show/new/edit pages
 
+Skorzystamy z wtyczki Bootstrap o nazwie *Modal*.
+Pobieramy plik [bootstrap-modal.js](http://twitter.github.com/bootstrap/1.4.0/bootstrap-modal.js)
+i zapisujemy go katalogu *vendor/assets/javascripts* aplikacji.
+Następnie dopisujemy go do pliku *application.js*:
+
+    :::js app/assets/javascripts/application.js
+    //= require jquery
+    //= require jquery_ujs
+    //= require jquery-ui-1.8.16.custom.min
+    //= require bootstrap-modal
+    //= require_tree .
+
 **TODO**
