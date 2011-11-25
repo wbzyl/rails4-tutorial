@@ -129,17 +129,17 @@ i pliku *application.css.scss*.
 
 **Restartujemy aplikację** i ponownie wchodzimy na stronę główną.
 Wchodzimy na konsolę Firebuga, gdzie ręcznie uruchomimy
-efekt *explode* na fortunce pierwszej na stronie.
+efekt *explode* na pierwszej fortunce.
 
-Podglądamy atrybut *href* pierwszej fortunki na stronie.
-Jeśli jest to */fortunes/4*, to na konsoli wpisujemy:
+Podglądamy atrybut *href* pierwszej fortunki.
+Jeśli jest to, na przykład */fortunes/4*, to na konsoli wpisujemy:
 
     :::js
-    r = $("a[href='/fortunes/10']")
+    r = $("a[href='/fortunes/4']")
     a = r.closest("article")
     a.effect("explode")
 
-Wybrana fortunka powinna eksplodować.
+Wybrana fortunka powinna eksplodować i zniknąć ze strony.
 
 Ten sam efekt powinniśmy uzyskać po wklepaniu następującego kodu
 do pliku *fortunes.js* (wcześniej usuwamy plik *fortunes.js.coffee*):
@@ -154,8 +154,8 @@ do pliku *fortunes.js* (wcześniej usuwamy plik *fortunes.js.coffee*):
       // });
     });
 
-Oczywiście, w powyższym kodzie nie korzystamy ze zwracanych danych.
-Ale gdybyśmy zapragnęli umieścić wyrzuconą fortunkę na marginesie
+Oczywiście, w powyższym kodzie nie korzystamy z przesłanych danych.
+Ale gdybyśmy zapragnęli umieścić właśnie usuniętą fortunkę na marginesie,
 po prawej stronie (element *div[class="span4"]*)…
 
 **Uwaga:** na stronie wiki
