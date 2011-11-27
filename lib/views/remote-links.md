@@ -179,8 +179,7 @@ Zmieniony link z *index.html.erb*:
     :::ruby
     <%= link_to 'Destroy', fortune,
        method: :delete,
-       remote: true,
-       class: "btn danger" %>
+       remote: true %>
 
 Wygenerowany kod HTML:
 
