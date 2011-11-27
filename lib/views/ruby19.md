@@ -43,6 +43,7 @@ Strony, gdzie od czasu do czasu warto zajrzeć:
 Różne:
 
 * [Leveraging Ruby's Standard Library: Appendix B - Ruby Best Practices](http://oreilly.com/ruby/excerpts/ruby-best-practices/ruby-standard-library.html)
+* [Learn Ruby](http://rubykoans.com/) – with the edgecase Ruby koans
 
 
 ## Hasze
