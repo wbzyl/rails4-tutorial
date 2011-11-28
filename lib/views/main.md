@@ -10,6 +10,8 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
+[2011.11.28] [Coding - the new Latin](http://www.bbc.co.uk/news/technology-15916677).
+
 [2011.10.21] Poprawioną wersję *Elevation* dla Rails umieściłem
 [tutaj](https://gist.github.com/1303620).
 Przygotowałem też szablon aplikacji korzystający z HTML5Boilerplate.
