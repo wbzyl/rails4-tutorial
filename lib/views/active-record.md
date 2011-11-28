@@ -8,7 +8,7 @@ Lista przykładów:
 1. Efektywne pobieranie danych z kilku tabel – Eager Loading
 1. Rodzime typy baz danych
 1. Sytuacje wyścigu, czyli *race conditions*
-1. Sortable List in Ruby on Rails 3.1
+1. Sortable List in Ruby on Rails 3.1  **TODO:** przenieść do *Remote Links*
 
 
 Zaczniemy od sprawdzenia jakie mamy zainstalowane w systemie
