@@ -12,6 +12,10 @@
 
 [2011.11.28] [Coding - the new Latin](http://www.bbc.co.uk/news/technology-15916677).
 
+[2011.10.26] [Method chaining and lazy evaluation in Ruby](http://jeffkreeftmeijer.com/2011/method-chaining-and-lazy-evaluation-in-ruby/) –
+we’ll write a library that can chain method calls to build up a
+MongoDB query in this article.
+
 [2011.10.21] Poprawioną wersję *Elevation* dla Rails umieściłem
 [tutaj](https://gist.github.com/1303620).
 Przygotowałem też szablon aplikacji korzystający z HTML5Boilerplate.
