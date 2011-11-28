@@ -9,10 +9,12 @@
 Zaczynamy od przypomnienia przykładów:
 
     :::bash
-    curl -I -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/1
-    curl    -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/1
-    curl -I -X DELETE http://localhost:3000/fortunes/1.json
-    curl    -X DELETE http://localhost:3000/fortunes/1
+    curl -v -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/44
+    curl    -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/45
+    curl    -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/46
+    curl -v -X DELETE http://localhost:3000/fortunes/47
+    curl    -X DELETE http://localhost:3000/fortunes/48.json
+    curl    -X DELETE http://localhost:3000/fortunes/49
     curl -v -X POST -H 'Content-Type: application/json' \
       --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes.json
     curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
