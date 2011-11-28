@@ -229,3 +229,8 @@ Następnie dopisujemy go do pliku *application.js*:
     //= require_tree .
 
 **TODO**
+
+Prosty przykład, na konsoli?:
+
+* [Sprockets](http://rubydoc.info/gems/sprockets/2.1.2/file/README.md) – *RubyDoc*
+* [Sprocekts](https://github.com/sstephenson/sprockets) – *Github*
