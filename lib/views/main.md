@@ -53,7 +53,6 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Makieta aplikacji, czyli layout", "/layouty" %}
 1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
 1. {%= link_to "TDD, BDD…", "/testowanie" %}
-1. {%= link_to "Powiązania między modelami", "/models" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "Remote links", "/remote-links" %}
