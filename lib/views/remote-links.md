@@ -230,9 +230,108 @@ Następnie dopisujemy go do pliku *application.js*:
     //= require bootstrap-modal
     //= require_tree .
 
+Przykładowa strona z Bootstrap Modal Window:
+
+    :::html
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset=utf-8>
+        <link rel="stylesheet" href="bootstrap.css">
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script src="bootstrap-modal.js"></script>
+        <title>Bootstrap Modal Windows</title>
+      </head>
+      <body>
+        <a class="btn danger"
+          data-controls-modal="my-modal"
+          data-backdrop="static" data-keyboard="true">Launch Modal</a>
+
+        <article id="my-modal" class="modal hide fade in">
+          <div class="modal-header">
+            <div class="close">×</div>
+            <h3>Modal Heading</h3>
+          </div>
+          <div class="modal-body">
+            <p>One fine body…</p>
+          </div>
+        </article>
+      </body>
+    </html>
+
+**TODO:** Opisać jak to działa.
+
+
+### Remote Show
+
+Szablon EJS:
+
+    :::rhtml app/assets/javascripts/templates/show.jst.ejs
+    <article id="<%= modal %>" class="modal hide fade in">
+      <div class="modal-header">
+        <div class="close">×</div>
+        <h3>Fortune #<%= id %></h3>
+      </div>
+      <div class="modal-body">
+        <p><%= quotation %></p>
+        <p class="source"><%= source %></p>
+      </div>
+    </article>
+
+**TODO:** Omówić. Dodać przyciski *Back* i *Edit*.
+Dla remote edit:  *Back* i *Show*.
+
+JavaScript:
+
+    :::js
+    $(function() {
+      $('.show').bind('click', function() { // class show was added in index.html.erb
+        var href = $(this).attr('href');
+        var id = href.slice(1).split('/').join('-');  // ex. fortune-31
+        $.ajax({
+          url: href,
+          dataType: "json"
+        }).done(function(data) {
+          if ($('#' + id).length == 0) { // modal is not present
+            // use EJS template
+            $(".page-header").append(JST["templates/show"]({
+              modal: id,
+              id: data.id,
+              quotation: data.quotation,
+              source: data.source }));
+          };
+          // show modal window
+          $('#' + id).modal({backdrop: "static", keyboard: true, show: true});
+        });
+        return false;
+      });
+    });
+
+Nieco CSS:
+
+    :::css app/assets/stylesheets/bootstrap-container-app.css.scss
+    .modal {
+      padding: 1em;
+      h3 {
+        font-size: 20px; }
+      p {
+        font-size: 18px; }
+      .source {
+        padding-top: 0.5em;
+        font-style: italic; }
+      .close {
+        cursor: pointer;
+        padding: 1ex; }
+    }
+
+
+### Remote Edit
+
 **TODO**
 
-Prosty przykład, na konsoli?:
+
+### Dokumentacja
 
 * [Sprockets](http://rubydoc.info/gems/sprockets/2.1.2/file/README.md) – *RubyDoc*
 * [Sprocekts](https://github.com/sstephenson/sprockets) – *Github*
+* [CSS Cursors](http://www.w3schools.com/cssref/playit.asp?filename=playcss_cursor&preval=default)
