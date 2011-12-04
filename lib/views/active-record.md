@@ -421,6 +421,10 @@ Dopisujemy brakujące powiązania w modelach:
       belongs_to :photographer
     end
 
+    class Photo < ActiveRecord::Base
+      belongs_to :gallery
+    end
+
 Teraz migrujemy:
 
     rake db:migrate
