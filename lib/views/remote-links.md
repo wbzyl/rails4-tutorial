@@ -340,4 +340,14 @@ Nieco CSS:
 
 Embedded CoffeeScript templates:
 
-* [Eco](https://github.com/sstephenson/eco)
+* [Eco](https://github.com/sstephenson/eco) –
+  embedded CoffeeScript templates
+* [Ruby Eco](https://github.com/sstephenson/ruby-eco) –
+  a bridge to the official Eco compiler for embedded CoffeeScript templates.
+
+Instalacja:
+
+    :::bash
+    gem install coffee-script execjs therubyracer # zależności
+    gem install --pre eco-source
+    gem install eco
