@@ -218,6 +218,8 @@ Zamieniamy kod na:
 
 ## Remote modal show/new/edit pages
 
+Cały przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links).
+
 Skorzystamy z wtyczki Bootstrap o nazwie *Modal*.
 Pobieramy plik [bootstrap-modal.js](http://twitter.github.com/bootstrap/1.4.0/bootstrap-modal.js)
 i zapisujemy go katalogu *vendor/assets/javascripts* aplikacji.
@@ -259,7 +261,8 @@ Przykładowa strona z Bootstrap Modal Window:
       </body>
     </html>
 
-**TODO:** Opisać jak to działa.
+Przeanalizować [ten przykład](https://gist.github.com/1450706)
+z przyciskiem i funkcją obsługi zdarzenia *onclick* tego przycisku.
 
 
 ### Remote Show
@@ -276,22 +279,28 @@ Szablon EJS:
         <p><%= quotation %></p>
         <p class="source"><%= source %></p>
       </div>
+      <div class="modal-footer">
+        <div class="btn default">Close</div>
+      </div>
     </article>
 
-**TODO:** Omówić. Dodać przyciski *Back* i *Edit*.
-Dla remote edit:  *Back* i *Show*.
+W oknie modalnym przycisk *Back* nie ma sensu. Zamienimy go na
+przycisk *Close* i dodamy przycisk *Edit*.
 
-JavaScript:
+Po kliknięciu przycisku *Show*, pobieramy z bazy za pomocą żądania AJAX
+JSON-a z danymi. Następnie skorzystamy szablonu EJS do wygenerowania
+kodu HTML okna, który po dodaniu do strony, pokazujemy (**TODO**):
 
     :::js
     $(function() {
-      $('.show').bind('click', function() { // class show was added in index.html.erb
+      $('.show').bind('click', function() { // show dodano w index.html.erb
         var href = $(this).attr('href');
-        var id = href.slice(1).split('/').join('-');  // ex. fortune-31
+        var id = href.slice(1).split('/').join('-');  // np. fortune-31
         $.ajax({
           url: href,
           dataType: "json"
         }).done(function(data) {
+          // TODO: należy usunąć; nie powinniśmy implementować cacheowania!
           if ($('#' + id).length == 0) { // modal is not present
             // use EJS template
             $(".page-header").append(JST["templates/show"]({
@@ -300,14 +309,174 @@ JavaScript:
               quotation: data.quotation,
               source: data.source }));
           };
-          // show modal window
+          // pokaż okno modalne
           $('#' + id).modal({backdrop: "static", keyboard: true, show: true});
         });
         return false;
       });
     });
 
-Nieco CSS:
+Na razie przycisk *Close* nie działa. Aby go uaktywnić,
+można dopisać do elementu klasę *close*. Niestety do tej klasy przypisany jest CSS
+psujący wygląd przycisku. Dlatego postąpimy tak:
+
+
+    :::js
+    if ($('#' + id).length == 0) { // modal is not present
+      // use EJS template
+      $(".page-header").append(JST["templates/show"]({
+        modal: id,
+        id: data.id,
+        quotation: data.quotation,
+        source: data.source }));
+        $(".page-header .default").bind('click', function() {
+          $('#' + id).modal('hide');
+        });
+    };
+
+I to już w zasadzie koniec zabaw z „remote links”.
+
+
+## Remote Edit
+
+Na początek przerobimy formularz na „remote”, co oznacza że po kliknięciu przycisku
+submit będzie wysyłane żądanie AJAX do bazy.
+
+Przeróbka jest trywialna. Wystarczy dopisać `remote: true` do *semantic_form_for*:
+
+    :::rhtml _form.html.erb
+    <%= semantic_form_for @fortune, remote: true do |f| %>
+
+Oto kod HTML wygenerowany z szablonu *_form.html.erb* fortunki:
+
+    :::rhtml
+    <div class="form edit">
+    <form accept-charset="UTF-8" action="/fortunes/54" class="formtastic fortune" data-remote="true"
+          id="edit_fortune_54" method="post" novalidate="novalidate">
+        <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" />
+        <input name="_method" type="hidden" value="put" />
+        <input name="authenticity_token" type="hidden" value="Ps++PiFakL52X1UuxGHtNsPb3OgNyqOfpqhXyZWT1jE=" /></div>
+        ...
+        <fieldset class="buttons"><ol>
+          <li class="commit button"><input class="update" name="commit" type="submit" value="Update Fortune" /></li>
+        </ol>
+        ...
+      </form>
+      <div class="link">
+        <a href="/fortunes/55" class="btn primary">Show</a>
+        <a href="/fortunes" class="btn primary">Back</a>
+      </div>
+    </div>
+
+Jak widać, w szablonie skorzystano z wielu metod pomocniczych *Rails* i *Formtastic*.
+Wobec tego przepisanie *_form.html.erb* na EJS nie ma większego sensu.
+
+Dlatego postąpimy tak. Wygenerujemy cały formularz na serwerze.
+Skorzystamy z takiego szablonu:
+
+    :::rhtml edit.text.html
+    <%= render('form') %>
+
+via metoda *edit* z dodanym formatem tekstowym:
+
+    :::ruby
+    # GET /fortunes/1/edit
+    def edit
+      @fortune = Fortune.find(params[:id])
+
+      respond_to do |format|
+        format.html # edit.html.erb
+        format.text # edit.text.erb
+      end
+    end
+
+**Dziwne?** Musiałem jeszcze zrobić coś takiego:
+
+    :::bash
+    ln -s _form.html.erb _form.text.erb
+
+Inaczej zgłaszany był błąd z powodu brakującego szablonu.
+
+Wyrenderowany(?) kod HTML formularza pobierzemy via AJAX
+i wstawimy go do szablonu EJS:
+
+    :::js app/assets/javascripts/application.js
+    $('.edit').bind('click', function() {
+      var href = $(this).attr('href');
+      var id = href.slice(1).split('/').join('-');  // ex. fortune-31-edit
+
+      $.ajax({
+        url: href,
+        dataType: "text"  // tak wymuszamy format tekstowy
+      }).done(function(data) {
+        $('#' + id).detach(); // usuwamy okno modalne z DOM
+        $(".page-header").append(JST["templates/edit"]({
+          modal: id,
+          form: data }));
+
+        $("#" + id + " .default").bind('click', function() {
+          $('#' + id).modal('hide');  // albo detach?
+        });
+
+        $('#' + id).bind('ajax:success', function(event, data, status, xhr) {
+          $('#' + id).modal('hide');  // a może detach?
+        });
+        // TODO: failure
+
+        $('#' + id).modal({backdrop: "static", keyboard: true, show: true});
+      });
+      return false;
+    });
+
+A to użyty powyżej szablon EJS:
+
+    :::rhtml templates/show.jst.ejs
+    <article id="<%= modal %>" class="modal hide fade in">
+      <div class="modal-header">
+        <div class="close">×</div>
+        <h3>Edit Fortune</h3>
+      </div>
+      <div class="modal-body">
+        <%= form %>
+      </div>
+      <div class="modal-footer">
+        <div class="btn default">Close</div>
+      </div>
+    </article>
+
+Do kodu metody *update* musiałem dopisać wiersz z *format.js*:
+
+    :::ruby
+    # PUT /fortunes/1
+    # PUT /fortunes/1.json
+    def update
+      @fortune = Fortune.find(params[:id])
+
+      respond_to do |format|
+        if @fortune.update_attributes(params[:fortune])
+          format.html { redirect_to @fortune, notice: 'Fortune was successfully updated.' }
+          format.json { head :ok }
+          format.js { render nothing: true }
+        ...
+
+Bez *format.js* renderowane było (Firebug jest wielki ♬♬♬):
+
+    :::ruby
+    format.html { redirect_to @fortune, notice: 'Fortune was successfully updated.' }
+
+**Bug?** A powinien być zgłaszany błąd o brakującym szablonie *update.js.erb*.
+
+**Uwaga:** W kodzie powyżej powtarza się ten sam schemat: `# + id` v. `id`.
+Coś trzeba z tym zrobić.
+
+Pozostaje przygotować szablon EJS, do którego wstawimy pobrany formularz.
+Na koniec całość dodamy do okna modalnego – podobnie jak to zrobiliśmy
+w wypadku *show*.
+
+
+### Nieco CSS
+
+Poprawiamy nieco wygląd widoków:
 
     :::css app/assets/stylesheets/bootstrap-container-app.css.scss
     .modal {
@@ -323,11 +492,6 @@ Nieco CSS:
         cursor: pointer;
         padding: 1ex; }
     }
-
-
-### Remote Edit
-
-**TODO**
 
 
 ### Dokumentacja
