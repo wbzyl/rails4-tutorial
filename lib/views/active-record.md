@@ -65,7 +65,7 @@ jeszcze jeden atrybut (*foreign key*) do zamówień:
 
 * *Order* (zamówienie) – atrybuty: **customer_id**, order_date, …
 
-Generujemy *boilerplate code*::
+Generujemy *boilerplate code*:
 
     rails generate model Customer name:string
     rails generate model Order order_date:datetime order_number:string customer:references
@@ -95,7 +95,7 @@ A tak usuwamy z bazy klienta i wszystkie jego zamówienia:
 
 ### Dodajemy powiązania między modelami
 
-Po dopisaniu kod usalającego powiązania między tymi modelami:
+Po dopisaniu kod ustalającego powiązania między tymi modelami:
 
     :::ruby
     class Customer < ActiveRecord::Base
@@ -419,6 +419,10 @@ Dopisujemy brakujące powiązania w modelach:
     class Gallery < ActiveRecord::Base
       has_many :photos
       belongs_to :photographer
+    end
+
+    class Photo < ActiveRecord::Base
+      belongs_to :gallery
     end
 
 Teraz migrujemy:

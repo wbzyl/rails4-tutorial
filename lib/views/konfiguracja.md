@@ -165,16 +165,33 @@ Podstawowe gemy instalujemy, korzystając ze skryptu *rvmsudo*:
 Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
 
     :::ruby ~/.irbrc
+    IRB.conf[:PROMPT_MODE] = :SIMPLE
+
     require 'rubygems'
     require 'wirble'
     require 'hirb'
+
     Wirble.init
     Wirble.colorize
     Hirb.enable
+
     if ENV.include?('RAILS_ENV') && !Object.const_defined?('RAILS_DEFAULT_LOGGER')
       require 'logger'
       RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
     end
+
+Znak zachęty można zdefiniować samemu.
+Oto przykład (*TODO*: sprawdzić czy to działa):
+
+    :::ruby
+    IRB.conf[:PROMPT][:CUSTOM] = {
+      :PROMPT_I => ">> ",
+      :PROMPT_N => ">> ",
+      :PROMPT_S => nil,
+      :PROMPT_C => ">> ",
+      :RETURN => "%s\n"
+    }
+    IRB.conf[:PROMPT_MODE] = :CUSTOM
 
 oraz gemów:
 

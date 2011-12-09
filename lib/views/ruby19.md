@@ -18,6 +18,9 @@ Podręczniki do języka Ruby:
   Ruby Book](http://www.humblelittlerubybook.com/book/html/index.html)
   \([pdf](http://www.humblelittlerubybook.com/book/hlrb.pdf)\)
 * [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/)
+* Dan Nguyen.
+  [The Bastards Book of Ruby](http://ruby.bastardsbook.com/) –
+  a programming primer for counting and other unconventional tasks
 * [Hyperpolyglot](http://hyperpolyglot.org/scripting) – nie tylko Ruby!
 
 Dokumentacja online:
