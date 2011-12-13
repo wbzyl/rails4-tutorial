@@ -1,12 +1,9 @@
-#### {% title "Prezentacje 2011" %}
+#### {% title "Prezentacje 2012.01" %}
 
 # Prezentacje
 
 **Uwaga:** Poniżej podano **orientacyjne**
 godziny rozpoczęcia prezentacji.
-
-**Legenda:** *[G-]* -- brak
-repozytorium, *[G+W-]* -- brak opisu projektu.
 
 <table class="span-16" summary="harmonogram">
   <colgroup>
@@ -20,28 +17,38 @@ repozytorium, *[G+W-]* -- brak opisu projektu.
 <tbody>
 
  <tr>
- <td>12:15–12:30 <b>(5.01)</b></td>
- <td><a href="https://github.com/Tap-madl/fajny_link">Fajny link</a></td>
+ <td>10:15–10:30 <b>(9.01)</b></td>
+ <td>Dragonborn</td>
  </tr>
 
  <tr>
- <td>12:30–12:45 <b>(5.01)</b></td>
- <td><a href="https://github.com/yahetai/projekt">Inner Gurus</a></td>
+ <td>10:30–10:45 <b>(9.01)</b></td>
+ <td>ZTM</td>
  </tr>
 
  <tr>
- <td>12:45–13:00 <b>(5.01)</b></td>
- <td><a href="https://github.com/PawelMysior/Javatar">Javatar</a> [G-]</td>
+ <td>10:45–11:00 <b>(9.01)</b></td>
+ <td>Git-is-Git</td>
  </tr>
 
  <tr>
- <td>13:15–13:30 <b>(5.01)</b></td>
- <td><a href="https://github.com/kazukeri/railsShop">railsShop</a></td>
+ <td>11:00–11:15 <b>(9.01)</b></td>
+ <td>Tanczacy z Railsami</td>
  </tr>
 
  <tr>
- <td>13:30–13:45 <b>(5.01)</b></td>
- <td><a href="https://github.com/mswinh/pehaps">Serwis mailingowy</a></td>
+ <td>11:15–11:30 <b>(9.01)</b></td>
+ <td>Zadziory</td>
+ </tr>
+
+ <tr>
+ <td>11:30–11:45 <b>(9.01)</b></td>
+ <td>Grupa Zla</td>
+ </tr>
+
+ <tr>
+ <td>11:45–12:00 <b>(9.01)</b></td>
+ <td>Unnamed</td>
  </tr>
 
  <tr>
@@ -50,49 +57,41 @@ repozytorium, *[G+W-]* -- brak opisu projektu.
  </tr>
 
  <tr>
- <td>12:15–12:30 <b>(5.01)</b></td>
- <td><a href="https://github.com/borch/rails4">Monkey Presents</a></td>
+ <td>10:15–10:30 <b>(16.01)</b></td>
+ <td>Inception</td>
  </tr>
 
  <tr>
- <td>12:30–12:45 <b>(12.01)</b></td>
- <td><a href="https://github.com/cintrzyk/project">BeInTouch</a></td>
+ <td>10:30–10:45 <b>(16.01)</b></td>
+ <td>MotoMyszy z Marsa</td>
  </tr>
 
  <tr>
- <td>12:45–13:00 <b>(12.01)</b></td>
- <td><a href="https://github.com/kepisty89/wierszopis">Wierszopis</a></td>
+ <td>10:45–11:00 <b>(16.01)</b></td>
+ <td>Panda50</td>
  </tr>
 
  <tr>
- <td>13:00–13:15 <b>(12.01)</b></td>
- <td><a href="https://github.com/Lejdis/project">Lejdis</a></td>
+ <td>11:00–11:15 <b>(16.01)</b></td>
+ <td>Pejdzer</td>
  </tr>
 
  <tr>
- <td>13:15–13:30 <b>(12.01)</b></td>
- <td><a href="https://github.com/c2h5oh-Ruby/git-nalewki">Git Nalewki</a> [G-]</td>
+ <td>11:15–11:30 <b>(16.01)</b></td>
+ <td>Pod Murzynem</td>
  </tr>
 
  <tr>
- <td>13:30–13:45 <b>(12.01)</b></td>
- <td><a href="https://github.com/ascii-main/ascii-arch-serw-int">ASCII</a> [G+W-]</td>
+ <td>11:30–11:45 <b>(16.01)</b></td>
+ <td>Somateria</td>
  </tr>
 
  <tr>
- <td>13:45–14:00 <b>(12.01)</b></td>
- <td><a href="https://github.com/gnysek/xxx">XXX</a> [G+W--]</td>
- </tr>
-
- <tr>
- <td>??–?? <b>(12.01)</b></td>
- <td><a href="https://github.com/kamilpiotr/Students-on-Rails">Students on Rails</a> [G+W--]</td>
- </tr>
-
- <tr>
- <td>??–?? <b>(12.01)</b></td>
- <td><a href="https://github.com/ghoscik/digital-portfolio">Digital portfolio</a> [G-]</td>
+ <td>11:45–12:00 <b>(16.01)</b></td>
+ <td>???</td>
  </tr>
 
 </tbody>
 </table>
+
+**Legenda:** *[R-]* -- brak README.md

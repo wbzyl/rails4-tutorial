@@ -1,4 +1,4 @@
-# 3.10.2011 – zaczynamy!
+# Prezentacje – 9.01, 16.01
 
 <blockquote>
   {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
@@ -9,6 +9,99 @@
   </p>
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
+
+Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
+
+<table class="span-16" summary="harmonogram">
+  <colgroup>
+    <col class="table1"/>
+    <col class="table2"/>
+  </colgroup>
+  <caption><em>Harmonogram prezentacji</em></caption>
+  <thead>
+  </thead>
+
+<tbody>
+
+ <tr>
+ <td>10:15–10:30 <b>(9.01)</b></td>
+ <td>Dragonborn</td>
+ </tr>
+
+ <tr>
+ <td>10:30–10:45 <b>(9.01)</b></td>
+ <td>ZTM</td>
+ </tr>
+
+ <tr>
+ <td>10:45–11:00 <b>(9.01)</b></td>
+ <td>Git-is-Git</td>
+ </tr>
+
+ <tr>
+ <td>11:00–11:15 <b>(9.01)</b></td>
+ <td>Tańczący z Railsami</td>
+ </tr>
+
+ <tr>
+ <td>11:15–11:30 <b>(9.01)</b></td>
+ <td>Zadziory</td>
+ </tr>
+
+ <tr>
+ <td>11:30–11:45 <b>(9.01)</b></td>
+ <td>Grupa Zła</td>
+ </tr>
+
+ <tr>
+ <td>11:45–12:00 <b>(9.01)</b></td>
+ <td>Unnamed</td>
+ </tr>
+
+ <tr>
+ <td></td>
+ <td></td>
+ </tr>
+
+ <tr>
+ <td>10:15–10:30 <b>(16.01)</b></td>
+ <td>Inception</td>
+ </tr>
+
+ <tr>
+ <td>10:30–10:45 <b>(16.01)</b></td>
+ <td>MotoMyszy z Marsa</td>
+ </tr>
+
+ <tr>
+ <td>10:45–11:00 <b>(16.01)</b></td>
+ <td>Panda50</td>
+ </tr>
+
+ <tr>
+ <td>11:00–11:15 <b>(16.01)</b></td>
+ <td>Pejdżer</td>
+ </tr>
+
+ <tr>
+ <td>11:15–11:30 <b>(16.01)</b></td>
+ <td>Pod Murzynem</td>
+ </tr>
+
+ <tr>
+ <td>11:30–11:45 <b>(16.01)</b></td>
+ <td>Somateria</td>
+ </tr>
+
+ <tr>
+ <td>11:45–12:00 <b>(16.01)</b></td>
+ <td>???</td>
+ </tr>
+
+</tbody>
+</table>
+
+<!--
 
 [2011.11.28] [Coding - the new Latin](http://www.bbc.co.uk/news/technology-15916677).
 
@@ -51,8 +144,11 @@ należy podać Gitowi swoje **prawdziwe i aktualne** dane:
 <a href="http://wbzyl.inf.ug.edu.pl/sp/git">Parę aliasów dla Gita i Bash’a</a>
 oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
+-->
 
-## Rozpiska wykładów
+**Legenda:** *[R-]* -- brak README.md z opisem funkcjonalności aplikacji.
+
+# Rozpiska wykładów
 
 1. {%= link_to "Zapoznajemy się z Ruby", "/ruby19" %}
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
