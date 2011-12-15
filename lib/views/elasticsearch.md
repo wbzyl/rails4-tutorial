@@ -171,32 +171,67 @@ Wyszukiwanie po kilku indeksach:
     }'
 
 
-## Nie działa: Twitter Rivers
+## Wtyczki
+
+Zaczynamy od instalacji [wtyczek](https://github.com/elasticsearch).
+
+Rivers allows to index streams:
+
+    :::bash
+    bin/plugin -install elasticsearch/elasticsearch-river-twitter/1.0.0
+    bin/plugin -install elasticsearch/elasticsearch-river-couchdb/1.0.0
+    bin/plugin -install elasticsearch/elasticsearch-river-wikipedia/1.0.0
+
+Allows to have JavaScript as the language of scripts to execute:
+
+    :::bash
+    bin/plugin -install elasticsearch/elasticsearch-lang-javascript/1.0.0
+
+
+### River Twitter
+
+Usuwanie swoich rivers, na przykład:
+
+    :::bash
+    curl -XDELETE http://localhost:9200/_river/my_twitter_river
+
+Sprawdzanie statusu:
+
+    :::bash
+    curl -XGET http://localhost:9200/_river/my_twitter_river/_status
+
 
 Przykład tzw. *filtered stream*:
 
     :::bash
-    curl -XPUT localhost:9200/_river/my_twitter_river/_meta -d '
+    curl -XPUT localhost:9200/_river/twitter_statuses_internal/_meta -d @nosql-twitter.json
+
+gdzie w pliku *nosql-twitter.json* wpisaliśmy:
+
+    :::json nosql-twitter.json
     {
         "type" : "twitter",
         "twitter" : {
-            "user" : "twitter_user",
-            "password" : "twitter_password",
+            "user" : "wbzyl",
+            "password" : "kochanie13",
             "filter": {
                "tracks": ["elasticsearch", "mongodb", "couchdb", "rails"]
             }
         },
         "index" : {
-            "index" : "wlodek",
+            "index": "twitter",
             "type" : "nosql",
             "bulk_size" : 10
         }
     }
-    '
 
-Ale można też tak:
+Wyszukiwanie:
 
     :::bash
-    curl -XPUT localhost:9200/_river/my_twitter_river/_meta -d @wlodek-nosql-tweets.json
-
-gdzie powyższy JSON zapisaliśmy w pliku *wlodek-nosql-tweets.json*.
+    curl -XGET 'http://localhost:9200/twitter/nosql/_search?q=text:mongodb&fields=user.name,text&pretty=true'
+    curl -XGET 'http://localhost:9200/twitter/nosql/_search?pretty=true' -d '
+    {
+        "query" : {
+            "matchAll" : {}
+        }
+    }'
