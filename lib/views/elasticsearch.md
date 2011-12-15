@@ -178,9 +178,13 @@ Zaczynamy od instalacji [wtyczek](https://github.com/elasticsearch).
 Rivers allows to index streams:
 
     :::bash
-    bin/plugin -install elasticsearch/elasticsearch-river-twitter/1.0.0
-    bin/plugin -install elasticsearch/elasticsearch-river-couchdb/1.0.0
-    bin/plugin -install elasticsearch/elasticsearch-river-wikipedia/1.0.0
+    bin/plugin -install river-twitter
+      -> Installing river-twitter...
+      Trying http://elasticsearch.googlecode.com/svn/plugins/river-twitter/elasticsearch-river-twitter-0.18.5.zip...
+
+    # bin/plugin -install elasticsearch/elasticsearch-river-twitter/1.0.0
+    # bin/plugin -install elasticsearch/elasticsearch-river-couchdb/1.0.0
+    # bin/plugin -install elasticsearch/elasticsearch-river-wikipedia/1.0.0
 
 Allows to have JavaScript as the language of scripts to execute:
 
