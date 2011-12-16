@@ -181,15 +181,24 @@ Rivers allows to index streams:
     bin/plugin -install river-twitter
       -> Installing river-twitter...
       Trying http://elasticsearch.googlecode.com/svn/plugins/river-twitter/elasticsearch-river-twitter-0.18.5.zip...
-
-    # bin/plugin -install elasticsearch/elasticsearch-river-twitter/1.0.0
-    # bin/plugin -install elasticsearch/elasticsearch-river-couchdb/1.0.0
-    # bin/plugin -install elasticsearch/elasticsearch-river-wikipedia/1.0.0
+      ...
+    bin/plugin -install river-couchdb
+      -> Installing river-couchdb...
+      Trying http://elasticsearch.googlecode.com/svn/plugins/river-couchdb/elasticsearch-river-couchdb-0.18.5.zip...
+      Downloading ...DONE
+      Installed river-couchdb
+    bin/plugin -install river-wikipedia
+      -> Installing river-wikipedia...
+      Trying http://elasticsearch.googlecode.com/svn/plugins/river-wikipedia/elasticsearch-river-wikipedia-0.18.5.zip...
+      Downloading ......DONE
+      Installed river-wikipedia
 
 Allows to have JavaScript as the language of scripts to execute:
 
     :::bash
-    bin/plugin -install elasticsearch/elasticsearch-lang-javascript/1.0.0
+    bin/plugin -install lang-javascript
+      -> Installing lang-javascript...
+      Trying http://elasticsearch.googlecode.com/svn/plugins/lang-javascript/elasticsearch-lang-javascript-0.18.5.zip...
 
 
 ### River Twitter
@@ -197,22 +206,38 @@ Allows to have JavaScript as the language of scripts to execute:
 Usuwanie swoich rivers, na przykład:
 
     :::bash
-    curl -XDELETE http://localhost:9200/_river/my_twitter_river
+    curl -XDELETE http://localhost:9200/_river/my_rivers
 
 Sprawdzanie statusu:
 
     :::bash
-    curl -XGET http://localhost:9200/_river/my_twitter_river/_status
+    curl -XGET http://localhost:9200/_river/my_rivers/_status
 
 
 Przykład tzw. *filtered stream*:
 
     :::bash
-    curl -XPUT localhost:9200/_river/twitter_statuses_internal/_meta -d @nosql-twitter.json
+    curl -XPUT localhost:9200/_river/my_rivers/_meta -d @tweets-nosql.json
 
-gdzie w pliku *nosql-twitter.json* wpisaliśmy:
+gdzie w pliku *nosql-tweets.json* wpisaliśmy:
 
-    :::json nosql-twitter.json
+    :::json tweets-nosql.json
+    {
+        "type" : "twitter",
+        "twitter" : {
+            "user" : "wbzyl",
+            "password" : "kochanie13",
+            "filter": {
+               "tracks": ["elasticsearch", "mongodb", "couchdb", "rails"]
+            }
+        },
+        "index" : {
+            "index": "tweets",
+            "type" : "nosql",
+            "bulk_size" : 10
+        }
+    }
+
     {
         "type" : "twitter",
         "twitter" : {
@@ -229,11 +254,31 @@ gdzie w pliku *nosql-twitter.json* wpisaliśmy:
         }
     }
 
+Sparawdzamy staus:
+
+    curl -XGET http://localhost:9200/_river/my_rivers/_status?pretty=true
+    {
+      "_index" : "_river",
+      "_type" : "my_rivers",
+      "_id" : "_status",
+      "_version" : 1,
+      "exists" : true, "_source" : {
+         "ok":true,"node": {
+            "id":"Q6rFvYZfTKClSCa4HyWxvA","name":"Hazard","transport_address":"inet[/192.168.32.64:9300]"}}
+
+A tak raportowane jest pobranie paczki tweets na konsoli:
+
+    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Establishing connection.
+    [2011-12-16 12:54][INFO ][cluster.metadata           ] [Hazard] [_river] update_mapping [my_rivers] (dynamic)
+    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Connection established.
+    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Receiving status stream.
+    [2011-12-16 12:57][INFO ][cluster.metadata           ] [Hazard] [tweets] update_mapping [nosql] (dynamic)
+
 Wyszukiwanie:
 
     :::bash
-    curl -XGET 'http://localhost:9200/twitter/nosql/_search?q=text:mongodb&fields=user.name,text&pretty=true'
-    curl -XGET 'http://localhost:9200/twitter/nosql/_search?pretty=true' -d '
+    curl -XGET 'http://localhost:9200/tweets/nosql/_search?q=text:mongodb&fields=user.name,text&pretty=true'
+    curl -XGET 'http://localhost:9200/tweets/nosql/_search?pretty=true' -d '
     {
         "query" : {
             "matchAll" : {}
