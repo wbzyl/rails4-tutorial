@@ -16,19 +16,26 @@ Strona domowa, dokumentacja:
   - [API](http://www.elasticsearch.org/guide/reference/api/)
   - [Query](http://www.elasticsearch.org/guide/reference/query-dsl/)
   - [Mapping](http://www.elasticsearch.org/guide/reference/mapping/)
+* [Setting up elasticsearch ](http://www.elasticsearch.org/tutorials/2010/07/01/setting-up-elasticsearch.html)
 
 Driver do Ruby:
 
 * Karel Minarik.
   [Tire](https://github.com/karmi/tire) – a rich Ruby API and DSL for the ElasticSearch search engine/database
 
+Fedora:
+
+* [Elasticsearch RPMs](https://github.com/tavisto/elasticsearch-rpms)
+
 Różne:
 
 * Karel Minarik.
   [Data Visualization with ElasticSearch and Protovis](http://www.elasticsearch.org/blog/2011/05/13/data-visualization-with-elasticsearch-and-protovis.html)
+* Clinton Gormley.
+  [Terms of endearment – the ElasticSearch Query DSL explained](http://www.elasticsearch.org/tutorials/2011/08/28/query-dsl-explained.html)
 
 
-## Instalacja
+## Instalacja ze źródeł
 
 Rozpakowujemy archiwum z ostatnią wersją
 [ElasticSearch](http://www.elasticsearch.org/download/) (ok. 16 MB):
@@ -53,19 +60,19 @@ Składnia zapytań:
 Dane zapiszemy w ElasticSearch za pomocą programu *curl*:
 
     :::bash
-    curl -XPUT 'http://localhost:9200/twitter/user/kimchy' -d '
+    curl -XPUT 'http://localhost:9200/twitter/users/kimchy' -d '
     {
        "name" : "Shay Banon"
     }'
 
-    curl -XPUT 'http://localhost:9200/twitter/tweet/1' -d '
+    curl -XPUT 'http://localhost:9200/twitter/tweets/1' -d '
     {
        "user": "kimchy",
        "postDate": "2009-11-15T13:12:00",
        "message": "Trying out Elastic Search, so far so good?"
     }'
 
-    curl -XPUT 'http://localhost:9200/twitter/tweet/2' -d '
+    curl -XPUT 'http://localhost:9200/twitter/tweets/2' -d '
     {
        "user": "kimchy",
        "postDate": "2009-11-15T14:12:12",
@@ -77,9 +84,9 @@ Sprawdzamy, co zostało dodane:
 Now, lets see if the information was added by GETting it:
 
     :::bash
-    curl -XGET 'http://localhost:9200/twitter/user/kimchy?pretty=true'
-    curl -XGET 'http://localhost:9200/twitter/tweet/1?pretty=true'
-    curl -XGET 'http://localhost:9200/twitter/tweet/2?pretty=true'
+    curl -XGET 'http://localhost:9200/twitter/users/kimchy?pretty=true'
+    curl -XGET 'http://localhost:9200/twitter/tweets/1?pretty=true'
+    curl -XGET 'http://localhost:9200/twitter/tweets/2?pretty=true'
 
 
 ## Wyszukiwanie – pierwsze koty za płoty
@@ -94,12 +101,12 @@ http://localhost:9200/<b> index </b>/<b> type </b>/_search?...
 Standardowe zapytanie (w *query string*):
 
     :::bash
-    curl -XGET 'http://localhost:9200/twitter/tweet/_search?q=user:kimchy&pretty=true'
+    curl -XGET 'http://localhost:9200/twitter/tweets/_search?q=user:kimchy&pretty=true'
 
 Zapytanie z JSON (korzystamy z *JSON query language*):
 
     :::bash
-    curl -XGET 'http://localhost:9200/twitter/tweet/_search?pretty=true' -d '
+    curl -XGET 'http://localhost:9200/twitter/tweets/_search?pretty=true' -d '
     {
        "query" : {
           "text" : { "user": "kimchy" }
@@ -129,7 +136,7 @@ Wszystkie dokumenty z indeksu *twitter*:
 Wszystkie dokumenty typu *user* z indeksu *twitter*:
 
     :::bash
-    curl -XGET 'http://localhost:9200/twitter/user/_search?pretty=true' -d '
+    curl -XGET 'http://localhost:9200/twitter/users/_search?pretty=true' -d '
     {
         "query" : {
             "matchAll" : {}
@@ -147,13 +154,13 @@ Wszystkie dokumenty typu *user* z indeksu *twitter*:
     curl -XPUT 'http://localhost:9200/bilbo/info/1' -d '{ "name" : "Bilbo Baggins" }'
     curl -XPUT 'http://localhost:9200/frodo/info/1' -d '{ "name" : "Frodo Baggins" }'
 
-    curl -XPUT 'http://localhost:9200/bilbo/tweet/1' -d '
+    curl -XPUT 'http://localhost:9200/bilbo/tweets/1' -d '
     {
         "user": "bilbo",
         "postDate": "2009-11-15T13:12:00",
         "message": "Trying out Elastic Search, so far so good?"
     }'
-    curl -XPUT 'http://localhost:9200/frodo/tweet/1' -d '
+    curl -XPUT 'http://localhost:9200/frodo/tweets/1' -d '
     {
         "user": "frodo",
         "postDate": "2009-11-15T14:12:12",
@@ -200,6 +207,8 @@ Allows to have JavaScript as the language of scripts to execute:
       -> Installing lang-javascript...
       Trying http://elasticsearch.googlecode.com/svn/plugins/lang-javascript/elasticsearch-lang-javascript-0.18.5.zip...
 
+**Uwaga**: Elasticsearch must be restarted after the installation of a plugin.
+
 
 ### River Twitter
 
@@ -219,30 +228,14 @@ Przykład tzw. *filtered stream*:
     :::bash
     curl -XPUT localhost:9200/_river/my_rivers/_meta -d @tweets-nosql.json
 
-gdzie w pliku *nosql-tweets.json* wpisaliśmy:
+gdzie w pliku *nosql-tweets.json* wpisałem:
 
     :::json tweets-nosql.json
     {
         "type" : "twitter",
         "twitter" : {
             "user" : "wbzyl",
-            "password" : "kochanie13",
-            "filter": {
-               "tracks": ["elasticsearch", "mongodb", "couchdb", "rails"]
-            }
-        },
-        "index" : {
-            "index": "tweets",
-            "type" : "nosql",
-            "bulk_size" : 10
-        }
-    }
-
-    {
-        "type" : "twitter",
-        "twitter" : {
-            "user" : "wbzyl",
-            "password" : "kochanie13",
+            "password" : "sekret",
             "filter": {
                "tracks": ["elasticsearch", "mongodb", "couchdb", "rails"]
             }
@@ -281,6 +274,19 @@ Wyszukiwanie:
     curl -XGET 'http://localhost:9200/tweets/nosql/_search?pretty=true' -d '
     {
         "query" : {
-            "matchAll" : {}
+            "match_all" : { }
         }
     }'
+
+
+
+
+
+# Zadania
+
+1\. Zainstalować wtyczkę *Wikipedia River*. Wyszukiwanie?
+
+2\. Przeczytać [Creating a pluggable REST endpoint](http://www.elasticsearch.org/tutorials/2011/09/14/creating-pluggable-rest-endpoints.html).
+
+* Zainstalować wtyczkę [hello world](https://github.com/brusic/elasticsearch-hello-world-plugin/).
+* Napisać swoją wtyczkę.
