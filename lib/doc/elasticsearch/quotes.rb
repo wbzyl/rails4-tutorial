@@ -4,11 +4,13 @@ require 'tire'
 require 'yajl/json_gem'
 
 fortunes = [
-  { id: 1, type: 'quotes', text: "Jedną z cech głupstwa jest logika.", tags: ["logika", "głupstwo"] },
-  { id: 2, type: 'quotes', text: "Znasz hasło do swojego wnętrza?", tags: ["hasło", "głupstwo"] },
+  { id: 1, type: 'quotes', text: "Jedną z cech głupstwa jest logika.", tags: ["logika", "głupstwo", "nauka"] },
+  { id: 2, type: 'quotes', text: "Znasz hasło do swojego wnętrza?", tags: ["hasło", "głupstwo", "czas"] },
   { id: 3, type: 'quotes', text: "Miał lwi pazur, ale brudny.", tags: ["lew", "pazur", "nauka"] },
-  { id: 4, type: 'quotes', text: "Unikaj skarżącego się na brak czasu, chce ci zabrać twój.", tags: ["czas"] }
+  { id: 4, type: 'quotes', text: "Unikaj skarżącego się na brak czasu, chce ci zabrać twój.", tags: ["nauka", "czas"] }
 ]
+
+# fields *id* and *type* are required.
 
 Tire.index 'fortunes' do
   delete
@@ -92,16 +94,74 @@ end
 # Let's say we want to display article counts for every tag in the database.
 # For that, we'll use a _terms_ facet.
 
-#
-s = Tire.search 'articles' do
+# Scoped and global counts
 
-  # We will search for articles whose title begins with letter “T”,
+s = Tire.search 'fortunes' do
+  query { string 'text:s*' }
   #
-  query { string 'title:T*' }
-
-  # and retrieve the counts “bucketed” by `tags`.
+  # retrieve the counts “bucketed” by `tags`.
   #
-  facet 'tags' do
+  facet 'scoped tags counts' do
     terms :tags
   end
-en
+
+  facet 'global tags counts' do
+    terms :tags, global: true
+  end
+end
+
+puts "Found #{s.results.count} fortunes matching 'text:s*':\n#{s.results.map(&:text).join("\n")}"
+
+puts "\nScoped counts by tag:", "-"*25
+s.results.facets['scoped tags counts']['terms'].each do |f|
+  puts "#{f['term'].ljust(10)} #{f['count']}"
+end
+
+puts "\nGlobal counts by tag:", "-"*25
+s.results.facets['global tags counts']['terms'].each do |f|
+  puts "#{f['term'].ljust(10)} #{f['count']}"
+end
+
+
+# Filtered Search
+
+s = Tire.search 'fortunes' do
+  query { string 'text:s*' }
+
+  filter :terms, tags: ['głupstwo']
+end
+
+puts "\nFiltered search: 'text:s*', filter: tags: ['głupstwo']", "-"*25
+s.results.each do |document|
+  puts "* #{ document.text } [tags: #{document.tags.join(', ')}]"
+end
+
+
+# Sortowanie
+
+s = Tire.search 'fortunes' do
+  query { all }
+
+  # sort do
+  #   by :text, 'desc'
+  # end
+end
+
+puts "\nSorted desc: (nie działa)", "-"*25
+s.results.each do |document|
+  puts "* #{ document.text }"
+end
+
+
+# Highlighting
+
+s = Tire.search 'fortunes' do
+  query { string 'text:hasło' }
+
+  highlight :text
+end
+
+puts "\nHighlighting:", "-"*25
+s.results.each do |document|
+  puts "* #{document.highlight.text}"
+end

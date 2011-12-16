@@ -51,6 +51,11 @@ Uruchamiamy *elasticsearch*:
 Korzystamy z domyślnych ustawień — *http://localhost:9200*
 
 
+<blockquote>
+ <p>The usual purpose of a full-text search engine is to return
+  <b>a small number</b> of documents matching your query.
+</blockquote>
+
 ## Your data, Your search
 
 Nieco zmienione przykłady
@@ -60,6 +65,12 @@ Składnia zapytań:
 
 <pre>http://localhost:9200/<b> index </b>/<b> type </b>/...
 </pre>
+
+<blockquote>
+ <p>Field names with the <b>same name</b> across types are highly
+ recommended to have the <b>same type</b> and same mapping characteristics
+ (analysis settings for example).
+</blockquote>
 
 Książka:
 
@@ -322,7 +333,7 @@ Sparawdzamy staus:
          "ok":true,"node": {
             "id":"Q6rFvYZfTKClSCa4HyWxvA","name":"Hazard","transport_address":"inet[/192.168.32.64:9300]"}}
 
-A tak raportowane jest pobranie paczki tweets na konsoli:
+A tak raportowane jest pobranie paczki z 10 tweets na konsoli:
 
     [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Establishing connection.
     [2011-12-16 12:54][INFO ][cluster.metadata           ] [Hazard] [_river] update_mapping [my_rivers] (dynamic)
@@ -342,7 +353,14 @@ Wyszukiwanie:
     }'
 
 
-# Ruby – Tire + ElasticSearch
+# Rails — Tire & ElasticSearch
+
+* Rails application template.
+* Dodać model *Tweet* i podłączyć go do twitter river.
+
+
+
+# Ruby — Tire + ElasticSearch
 
 Instalujemy gemy – *tire* i *yajl-ruby*:
 
@@ -354,10 +372,10 @@ Hurtowe indeksowanie (*bulk indexing*):
     :::ruby quotes.rb
     require 'tire'
     fortunes = [
-      { id: 1, type: 'quotes', text: "Jedną z cech głupstwa jest logika.", tags: ["logika", "głupstwo"] },
-      { id: 2, type: 'quotes', text: "Znasz hasło do swojego wnętrza?", tags: ["hasło", "głupstwo"] },
+      { id: 1, type: 'quotes', text: "Jedną z cech głupstwa jest logika.", tags: ["logika", "głupstwo", "nauka"] },
+      { id: 2, type: 'quotes', text: "Znasz hasło do swojego wnętrza?", tags: ["hasło", "głupstwo", "czas"] },
       { id: 3, type: 'quotes', text: "Miał lwi pazur, ale brudny.", tags: ["lew", "pazur", "nauka"] },
-      { id: 4, type: 'quotes', text: "Unikaj skarżącego się na brak czasu, chce ci zabrać twój.", tags: ["czas"] }
+      { id: 4, type: 'quotes', text: "Unikaj skarżącego się na brak czasu, chce ci zabrać twój.", tags: ["nauka", "czas"] }
     ]
     Tire.index 'fortunes' do
       delete
