@@ -16,6 +16,7 @@ Strona domowa, dokumentacja:
   - [API](http://www.elasticsearch.org/guide/reference/api/)
   - [Query](http://www.elasticsearch.org/guide/reference/query-dsl/)
   - [Mapping](http://www.elasticsearch.org/guide/reference/mapping/)
+  - [Facets](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html)
 * [Setting up elasticsearch ](http://www.elasticsearch.org/tutorials/2010/07/01/setting-up-elasticsearch.html)
 
 Driver do Ruby:
@@ -50,14 +51,72 @@ Uruchamiamy *elasticsearch*:
 Korzystamy z domyślnych ustawień — *http://localhost:9200*
 
 
-## Zapisujemy dane w ElasticSearch
+## Your data, Your search
+
+Nieco zmienione przykłady
+z [Your Data, Your Search](http://www.elasticsearch.org/blog/2010/02/12/yourdatayoursearch.html).
 
 Składnia zapytań:
 
 <pre>http://localhost:9200/<b> index </b>/<b> type </b>/...
 </pre>
 
-Dane zapiszemy w ElasticSearch za pomocą programu *curl*:
+Książka:
+
+    :::json book.json
+    {
+      "isbn" : "0812504321",
+      "name" : "Call of the Wild",
+      "author" : {
+         "first_name" : "Jack",
+         "last_name" : "London"
+       },
+       "pages" : 128,
+       "tags" : ["fiction", "children"]
+    }
+
+Dodajemy książkę:
+
+    curl -XPUT http://localhost:9200/amazon/books/0812504321 -d @book.json
+      {"ok":true,"_index":"amazon","_type":"books","_id":"0812504321","_version":1}
+
+Przykładowe zapytanie (w **query string**):
+
+    curl 'http://localhost:9200/amazon/books/_search?pretty=true&q=author.first_name:Jack'
+
+CD:
+
+    :::json cd.json
+    {
+       "asin" : "B00192IV0O",
+       "name" : "THE E.N.D. (Energy Never Dies)",
+       "artist" : "Black Eyed Peas",
+       "label" : "Interscope",
+       "release_date": "2009-06-09",
+       "tags" : ["hip-hop", "pop-rap"]
+    }
+
+Dodajemy CD:
+
+    curl -XPUT http://localhost:9200/amazon/cds/B00192IV0O -d @cd.json
+      {"ok":true,"_index":"amazon","_type":"cds","_id":"B00192IV0O","_version":1}
+
+Przykładowe zapytanie:
+
+    curl 'http://localhost:9200/amazon/cds/_search?pretty=true&q=label:Interscope'
+
+Wyszukiwanie po kilku typach:
+
+    curl 'http://localhost:9200/amazon/books,cds/_search?pretty=true&q=name:energy'
+
+Wyszukiwanie po wszystkich typach:
+
+    curl 'http://localhost:9200/amazon/_search?pretty=true&q=name:energy'
+
+
+## Korzystamy z JSON Query Language
+
+Dane zapiszemy w ElasticSearch kozystając z programu *curl*:
 
     :::bash
     curl -XPUT 'http://localhost:9200/twitter/users/kimchy' -d '
@@ -81,12 +140,10 @@ Dane zapiszemy w ElasticSearch za pomocą programu *curl*:
 
 Sprawdzamy, co zostało dodane:
 
-Now, lets see if the information was added by GETting it:
-
     :::bash
     curl -XGET 'http://localhost:9200/twitter/users/kimchy?pretty=true'
-    curl -XGET 'http://localhost:9200/twitter/tweets/1?pretty=true'
-    curl -XGET 'http://localhost:9200/twitter/tweets/2?pretty=true'
+    curl       'http://localhost:9200/twitter/tweets/1?pretty=true'
+    curl       'http://localhost:9200/twitter/tweets/2?pretty=true'
 
 
 ## Wyszukiwanie – pierwsze koty za płoty
@@ -98,12 +155,7 @@ http://localhost:9200/<b> index </b>/_search?...
 http://localhost:9200/<b> index </b>/<b> type </b>/_search?...
 </pre>
 
-Standardowe zapytanie (w *query string*):
-
-    :::bash
-    curl -XGET 'http://localhost:9200/twitter/tweets/_search?q=user:kimchy&pretty=true'
-
-Zapytanie z JSON (korzystamy z *JSON query language*):
+Przykładowe zapytanie (korzystamy z **JSON query language**):
 
     :::bash
     curl -XGET 'http://localhost:9200/twitter/tweets/_search?pretty=true' -d '
@@ -112,6 +164,14 @@ Zapytanie z JSON (korzystamy z *JSON query language*):
           "text" : { "user": "kimchy" }
        }
     }'
+    curl -XGET 'http://localhost:9200/twitter/tweets/_search?pretty=true' -d '
+    {
+       "query" : {
+          "term" : { "user": "kimchy" }
+       }
+    }'
+
+Jaka jest różnica między wyszukiwaniem z **text** a **term**?
 
 Wszystkie dokumenty:
 
@@ -146,7 +206,9 @@ Wszystkie dokumenty typu *user* z indeksu *twitter*:
 
 ## Multi Tenant – indeksy i typy
 
-*Tenant* to najemca, dzierżawca. *Multi tenant* oznacza — …?
+*Tenant* to najemca, dzierżawca.
+*Multi tenant* – jak to przetłumaczyć?
+Co to może oznaczać?
 
 *Przykład.* Zapisujemy następujące dane w ElasticSearch:
 
@@ -241,7 +303,7 @@ gdzie w pliku *nosql-tweets.json* wpisałem:
             }
         },
         "index" : {
-            "index": "twitter",
+            "index": "tweets",
             "type" : "nosql",
             "bulk_size" : 10
         }
@@ -249,6 +311,7 @@ gdzie w pliku *nosql-tweets.json* wpisałem:
 
 Sparawdzamy staus:
 
+    :::bash
     curl -XGET http://localhost:9200/_river/my_rivers/_status?pretty=true
     {
       "_index" : "_river",
@@ -279,7 +342,32 @@ Wyszukiwanie:
     }'
 
 
+# Ruby – Tire + ElasticSearch
 
+Instalujemy gemy – *tire* i *yajl-ruby*:
+
+    gem install tire
+    gem install yajl-ruby
+
+Hurtowe indeksowanie (*bulk indexing*):
+
+    :::ruby quotes.rb
+    require 'tire'
+    fortunes = [
+      { id: 1, type: 'quotes', text: "Jedną z cech głupstwa jest logika.", tags: ["logika", "głupstwo"] },
+      { id: 2, type: 'quotes', text: "Znasz hasło do swojego wnętrza?", tags: ["hasło", "głupstwo"] },
+      { id: 3, type: 'quotes', text: "Miał lwi pazur, ale brudny.", tags: ["lew", "pazur", "nauka"] },
+      { id: 4, type: 'quotes', text: "Unikaj skarżącego się na brak czasu, chce ci zabrać twój.", tags: ["czas"] }
+    ]
+    Tire.index 'fortunes' do
+      delete
+      import fortunes
+      refresh
+    end
+
+*Uwaga:* pola *id* oraz *type* są obowiązkowe.
+
+**TODO**: doc/elasticsearch/Tire.md
 
 
 # Zadania
