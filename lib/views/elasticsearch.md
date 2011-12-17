@@ -356,8 +356,7 @@ Wyszukiwanie:
 # Rails — Tire & ElasticSearch
 
 * Rails application template.
-* Dodać model *Tweet* i podłączyć go do twitter river.
-* Co z paginacją?
+* Dodać klasę *Tweet* i podłączyć ją do Twitter River.
 
 JSON:
 
@@ -393,10 +392,10 @@ Model:
     :::ruby app/models/tweet.rb
     class Tweet
       def self.search(params)
-        Tire.search('tweets') do
-          size 30 # default value for per_page ?
-          if params[:page]
-            from params[:page]
+        Tire.search('tweets', type: 'nosql') do
+          size 6
+          if params[:page].present?
+            from ((params[:page].to_i - 1) * 6)
           end
           query do
             boolean do
