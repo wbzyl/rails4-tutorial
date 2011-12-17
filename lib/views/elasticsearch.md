@@ -357,7 +357,82 @@ Wyszukiwanie:
 
 * Rails application template.
 * Dodać model *Tweet* i podłączyć go do twitter river.
+* Co z paginacją?
 
+JSON:
+
+    :::json tweets-nosql.json
+    {
+        "type" : "twitter",
+        "twitter" : {
+            "user" : "me",
+            "password" : "secret",
+            "filter": {
+               "tracks": ["elasticsearch", "mongodb", "couchdb", "rails"]
+            }
+        },
+        "index" : {
+            "index": "tweets",
+            "type" : "nosql",
+            "bulk_size" : 20
+        }
+    }
+
+Twitter River:
+
+    curl -XPUT localhost:9200/_river/my_rivers/_meta -d @tweets-nosql.json
+
+Routing:
+
+    :::ruby config/routes.rb
+    # get "tweets/index"
+    match '/tweets' => 'tweets#index', :as => :tweets
+
+Model:
+
+    :::ruby app/models/tweet.rb
+    class Tweet
+      def self.search(params)
+        Tire.search('tweets') do
+          size 30 # default value for per_page ?
+          if params[:page]
+            from params[:page]
+          end
+          query do
+            boolean do
+              must { string params[:q] } if params[:q].present?
+            end
+          end
+        end.results
+      end
+    end
+
+Kontroler:
+
+    :::ruby app/controllers/tweets_controller.rb
+    class TweetsController < ApplicationController
+      def index
+        @tweets = Tweet.search(params)
+      end
+    end
+
+Widok:
+
+    :::rhtml app/views/tweets/index.html.erb
+    <h1>Listing tweets</h1>
+
+    <%= form_tag tweets_path, method: :get do %>
+      <p>
+        <%= text_field_tag :q, params[:q] %>
+        <%= submit_tag 'Search', name: nil %>
+      </p>
+    <% end %>
+
+    <%= will_paginate @tweets %>
+
+    <% @tweets.each do |tweet| %>
+    <p><%= tweet.text %>
+    <% end %>
 
 
 # Ruby — Tire + ElasticSearch
