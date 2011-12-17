@@ -288,18 +288,12 @@ Allows to have JavaScript as the language of scripts to execute:
 Usuwanie swoich rivers, na przykład:
 
     :::bash
-    curl -XDELETE http://localhost:9200/_river/my_rivers
-
-Sprawdzanie statusu:
-
-    :::bash
-    curl -XGET http://localhost:9200/_river/my_rivers/_status
-
+    curl -XDELETE http://localhost:9200/_river/my_twitter_river
 
 Przykład tzw. *filtered stream*:
 
     :::bash
-    curl -XPUT localhost:9200/_river/my_rivers/_meta -d @tweets-nosql.json
+    curl -XPUT localhost:9200/_river/my_twitter_river/_meta -d @tweets-nosql.json
 
 gdzie w pliku *nosql-tweets.json* wpisałem:
 
@@ -320,10 +314,10 @@ gdzie w pliku *nosql-tweets.json* wpisałem:
         }
     }
 
-Sparawdzamy staus:
+Sprawdzanie statusu:
 
     :::bash
-    curl -XGET http://localhost:9200/_river/my_rivers/_status?pretty=true
+    curl -XGET http://localhost:9200/_river/my_twitter_river/_status?pretty=true
     {
       "_index" : "_river",
       "_type" : "my_rivers",
@@ -379,7 +373,7 @@ JSON:
 
 Twitter River:
 
-    curl -XPUT localhost:9200/_river/my_rivers/_meta -d @tweets-nosql.json
+    curl -XPUT localhost:9200/_river/my_twitter_river/_meta -d @tweets-nosql.json
 
 Routing:
 
