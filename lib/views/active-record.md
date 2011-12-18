@@ -751,5 +751,5 @@ Możemy to zmienić, na przykład w taki sposób:
       end
     end
 
-Teraz nowe element pojawią się u dołu wyśwoetlanej listy.
-Niestety, ten kod działa tylko(?) z *ActiveRecord*.
+Teraz nowe elementy pojawią się u dołu wyświetlanej listy.
+Niestety, taki kod działa tylko(? sparwdzić) z *ActiveRecord*.
