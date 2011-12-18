@@ -752,4 +752,4 @@ Możemy to zmienić, na przykład w taki sposób:
     end
 
 Teraz nowe elementy pojawią się u dołu wyświetlanej listy.
-Niestety, taki kod działa tylko(? sparwdzić) z *ActiveRecord*.
+Niestety, taki kod działa tylko z *ActiveRecord* (?, sprawdzić to).
