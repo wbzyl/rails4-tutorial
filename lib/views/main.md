@@ -34,7 +34,7 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
  </tr>
 
  <tr>
- <td>10:45–11:00 <b>(16.01)</b></td>
+ <td>10:45–11:00 <b>(9.01)</b></td>
  <td>Panda50</td>
  </tr>
 
@@ -74,7 +74,7 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
  </tr>
 
  <tr>
- <td>10:45–11:00 <b>(9.01)</b></td>
+ <td>10:45–11:00 <b>(16.01)</b></td>
  <td>Git-is-Git</td>
  </tr>
 
