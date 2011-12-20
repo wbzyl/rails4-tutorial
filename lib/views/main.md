@@ -101,6 +101,22 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
 </tbody>
 </table>
 
+[Proponowana forma prezentacji](http://philip.greenspun.com/seia/writeup):
+
+* *Elevator pitch* (30 sekund).
+  Wyjaśnić jaki problem został rozwiązany
+  i dlaczego prezentowane rozwiązanie jest lepsze od już istniejących.
+* Demo gotowej aplikacji (5 minut)
+  (Należy powiedzieć czy aplikacja została wdrożona czy nie).
+* Slajd architektury systemu oraz użytych komponentów
+  (2 minuty).
+* Omówienie najtrudniejszych wyzwań technicznych projektu
+  i jak zostały one rozwiązane (2 minuty, dodatkowe slajdy)
+* Przyszłość (1 minuta).
+  Jakie są planowane następne „milestones”?
+  Kto będzie rozwijał aplikację?
+
+
 <!--
 
 [2011.11.28] [Coding - the new Latin](http://www.bbc.co.uk/news/technology-15916677).
