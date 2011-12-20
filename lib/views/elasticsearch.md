@@ -126,6 +126,10 @@ Wyszukiwanie po wszystkich typach:
 
     curl 'http://localhost:9200/amazon/_search?pretty=true&q=name:energy'
 
+Na koniec, zapytanie o zdrowie:
+
+    curl -XGET 'http://127.0.0.1:9200/_cluster/health?pretty=true'
+
 
 ## Korzystamy z JSON Query Language
 
