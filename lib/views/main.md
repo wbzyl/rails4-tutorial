@@ -106,12 +106,12 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
 * [Elevator pitch](http://en.wikipedia.org/wiki/Elevator_pitch) (30 sekund).
   Wyjaśnić jaki problem został rozwiązany
   i dlaczego prezentowane rozwiązanie jest lepsze od już istniejących.
-* Demo gotowej aplikacji (5 minut)
+* Demo gotowej aplikacji (5 minut).
   (Należy powiedzieć czy aplikacja została wdrożona czy nie).
 * Slajd architektury systemu oraz użytych komponentów
   (2 minuty).
 * Omówienie najtrudniejszych wyzwań technicznych projektu
-  i jak zostały one rozwiązane (2 minuty, dodatkowe slajdy)
+  i jak zostały one rozwiązane (2 minuty, dodatkowe slajdy).
 * Przyszłość (1 minuta).
   Jakie są planowane następne „milestones”?
   Kto będzie rozwijał aplikację?
