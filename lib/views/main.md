@@ -116,6 +116,25 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
   Jakie są planowane następne „milestones”?
   Kto będzie rozwijał aplikację?
 
+<!--
+
+1. This team has communicated clearly what problem they've solved.
+2. The demo gave me a good feeling for how the system works.
+3. This team has done an impressive job tackling engineering challenges.
+4. This team has documented their system clearly and thoroughly.
+5. I'd really like to hire these people for my own organization.
+
+### Time and Motion
+
+The writeup should take four to six hours and may be split among team
+members. An effective division of labor might be: screen shot
+technician, writer, proofreader. Thinking about and writing down a
+definition of professionalism ought to take one to two hours. The
+presentation will go faster if the team has kept up with their
+documentation, but ought to take no more than a few hours to prepare
+plus an hour to practice a few times.
+
+-->
 
 <!--
 
