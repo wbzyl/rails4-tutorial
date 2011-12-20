@@ -103,7 +103,7 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
 
 [Proponowana forma prezentacji](http://philip.greenspun.com/seia/writeup):
 
-* *Elevator pitch* (30 sekund).
+* [Elevator pitch](http://en.wikipedia.org/wiki/Elevator_pitch) (30 sekund).
   Wyjaśnić jaki problem został rozwiązany
   i dlaczego prezentowane rozwiązanie jest lepsze od już istniejących.
 * Demo gotowej aplikacji (5 minut)
