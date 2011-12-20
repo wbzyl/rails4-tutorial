@@ -8,7 +8,9 @@
  <p class="author">— John Cage (1912–1992)</p>
 </blockquote>
 
-Strona domowa, dokumentacja:
+[What's Wrong with SQL search](http://philip.greenspun.com/seia/search).
+
+Strona domowa ElasticSearch, dokumentacja:
 
 * [You know, for Search](http://www.elasticsearch.org/)
 * [Guides](http://www.elasticsearch.org/guide/):
@@ -17,9 +19,9 @@ Strona domowa, dokumentacja:
   - [Query](http://www.elasticsearch.org/guide/reference/query-dsl/)
   - [Mapping](http://www.elasticsearch.org/guide/reference/mapping/)
   - [Facets](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html)
-* [Setting up elasticsearch ](http://www.elasticsearch.org/tutorials/2010/07/01/setting-up-elasticsearch.html)
+* [Setting up ElasticSearch ](http://www.elasticsearch.org/tutorials/2010/07/01/setting-up-elasticsearch.html)
 
-Driver do Ruby:
+Driver ElasticSearch dla języka Ruby:
 
 * Karel Minarik.
   [Tire](https://github.com/karmi/tire) – a rich Ruby API and DSL for the ElasticSearch search engine/database
