@@ -35,7 +35,7 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>10:45–11:00 <b>(9.01)</b></td>
- <td>Panda50</td>
+ <td>Unnamed</td>
  </tr>
 
  <tr>
@@ -51,11 +51,6 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
  <tr>
  <td>11:30–11:45 <b>(9.01)</b></td>
  <td>Grupa Zła</td>
- </tr>
-
- <tr>
- <td>11:45–12:00 <b>(9.01)</b></td>
- <td>Unnamed</td>
  </tr>
 
  <tr>
@@ -95,7 +90,7 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>11:45–12:00 <b>(16.01)</b></td>
- <td>???</td>
+ <td>Panda50</td>
  </tr>
 
 </tbody>
