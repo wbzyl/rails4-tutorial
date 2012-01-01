@@ -287,11 +287,12 @@ Know your options! [The Ruby Toolbox](http://ruby-toolbox.com/).
   [Ruby on Rails Tutorial. Learn Rails by Example](http://www.railstutorial.org/book).
 
 
-## Misc stuffisz masz
+## Misz masz…
 
 * [Rails 3 Application Templates](https://github.com/RailsApps/rails3-application-templates)
 * [Examples of how to build PDFs in Rails with Prawn and Prawnto](http://prawn.heroku.com/)
 * [Exploring the stdlib: logger](http://rbjl.net/50-exploring-the-stdlib-logger)
+* [PubSub Chat Using HTML5 Web Socket and em-websocket](http://railstech.com/2011/12/pubsub-chat-using-html5-web-socket-and-em-websocket/)
 
 
 <blockquote>
