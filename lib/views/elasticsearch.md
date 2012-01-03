@@ -32,8 +32,12 @@ Fedora:
 
 Różne:
 
-* Karel Minarik.
-  [Data Visualization with ElasticSearch and Protovis](http://www.elasticsearch.org/blog/2011/05/13/data-visualization-with-elasticsearch-and-protovis.html)
+* Karel Minarik
+  - [Data Visualization with ElasticSearch and Protovis](http://www.elasticsearch.org/blog/2011/05/13/data-visualization-with-elasticsearch-and-protovis.html)
+  - [Your Data, Your Search, ElasticSearch (EURUKO 2011)](http://www.slideshare.net/karmi/your-data-your-search-elasticsearch-euruko-2011)
+  - [Reversed or “Real Time” Search in ElasticSearch](http://karmi.github.com/tire/play/percolated-twitter.html) –
+  czyli „percolated twitter”
+  - [Route requests to ElasticSearch to authenticated user's own index](https://gist.github.com/986390) (wersja dla Nginx)
 * Clinton Gormley.
   [Terms of endearment – the ElasticSearch Query DSL explained](http://www.elasticsearch.org/tutorials/2011/08/28/query-dsl-explained.html)
 
@@ -43,14 +47,14 @@ Różne:
 Rozpakowujemy archiwum z ostatnią wersją
 [ElasticSearch](http://www.elasticsearch.org/download/) (ok. 16 MB):
 
-    unzip elasticsearch-0.18.5.zip
+    unzip elasticsearch-0.18.6.zip
 
 Uruchamiamy *elasticsearch*:
 
-    cd elasticsearch-0.18.5
+    cd elasticsearch-0.18.6
     bin/elasticsearch -f
 
-Korzystamy z domyślnych ustawień — *http://localhost:9200*
+Domyślnie ElasticSearch nasłuchuje na porcie 9200.
 
 
 <blockquote>
@@ -326,12 +330,12 @@ Sprawdzanie statusu:
     curl -XGET http://localhost:9200/_river/my_twitter_river/_status?pretty=true
     {
       "_index" : "_river",
-      "_type" : "my_rivers",
+      "_type" : "my_twitter_river",
       "_id" : "_status",
-      "_version" : 1,
-      "exists" : true, "_source" : {
-         "ok":true,"node": {
-            "id":"Q6rFvYZfTKClSCa4HyWxvA","name":"Hazard","transport_address":"inet[/192.168.32.64:9300]"}}
+      "_version" : 5,
+      "exists" : true,
+      "_source" : {"ok":true,
+         "node":{"id":"aUJLtb_KSZibfW3IG9P8yQ","name":"Nobilus","transport_address":"inet[/192.168.4.4:9300]"}}
 
 A tak raportowane jest pobranie paczki z 10 tweets na konsoli:
 
@@ -351,6 +355,155 @@ Wyszukiwanie:
             "match_all" : { }
         }
     }'
+
+Sprawdzamy mapping:
+
+    :::bash
+    curl ‐X GET "http://localhost:9200/tweets/_mapping?pretty=true"
+
+Oto mapowanie:
+
+    :::json
+    {
+      "tweets" : {
+        "nosql" : {
+          "properties" : {
+            "text" : {
+              "type" : "string"
+            },
+            "source" : {
+              "type" : "string"
+            },
+            "location" : {
+              "type" : "geo_point"
+            },
+            "link" : {
+              "dynamic" : "true",
+              "properties" : {
+                "start" : {
+                  "type" : "long"
+                },
+                "expand_url" : {
+                  "type" : "string"
+                },
+                "display_url" : {
+                  "type" : "string"
+                },
+                "url" : {
+                  "type" : "string"
+                },
+                "end" : {
+                  "type" : "long"
+                }
+              }
+            },
+            "hashtag" : {
+              "dynamic" : "true",
+              "properties" : {
+                "text" : {
+                  "type" : "string"
+                },
+                "start" : {
+                  "type" : "long"
+                },
+                "end" : {
+                  "type" : "long"
+                }
+              }
+            },
+            "retweet_count" : {
+              "type" : "long"
+            },
+            "created_at" : {
+              "format" : "dateOptionalTime",
+              "type" : "date"
+            },
+            "mention" : {
+              "properties" : {
+                "id" : {
+                  "type" : "long"
+                },
+                "start" : {
+                  "type" : "long"
+                },
+                "name" : {
+                  "type" : "string"
+                },
+                "screen_name" : {
+                  "index" : "not_analyzed",
+                  "type" : "string"
+                },
+                "end" : {
+                  "type" : "long"
+                }
+              }
+            },
+            "in_reply" : {
+              "properties" : {
+                "user_screen_name" : {
+                  "index" : "not_analyzed",
+                  "type" : "string"
+                },
+                "status" : {
+                  "type" : "long"
+                },
+                "user_id" : {
+                  "type" : "long"
+                }
+              }
+            },
+            "truncated" : {
+              "type" : "boolean"
+            },
+            "place" : {
+              "dynamic" : "true",
+              "properties" : {
+                "id" : {
+                  "type" : "string"
+                },
+                "name" : {
+                  "type" : "string"
+                },
+                "type" : {
+                  "type" : "string"
+                },
+                "country_code" : {
+                  "type" : "string"
+                },
+                "url" : {
+                  "type" : "string"
+                },
+                "full_name" : {
+                  "type" : "string"
+                },
+                "country" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "user" : {
+              "properties" : {
+                "id" : {
+                  "type" : "long"
+                },
+                "location" : {
+                  "type" : "string"
+                },
+                "description" : {
+                  "type" : "string"
+                },
+                "name" : {
+                  "type" : "string"
+                },
+                "screen_name" : {
+                  "index" : "not_analyzed",
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
 
 
 # Rails — Tire & ElasticSearch
