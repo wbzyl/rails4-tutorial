@@ -41,6 +41,12 @@ Różne:
 * Clinton Gormley.
   [Terms of endearment – the ElasticSearch Query DSL explained](http://www.elasticsearch.org/tutorials/2011/08/28/query-dsl-explained.html)
 
+Przykładowe aplikacje:
+
+* Karel Minarik.
+  [Search Your Gmail Messages with ElasticSearch and Ruby](http://ephemera.karmi.cz/)
+  (Sinatra)
+
 
 ## Instalacja ze źródeł
 
