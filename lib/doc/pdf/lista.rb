@@ -13,7 +13,7 @@ Prawn::Document.generate("lista.pdf") do
   font_size 10
 
   # mongoexport --db test --collection asi2011 \
-  #   -f nazwisko,imie --csv | tail +2 | sort > asi2011.csv
+  #   -f last_name,first_name --csv | tail -n +2 | sort > students-$(date +%Y-%m-%d).csv
 
   if ARGV.length == 0
     puts "Usage: ruby lista.rb NAME.CSV"
