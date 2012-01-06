@@ -21,7 +21,7 @@ Strona domowa ElasticSearch, dokumentacja:
   - [Facets](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html)
 * [Setting up ElasticSearch ](http://www.elasticsearch.org/tutorials/2010/07/01/setting-up-elasticsearch.html)
 
-Driver ElasticSearch dla języka Ruby:
+ElasticSearch driver dla języka Ruby:
 
 * Karel Minarik.
   [Tire](https://github.com/karmi/tire) – a rich Ruby API and DSL for the ElasticSearch search engine/database
@@ -60,7 +60,7 @@ Uruchamiamy *elasticsearch*:
     cd elasticsearch-0.18.6
     bin/elasticsearch -f
 
-Domyślnie ElasticSearch nasłuchuje na porcie 9200.
+I już! Domyślnie ElasticSearch nasłuchuje na porcie 9200.
 
 
 <blockquote>
@@ -70,12 +70,12 @@ Domyślnie ElasticSearch nasłuchuje na porcie 9200.
 
 ## Your data, Your search
 
-Nieco zmienione przykłady
-z [Your Data, Your Search](http://www.elasticsearch.org/blog/2010/02/12/yourdatayoursearch.html).
+Kilka, nieco zmienionych, przykładów z tej strony
+[Your Data, Your Search](http://www.elasticsearch.org/blog/2010/02/12/yourdatayoursearch.html).
 
-Składnia zapytań:
+**Interpretacja uri w zapytaniach kierowanych do ElasticSearch:**
 
-<pre>http://localhost:9200/<b> index </b>/<b> type </b>/...
+<pre>http://localhost:9200/<b>⟨index⟩</b>/<b>⟨type⟩</b>/...
 </pre>
 
 <blockquote>
@@ -100,11 +100,13 @@ Książka:
 
 Dodajemy książkę:
 
+    :::bash
     curl -XPUT http://localhost:9200/amazon/books/0812504321 -d @book.json
       {"ok":true,"_index":"amazon","_type":"books","_id":"0812504321","_version":1}
 
 Przykładowe zapytanie (w **query string**):
 
+    :::bash
     curl 'http://localhost:9200/amazon/books/_search?pretty=true&q=author.first_name:Jack'
 
 CD:
@@ -121,29 +123,34 @@ CD:
 
 Dodajemy CD:
 
+    :::bash
     curl -XPUT http://localhost:9200/amazon/cds/B00192IV0O -d @cd.json
       {"ok":true,"_index":"amazon","_type":"cds","_id":"B00192IV0O","_version":1}
 
 Przykładowe zapytanie:
 
+    :::bash
     curl 'http://localhost:9200/amazon/cds/_search?pretty=true&q=label:Interscope'
 
 Wyszukiwanie po kilku typach:
 
+    :::bash
     curl 'http://localhost:9200/amazon/books,cds/_search?pretty=true&q=name:energy'
 
 Wyszukiwanie po wszystkich typach:
 
+    :::bash
     curl 'http://localhost:9200/amazon/_search?pretty=true&q=name:energy'
 
 Na koniec, zapytanie o zdrowie:
 
+    :::bash
     curl -XGET 'http://127.0.0.1:9200/_cluster/health?pretty=true'
 
 
 ## Korzystamy z JSON Query Language
 
-Dane zapiszemy w ElasticSearch kozystając z programu *curl*:
+Użyjemy programu *curl* do zapisania danych w ElasticSearch:
 
     :::bash
     curl -XPUT 'http://localhost:9200/twitter/users/kimchy' -d '
@@ -173,16 +180,18 @@ Sprawdzamy, co zostało dodane:
     curl       'http://localhost:9200/twitter/tweets/2?pretty=true'
 
 
-## Wyszukiwanie – pierwsze koty za płoty
+### Odpytywanie ElasticSearch
 
-Składnia zapytań:
+Po umieszczeniu danych w ElasticSearch spróbujemy zadać
+kilka zapytań, korzystających z **JSON query language**.
+
+Dla przypomnienia, interpretacja uri w zapytaniach do ElasticSearch:
 
 <pre>http://localhost:9200/_search?...
-http://localhost:9200/<b> index </b>/_search?...
-http://localhost:9200/<b> index </b>/<b> type </b>/_search?...
+http://localhost:9200/<b>⟨index⟩</b>/_search?...
+http://localhost:9200/<b>⟨index⟩</b>/<b>⟨type⟩</b>/_search?...
 </pre>
 
-Przykładowe zapytanie (korzystamy z **JSON query language**):
 
     :::bash
     curl -XGET 'http://localhost:9200/twitter/tweets/_search?pretty=true' -d '
@@ -200,7 +209,7 @@ Przykładowe zapytanie (korzystamy z **JSON query language**):
 
 Jaka jest różnica między wyszukiwaniem z **text** a **term**?
 
-Wszystkie dokumenty:
+Wyciągamy wszystkie dokumenty z ElasticSearch:
 
     :::bash
     curl -XGET 'http://localhost:9200/_search?pretty=true' -d '
@@ -210,7 +219,7 @@ Wszystkie dokumenty:
         }
     }'
 
-Wszystkie dokumenty z indeksu *twitter*:
+A teraz – wszystkie dokumenty z indeksu *twitter*:
 
     :::bash
     curl -XGET 'http://localhost:9200/twitter/_search?pretty=true' -d '
@@ -233,11 +242,10 @@ Wszystkie dokumenty typu *user* z indeksu *twitter*:
 
 ## Multi Tenant – indeksy i typy
 
-*Tenant* to najemca, dzierżawca.
-*Multi tenant* – jak to przetłumaczyć?
+*Tenant* to najemca, dzierżawca. *Multi tenant* – jak to przetłumaczyć?
 Co to może oznaczać?
 
-*Przykład.* Zapisujemy następujące dane w ElasticSearch:
+*Przykład.* Zaczynamy od zapisania takich danych w ElasticSearch:
 
     :::bash
     curl -XPUT 'http://localhost:9200/bilbo/info/1' -d '{ "name" : "Bilbo Baggins" }'
@@ -267,7 +275,67 @@ Wyszukiwanie po kilku indeksach:
     }'
 
 
-## Wtyczki
+<blockquote>
+ {%= image_tag "/images/daniel_kahneman.jpg", :alt => "[Daniel Kahneman]" %}
+ <p><b>The hallo effect</b> helps keep explanatory narratives
+  simple and coherent by exaggerating the consistency
+  of evaluations: good people do only good things
+  and bad people are all bad.
+ </p>
+ <p class="author">— Daniel Kahneman</p>
+</blockquote>
+
+## ElasticSearch & Rails
+
+Przykłady w których sami zapisujemy dane w ElasticSearch,
+po to aby je zaraz odszukać pozwalają na sprawdzić czy
+poprawnie zainstalowaliśmy program oraz czy rozumiemy
+rest API. Dalsze tego typu eksperymenty są nużące.
+
+Dlatego, do następnych eksperymentów użyjemy rzeczywistych
+danych. Pobierzemy dużo interesujących nas statusów z Twittera.
+Do przeszukiwania statusów, napiszemy prostą aplikację Rails.
+(Ponieważ Twitter & Rails są *cool*, więc efekt halo powinnien
+przenieść *coolines* na ten przykład.)
+
+Do pobierania statusów skorzystamy ze [stream API](https://dev.twitter.com/docs/streaming-api).
+Pierwsza wersja skryptu, którego użyjemy do filtrowania,
+ma działać. *Pre-launch Checklist* zajmiemy się później.
+
+<blockquote>
+<p>
+  <h2><a href="https://dev.twitter.com/docs/streaming-api/concepts#access-rate-limiting">Important note</a></h2>
+  <p>Each account may create only one standing connection to the
+  Streaming API. Subsequent connections from the same account may
+  cause previously established connections to be
+  disconnected. Excessive connection attempts, regardless of success,
+  will result in an automatic ban of the client's IP
+  address. Continually failing connections will result in your IP
+  address being blacklisted from all Twitter access.
+</p>
+</blockquote>
+
+{%= image_tag "/images/twitter_elasticsearch.jpeg", :alt => "[Twitter -> ElasticSearch]" %}
+
+Za pomocą programu curl:
+
+    curl -d @tracking https://stream.twitter.com/1/statuses/filter.json -uAnyTwitterUser:Password
+
+Interesujące nas statusy odfiltrujemy zapisując w pliku *tracking*
+po `track=` interesujące nas słowa kluczowe:
+
+    :::tracking
+    track=rails,mongodb,couchdb,redis,elasticsearch,neo4j
+
+Można tak. Ale można też za pomocą skryptu w Ruby.
+Oczywiście skorzystamy z gemów: coś do pobrania statusów:
+*twitter*. Do zapisania w ES: *tire* (linki).
+
+
+Zobacz też przykład [Gmail & ES](http://ephemera.karmi.cz/post/5510326335/gmail-elasticsearch-ruby)
+
+
+# Wtyczki
 
 Zaczynamy od instalacji [wtyczek](https://github.com/elasticsearch).
 
