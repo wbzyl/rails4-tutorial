@@ -12,6 +12,8 @@ abort usage unless user = ARGV.shift
 abort usage unless password = ARGV.shift
 
 #url = 'https://stream.twitter.com/1/statuses/sample.json'
+#url = 'https://stream.twitter.com/1/statuses/filter.json?track=wow,ruby,rails,mongodb,couchdb,redis,neo4j,elasticsearch'
+
 url = 'https://stream.twitter.com/1/statuses/filter.json?track=ruby,rails,mongodb,couchdb,redis,neo4j,elasticsearch'
 
 def handle_tweet(tweet)
