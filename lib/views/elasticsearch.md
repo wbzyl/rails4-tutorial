@@ -332,7 +332,11 @@ Oczywiście skorzystamy z gemów: coś do pobrania statusów:
 *twitter*. Do zapisania w ES: *tire* (linki).
 
 
-Zobacz też przykład [Gmail & ES](http://ephemera.karmi.cz/post/5510326335/gmail-elasticsearch-ruby)
+Zobacz też:
+
+* [Consuming the Twitter Streaming API](http://adam.heroku.com/past/2010/3/19/consuming_the_twitter_streaming_api/)
+* [tweetstream](https://github.com/intridea/tweetstream)
+* [Gmail & ES](http://ephemera.karmi.cz/post/5510326335/gmail-elasticsearch-ruby)
 
 
 # Wtyczki
