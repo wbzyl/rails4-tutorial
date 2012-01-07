@@ -302,6 +302,42 @@ Do pobierania statusów skorzystamy ze [stream API](https://dev.twitter.com/docs
 Pierwsza wersja skryptu, którego użyjemy do filtrowania,
 ma działać. *Pre-launch Checklist* zajmiemy się później.
 
+Za pomocą programu curl:
+
+    :::bash
+    curl -X POST -uAnyTwitterUser:Password \
+      https://stream.twitter.com/1/statuses/filter.json -d @tracking
+
+Interesujące nas statusy odfiltrujemy zapisując w pliku *tracking*
+po `track=` interesujące nas słowa kluczowe.
+
+Do słów kluczowych dopiszemy jeszcze **wow**. Słówko to pojawia się
+w wielu statusach, a pozostałe słowa występują z rzadka. Po dodaniu
+**wow** nowe statusy będą się pojawiać co chwila. Wow!
+
+    :::tracking
+    track=wow,rails,mongodb,couchdb,redis,elasticsearch,neo4j
+
+Statusy zawierają wiele pól. Tylko niektóre z nich nas będą nas interesować:
+
+    id
+    text
+    created_at
+    screen_name
+
+Trudno by było wyciąć na konsoli te pola ze statusów.
+Dlatego „czyszczenie” statusów zaprogamujemy w języku Ruby.
+Skorzystamy z kilku gemów:
+
+   gem install eventmachine em-http-request tweetstream yajl-ruby
+
+Linki do dokumentacji:
+
+* [eventmachine](https://github.com/eventmachine/eventmachine)
+* [em-http-request](https://github.com/igrigorik/em-http-request)
+* [tweetstream](https://github.com/intridea/tweetstream)
+* [yajl-ruby](https://github.com/brianmario/yajl-ruby)
+
 <blockquote>
 <p>
   <h2><a href="https://dev.twitter.com/docs/streaming-api/concepts#access-rate-limiting">Important note</a></h2>
@@ -317,25 +353,53 @@ ma działać. *Pre-launch Checklist* zajmiemy się później.
 
 {%= image_tag "/images/twitter_elasticsearch.jpeg", :alt => "[Twitter -> ElasticSearch]" %}
 
-Za pomocą programu curl:
+Oto ten skrypt:
 
-    curl -d @tracking https://stream.twitter.com/1/statuses/filter.json -uAnyTwitterUser:Password
+    :::ruby nosql-twitter-stream.rb
+    # encoding: utf-8
 
-Interesujące nas statusy odfiltrujemy zapisując w pliku *tracking*
-po `track=` interesujące nas słowa kluczowe:
+    require 'yajl/json_gem'
+    require 'tweetstream'
 
-    :::tracking
-    track=rails,mongodb,couchdb,redis,elasticsearch,neo4j
+    user, password = ARGV
 
-Można tak. Ale można też za pomocą skryptu w Ruby.
-Oczywiście skorzystamy z gemów: coś do pobrania statusów:
-*twitter*. Do zapisania w ES: *tire* (linki).
+    unless (user && password)
+      puts "Usage: #{__FILE__} <user> <password>"
+      exit(1)
+    en
+
+    TweetStream.configure do |config|
+      config.username = username
+      config.password = password
+      config.auth_method = :basic
+      config.parser = :yajl
+    end
+
+    def handle_tweet(s)
+      return unless s.text
+      # puts "#{JSON.pretty_generate(s)}"
+      puts green { "\t#{s.user.screen_name} (#{s.id}):" }
+      puts "#{s.text}"
+    end
+
+    # ----
+
+    client = TweetStream::Client.new
+
+    client.on_error do |message|
+      puts message
+    end
+
+    #client.track('wow', 'lol') do |status|
+    client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
+      handle_tweet status
+    end
 
 
 Zobacz też:
 
 * [Consuming the Twitter Streaming API](http://adam.heroku.com/past/2010/3/19/consuming_the_twitter_streaming_api/)
-* [tweetstream](https://github.com/intridea/tweetstream)
+  prościej, bez *TweetStream*
 * [Gmail & ES](http://ephemera.karmi.cz/post/5510326335/gmail-elasticsearch-ruby)
 
 
