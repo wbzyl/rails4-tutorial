@@ -648,7 +648,9 @@ Oto mapowanie:
       }
 
 
-# Rails — Tire & ElasticSearch
+# Rails Along The River
+
+Rails — Tire & ElasticSearch
 
 * Rails application template.
 * Dodać klasę *Tweet* i podłączyć ją do Twitter River.
