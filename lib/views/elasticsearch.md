@@ -403,18 +403,10 @@ Czyszczeniem zajmiemy się w kodzie metody *handle_tweet*:
 Po wymianie kodu *handle_tweet* na nowy i uruchomieniu skryptu
 widzimy efekty. Więcej widać!
 
-Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch:
+Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch.
 
     :::ruby
     require 'tire'
-
-    def handle_tweet(s)
-      Status.create :id => s[:id],
-        :text => s[:text],
-        :screen_name => s[:user][:screen_name],
-        :entities => s[:entities],
-        :created_at => Time.parse(s[:created_at])
-    end
 
     class Status
       include Tire::Model::Persistence
@@ -453,9 +445,19 @@ Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch:
     Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
     Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
 
-Działanie skryptu kończymy wciskając klawisze `ctrl+c`.
+Na koniec podmieniamy kod *handle_tweet*:
 
-Tak sprawdzamy, co się importuje:
+    :::ruby
+    def handle_tweet(s)
+      Status.create :id => s[:id],
+        :text => s[:text],
+        :screen_name => s[:user][:screen_name],
+        :entities => s[:entities],
+        :created_at => Time.parse(s[:created_at])
+    end
+
+Działanie skryptu kończymy wciskając klawisze `ctrl+c`.
+A tak sprawdzamy, co się zaimportowało:
 
     :::bash
     curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=2&pretty=true'
@@ -463,12 +465,15 @@ Tak sprawdzamy, co się importuje:
 **TODO:** Przydałoby się jakieś podsumowanie (z *percolated-twitter.rb*, dostosować):
 
     :::ruby
+    puts "", bold { "Check out your index" }, '-'*80
+    puts "curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=5&pretty=true'", ""
+
     # Display import statistics
 
     def report
        ["",
        "Imported #{@done} messages into index: " +
-       "<http://localhost:9200/#{USERNAME}/_search?q=*> ",
+       "<http://localhost:9200/statuses/_search?q=*> ",
        "in #{elapsed_to_human(@elapsed)}. " +
        "There were #{@errors.size} errors.",
        ""].join("\n")
@@ -750,9 +755,7 @@ Oto mapowanie:
       }
 
 
-# Rails Along The River
-
-Rails — Tire & ElasticSearch
+# Rails — Tire & ElasticSearch
 
 * Rails application template.
 * Dodać klasę *Tweet* i podłączyć ją do Twitter River.
