@@ -76,6 +76,11 @@ go.”
 
 # Fortunka krok po kroku
 
+Podobne aplikacje:
+
+* [Proverb Hunter](http://proverbhunter.com/)
+* …?
+
 1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
 katalogu z wygenerowanym rusztowaniem:
 
