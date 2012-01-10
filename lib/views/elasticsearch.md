@@ -287,56 +287,74 @@ Wyszukiwanie po kilku indeksach:
 
 ## ElasticSearch & Rails
 
-Przykłady w których sami zapisujemy dane w ElasticSearch,
-po to aby je zaraz odszukać pozwalają na sprawdzić czy
-poprawnie zainstalowaliśmy program oraz czy rozumiemy
-rest API. Dalsze tego typu eksperymenty są nużące.
+Takie eksperymentowanie z ElasticSearch rest API pozwala sprawdzić,
+czy dobrze je rozumiemy oraz czy poprawnie zainstalowaliśmy sam program.
+Dalsze takie próby są nużące i wyniki są mało efektowne.
 
-Dlatego, do następnych eksperymentów użyjemy rzeczywistych
-danych. Pobierzemy dużo interesujących nas statusów z Twittera.
-Do przeszukiwania statusów, napiszemy prostą aplikację Rails.
-(Ponieważ Twitter & Rails są *cool*, więc efekt halo powinnien
-przenieść *coolines* na ten przykład.)
+Dlatego, do następnych prób użyjemy większej liczby rzeczywistych
+i zajmujących danych. Naszymi danymi będą statusy z Twittera.
+Dodatkowo skorzystamy z [stream API](https://dev.twitter.com/docs/streaming-api),
+do odfiltrowania interesujących nas statusów:
 
-Do pobierania statusów skorzystamy ze [stream API](https://dev.twitter.com/docs/streaming-api).
-Pierwsza wersja skryptu, którego użyjemy do filtrowania,
-ma działać. *Pre-launch Checklist* zajmiemy się później.
-
-Za pomocą programu curl:
-
-    :::bash
-    curl -X POST -uAnyTwitterUser:Password \
-      https://stream.twitter.com/1/statuses/filter.json -d @tracking
-
-Interesujące nas statusy odfiltrujemy zapisując w pliku *tracking*
-po `track=` interesujące nas słowa kluczowe.
-
-Do słów kluczowych dopiszemy jeszcze **wow**. Słówko to pojawia się
-w wielu statusach, a pozostałe słowa występują z rzadka. Po dodaniu
-**wow** nowe statusy będą się pojawiać co chwila. Wow!
-
-    :::tracking
+    :::ruby tracking
     track=wow,rails,mongodb,couchdb,redis,elasticsearch,neo4j
 
-Statusy zawierają wiele pól. Tylko niektóre z nich nas będą nas interesować:
+(Co sekundę wysyłanych jest ok. 1000 nowych statusów.)
 
-    id
-    text
-    created_at
-    screen_name
+Do słów kluczowych dopisaliśmy **wow**. Słówo to pojawia się
+w wielu statusach, a pozostałe słowa występują z rzadka.
+Po dodaniu **wow** nowe statusy będą się pojawiać co chwila.
+**Wow!**
 
-Trudno by było wyciąć na konsoli te pola ze statusów.
-Dlatego „czyszczenie” statusów zaprogamujemy w języku Ruby.
-Skorzystamy z kilku gemów:
+Najprościej jest pobrać statusy za pomocą programu *curl*:
 
-   gem install eventmachine em-http-request tweetstream yajl-ruby
+    :::bash
+    curl -X POST https://stream.twitter.com/1/statuses/filter.json -d @tracking \
+      -uAnyTwitterUser:Password
 
-Linki do dokumentacji:
+Jak widać statusy zawierają wiele pól i tylko kilka z nich jest
+interesujących. Niestety, na konsoli trudno jest je dostrzec i wyciąć.
+Prościej będzie zaprogramować takie „czyszczenie” statusów w Ruby.
+W tym celu skorzystamy z kilku gemów. Oto one:
 
-* [eventmachine](https://github.com/eventmachine/eventmachine)
-* [em-http-request](https://github.com/igrigorik/em-http-request)
-* [tweetstream](https://github.com/intridea/tweetstream)
-* [yajl-ruby](https://github.com/brianmario/yajl-ruby)
+    eventmachine tweetstream yajl-ruby
+
+{%= image_tag "/images/twitter_elasticsearch.jpeg", :alt => "[Twitter -> ElasticSearch]" %}
+
+Zaczniemy od skryptu działającego podobnie do polecenia z *curl* powyżej:
+
+    :::ruby nosql-tweets.rb
+    # encoding: utf-8
+
+    require 'yajl/json_gem'
+    require 'tweetstream'
+
+    user, password = ARGV
+    unless (user && password)
+      puts "\nUsage:\n\t#{__FILE__} <user> <password>\n\n"
+      exit(1)
+    end
+
+    TweetStream.configure do |config|
+      config.username = user
+      config.password = password
+      config.auth_method = :basic
+      config.parser = :yajl
+    end
+
+    def handle_tweet(s)
+      puts "#{JSON.pretty_generate(s)}"
+    end
+
+    client = TweetStream::Client.new
+
+    client.on_error do |message|
+      puts message
+    end
+
+    client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
+      handle_tweet status
+    end
 
 <blockquote>
 <p>
@@ -351,50 +369,134 @@ Linki do dokumentacji:
 </p>
 </blockquote>
 
-{%= image_tag "/images/twitter_elasticsearch.jpeg", :alt => "[Twitter -> ElasticSearch]" %}
+Skrypt ten uruchamiamy na konsoli w następujący sposób:
 
-Oto ten skrypt:
+    :::bash
+    ruby nosql-tweets.rb AnyTwitterUser Password
 
-    :::ruby nosql-twitter-stream.rb
-    # encoding: utf-8
+Przypatrując się zawartości pobieranych statusów,
+po chwili widzimy jakie pole są interesujące. Oto one:
 
-    require 'yajl/json_gem'
-    require 'tweetstream'
+    id
+    text
+    created_at
+    user:
+      screen_name
+    entities:      # trzy tablice jsonów
+      urls (url)
+      user_mentions (id_str, name, screen_name)
+      hashtags (text)
 
-    user, password = ARGV
+Czyszczeniem zajmiemy się w kodzie metody *handle_tweet*:
 
-    unless (user && password)
-      puts "Usage: #{__FILE__} <user> <password>"
-      exit(1)
-    en
-
-    TweetStream.configure do |config|
-      config.username = username
-      config.password = password
-      config.auth_method = :basic
-      config.parser = :yajl
+    :::ruby
+    def handle_tweet(s)
+      h = {}
+      h[:id] = s.id
+      h[:text] = s.text
+      h[:created_at] = Time.parse(h[:created_at])
+      h[:screen_name] = s.user.screen_name
+      h[:entities] = s.entities
+      puts "#{JSON.pretty_generate(h)}"
     end
+
+Po wymianie kodu *handle_tweet* na nowy i uruchomieniu skryptu
+widzimy efekty. Więcej widać!
+
+Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch:
+
+    :::ruby
+    require 'tire'
 
     def handle_tweet(s)
-      return unless s.text
-      # puts "#{JSON.pretty_generate(s)}"
-      puts green { "\t#{s.user.screen_name} (#{s.id}):" }
-      puts "#{s.text}"
+      Status.create :id => s[:id],
+        :text => s[:text],
+        :screen_name => s[:user][:screen_name],
+        :entities => s[:entities],
+        :created_at => Time.parse(s[:created_at])
     end
 
-    # ----
+    class Status
+      include Tire::Model::Persistence
 
-    client = TweetStream::Client.new
+      property :id
+      property :text
+      property :screen_name
+      property :created_at
+      property :entities
 
-    client.on_error do |message|
-      puts message
+      # Let's define callback for percolation.
+      # Whenewer a new document is saved in the index, this block will be executed,
+      # and we will have access to matching queries in the `Status#matches` property.
+      #
+      # In our case, we will just print the list of matching queries.
+      #
+      on_percolate do
+        puts green { "'#{text}' from @#{red { screen_name }} matches queries: #{bold { matches.inspect }}" } unless matches.empty?
+      end
     end
 
-    #client.track('wow', 'lol') do |status|
-    client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
-      handle_tweet status
+    # First, let's define the query_string queries.
+    #
+    q            = {}
+    q[:rails] = 'rails'
+    q[:mongodb] = 'mongodb'
+    q[:redis] = 'redis'
+    q[:couchdb] = 'couchdb'
+    q[:neo4j] = 'neo4j'
+    q[:elasticsearch] = 'elasticsearch'
+
+    Status.index.register_percolator_query('rails') { |query| query.string q[:rails] }
+    Status.index.register_percolator_query('mongodb') { |query| query.string q[:mongodb] }
+    Status.index.register_percolator_query('redis') { |query| query.string q[:redis] }
+    Status.index.register_percolator_query('couchdb') { |query| query.string q[:couchdb] }
+    Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
+    Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
+
+Działanie skryptu kończymy wciskając klawisze `ctrl+c`.
+
+Tak sprawdzamy, co się importuje:
+
+    :::bash
+    curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=2&pretty=true'
+
+**TODO:** Przydałoby się jakieś podsumowanie (z *percolated-twitter.rb*, dostosować):
+
+    :::ruby
+    # Display import statistics
+
+    def report
+       ["",
+       "Imported #{@done} messages into index: " +
+       "<http://localhost:9200/#{USERNAME}/_search?q=*> ",
+       "in #{elapsed_to_human(@elapsed)}. " +
+       "There were #{@errors.size} errors.",
+       ""].join("\n")
     end
 
+    # Clean exit on interrupt
+
+    trap(:INT) do
+      puts "\nExiting...\n"
+      puts report
+      exit( @errors.size > 0 ? 1 : 0 )
+    end
+
+
+Po zaimportowaniu większej liczby statusów…
+
+Do przeszukiwania statusów, napiszemy prostą aplikację Rails.
+
+(*Uwaga*: Ponieważ Twitter & Rails są *cool*,
+więc efekt halo powinien przenieść *coolines* na ten tekst.)
+
+
+Linki do dokumentacji:
+
+* [eventmachine](https://github.com/eventmachine/eventmachine)
+* [em-http-request](https://github.com/igrigorik/em-http-request)
+* [tweetstream](https://github.com/intridea/tweetstream)
+* [yajl-ruby](https://github.com/brianmario/yajl-ruby)
 
 Zobacz też:
 

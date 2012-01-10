@@ -21,10 +21,17 @@ TweetStream.configure do |config|
 end
 
 def handle_tweet(s)
-  return unless s.text
+  # return unless s.text
   # puts "#{JSON.pretty_generate(s)}"
-  puts green { "\t#{s.user.screen_name} (#{s.id}):" }
-  puts "#{s.text}"
+  #puts green { "\t#{s.user.screen_name} (#{s.id}):" }
+  #puts "#{s.text}"
+  h = {}
+  h[:id] = s.id
+  h[:text] = s.text
+  h[:screen_name] = s.user.screen_name
+  h[:entities] = s.entities
+  h[:created_at] = s.created_at
+  puts "#{JSON.pretty_generate(h)}"
 end
 
 # ----
