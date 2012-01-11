@@ -23,11 +23,20 @@ TweetStream.configure do |config|
 end
 
 def handle_tweet(s)
-  Status.create :id => s[:id],
+  puts cyan { s.text }
+  h = Status.new :id => s[:id],
     :text => s[:text],
     :screen_name => s[:user][:screen_name],
     :entities => s[:entities],
     :created_at => Time.parse(s[:created_at])
+
+  types = h.percolate
+  puts magenta { types }
+
+  # types.each do |type|
+  #   Status.document_type type
+  #   h.save
+  # end
 end
 
 # ----
@@ -48,13 +57,13 @@ class Status
   # In our case, we will just print the list of matching queries.
   #
   on_percolate do
-    puts green { "'#{text}' from @#{red { screen_name }} matches queries: #{bold { matches.inspect }}" } unless matches.empty?
+    puts green { "'#{text}' from @#{bold { screen_name }} matches queries: #{bold { matches.inspect }}" } unless matches.empty?
   end
 end
 
 # First, let's define the query_string queries.
 #
-q            = {}
+q = {}
 q[:rails] = 'rails'
 q[:mongodb] = 'mongodb'
 q[:redis] = 'redis'
@@ -74,10 +83,17 @@ Status.index.register_percolator_query('elasticsearch') { |query| query.string q
 client = TweetStream::Client.new
 
 client.on_error do |message|
-  puts message
+  puts red { message }
 end
 
-#client.track('wow', 'lol') do |status|
 client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
   handle_tweet status
 end
+
+# client.on_delete do |status_id, user_id|
+#   Tweet.delete(status_id)
+# end
+
+# You can check out the the documents in your index with `curl` or your browser.
+#
+# puts "curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=4&pretty=true'", ""
