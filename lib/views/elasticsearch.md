@@ -458,7 +458,6 @@ Zaczniemy od definicji modelu *Status*. Od razu **percolate**?
     Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
 
     # Refresh the `_percolator` index for immediate access.
-
     Tire.index('_percolator').refresh
 
     puts magenta { "\nYou can check out the the documents in your index with curl:\n" }
@@ -466,6 +465,7 @@ Zaczniemy od definicji modelu *Status*. Od razu **percolate**?
 
 Podmieniamy kod *handle_tweet*:
 
+    :::ruby percolate-nosql-tweets.rb
     # Strip off fields we are not interested in.
 
     def handle_tweet(s)
@@ -486,7 +486,7 @@ Podmieniamy kod *handle_tweet*:
 
 Łączymy się z Twitterem.
 
-    :::ruby
+    :::ruby percolate-nosql-tweets.rb
     client = TweetStream::Client.new
 
     client.on_error do |message|
