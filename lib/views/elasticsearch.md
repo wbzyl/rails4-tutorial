@@ -414,7 +414,13 @@ Skorzystamy z gemu *Tire*:
 
     gem install tire ansi
 
-Zaczniemy od definicji modelu *Status*. Od razu **percolate**?
+Zaczniemy od definicji modelu *Status*.
+
+**TODO** Od razu **percolate**?
+Let's define callback for percolation.
+Whenewer a new document is saved in the index, this block will be executed,
+and we will have access to matching queries in the `Status#matches` property.
+In our case, we will just print the list of matching queries.
 
     :::ruby percolate-nosql-tweets.rb
     require 'tire'
@@ -431,17 +437,12 @@ Zaczniemy od definicji modelu *Status*. Od razu **percolate**?
       property :created_at
       property :entities
 
-      # Let's define callback for percolation.
-      # Whenewer a new document is saved in the index, this block will be executed,
-      # and we will have access to matching queries in the `Status#matches` property.
-      # In our case, we will just print the list of matching queries.
       on_percolate do
         puts green { "'#{text}' from @#{bold { screen_name }}" } unless matches.empty?
       end
     end
 
     # First, let's define the query_string queries.
-
     q = {}
     q[:rails] = 'rails'
     q[:mongodb] = 'mongodb'
@@ -457,17 +458,13 @@ Zaczniemy od definicji modelu *Status*. Od razu **percolate**?
     Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
     Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
 
-    # Refresh the `_percolator` index for immediate access.
+    # Finally, refresh the `_percolator` index for immediate access.
     Tire.index('_percolator').refresh
 
-    puts magenta { "\nYou can check out the the documents in your index with curl:\n" }
-    puts yellow  { "  curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=4&pretty=true'\n" }
-
-Podmieniamy kod *handle_tweet*:
+Podmieniamy kod *handle_tweet*.
+Strip off fields we are not interested in.
 
     :::ruby percolate-nosql-tweets.rb
-    # Strip off fields we are not interested in.
-
     def handle_tweet(s)
       h = Status.new :id => s[:id],
         :text => s[:text],
@@ -484,7 +481,7 @@ Podmieniamy kod *handle_tweet*:
       end
     end
 
-Łączymy się z Twitterem.
+Podłączamy się do strumienia ze statusami.
 
     :::ruby percolate-nosql-tweets.rb
     client = TweetStream::Client.new
