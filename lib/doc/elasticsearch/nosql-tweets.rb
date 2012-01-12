@@ -3,15 +3,10 @@
 require 'yajl/json_gem'
 require 'tweetstream'
 
-require 'tire'
-
-require 'ansi/code'
-include ANSI::Code
-
 user, password = ARGV
 
 unless (user && password)
-  puts "\nUsage:\n\t#{__FILE__} <user> <password>\n\n"
+  puts "\nUsage:\n\t#{__FILE__} <AnyTwitterUser> <Password>\n\n"
   exit(1)
 end
 
@@ -22,54 +17,19 @@ TweetStream.configure do |config|
   config.parser = :yajl
 end
 
+# def handle_tweet(s)
+#   puts "#{JSON.pretty_generate(s)}"
+# end
+
 def handle_tweet(s)
-  Status.create :id => s[:id],
-    :text => s[:text],
-    :screen_name => s[:user][:screen_name],
-    :entities => s[:entities],
-    :created_at => Time.parse(s[:created_at])
+  h = { }
+  h[:id] = s[:id]
+  h[:text] =  s[:text]
+  h[:screen_name] = s[:user][:screen_name]
+  h[:entities] = s[:entities]
+  h[:created_at] = Time.parse(s[:created_at])
+  puts "#{JSON.pretty_generate(h)}"
 end
-
-# ----
-
-class Status
-  include Tire::Model::Persistence
-
-  property :id
-  property :text
-  property :screen_name
-  property :created_at
-  property :entities
-
-  # Let's define callback for percolation.
-  # Whenewer a new document is saved in the index, this block will be executed,
-  # and we will have access to matching queries in the `Status#matches` property.
-  #
-  # In our case, we will just print the list of matching queries.
-  #
-  on_percolate do
-    puts green { "'#{text}' from @#{red { screen_name }} matches queries: #{bold { matches.inspect }}" } unless matches.empty?
-  end
-end
-
-# First, let's define the query_string queries.
-#
-q            = {}
-q[:rails] = 'rails'
-q[:mongodb] = 'mongodb'
-q[:redis] = 'redis'
-q[:couchdb] = 'couchdb'
-q[:neo4j] = 'neo4j'
-q[:elasticsearch] = 'elasticsearch'
-
-Status.index.register_percolator_query('rails') { |query| query.string q[:rails] }
-Status.index.register_percolator_query('mongodb') { |query| query.string q[:mongodb] }
-Status.index.register_percolator_query('redis') { |query| query.string q[:redis] }
-Status.index.register_percolator_query('couchdb') { |query| query.string q[:couchdb] }
-Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
-Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
-
-# ----
 
 client = TweetStream::Client.new
 
@@ -77,7 +37,6 @@ client.on_error do |message|
   puts message
 end
 
-#client.track('wow', 'lol') do |status|
 client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
   handle_tweet status
 end

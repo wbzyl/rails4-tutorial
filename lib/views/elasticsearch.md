@@ -53,12 +53,13 @@ Przykładowe aplikacje:
 Rozpakowujemy archiwum z ostatnią wersją
 [ElasticSearch](http://www.elasticsearch.org/download/) (ok. 16 MB):
 
+    :::bash
     unzip elasticsearch-0.18.6.zip
 
-Uruchamiamy *elasticsearch*:
+A tak uruchamiamy *elasticsearch*:
 
-    cd elasticsearch-0.18.6
-    bin/elasticsearch -f
+    :::bash
+    elasticsearch-0.18.6/bin/elasticsearch -f
 
 I już! Domyślnie ElasticSearch nasłuchuje na porcie 9200.
 
@@ -98,7 +99,7 @@ Książka:
        "tags" : ["fiction", "children"]
     }
 
-Dodajemy książkę:
+Dodajemy książkę do indeksu *amazon*:
 
     :::bash
     curl -XPUT http://localhost:9200/amazon/books/0812504321 -d @book.json
@@ -121,7 +122,7 @@ CD:
        "tags" : ["hip-hop", "pop-rap"]
     }
 
-Dodajemy CD:
+Dodajemy CD do indeksu *amazon*:
 
     :::bash
     curl -XPUT http://localhost:9200/amazon/cds/B00192IV0O -d @cd.json
@@ -130,27 +131,38 @@ Dodajemy CD:
 Przykładowe zapytanie:
 
     :::bash
-    curl 'http://localhost:9200/amazon/cds/_search?pretty=true&q=label:Interscope'
+    curl 'http://localhost:9200/_search?pretty=true&q=label:Interscope'
+
+Wyszukiwanie po wszystkich typach w indeksie *amazon*:
+
+    :::bash
+    curl 'http://localhost:9200/amazon/_search?pretty=true&q=name:energy'
 
 Wyszukiwanie po kilku typach:
 
     :::bash
     curl 'http://localhost:9200/amazon/books,cds/_search?pretty=true&q=name:energy'
 
-Wyszukiwanie po wszystkich typach:
+Teraz pora na posprzątanie po sobie. Usuwamy indeks **amazon**:
 
     :::bash
-    curl 'http://localhost:9200/amazon/_search?pretty=true&q=name:energy'
+    curl -XDELETE 'http://127.0.0.1:9200/amazon'
 
-Na koniec, zapytanie o zdrowie:
+albo, za jednym razem usuwamy **wszystkie** indeksy
+(zalecana ostrożność):
 
     :::bash
-    curl -XGET 'http://127.0.0.1:9200/_cluster/health?pretty=true'
+    curl -XDELETE 'http://127.0.0.1:9200/_all'
+
+Na koniec, zapytanie o zdrowie klastra ElasticSearch:
+
+    :::bash
+    curl 'http://127.0.0.1:9200/_cluster/health?pretty=true'
 
 
-## Korzystamy z JSON Query Language
+### Zapytania, korzystające z JSON Query Language
 
-Użyjemy programu *curl* do zapisania danych w ElasticSearch:
+Zaczynamy od zapisania kilku JSON–ów w ElasticSearch:
 
     :::bash
     curl -XPUT 'http://localhost:9200/twitter/users/kimchy' -d '
@@ -175,15 +187,9 @@ Użyjemy programu *curl* do zapisania danych w ElasticSearch:
 Sprawdzamy, co zostało dodane:
 
     :::bash
-    curl -XGET 'http://localhost:9200/twitter/users/kimchy?pretty=true'
-    curl       'http://localhost:9200/twitter/tweets/1?pretty=true'
-    curl       'http://localhost:9200/twitter/tweets/2?pretty=true'
-
-
-### Odpytywanie ElasticSearch
-
-Po umieszczeniu danych w ElasticSearch spróbujemy zadać
-kilka zapytań, korzystających z **JSON query language**.
+    curl 'http://localhost:9200/twitter/users/kimchy?pretty=true'
+    curl 'http://localhost:9200/twitter/tweets/1?pretty=true'
+    curl 'http://localhost:9200/twitter/tweets/2?pretty=true'
 
 Dla przypomnienia, interpretacja uri w zapytaniach do ElasticSearch:
 
@@ -192,15 +198,17 @@ http://localhost:9200/<b>⟨index⟩</b>/_search?...
 http://localhost:9200/<b>⟨index⟩</b>/<b>⟨type⟩</b>/_search?...
 </pre>
 
+Teraz odpytamy indeks *twitter* korzystając
+z ElasticSearch *JSON query language*:
 
     :::bash
-    curl -XGET 'http://localhost:9200/twitter/tweets/_search?pretty=true' -d '
+    curl 'http://localhost:9200/twitter/tweets/_search?pretty=true' -d '
     {
        "query" : {
           "text" : { "user": "kimchy" }
        }
     }'
-    curl -XGET 'http://localhost:9200/twitter/tweets/_search?pretty=true' -d '
+    curl 'http://localhost:9200/twitter/tweets/_search?pretty=true' -d '
     {
        "query" : {
           "term" : { "user": "kimchy" }
@@ -209,27 +217,17 @@ http://localhost:9200/<b>⟨index⟩</b>/<b>⟨type⟩</b>/_search?...
 
 Jaka jest różnica między wyszukiwaniem z **text** a **term**?
 
-Wyciągamy wszystkie dokumenty z ElasticSearch:
+Wyciągamy wszystkie dokumenty z indeksu *twitter*:
 
     :::bash
-    curl -XGET 'http://localhost:9200/_search?pretty=true' -d '
+    curl 'http://localhost:9200/twitter/_search?pretty=true' -d '
     {
         "query" : {
             "matchAll" : {}
         }
     }'
 
-A teraz – wszystkie dokumenty z indeksu *twitter*:
-
-    :::bash
-    curl -XGET 'http://localhost:9200/twitter/_search?pretty=true' -d '
-    {
-        "query" : {
-            "matchAll" : {}
-        }
-    }'
-
-Wszystkie dokumenty typu *user* z indeksu *twitter*:
+Albo – dokumenty typu *user* z indeksu *twitter*:
 
     :::bash
     curl -XGET 'http://localhost:9200/twitter/users/_search?pretty=true' -d '
@@ -240,12 +238,10 @@ Wszystkie dokumenty typu *user* z indeksu *twitter*:
     }'
 
 
-## Multi Tenant – indeksy i typy
+## Indeksy i typy *Multi Tenant*
 
 *Tenant* to najemca, dzierżawca. *Multi tenant* – jak to przetłumaczyć?
-Co to może oznaczać?
-
-*Przykład.* Zaczynamy od zapisania takich danych w ElasticSearch:
+Czy poniższy przykład coś wyjaśna?
 
     :::bash
     curl -XPUT 'http://localhost:9200/bilbo/info/1' -d '{ "name" : "Bilbo Baggins" }'
@@ -264,7 +260,7 @@ Co to może oznaczać?
         "message": "Another tweet, will it be indexed?"
     }'
 
-Wyszukiwanie po kilku indeksach:
+Wyszukiwanie „multi”, po kilku indeksach:
 
     :::bash
     curl -XGET 'http://localhost:9200/bilbo,frodo/_search?pretty=true' -d '
@@ -289,39 +285,47 @@ Wyszukiwanie po kilku indeksach:
 
 Takie eksperymentowanie z ElasticSearch rest API pozwala sprawdzić,
 czy dobrze je rozumiemy oraz czy poprawnie zainstalowaliśmy sam program.
-Dalsze takie próby są nużące i wyniki są mało efektowne.
+Dalsze takie próby są nużące i wyniki są nie są zajmujące.
 
 Dlatego, do następnych prób użyjemy większej liczby rzeczywistych
 i zajmujących danych. Naszymi danymi będą statusy z Twittera.
-Dodatkowo skorzystamy z [stream API](https://dev.twitter.com/docs/streaming-api),
-do odfiltrowania interesujących nas statusów:
+Dodatkowo do odfiltrowania interesujących nas statusów
+skorzystamy z [stream API](https://dev.twitter.com/docs/streaming-api):
 
     :::ruby tracking
     track=wow,rails,mongodb,couchdb,redis,elasticsearch,neo4j
 
-(Co sekundę wysyłanych jest ok. 1000 nowych statusów.)
+(Dlaczego filtrujemy? Co sekundę wysyłanych jest do Twittera ok. 1000
+nowych statusów. Większość z nich nie ma dla nas żadnego znaczenia.)
 
 Do słów kluczowych dopisaliśmy **wow**. Słówo to pojawia się
 w wielu statusach, a pozostałe słowa występują z rzadka.
 Po dodaniu **wow** nowe statusy będą się pojawiać co chwila.
 **Wow!**
 
-Najprościej jest pobrać statusy za pomocą programu *curl*:
+Najprościej będzie zacząć od pobrania statusów za pomocą programu *curl*:
 
     :::bash
     curl -X POST https://stream.twitter.com/1/statuses/filter.json -d @tracking \
       -uAnyTwitterUser:Password
 
-Jak widać statusy zawierają wiele pól i tylko kilka z nich jest
-interesujących. Niestety, na konsoli trudno jest je dostrzec i wyciąć.
-Prościej będzie zaprogramować takie „czyszczenie” statusów w Ruby.
-W tym celu skorzystamy z kilku gemów. Oto one:
+Jak widać statusy zawierają wiele pól i tylko kilka z nich zawiera
+interesujące dane. Niestety, na konsoli trudno czytać interesujące nas fragmenty.
+Są one wymieszane z jakimiś technicznymi rzeczami, np.
+*profile_sidebar_fill_color*, *profile_use_background_image* itp.
 
-    eventmachine tweetstream yajl-ruby
+Dlatego, przed wypisaniem statusu na ekran, powinniśmy go „oczyścić”
+ze zbędnych pól. Zrobimy to za pomocą skryptu w Ruby. W skrypcie
+skorzystamy z następujących gemów, które najpierw zainstakujemy:
+
+    gem install tweetstream  yajl-ruby
 
 {%= image_tag "/images/twitter_elasticsearch.jpeg", :alt => "[Twitter -> ElasticSearch]" %}
 
-Zaczniemy od skryptu działającego podobnie do polecenia z *curl* powyżej:
+Zaczniemy od skryptu działającego podobnie do polecenia z *curl* powyżej.
+
+Aby uzyskać dostęp do stream API wymagana jest weryfikacja<br>
+(opcja *-uAnyTwitterUser:Password* w poleceniu *curl* powyżej).
 
     :::ruby nosql-tweets.rb
     # encoding: utf-8
@@ -330,15 +334,16 @@ Zaczniemy od skryptu działającego podobnie do polecenia z *curl* powyżej:
     require 'tweetstream'
 
     user, password = ARGV
+
     unless (user && password)
-      puts "\nUsage:\n\t#{__FILE__} <user> <password>\n\n"
+      puts "\nUsage:\n\t#{__FILE__} <AnyTwitterUser> <Password>\n\n"
       exit(1)
     end
 
     TweetStream.configure do |config|
       config.username = user
       config.password = password
-      config.auth_method = :basic
+      config.auth_method = :basic  # OAuth or HTTP Basic Authentication is required
       config.parser = :yajl
     end
 
@@ -356,6 +361,7 @@ Zaczniemy od skryptu działającego podobnie do polecenia z *curl* powyżej:
       handle_tweet status
     end
 
+
 <blockquote>
 <p>
   <h2><a href="https://dev.twitter.com/docs/streaming-api/concepts#access-rate-limiting">Important note</a></h2>
@@ -372,17 +378,17 @@ Zaczniemy od skryptu działającego podobnie do polecenia z *curl* powyżej:
 Skrypt ten uruchamiamy na konsoli w następujący sposób:
 
     :::bash
-    ruby nosql-tweets.rb AnyTwitterUser Password
+    ruby nosql-tweets.rb MyTwitterUserName MyPassword
 
-Przypatrując się zawartości pobieranych statusów,
-po chwili widzimy jakie pole są interesujące. Oto one:
+Wpatrując się w ekran przez jakiś czas zaczynamy
+dostrzegać pole zawierające interesujące dane:
 
     id
     text
     created_at
     user:
       screen_name
-    entities:      # trzy tablice jsonów
+    entities:      # tylko trzy tablice?
       urls (url)
       user_mentions (id_str, name, screen_name)
       hashtags (text)
@@ -391,22 +397,30 @@ Czyszczeniem zajmiemy się w kodzie metody *handle_tweet*:
 
     :::ruby
     def handle_tweet(s)
-      h = {}
-      h[:id] = s.id
-      h[:text] = s.text
-      h[:created_at] = Time.parse(h[:created_at])
-      h[:screen_name] = s.user.screen_name
-      h[:entities] = s.entities
+      h = { }
+      h[:id] = s[:id]
+      h[:text] =  s[:text]
+      h[:screen_name] = s[:user][:screen_name]
+      h[:entities] = s[:entities]
+      h[:created_at] = Time.parse(s[:created_at])
       puts "#{JSON.pretty_generate(h)}"
     end
 
-Po wymianie kodu *handle_tweet* na nowy i uruchomieniu skryptu
-widzimy efekty. Więcej widać!
+Po wymianie na nowy kodu *handle_tweet* i ponownym uruchomieniu skryptu
+widzimy efekty. To się da czytać!
 
 Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch.
+Skorzystamy z gemu *Tire*:
 
-    :::ruby
+    gem install tire ansi
+
+Zaczniemy od definicji modelu *Status*. Od razu **percolate**?
+
+    :::ruby percolate-nosql-tweets.rb
     require 'tire'
+    require 'ansi/code'
+
+    include ANSI::Code
 
     class Status
       include Tire::Model::Persistence
@@ -420,17 +434,15 @@ Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch.
       # Let's define callback for percolation.
       # Whenewer a new document is saved in the index, this block will be executed,
       # and we will have access to matching queries in the `Status#matches` property.
-      #
       # In our case, we will just print the list of matching queries.
-      #
       on_percolate do
-        puts green { "'#{text}' from @#{red { screen_name }} matches queries: #{bold { matches.inspect }}" } unless matches.empty?
+        puts green { "'#{text}' from @#{bold { screen_name }}" } unless matches.empty?
       end
     end
 
     # First, let's define the query_string queries.
-    #
-    q            = {}
+
+    q = {}
     q[:rails] = 'rails'
     q[:mongodb] = 'mongodb'
     q[:redis] = 'redis'
@@ -445,48 +457,57 @@ Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch.
     Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
     Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
 
-Na koniec podmieniamy kod *handle_tweet*:
+    # Refresh the `_percolator` index for immediate access.
 
-    :::ruby
+    Tire.index('_percolator').refresh
+
+    puts magenta { "\nYou can check out the the documents in your index with curl:\n" }
+    puts yellow  { "  curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=4&pretty=true'\n" }
+
+Podmieniamy kod *handle_tweet*:
+
+    # Strip off fields we are not interested in.
+
     def handle_tweet(s)
-      Status.create :id => s[:id],
+      h = Status.new :id => s[:id],
         :text => s[:text],
         :screen_name => s[:user][:screen_name],
         :entities => s[:entities],
         :created_at => Time.parse(s[:created_at])
+
+      types = h.percolate
+      puts cyan { "matched queries: #{types}" }
+
+      types.to_a.each do |type|
+        Status.document_type type
+        h.save
+      end
     end
 
-Działanie skryptu kończymy wciskając klawisze `ctrl+c`.
-A tak sprawdzamy, co się zaimportowało:
-
-    :::bash
-    curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=2&pretty=true'
-
-**TODO:** Przydałoby się jakieś podsumowanie (z *percolated-twitter.rb*, dostosować):
+Łączymy się z Twitterem.
 
     :::ruby
-    puts "", bold { "Check out your index" }, '-'*80
-    puts "curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=5&pretty=true'", ""
+    client = TweetStream::Client.new
 
-    # Display import statistics
-
-    def report
-       ["",
-       "Imported #{@done} messages into index: " +
-       "<http://localhost:9200/statuses/_search?q=*> ",
-       "in #{elapsed_to_human(@elapsed)}. " +
-       "There were #{@errors.size} errors.",
-       ""].join("\n")
+    client.on_error do |message|
+      puts message
     end
 
-    # Clean exit on interrupt
-
-    trap(:INT) do
-      puts "\nExiting...\n"
-      puts report
-      exit( @errors.size > 0 ? 1 : 0 )
+    client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
+      handle_tweet status
     end
 
+Działanie skryptu kończymy wciskając klawisze `CTRL+C`.
+
+Tak możemy sprawdzić ile statusów jest w bazie.
+Wyświetlimy też dwa ostatnio zaindeksowane statusy.
+
+    :::bash
+    curl 'http://localhost:9200/statuses/_count'
+    curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=2&pretty=true'
+
+
+## TODO
 
 Po zaimportowaniu większej liczby statusów…
 

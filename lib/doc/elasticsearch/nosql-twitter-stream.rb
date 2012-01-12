@@ -9,7 +9,7 @@ include ANSI::Code
 user, password = ARGV
 
 unless (user && password)
-  puts "\nUsage:\n\t#{__FILE__} <user> <password>\n\n"
+  puts "\nUsage:\n\t#{__FILE__} <AnyTwitterUser> <Password>\n\n"
   exit(1)
 end
 
