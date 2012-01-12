@@ -105,10 +105,16 @@ pomocniczych. Warto je dopisać do pliku *app/helpers/layout_helper.rb*:
 
 ## Linki
 
+Bootstrap:
+
+* [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/)
+* Pat Shaughnessy:
+  - [Twitter Bootstrap, Less, and Sass: Understanding Your Options for Rails 3.1](http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/)
+  - [Too good to be true! Twitter Bootstrap meets Formtastic and Tabulous](http://rubysource.com/too-good-to-be-true-twitter-bootstrap-meets-formtastic-and-tabulous/)
+  - [How to Customize Twitter Bootstrap’s Design in a Rails app](http://rubysource.com/how-to-customize-twitter-bootstrap%E2%80%99s-design-in-a-rails-app/)
 * Inayaili de León. [Have a Field Day with HTML5 Forms](http://24ways.org/2009/have-a-field-day-with-html5-forms)
 * [Coding A HTML 5 Layout From Scratch](http://www.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/)
 * [Coding a CSS3 & HTML5 One-Page Website Template](http://tutorialzine.com/2010/02/html5-css3-website-template/)
-
 
 
 # Co to są sitemaps?

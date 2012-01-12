@@ -23,7 +23,6 @@ TweetStream.configure do |config|
 end
 
 def handle_tweet(s)
-  puts cyan { s.text }
   h = Status.new :id => s[:id],
     :text => s[:text],
     :screen_name => s[:user][:screen_name],
@@ -31,12 +30,12 @@ def handle_tweet(s)
     :created_at => Time.parse(s[:created_at])
 
   types = h.percolate
-  puts magenta { types }
+  puts cyan { "matched queries: #{types}" }
 
-  # types.each do |type|
-  #   Status.document_type type
-  #   h.save
-  # end
+  types.to_a.each do |type|
+    Status.document_type type
+    h.save
+  end
 end
 
 # ----
@@ -57,7 +56,7 @@ class Status
   # In our case, we will just print the list of matching queries.
   #
   on_percolate do
-    puts green { "'#{text}' from @#{bold { screen_name }} matches queries: #{bold { matches.inspect }}" } unless matches.empty?
+    puts green { "'#{text}' from @#{bold { screen_name }}" } unless matches.empty?
   end
 end
 
