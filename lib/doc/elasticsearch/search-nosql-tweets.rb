@@ -49,26 +49,32 @@ end
 # include Tire::Persistence::Pagination
 # size per_page
 
-s = Tire.search('statuses', per_page: 2, page: 3) do
-  #query { string 'mongo*' }
-  query { all }
+s = Tire.search('statuses', per_page: 10, page: 3) do
+  query { string 'mongo*' }
+  # query { all }
   #filter :range, created_at: {to: Time.now.iso8601, from: (Time.now - 3600).iso8601}
   filter :range, created_at: {to: "2012-01-13T18:00:00", from: "2012-01-13T16:00:00"}
   sort { by :created_at, 'desc' }
   size options[:per_page]
   from (options[:page] - 1) * options[:per_page]
+
+  highlight :text, :options => { :tag => '<strong class="highlight">' }
 end
 
 puts JSON.pretty_generate(s.to_hash)
 #puts s.to_curl
 
+puts cyan {"\nHighligted:\n"}
 s.results.each do |document|
   puts "#{magenta { document.created_at }}: #{document.text}"
 end
 
+puts cyan {"\nFaceted search:\n"}
+
 # s = Tire.search 'statuses', type: 'rails' do
 s = Tire.search 'statuses' do
   # query { all } # this is the default value
+  # filter :range, created_at: {to: "2012-01-13", from: "2012-01-12"}
 
   # and retrieve the counts “bucketed” by `entities.hashtags.text`.
   facet('hashtags') { terms 'entities.hashtags.text', size: 16 }
