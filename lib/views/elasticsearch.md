@@ -497,22 +497,26 @@ Podłączamy się do strumienia ze statusami.
 Działanie skryptu kończymy wciskając klawisze `CTRL+C`.
 
 Tak możemy sprawdzić ile statusów jest w bazie.
-Wyświetlimy też dwa ostatnio zaindeksowane statusy.
+Wyświetlimy też dwa ostatnio zaindeksowane statusy oraz
+wszystkie statusy typu *elasticsearch*.
 
     :::bash
     curl 'http://localhost:9200/statuses/_count'
     curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=2&pretty=true'
+    curl 'http://localhost:9200/statuses/_search?size=2&sort=created_at:desc&pretty=true'
+    curl 'http://localhost:9200/statuses/_search?_all&sort=created_at:desc&pretty=true'
+
+Faceted search:
+
+    curl -X POST "http://localhost:9200/statuses/_count?q=couchdb&pretty=true"
+    curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
+    {
+      "query" : { "query_string" : {"query" : "couchdb"} },
+      "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
+    }'
 
 
-## TODO
-
-Po zaimportowaniu większej liczby statusów…
-
-Do przeszukiwania statusów, napiszemy prostą aplikację Rails.
-
-(*Uwaga*: Ponieważ Twitter & Rails są *cool*,
-więc efekt halo powinien przenieść *coolines* na ten tekst.)
-
+### Nieco linków
 
 Linki do dokumentacji:
 
@@ -523,16 +527,24 @@ Linki do dokumentacji:
 
 Zobacz też:
 
-* [Consuming the Twitter Streaming API](http://adam.heroku.com/past/2010/3/19/consuming_the_twitter_streaming_api/)
+* [Consuming the Twitter Streaming API](http://adam.heroku.com/past/2010/3/19/consuming_the_twitter_streaming_api/) –
   prościej, bez *TweetStream*
 * [Gmail & ES](http://ephemera.karmi.cz/post/5510326335/gmail-elasticsearch-ruby)
 
 
-# Wtyczki
+## Prosta aplikacja Rails do przeszukiwania statusów
 
-Zaczynamy od instalacji [wtyczek](https://github.com/elasticsearch).
+Po zaimportowaniu większej liczby statusów…
 
-Rivers allows to index streams:
+**TODO**
+
+
+# Rivers allows to index streams
+
+Zamiast samemu pisać kod do pobierania statusów z Twittera możemy
+użyć do tego celu wtyczki *river-twitter*.
+
+Instalacja wtyczek *rivers* jest prosta:
 
     :::bash
     bin/plugin -install river-twitter
@@ -550,14 +562,9 @@ Rivers allows to index streams:
       Downloading ......DONE
       Installed river-wikipedia
 
-Allows to have JavaScript as the language of scripts to execute:
+Repozytoria z kodem wtyczek są na Githubie [tutaj](https://github.com/elasticsearch).
 
-    :::bash
-    bin/plugin -install lang-javascript
-      -> Installing lang-javascript...
-      Trying http://elasticsearch.googlecode.com/svn/plugins/lang-javascript/elasticsearch-lang-javascript-0.18.5.zip...
-
-**Uwaga**: Elasticsearch must be restarted after the installation of a plugin.
+**Uwaga**: po instalacji wtyczki, należe zrestartować *ElasticSearch*.
 
 
 ### River Twitter
@@ -615,8 +622,8 @@ A tak raportowane jest pobranie paczki z 10 tweets na konsoli:
 Wyszukiwanie:
 
     :::bash
-    curl -XGET 'http://localhost:9200/tweets/nosql/_search?q=text:mongodb&fields=user.name,text&pretty=true'
-    curl -XGET 'http://localhost:9200/tweets/nosql/_search?pretty=true' -d '
+    curl 'http://localhost:9200/tweets/nosql/_search?q=text:mongodb&fields=user.name,text&pretty=true'
+    curl 'http://localhost:9200/tweets/nosql/_search?pretty=true' -d '
     {
         "query" : {
             "match_all" : { }
@@ -626,7 +633,7 @@ Wyszukiwanie:
 Sprawdzamy mapping:
 
     :::bash
-    curl ‐X GET "http://localhost:9200/tweets/_mapping?pretty=true"
+    curl 'http://localhost:9200/tweets/_mapping?pretty=true'
 
 Oto mapowanie:
 
