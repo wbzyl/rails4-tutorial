@@ -28,14 +28,65 @@ include ANSI::Code
 #   puts "#{document.text}"
 # end
 
+# http://www.elasticsearch.org/guide/reference/mapping/date-format.html
+# http://joda-time.sourceforge.net/api-release/org/joda/time/format/ISODateTimeFormat.html#dateOptionalTimeParser%28%29
+
 s = Tire.search('statuses') do
   query do
-    string "created_at:[2011-01-11T21:17:00 TO 2012-01-11T21:20:00]"
+    string "created_at:[2012-01-12T14:00:00 TO 2012-01-12T14:24:00]"
   end
+  size 4  # return that many statuses
+  from 2  # offset
 end
 
+puts JSON.pretty_generate(s.to_hash)
+#puts s.to_curl
+
 s.results.each do |document|
-  puts "#{yellow { document.created_at }}: #{document.text} matched #{document.inspect}"
-  puts "----"
-  puts "#{document.inspect}"
-  puts "===="end
+  puts "#{magenta { document.created_at }}: #{document.text}"
+end
+
+# include Tire::Persistence::Pagination
+# size per_page
+
+s = Tire.search('statuses', per_page: 2, page: 3) do
+  #query { string 'mongo*' }
+  query { all }
+  #filter :range, created_at: {to: Time.now.iso8601, from: (Time.now - 3600).iso8601}
+  filter :range, created_at: {to: "2012-01-13T18:00:00", from: "2012-01-13T16:00:00"}
+  sort { by :created_at, 'desc' }
+  size options[:per_page]
+  from (options[:page] - 1) * options[:per_page]
+end
+
+puts JSON.pretty_generate(s.to_hash)
+#puts s.to_curl
+
+s.results.each do |document|
+  puts "#{magenta { document.created_at }}: #{document.text}"
+end
+
+# s = Tire.search 'statuses', type: 'rails' do
+s = Tire.search 'statuses' do
+  # query { all } # this is the default value
+
+  # and retrieve the counts “bucketed” by `entities.hashtags.text`.
+  facet('hashtags') { terms 'entities.hashtags.text', size: 16 }
+  facet('timeline') { date  :created_at, interval: 'day' }
+end
+
+#puts "Found #{s.results.count} statuses" # s.results.map(&:text).join("\n")
+
+puts JSON.pretty_generate(s.to_hash)
+#puts s.to_curl
+
+puts cyan {"\nCounts by hashtags:\n"}
+s.results.facets['hashtags']['terms'].each do |facet|
+  puts "#{facet['term'].ljust(16)} #{facet['count']}"
+end
+puts cyan {"\nTimeline: \#statuses per day:\n"}
+s.results.facets['timeline']['entries'].each do |facet|
+  puts "#{Time.at(facet['time']/1000).utc} #{facet['count']}"
+end
+
+puts ""

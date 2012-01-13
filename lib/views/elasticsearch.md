@@ -506,15 +506,55 @@ wszystkie statusy typu *elasticsearch*.
     curl 'http://localhost:9200/statuses/_search?size=2&sort=created_at:desc&pretty=true'
     curl 'http://localhost:9200/statuses/_search?_all&sort=created_at:desc&pretty=true'
 
-Faceted search:
+Faceted search. Tłum. wyszukiwanie fasetowe?
+[Co to jest?](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html)
+„Facets provide aggregated data based on a search query. In the
+simplest case, a terms facet can return facet counts for various facet
+values for a specific field. ElasticSearch supports more facet
+implementations, such as statistical or date histogram facets.”
 
+    :::bash
     curl -X POST "http://localhost:9200/statuses/_count?q=couchdb&pretty=true"
     curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
     {
       "query" : { "query_string" : {"query" : "couchdb"} },
       "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
     }'
+    curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
+    {
+      "query" : { "match_all" : {} },
+      "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
+    }'
+    curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
+    {
+      "query" : { "match_all" : {} },
+      "facets" : { "statuses_per_day" : { "date_histogram" :  { "field" : "created_at", "interval": "day" } } }
+    }'
 
+A tak wyglądaja JSON z fasetami:
+
+    :::json
+    "facets" : {
+       "hashtags" : {
+         "_type" : "terms",
+         "missing" : 3240,
+         "total" : 2099,
+         "other" : 1279,
+         "terms" : [ {
+           "term" : "mongodb",
+           "count" : 198
+         }, {
+           "term" : "rails",
+           "count" : 141
+         }, {
+           "term" : "nosql",
+           "count" : 80
+         }, {
+           "term" : "job",
+           "count" : 80
+         } ]
+       }
+     }
 
 ### Nieco linków
 
@@ -527,9 +567,13 @@ Linki do dokumentacji:
 
 Zobacz też:
 
-* [Consuming the Twitter Streaming API](http://adam.heroku.com/past/2010/3/19/consuming_the_twitter_streaming_api/) –
+* Adam Wiggins.
+  [Consuming the Twitter Streaming API](http://adam.heroku.com/past/2010/3/19/consuming_the_twitter_streaming_api/) –
   prościej, bez *TweetStream*
-* [Gmail & ES](http://ephemera.karmi.cz/post/5510326335/gmail-elasticsearch-ruby)
+* Karel Minarik.
+  [Gmail & ES](http://ephemera.karmi.cz/post/5510326335/gmail-elasticsearch-ruby)
+* Mirko Froehlich.
+  [Building a Twitter Filter With Sinatra, Redis, and TweetStream](http://www.digitalhobbit.com/2009/11/08/building-a-twitter-filter-with-sinatra-redis-and-tweetstream/)
 
 
 ## Prosta aplikacja Rails do przeszukiwania statusów
