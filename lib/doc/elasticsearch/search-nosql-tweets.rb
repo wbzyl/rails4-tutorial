@@ -5,6 +5,45 @@ require 'tweetstream'
 
 require 'tire'
 
+class Status
+  include Tire::Model::Persistence
+
+  property :id
+  property :text
+  property :screen_name
+  property :created_at
+  property :entities
+
+  property :user
+end
+
+#puts Status.methods
+
+s = Status.first
+puts s.to_json
+
+# puts s.methods
+
+s.destroy
+
+Tire.index('statuses').refresh
+
+s = Status.first
+
+puts s.to_json
+
+s.update_attributes text: "[Censored]"
+
+puts s.to_json
+
+#puts Status.first.to_json
+
+# puts Status.find("157236146202624000").inspect
+
+# puts Status.all.inspect
+
+__END__
+
 require 'ansi/code'
 include ANSI::Code
 

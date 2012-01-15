@@ -20,6 +20,7 @@ Strona domowa ElasticSearch, dokumentacja:
   - [Mapping](http://www.elasticsearch.org/guide/reference/mapping/)
   - [Facets](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html)
 * [Setting up ElasticSearch ](http://www.elasticsearch.org/tutorials/2010/07/01/setting-up-elasticsearch.html)
+* [A web front end for an ElasticSearch cluster](https://github.com/Aconex/elasticsearch-head)
 
 ElasticSearch driver dla języka Ruby:
 
