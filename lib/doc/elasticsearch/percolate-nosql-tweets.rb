@@ -14,6 +14,12 @@ include ANSI::Code
 
 require 'yaml'
 
+# services.yml
+# ---
+# twitter:
+#   login: AnyTwitterUser
+#   password: Password
+
 raw_config = File.read("#{ENV['HOME']}/.credentials/services.yml")
 twitter = YAML.load(raw_config)['twitter']
 
