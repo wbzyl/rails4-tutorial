@@ -256,6 +256,9 @@ oraz [jQuery UI](http://jqueryui.com/download/)
 Co to są wirtualne atrybuty?
 [More on Virtual Attributes](http://railscasts.com/episodes/167-more-on-virtual-attributes?view=asciicast).
 
+Inne podejście, [Array of hashes form builder](http://stackoverflow.com/questions/8887016/array-of-hashes-form-builder)
+z [Mongoid + filtering result set(?)](http://mongoid.org/docs/querying/scopes.html).
+
 Dodajemy metody getter i setter dla **wirtualnych atrybutów**
 oraz ustawiamy domyślne sortowanie rekordów:
 
