@@ -12,16 +12,23 @@ include ANSI::Code
 # with OAuth or HTTP Basic Authentication is required.
 # We use Basic Authentication.
 
-user, password = ARGV
+require 'yaml'
 
-unless (user && password)
-  puts "\nUsage:\n\t#{__FILE__} <AnyTwitterUser> <Password>\n\n"
-  exit(1)
-end
+raw_config = File.read("#{ENV['HOME']}/.credentials/services.yml")
+twitter = YAML.load(raw_config)['twitter']
+
+# user, password = ARGV
+
+# unless (user && password)
+#   puts "\nUsage:\n\t#{__FILE__} <AnyTwitterUser> <Password>\n\n"
+#   exit(1)
+# end
 
 TweetStream.configure do |config|
-  config.username = user
-  config.password = password
+  # config.username = user
+  # config.password = password
+  config.username = twitter['login']
+  config.password = twitter['password']
   config.auth_method = :basic
   config.parser = :yajl
 end
