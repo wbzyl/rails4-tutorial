@@ -20,15 +20,17 @@ require 'yaml'
 #   login: AnyTwitterUser
 #   password: Password
 
-raw_config = File.read("#{ENV['HOME']}/.credentials/services.yml")
-twitter = YAML.load(raw_config)['twitter']
+# TODO: add check if successful
 
-# user, password = ARGV
+# Twitter Stream API configuration
 
-# unless (user && password)
-#   puts "\nUsage:\n\t#{__FILE__} <AnyTwitterUser> <Password>\n\n"
-#   exit(1)
-# end
+begin
+  raw_config = File.read("#{ENV['HOME']}/.credentials/services.yml")
+  twitter = YAML.load(raw_config)['twitter']
+rescue
+  puts red { "\n\tError: problems with #{ENV['HOME']}/.credentials/services.yml\n" }
+  exit(1)
+end
 
 TweetStream.configure do |config|
   # config.username = user
@@ -38,6 +40,20 @@ TweetStream.configure do |config|
   config.auth_method = :basic
   config.parser = :yajl
 end
+
+# user, password = ARGV
+
+# unless (user && password)
+#   puts "\nUsage:\n\t#{__FILE__} <AnyTwitterUser> <Password>\n\n"
+#   exit(1)
+# end
+
+# TweetStream.configure do |config|
+#   config.username = user
+#   config.password = password
+#   config.auth_method = :basic
+#   config.parser = :yajl
+# end
 
 # Tire part.
 
@@ -65,20 +81,22 @@ end
 
 # First, let's define the query_string queries.
 
-q = {}
-q[:rails] = 'rails'
-q[:mongodb] = 'mongodb'
-q[:redis] = 'redis'
-q[:couchdb] = 'couchdb'
-q[:neo4j] = 'neo4j'
-q[:elasticsearch] = 'elasticsearch'
+# TODO: add check if already defined.
 
-Status.index.register_percolator_query('rails') { |query| query.string q[:rails] }
-Status.index.register_percolator_query('mongodb') { |query| query.string q[:mongodb] }
-Status.index.register_percolator_query('redis') { |query| query.string q[:redis] }
-Status.index.register_percolator_query('couchdb') { |query| query.string q[:couchdb] }
-Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
-Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
+# q = {}
+# q[:rails] = 'rails'
+# q[:mongodb] = 'mongodb'
+# q[:redis] = 'redis'
+# q[:couchdb] = 'couchdb'
+# q[:neo4j] = 'neo4j'
+# q[:elasticsearch] = 'elasticsearch'
+
+# Status.index.register_percolator_query('rails') { |query| query.string q[:rails] }
+# Status.index.register_percolator_query('mongodb') { |query| query.string q[:mongodb] }
+# Status.index.register_percolator_query('redis') { |query| query.string q[:redis] }
+# Status.index.register_percolator_query('couchdb') { |query| query.string q[:couchdb] }
+# Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
+# Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
 
 # Refresh the `_percolator` index for immediate access.
 
