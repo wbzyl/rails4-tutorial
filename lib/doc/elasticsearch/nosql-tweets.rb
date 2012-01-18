@@ -1,18 +1,28 @@
 # encoding: utf-8
 
+require 'yaml'
 require 'yajl/json_gem'
 require 'tweetstream'
 
-user, password = ARGV
+# services.yml
+# ---
+# twitter:
+#   login: AnyTwitterUser
+#   password: Password
 
-unless (user && password)
-  puts "\nUsage:\n\t#{__FILE__} <AnyTwitterUser> <Password>\n\n"
+# Twitter Stream API configuration
+
+begin
+  raw_config = File.read("#{ENV['HOME']}/.credentials/services.yml")
+  twitter = YAML.load(raw_config)['twitter']
+rescue
+  puts red { "\n\tError: problems with #{ENV['HOME']}/.credentials/services.yml\n" }
   exit(1)
 end
 
 TweetStream.configure do |config|
-  config.username = user
-  config.password = password
+  config.username = twitter['login']
+  config.password = twitter['password']
   config.auth_method = :basic
   config.parser = :yajl
 end

@@ -228,7 +228,7 @@ Wyciągamy wszystkie dokumenty z indeksu *twitter*:
         }
     }'
 
-Albo – dokumenty typu *user* z indeksu *twitter*:
+Albo – dokumenty typu *users* z indeksu *twitter*:
 
     :::bash
     curl -XGET 'http://localhost:9200/twitter/users/_search?pretty=true' -d '
@@ -242,7 +242,7 @@ Albo – dokumenty typu *user* z indeksu *twitter*:
 ## Indeksy i typy *Multi Tenant*
 
 *Tenant* to najemca, dzierżawca. *Multi tenant* – jak to przetłumaczyć?
-Czy poniższy przykład coś wyjaśna?
+Czy poniższy przykład coś wyjaśnia?
 
     :::bash
     curl -XPUT 'http://localhost:9200/bilbo/info/1' -d '{ "name" : "Bilbo Baggins" }'
@@ -282,14 +282,14 @@ Wyszukiwanie „multi”, po kilku indeksach:
  <p class="author">— Daniel Kahneman</p>
 </blockquote>
 
-## ElasticSearch & Rails
+# ElasticSearch & Ruby + Tire
 
 Takie eksperymentowanie z ElasticSearch rest API pozwala sprawdzić,
 czy dobrze je rozumiemy oraz czy poprawnie zainstalowaliśmy sam program.
-Dalsze takie próby są nużące i wyniki są nie są zajmujące.
+Dalsze takie próby są nużące i wyniki nie są są zajmujące.
 
 Dlatego, do następnych prób użyjemy większej liczby rzeczywistych
-i zajmujących danych. Naszymi danymi będą statusy z Twittera.
+(i dlatego zajmujących) danych. Naszymi danymi będą statusy z Twittera.
 Dodatkowo do odfiltrowania interesujących nas statusów
 skorzystamy z [stream API](https://dev.twitter.com/docs/streaming-api):
 
@@ -299,8 +299,8 @@ skorzystamy z [stream API](https://dev.twitter.com/docs/streaming-api):
 (Dlaczego filtrujemy? Co sekundę wysyłanych jest do Twittera ok. 1000
 nowych statusów. Większość z nich nie ma dla nas żadnego znaczenia.)
 
-Do słów kluczowych dopisaliśmy **wow**. Słówo to pojawia się
-w wielu statusach, a pozostałe słowa występują z rzadka.
+Do słów kluczowych dopisaliśmy słowo **wow**, które pojawia się
+w wielu statusach; pozostałe słowa występują z rzadka.
 Po dodaniu **wow** nowe statusy będą się pojawiać co chwila.
 **Wow!**
 
@@ -311,15 +311,15 @@ Najprościej będzie zacząć od pobrania statusów za pomocą programu *curl*:
       -uAnyTwitterUser:Password
 
 Jak widać statusy zawierają wiele pól i tylko kilka z nich zawiera
-interesujące dane. Niestety, na konsoli trudno czytać interesujące nas fragmenty.
+interesujące dane. Niestety, na konsoli trudno jest czytać interesujące nas fragmenty.
 Są one wymieszane z jakimiś technicznymi rzeczami, np.
 *profile_sidebar_fill_color*, *profile_use_background_image* itp.
 
 Dlatego, przed wypisaniem statusu na ekran, powinniśmy go „oczyścić”
-ze zbędnych pól. Zrobimy to za pomocą skryptu w Ruby. W skrypcie
-skorzystamy z następujących gemów, które najpierw zainstakujemy:
+ze zbędnych rzeczy. Zrobimy to za pomocą skryptu w Ruby. W skrypcie
+skorzystamy z następujących gemów:
 
-    gem install tweetstream  yajl-ruby
+    gem install tweetstream yajl-ruby tire
 
 {%= image_tag "/images/twitter_elasticsearch.jpeg", :alt => "[Twitter -> ElasticSearch]" %}
 
@@ -361,6 +361,11 @@ Aby uzyskać dostęp do stream API wymagana jest weryfikacja<br>
     client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
       handle_tweet status
     end
+
+
+W skrypcie {%= link_to "nosql-tweets.rb", "/elasticsearch/nosql-tweets.rb" %},
+który zostanie wykorzystany na wykładzie, inaczej rozwiązano
+podawanie swoich danych. Dlaczego tak?
 
 
 <blockquote>
@@ -424,11 +429,6 @@ and we will have access to matching queries in the `Status#matches` property.
 In our case, we will just print the list of matching queries.
 
     :::ruby percolate-nosql-tweets.rb
-    require 'tire'
-    require 'ansi/code'
-
-    include ANSI::Code
-
     class Status
       include Tire::Model::Persistence
 
@@ -438,12 +438,21 @@ In our case, we will just print the list of matching queries.
       property :created_at
       property :entities
 
+      # Let's define callback for percolation.
+      # Whenewer a new document is saved in the index, this block will be executed,
+      # and we will have access to matching queries in the `Status#matches` property.
+      #
+      # In our case, we will just print the list of matching queries.
+
       on_percolate do
         puts green { "'#{text}' from @#{bold { screen_name }}" } unless matches.empty?
       end
     end
 
     # First, let's define the query_string queries.
+
+    # TODO: add check if already defined.
+
     q = {}
     q[:rails] = 'rails'
     q[:mongodb] = 'mongodb'
@@ -459,11 +468,14 @@ In our case, we will just print the list of matching queries.
     Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
     Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
 
-    # Finally, refresh the `_percolator` index for immediate access.
+    # Refresh the `_percolator` index for immediate access.
+
     Tire.index('_percolator').refresh
 
-Podmieniamy kod *handle_tweet*.
-Strip off fields we are not interested in.
+    puts magenta { "\nYou can check out the the documents in your index with curl:\n" }
+    puts yellow  { "  curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=4&pretty=true'\n" }
+
+Podmieniamy kod *handle_tweet*. Wybieramy pola, które nas interesują:
 
     :::ruby percolate-nosql-tweets.rb
     def handle_tweet(s)
@@ -477,7 +489,7 @@ Strip off fields we are not interested in.
       puts cyan { "matched queries: #{types}" }
 
       types.to_a.each do |type|
-        Status.document_type type
+        Status.document_type type # czy można prościej zmienić typ dokumentu h?
         h.save
       end
     end
@@ -497,8 +509,11 @@ Podłączamy się do strumienia ze statusami.
 
 Działanie skryptu kończymy wciskając klawisze `CTRL+C`.
 
-Tak możemy sprawdzić ile statusów jest w bazie.
-Wyświetlimy też dwa ostatnio zaindeksowane statusy oraz
+Cały skrypt można obejrzeć tutaj
+{%= link_to "nosql-tweets.rb", "/elasticsearch/percolate-nosql-tweets.rb" %},
+
+Kilka sposobów na sprawdzenie, tego co skrypt zapisał w bazie elasticsearch:
+ile statusów jest w bazie, wyświetlamy dwa ostatnio zaindeksowane statusy oraz
 wszystkie statusy typu *elasticsearch*.
 
     :::bash
@@ -507,12 +522,19 @@ wszystkie statusy typu *elasticsearch*.
     curl 'http://localhost:9200/statuses/_search?size=2&sort=created_at:desc&pretty=true'
     curl 'http://localhost:9200/statuses/_search?_all&sort=created_at:desc&pretty=true'
 
-Faceted search. Tłum. wyszukiwanie fasetowe?
+Oczywiście prościej jest podejrzeć wszystkie te rzeczy
+korzystając z aplikacji webowej [Elasticsearch Head](https://github.com/Aconex/elasticsearch-head).
+
+
+## Faceted search, czyli wyszukiwanie fasetowe
+
 [Co to jest?](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html)
 „Facets provide aggregated data based on a search query. In the
 simplest case, a terms facet can return facet counts for various facet
 values for a specific field. ElasticSearch supports more facet
 implementations, such as statistical or date histogram facets.”
+
+Przykłady:
 
     :::bash
     curl -X POST "http://localhost:9200/statuses/_count?q=couchdb&pretty=true"
@@ -532,7 +554,7 @@ implementations, such as statistical or date histogram facets.”
       "facets" : { "statuses_per_day" : { "date_histogram" :  { "field" : "created_at", "interval": "day" } } }
     }'
 
-A tak wyglądaja JSON z fasetami:
+A tak wyglądają JSON-y z fasetami:
 
     :::json
     "facets" : {
@@ -557,7 +579,8 @@ A tak wyglądaja JSON z fasetami:
        }
      }
 
-### Nieco linków
+
+## Trochę linków
 
 Linki do dokumentacji:
 
@@ -577,11 +600,13 @@ Zobacz też:
   [Building a Twitter Filter With Sinatra, Redis, and TweetStream](http://www.digitalhobbit.com/2009/11/08/building-a-twitter-filter-with-sinatra-redis-and-tweetstream/)
 
 
-## Prosta aplikacja Rails do przeszukiwania statusów
+# ElasticSearch & Rails + Tire
 
 Po zaimportowaniu większej liczby statusów…
+Będziemy je przeszukiwać… Tylko po co?
 
 **TODO**
+
 
 
 # Rivers allows to index streams
@@ -612,7 +637,7 @@ Repozytoria z kodem wtyczek są na Githubie [tutaj](https://github.com/elasticse
 **Uwaga**: po instalacji wtyczki, należe zrestartować *ElasticSearch*.
 
 
-### River Twitter
+## River Twitter
 
 Usuwanie swoich rivers, na przykład:
 
@@ -639,11 +664,11 @@ gdzie w pliku *nosql-tweets.json* wpisałem:
         "index" : {
             "index": "tweets",
             "type" : "nosql",
-            "bulk_size" : 10
+            "bulk_size" : 20
         }
     }
 
-Sprawdzanie statusu:
+Sprawdzanie statusu *river twitter*:
 
     :::bash
     curl -XGET http://localhost:9200/_river/my_twitter_river/_status?pretty=true
@@ -656,7 +681,7 @@ Sprawdzanie statusu:
       "_source" : {"ok":true,
          "node":{"id":"aUJLtb_KSZibfW3IG9P8yQ","name":"Nobilus","transport_address":"inet[/192.168.4.4:9300]"}}
 
-A tak raportowane jest pobranie paczki z 10 tweets na konsoli:
+A tak raportowane jest pobranie paczki z tweetami na konsoli:
 
     [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Establishing connection.
     [2011-12-16 12:54][INFO ][cluster.metadata           ] [Hazard] [_river] update_mapping [my_rivers] (dynamic)
@@ -675,7 +700,7 @@ Wyszukiwanie:
         }
     }'
 
-Sprawdzamy mapping:
+Przy okazji sprawdzamy *mapping*:
 
     :::bash
     curl 'http://localhost:9200/tweets/_mapping?pretty=true'

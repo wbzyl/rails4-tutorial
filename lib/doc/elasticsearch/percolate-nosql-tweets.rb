@@ -1,8 +1,8 @@
 # encoding: utf-8
 
+require 'yaml'
 require 'yajl/json_gem'
 require 'tweetstream'
-
 require 'tire'
 
 require 'ansi/code'
@@ -12,15 +12,11 @@ include ANSI::Code
 # with OAuth or HTTP Basic Authentication is required.
 # We use Basic Authentication.
 
-require 'yaml'
-
 # services.yml
 # ---
 # twitter:
 #   login: AnyTwitterUser
 #   password: Password
-
-# TODO: add check if successful
 
 # Twitter Stream API configuration
 
@@ -33,8 +29,6 @@ rescue
 end
 
 TweetStream.configure do |config|
-  # config.username = user
-  # config.password = password
   config.username = twitter['login']
   config.password = twitter['password']
   config.auth_method = :basic
