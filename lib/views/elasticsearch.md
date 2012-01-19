@@ -1,4 +1,4 @@
-#### {% title "Wyszukiwanie ElasticSearch" %}
+#### {% title "Wyszukiwanie z ElasticSearch" %}
 
 <blockquote>
  {%= image_tag "/images/john_cage.jpg", :alt => "[John Cage]" %}
@@ -602,11 +602,84 @@ Zobacz też:
 
 # ElasticSearch & Rails + Tire
 
-Po zaimportowaniu większej liczby statusów…
-Będziemy je przeszukiwać… Tylko po co?
+Śledząc spływające statusy na konsoli, przyglądając
+się wynikom wyszukiwania fasetowego dla hashtagów
+szybko zaczynamy się orientować co się dzieje w
+rails, mongodb, couchdb, redis, elasticsearch, neo4j.
 
-**TODO**
+Napiszemy prostą aplikację Rails umożliwiającą nam przeglądanie
+statusów, które zostały zapisane w bazie, w czasie kiedy nie
+spoglądaliśmy na konsolę.
 
+Aplikacja będzie miała jeden model *Status*, a kontroler
+jedną metodę *index*. Na stronie indeksowej umieścimy
+formularz wyszukiwania statusów, zwracane statusy będą stronicowane
+(skorzystamy z gemu *kaminari* / *will_paginate*).
+Po wejściu na stronę główną aplikacja wyświetli stronę
+z ostatnimo pobranymi statusami.
+
+
+## Generujemy szablon aplikacji
+
+Wygląd aplikacji nadamy korzystając z gotowego szablonu o nazwie
+[ContainerApp](http://twitter.github.com/bootstrap/examples/container-app.html).
+Szablon ten korzysta z frameworka [Twitter Bootstrap](http://twitter.github.com/bootstrap/).
+
+Aplikację nazwiemy krótko **EST** (*ElasticSearch Statuses*):
+
+    :::bash
+    rails new est --skip-active-record --skip-test-unit --skip-bundle
+    cd est
+    bundle install --path=$HOME/.gems --binstubs
+    rails generate controller nosql_tweets index
+    rm public/index.html
+
+Routing:
+
+    :::ruby config/routes.rb
+    root :to => 'nosql_tweets#index'
+
+
+### Bootstrap
+
+[Bootstrap Sass is bootstrap for Rails, ready to rol](https://github.com/thomas-mcdonald/bootstrap-sass):
+
+    :::ruby Gemfile
+    gem 'bootstrap-sass', group: :assets
+
+Instalujemy gem:
+
+    :::bash
+    bundle install
+
+Zmienaimy kolorystykę:
+
+    :::bash
+    bundle show bootstrap-sass
+      $HOME/.gems/ruby/1.9.1/gems/bootstrap-sass-1.4.4
+    cd $HOME/.gems/ruby/1.9.1/gems/bootstrap-sass-1.4.4/vendor/assets/stylesheets
+    tree
+    .
+    ├── bootstrap
+    │   ├── forms.css.scss
+    │   ├── mixins.css.scss
+    │   ├── patterns.css.scss
+    │   ├── reset.css.scss
+    │   ├── scaffolding.css.scss
+    │   ├── tables.css.scss
+    │   ├── type.css.scss
+    │   └── variables.css.scss
+    └── bootstrap.css.scss
+
+
+Użyteczne linki:
+
+* [Twitter Bootstrap on Rails](http://lucapette.com/rails/twitter-bootstrap-on-rails/)
+* [Too good to be true! Twitter Bootstrap meets Formtastic and Tabulous](http://rubysource.com/too-good-to-be-true-twitter-bootstrap-meets-formtastic-and-tabulous/)
+* [How to Customize Twitter Bootstrap’s Design in a Rails app](http://rubysource.com/how-to-customize-twitter-bootstrap%E2%80%99s-design-in-a-rails-app/)
+
+
+### ContainerApp
 
 
 # Rivers allows to index streams
