@@ -652,7 +652,7 @@ Instalujemy gem:
     :::bash
     bundle install
 
-Zmienaimy kolorystykę:
+Zmieniamy kolorystykę:
 
     :::bash
     bundle show bootstrap-sass
@@ -670,6 +670,12 @@ Zmienaimy kolorystykę:
     │   ├── type.css.scss
     │   └── variables.css.scss
     └── bootstrap.css.scss
+
+Kolory:
+
+* pomarańczowy: \#A4050F
+* brązowy: \#300800
+* khaki: \#61673C (ciemny), \#B2AF6A (jaśniejszy), \#F6E6AF (jasny)
 
 
 Użyteczne linki:
