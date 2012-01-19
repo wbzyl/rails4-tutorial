@@ -683,6 +683,8 @@ Użyteczne linki:
 * [Twitter Bootstrap on Rails](http://lucapette.com/rails/twitter-bootstrap-on-rails/)
 * [Too good to be true! Twitter Bootstrap meets Formtastic and Tabulous](http://rubysource.com/too-good-to-be-true-twitter-bootstrap-meets-formtastic-and-tabulous/)
 * [How to Customize Twitter Bootstrap’s Design in a Rails app](http://rubysource.com/how-to-customize-twitter-bootstrap%E2%80%99s-design-in-a-rails-app/)
+* [jQuery Datepicker](http://keith-wood.name/datepick.html)
+* [jQuery-UI Datepicker](http://jqueryui.com/demos/datepicker/)
 
 
 ### ContainerApp
