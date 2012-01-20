@@ -62,6 +62,17 @@ class Status
   property :created_at
   property :entities
 
+  mapping do
+    indexes :id,           :index    => :not_analyzed
+    indexes :text,         :analyzer => 'snowball'
+    indexes :screen_name,  :analyzer => 'keyword'
+    indexes :created_at,   :type => 'date'  # , :include_in_all => false
+
+    # TODO: mapping entities?
+    #indexes :content_size, :as       => 'content.size'
+    #indexes :title,        :analyzer => 'snowball', :boost => 100
+  end
+
   # Let's define callback for percolation.
   # Whenewer a new document is saved in the index, this block will be executed,
   # and we will have access to matching queries in the `Status#matches` property.

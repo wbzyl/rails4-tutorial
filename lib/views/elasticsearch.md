@@ -663,7 +663,7 @@ Następnie instalujemy gemy, generujemy kontroler:
 i zmieniamy routing:
 
     :::ruby config/routes.rb
-    match '/nosql' => 'nosql_tweets#index', as: :tweets
+    match '/nosql_tweets' => 'nosql_tweets#index', as: :nosql_tweets
     root to: 'nosql_tweets#index'
 
 Po tej zmianie, polecenie
@@ -674,8 +674,8 @@ Po tej zmianie, polecenie
 powinno wypisać taki routing:
 
     :::json
-    tweets  /nosql(.:format) {:controller=>"nosql_tweets", :action=>"index"}
-      root  /                {:controller=>"nosql_tweets", :action=>"index"}
+    nosql_tweets  /nosql_tweets(.:format) {:controller=>"nosql_tweets", :action=>"index"}
+            root  /                       {:controller=>"nosql_tweets", :action=>"index"}
 
 
 <blockquote>
@@ -735,6 +735,10 @@ u góry strony:
 
     @import 'bootstrap';
 
+    article {
+      clear: both;
+    }
+
     body {
       padding-top: 60px;
     }
@@ -759,6 +763,16 @@ u góry strony:
       small {
         color: $headerColorLight;
       }
+    }
+
+    // statuses: datetime
+    .date {
+      float: right;
+      font-style: italic;
+      font-size: 90%;
+    }
+    a.entities {
+      margin-left: .5em;
     }
 
 Pozostaje zmienić layout (użyjemy gotowego szablonu o nazwie
@@ -796,21 +810,23 @@ Kontroler:
     :::ruby app/controllers/nosql_tweets_controller.rb
     class NosqlTweetsController < ApplicationController
       def index
-        @tweets = Tweet.search(params)
+        @nosql_tweets = NosqlTweet.search(params)
       end
     end
 
 Widok (*TODO:* poniżej przydałoby się kilka metod pomocniczych?):
 
     :::rhtml app/views/nosql_tweets/index.html.erb
-    <%= form_tag tweets_path, method: :get do %>
+    <%= form_tag nosql_tweets_path, method: :get do %>
     <p>
       <%= text_field_tag :q, params[:q] %>
       <%= submit_tag 'Search', name: nil %>
     </p>
     <% end %>
 
-    <% @nosql_tweets.each do |tweet| %>
+    <%= will_paginate @nosql_tweets.results %>
+
+    <% @nosql_tweets.results.each do |tweet| %>
     <article>
     <p>
      <% text = (tweet.highlight && tweet.highlight.text) ? tweet.highlight.text.first : tweet.text %>
@@ -833,32 +849,41 @@ Model:
 
     :::ruby app/models/nosql_tweet.rb
     class NosqlTweet
-
-      include Tire::Model::Persistence
-
       def self.search(params)
-        Tire.search('statuses', type: 'mongodb') do |search|
+        Tire.search('statuses', page: params[:page], per_page: 8) do |search|
+          per_page = search.options[:per_page]
+          current_page = search.options[:page] ? search.options[:page].to_i : 1
+          offset = search.options[:per_page] * (current_page - 1)
 
           search.query do
             boolean do
-              must { string params[:q] } if params[:q].present?
+              must { string params[:q] || "*" }
             end
           end
 
-          search.highlight text: {number_of_fragments: 0}, options: {tag: '<mark>'}
-
           search.sort { by :created_at, "desc" }
 
-          #? f = params[:p].to_i*settings.per_page
-          #? search.size settings.per_page
-          #? search.from f
+          search.highlight text: {number_of_fragments: 0}, options: {tag: '<mark>'}
 
-        end.results
+          search.size per_page
+          search.from offset
+        end
       end
     end
 
+Pobieramy style stronicowania ze strony
+[Samples of pagination styles for will_paginate](http://mislav.uniqpath.com/will_paginate/)
+i modyfikujemy *application.css*:
 
-## Poprawki w kodzie kontrolera
+    :::css app/assets/stylesheets/application.css
+    /*
+     * This is a manifest file that'll automatically include all the stylesheets available in this directory
+     * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
+     * the top of the compiled file, but it's generally better to create a new file per style scope.
+     *= require_self
+     *= require pagination
+     *= require nosql_tweets
+    */
 
 
 # Rivers allows to index streams
@@ -886,7 +911,7 @@ Instalacja wtyczek *rivers* jest prosta:
 
 Repozytoria z kodem wtyczek są na Githubie [tutaj](https://github.com/elasticsearch).
 
-**Uwaga**: po instalacji wtyczki, należe zrestartować *ElasticSearch*.
+**Uwaga**: po instalacji wtyczki, należy zrestartować *ElasticSearch*.
 
 
 ## River Twitter
