@@ -55,14 +55,30 @@ Rozpakowujemy archiwum z ostatnią wersją
 [ElasticSearch](http://www.elasticsearch.org/download/) (ok. 16 MB):
 
     :::bash
-    unzip elasticsearch-0.18.6.zip
+    unzip elasticsearch-0.18.7.zip
 
 A tak uruchamiamy *elasticsearch*:
 
     :::bash
-    elasticsearch-0.18.6/bin/elasticsearch -f
+    elasticsearch-0.18.7/bin/elasticsearch -f
 
-I już! Domyślnie ElasticSearch nasłuchuje na porcie 9200.
+I już! Domyślnie ElasticSearch nasłuchuje na porcie 9200:
+
+    :::bash
+    xdg-open http://localhost:9200
+
+ElasticSearch zwaraca wynik wyszukiwania w formacie JSON.
+Jeśli preferujemy pracę w przeglądarce, to użyteczny
+może być dodatek do Firefoks o nazwie
+[JSONView](http://jsonview.com/) – that helps you view JSON documents
+in the browser.
+
+Warto też od razu zainstalować i uruchomić webowy interfejs do
+ElasticSearch:
+
+    :::bash
+    elasticsearch-0.18.7/bin/plugin -install Aconex/elasticsearch-head
+    xdg-open http://localhost:9200/_plugin/head
 
 
 <blockquote>
@@ -72,7 +88,7 @@ I już! Domyślnie ElasticSearch nasłuchuje na porcie 9200.
 
 ## Your data, Your search
 
-Kilka, nieco zmienionych, przykładów z tej strony
+Kilka, nieco zmienionych przykładów ze strony
 [Your Data, Your Search](http://www.elasticsearch.org/blog/2010/02/12/yourdatayoursearch.html).
 
 **Interpretacja uri w zapytaniach kierowanych do ElasticSearch:**
@@ -163,7 +179,7 @@ Na koniec, zapytanie o zdrowie klastra ElasticSearch:
 
 ### Zapytania, korzystające z JSON Query Language
 
-Zaczynamy od zapisania kilku JSON–ów w ElasticSearch:
+Zaczynamy od zapisania kilku dokumentów w ElasticSearch:
 
     :::bash
     curl -XPUT 'http://localhost:9200/twitter/users/kimchy' -d '
@@ -541,20 +557,28 @@ Przykłady:
     curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
     {
       "query" : { "query_string" : {"query" : "couchdb"} },
+      "sort" : { "created_at" : { "order" : "desc" } }
+    }'
+    curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
+    {
+      "query" : { "query_string" : {"query" : "couchdb"} },
+      "sort" : { "created_at" : { "order" : "desc" } },
       "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
     }'
     curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
     {
       "query" : { "match_all" : {} },
+      "sort" : { "created_at" : { "order" : "desc" } },
       "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
     }'
     curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
     {
       "query" : { "match_all" : {} },
+      "sort" : { "created_at" : { "order" : "desc" } },
       "facets" : { "statuses_per_day" : { "date_histogram" :  { "field" : "created_at", "interval": "day" } } }
     }'
 
-A tak wyglądają JSON-y z fasetami:
+A tak wyglądają „fasetowy” JSON:
 
     :::json
     "facets" : {
@@ -602,14 +626,14 @@ Zobacz też:
 
 # ElasticSearch & Rails + Tire
 
-Śledząc spływające statusy na konsoli, przyglądając
-się wynikom wyszukiwania fasetowego dla hashtagów
-szybko zaczynamy się orientować co się dzieje w
+Śledząc spływające statusy na konsoli i analizując
+wyniki wyszukiwania fasetowego dla hashtagów,
+wkrótce zaczynamy orientować się co się dzieje w świecie
 rails, mongodb, couchdb, redis, elasticsearch, neo4j.
 
 Napiszemy prostą aplikację Rails umożliwiającą nam przeglądanie
 statusów, które zostały zapisane w bazie, w czasie kiedy nie
-spoglądaliśmy na konsolę.
+śledziliśmy statusów na konsoli.
 
 Aplikacja będzie miała jeden model *Status*, a kontroler
 jedną metodę *index*. Na stronie indeksowej umieścimy
@@ -618,41 +642,72 @@ formularz wyszukiwania statusów, zwracane statusy będą stronicowane
 Po wejściu na stronę główną aplikacja wyświetli stronę
 z ostatnimo pobranymi statusami.
 
+**TODO:** napisać coś o gemie Tire. Dlaczego z niego korzystamy?
+Czy jest jakaś alternatywa do/dla Tire?
 
-## Generujemy szablon aplikacji
 
-Wygląd aplikacji nadamy korzystając z gotowego szablonu o nazwie
-[ContainerApp](http://twitter.github.com/bootstrap/examples/container-app.html).
-Szablon ten korzysta z frameworka [Twitter Bootstrap](http://twitter.github.com/bootstrap/).
+## Generujemy rusztowanie aplikacji
 
 Aplikację nazwiemy krótko **EST** (*ElasticSearch Statuses*):
 
     :::bash
     rails new est --skip-active-record --skip-test-unit --skip-bundle
+    rm est/public/index.html
+
+Następnie instalujemy gemy, generujemy kontroler:
+
     cd est
     bundle install --path=$HOME/.gems --binstubs
     rails generate controller nosql_tweets index
-    rm public/index.html
 
-Routing:
+i zmieniamy routing:
 
     :::ruby config/routes.rb
-    root :to => 'nosql_tweets#index'
+    match '/nosql' => 'nosql_tweets#index', as: :tweets
+    root to: 'nosql_tweets#index'
+
+Po tej zmianie, polecenie
+
+    :::bash
+    rake routes
+
+powinno wypisać taki routing:
+
+    :::json
+    tweets  /nosql(.:format) {:controller=>"nosql_tweets", :action=>"index"}
+      root  /                {:controller=>"nosql_tweets", :action=>"index"}
 
 
-### Bootstrap
+<blockquote>
+ {%= image_tag "/images/mark-otto.jpg", :alt => "[Mark Otto]" %}
+ <p>Bootstrap is a toolkit from Twitter designed to kickstart
+ development of webapps and sites.  It includes base CSS and HTML for
+ typography, forms, buttons, tables, grids, navigation, and more.<p>
+ <p class="author">— Mark Otto</p>
+</blockquote>
 
-[Bootstrap Sass is bootstrap for Rails, ready to rol](https://github.com/thomas-mcdonald/bootstrap-sass):
+### Korzystamy z frameworka Twitter Bootstrap
+
+Dlaczego będziemy korzystać z [Twitter Bootstrap](http://twitter.github.com/bootstrap/)?
+
+Jest kilka gemów ułatwiajacych instalację tego frameworka w Rails.
+My skorzystamy z gemu [Bootstrap Sass](https://github.com/thomas-mcdonald/bootstrap-sass).
+
+Dopisujemy go, i przy okazji gemy [Will Paginate](https://github.com/mislav/will_paginate)
+oraz [Tire](https://github.com/karmi/tire) do *Gemfile*:
 
     :::ruby Gemfile
     gem 'bootstrap-sass', group: :assets
+    gem 'will_paginate'
+    gem 'tire'
 
-Instalujemy gem:
+i instalujemy oba gemy i gemy od nich zależne:
 
     :::bash
     bundle install
 
-Zmieniamy kolorystykę:
+Zmienne, mixiny, makra i pozostałe rzeczy zdefiniowane w *Bootstrap*
+znajdziemy tutaj:
 
     :::bash
     bundle show bootstrap-sass
@@ -671,12 +726,59 @@ Zmieniamy kolorystykę:
     │   └── variables.css.scss
     └── bootstrap.css.scss
 
-Kolory:
+Ja zmienię wielkość fontu, kolorystykę i dodam brakujący odstęp pod paskiem
+u góry strony:
+
+    :::css app/assets/stylesheets/nosql_tweets.css.scss
+    $basefont: 16px;
+    $baseline: 24px;
+
+    @import 'bootstrap';
+
+    body {
+      padding-top: 60px;
+    }
+
+    // patterns.css.scss:
+    // 0 -- opaque
+    // 1 -- transparent
+    .topbar-inner, .topbar .fill {
+      background-color: rgb(164, 5, 15);
+      @include vertical-gradient(#A4050F, #A40200);
+      $shadow: 0 0 3px rgba(164, 5, 15, .25), inset 0 -1px 0 rgba(164, 5, 15, .1);
+      @include box-shadow($shadow);
+    }
+
+    $headerColor: #300800;
+    $headerColorLight: lighten($headerColor, 25%);
+
+    // type.css.scss
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: bold;
+      color: $headerColor;
+      small {
+        color: $headerColorLight;
+      }
+    }
+
+Pozostaje zmienić layout (użyjemy gotowego szablonu o nazwie
+[ContainerApp](http://twitter.github.com/bootstrap/examples/container-app.html)),
+dodać kilka widoków częściowych i pierwsza wersja rusztowania
+aplikacji będzie gotowa.
+
+Wszystkie użyte pliki są w repozytorium [EST](https://github.com/wbzyl/est):
+
+* [application.html.erb](https://github.com/wbzyl/est/blob/master/app/views/layouts/application.html.erb)
+  (szablon [ContainerApp](http://twitter.github.com/bootstrap/examples/container-app.html) dostosowany do Rails 3.1)
+* [_menu.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_menu.html.erb)
+* [_header.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_header.html.erb)
+* [_footer.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_footer.html.erb)
+
+Powyżej skorzystałem z palety:
 
 * pomarańczowy: \#A4050F
 * brązowy: \#300800
 * khaki: \#61673C (ciemny), \#B2AF6A (jaśniejszy), \#F6E6AF (jasny)
-
 
 Użyteczne linki:
 
@@ -687,7 +789,76 @@ Użyteczne linki:
 * [jQuery-UI Datepicker](http://jqueryui.com/demos/datepicker/)
 
 
-### ContainerApp
+## Dodajemy pozostałe elementy MVC
+
+Kontroler:
+
+    :::ruby app/controllers/nosql_tweets_controller.rb
+    class NosqlTweetsController < ApplicationController
+      def index
+        @tweets = Tweet.search(params)
+      end
+    end
+
+Widok (*TODO:* poniżej przydałoby się kilka metod pomocniczych?):
+
+    :::rhtml app/views/nosql_tweets/index.html.erb
+    <%= form_tag tweets_path, method: :get do %>
+    <p>
+      <%= text_field_tag :q, params[:q] %>
+      <%= submit_tag 'Search', name: nil %>
+    </p>
+    <% end %>
+
+    <% @nosql_tweets.each do |tweet| %>
+    <article>
+    <p>
+     <% text = (tweet.highlight && tweet.highlight.text) ? tweet.highlight.text.first : tweet.text %>
+     <%= text.html_safe %>
+    </p>
+    <% date = Time.parse(tweet.created_at).strftime('%d.%m.%Y %H:%M') %>
+    <p class="date">published on <%= content_tag :time, date, datetime: tweet.created_at %></p>
+    <p>
+     <% unless tweet.entities.urls.empty? %>
+       Links:
+       <% tweet.entities.urls.each_with_index do |url, index| %>
+         <%= content_tag :a, "[#{index+1}]", href: url.expanded_url, class: :entities %>
+       <% end %>
+      <% end %>
+    </p>
+    </article>
+    <% end %>
+
+Model:
+
+    :::ruby app/models/nosql_tweet.rb
+    class NosqlTweet
+
+      include Tire::Model::Persistence
+
+      def self.search(params)
+        Tire.search('statuses', type: 'mongodb') do |search|
+
+          search.query do
+            boolean do
+              must { string params[:q] } if params[:q].present?
+            end
+          end
+
+          search.highlight text: {number_of_fragments: 0}, options: {tag: '<mark>'}
+
+          search.sort { by :created_at, "desc" }
+
+          #? f = params[:p].to_i*settings.per_page
+          #? search.size settings.per_page
+          #? search.from f
+
+        end.results
+      end
+    end
+
+
+## Poprawki w kodzie kontrolera
 
 
 # Rivers allows to index streams
@@ -964,52 +1135,6 @@ Routing:
     :::ruby config/routes.rb
     # get "tweets/index"
     match '/tweets' => 'tweets#index', :as => :tweets
-
-Model:
-
-    :::ruby app/models/tweet.rb
-    class Tweet
-      def self.search(params)
-        Tire.search('tweets', type: 'nosql') do
-          size 6
-          if params[:page].present?
-            from ((params[:page].to_i - 1) * 6)
-          end
-          query do
-            boolean do
-              must { string params[:q] } if params[:q].present?
-            end
-          end
-        end.results
-      end
-    end
-
-Kontroler:
-
-    :::ruby app/controllers/tweets_controller.rb
-    class TweetsController < ApplicationController
-      def index
-        @tweets = Tweet.search(params)
-      end
-    end
-
-Widok:
-
-    :::rhtml app/views/tweets/index.html.erb
-    <h1>Listing tweets</h1>
-
-    <%= form_tag tweets_path, method: :get do %>
-      <p>
-        <%= text_field_tag :q, params[:q] %>
-        <%= submit_tag 'Search', name: nil %>
-      </p>
-    <% end %>
-
-    <%= will_paginate @tweets %>
-
-    <% @tweets.each do |tweet| %>
-    <p><%= tweet.text %>
-    <% end %>
 
 
 # Ruby — Tire + ElasticSearch
