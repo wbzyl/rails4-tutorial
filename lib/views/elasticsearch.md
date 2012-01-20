@@ -455,14 +455,14 @@ In our case, we will just print the list of matching queries.
       property :entities
 
       mapping do
-        indexes :id,           index: :not_analyzed
+        indexes :id,           index:    :not_analyzed
         indexes :text,         analyzer: 'snowball'
-        indexes :screen_name,  :analyzer => 'keyword'
-        indexes :created_at,   :type => 'date'  # , :include_in_all => false
+        indexes :screen_name,  analyzer: 'keyword'
+        indexes :created_at,   type:     'date' #, :include_in_all => false
 
         # TODO: mapping entities? see below for an example
-        #indexes :content_size, :as       => 'content.size'
-        #indexes :title,        :analyzer => 'snowball', :boost => 100
+        #indexes :content_size, as:       'content.size'
+        #indexes :title,        analyzer: 'snowball', boost: 100
       end
 
       # Let's define callback for percolation.
