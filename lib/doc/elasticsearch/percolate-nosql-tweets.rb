@@ -63,10 +63,10 @@ class Status
   property :entities
 
   mapping do
-    indexes :id,           :index    => :not_analyzed
-    indexes :text,         :analyzer => 'snowball'
-    indexes :screen_name,  :analyzer => 'keyword'
-    indexes :created_at,   :type => 'date'  # , :include_in_all => false
+    indexes :id,           index:    :not_analyzed
+    indexes :text,         analyzer: 'snowball'
+    indexes :screen_name,  analyzer: 'keyword'
+    indexes :created_at,   type:     'date'  # , :include_in_all => false
 
     # TODO: mapping entities?
     #indexes :content_size, :as       => 'content.size'
