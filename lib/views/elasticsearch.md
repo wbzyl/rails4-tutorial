@@ -860,15 +860,36 @@ Model:
 
     :::ruby app/models/nosql_tweet.rb
     class NosqlTweet
+
+      include Tire::Model::Persistence
+
+      # property :id -- should be indexed ?
+      property :screen_name
+      property :text
+      property :created_at
+      property :entities
+
+      # used by all types: rails, mongodb, redis, … ?
+      mapping do
+        indexes :screen_name, type: 'string', analyzer: 'keyword'
+        indexes :text, type: 'string', analyzer: 'snowball'
+        indexes :created_at, type: 'date'
+        # TODO: mapping entities; how?
+        indexes :entities
+      end
+
       def self.search(params)
-        Tire.search('statuses', page: params[:page], per_page: 8) do |search|
+        #Tire.search('statuses', type: 'mongodb', page: params[:page], per_page: 3) do |search|
+        Tire.search('nosql_tweets', page: params[:page], per_page: 8) do |search|
           per_page = search.options[:per_page]
           current_page = search.options[:page] ? search.options[:page].to_i : 1
           offset = search.options[:per_page] * (current_page - 1)
 
           search.query do
             boolean do
-              must { string params[:q] || "*" }
+              #must { string params[:q].blank? ? "*" : params[:q] }
+              must { string params[:q] } if params[:q].present?
+              must { range :created_at, lte: Time.zone.now }
             end
           end
 
