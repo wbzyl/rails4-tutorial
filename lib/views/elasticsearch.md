@@ -799,6 +799,10 @@ Wszystkie użyte pliki są w repozytorium [EST](https://github.com/wbzyl/est):
 * [_header.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_header.html.erb)
 * [_footer.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_footer.html.erb)
 
+Skrypt pobierający statusy z Twittera i zapisujący je w ElasticSearch:
+
+* [percolate-nosql-tweets.rb](https://github.com/wbzyl/est/blob/master/percolate-nosql-tweets.rb)
+
 Powyżej skorzystałem z palety:
 
 * pomarańczowy: \#A4050F
