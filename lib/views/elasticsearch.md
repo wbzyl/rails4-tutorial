@@ -73,7 +73,7 @@ może być dodatek do Firefoks o nazwie
 [JSONView](http://jsonview.com/) – that helps you view JSON documents
 in the browser.
 
-Warto też od razu zainstalować i uruchomić webowy interfejs do
+Warto też od razu zainstalować i uruchomić interfejs webowy do
 ElasticSearch:
 
     :::bash
@@ -90,6 +90,9 @@ ElasticSearch:
 
 Kilka, nieco zmienionych przykładów ze strony
 [Your Data, Your Search](http://www.elasticsearch.org/blog/2010/02/12/yourdatayoursearch.html).
+
+[Rest API & JSON & Elasticsearch](http://www.elasticsearch.org/guide/reference/api/).
+
 
 **Interpretacja uri w zapytaniach kierowanych do ElasticSearch:**
 
@@ -1224,6 +1227,94 @@ Hurtowe indeksowanie (*bulk indexing*):
 *Uwaga:* pola *id* oraz *type* są obowiązkowe.
 
 **TODO**: doc/elasticsearch/Tire.md
+
+
+# ElasticSearch dump ⇒ JSON
+
+Zobacz search API:
+
+* [scroll](http://www.elasticsearch.org/guide/reference/api/search/scroll.html)
+* [scan](http://www.elasticsearch.org/guide/reference/api/search/search-type.html)
+
+Przykład:
+
+    :::bash
+    curl -XGET 'localhost:9200/nosql_tweets/mongodb/_search?search_type=scan&scroll=10m&size=2&pretty=true' -d '
+    {
+       "query" : {
+         "match_all" : {}
+       }
+    }'
+
+Wynik wykonania tego polecenia, to przykładowo:
+
+    :::json
+    {
+      "_scroll_id" : "c2NhbjsxOzcwOnpqZS1ZaS1oVHhDcWY5Z2FfRjJSbUE7MTt0b3RhbF9oaXRzOjY2Ow==",
+      "took" : 0,
+      "timed_out" : false,
+      "_shards" : {
+        "total" : 1,
+        "successful" : 1,
+        "failed" : 0
+      },
+      "hits" : {
+        "total" : 66,
+        "max_score" : 0.0,
+        "hits" : [ ]
+      }
+
+Teraz wykonujemy wielokrotnie:
+
+    :::bash
+    curl -XGET 'localhost:9200/_search/scroll?scroll=10m&pretty=true' \
+      -d 'c2NhbjsxOzcwOnpqZS1ZaS1oVHhDcWY5Z2FfRjJSbUE7MTt0b3RhbF9oaXRzOjY2Ow=='
+
+Ile razy? Łatwo to policzyć po wykonaniu polecenia:
+
+    curl -XGET 'localhost:9200/nosql_tweets/mongodb/_count'
+
+Wynik:
+
+    {
+      "count" : 66,
+      "_shards" : {"total" : 1, "successful" : 1, "failed" : 0 }
+    }
+
+Ostatnia paczka JSON–ów:
+
+    :::json
+    {
+      "_scroll_id" : "c2NhbjswOzE7dG90YWxfaGl0czo2Njs=",
+      "took" : 0,
+      "timed_out" : false,
+      "_shards" : {
+        "total" : 1,
+        "successful" : 1,
+        "failed" : 0
+      },
+      "hits" : {
+        "total" : 66,
+        "max_score" : 0.0,
+        "hits" : [ {
+          "_index" : "nosql_tweets",
+          "_type" : "mongodb",
+          "_id" : "161142485450625024",
+          ...
+        }, {
+          "_index" : "nosql_tweets",
+          "_type" : "mongodb",
+          "_id" : "161143013618352128",
+          "_score" : 0.0,
+          "_source" : {
+                "created_at":"2012-01-22T18:47:42+01:00",
+                "hashtags":[],
+                "screen_name":"CakePHP_HBFeed",
+                "text":"MongoDB-DboSource update http://t.co/xxx",
+                "urls":["http://dlvr.it/16bxlv"],"user_mentions":[]}
+        } ]
+      }
+    }
 
 
 # Zadania
