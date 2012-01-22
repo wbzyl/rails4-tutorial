@@ -20,6 +20,14 @@ this guide covers the basic layout features of Action Controller and Action View
 Projekt [web-app-theme](https://github.com/pilu/web-app-theme) (autor Andrea Franz)
 jest drugi w kategorii „Most Watched Overall Javascript project” na githubie.
 
+Szablony na dobry początek:
+
+* [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/)
+* [HTML KickStart](http://www.99lime.com/) –
+is an ultra–lean set of HTML5, CSS, and jQuery (javascript) files,
+layouts, and elements designed to give you a headstart and save you
+10's of hours on your next web project
+
 
 ## Layout aplikacji
 
