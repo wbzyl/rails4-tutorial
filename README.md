@@ -27,3 +27,8 @@ Czasami muszę wstawić coś takiego na stronie głównej aplikacji:
       format: 'dHMS'});
     });
     </script>
+
+
+## TODO
+
+1.  [jQuery One Page Navigation Plugin](https://github.com/davist11/jQuery-One-Page-Nav)
