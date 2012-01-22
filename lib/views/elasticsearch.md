@@ -1016,154 +1016,10 @@ Wyszukiwanie:
         }
     }'
 
-Przy okazji sprawdzamy *mapping*:
+Przy okazji możemy sprawdzić jak zaimplemetowany jest *mapping* w Tiver Twitter:
 
     :::bash
     curl 'http://localhost:9200/tweets/_mapping?pretty=true'
-
-Oto mapowanie:
-
-    :::json
-    {
-      "tweets" : {
-        "nosql" : {
-          "properties" : {
-            "text" : {
-              "type" : "string"
-            },
-            "source" : {
-              "type" : "string"
-            },
-            "location" : {
-              "type" : "geo_point"
-            },
-            "link" : {
-              "dynamic" : "true",
-              "properties" : {
-                "start" : {
-                  "type" : "long"
-                },
-                "expand_url" : {
-                  "type" : "string"
-                },
-                "display_url" : {
-                  "type" : "string"
-                },
-                "url" : {
-                  "type" : "string"
-                },
-                "end" : {
-                  "type" : "long"
-                }
-              }
-            },
-            "hashtag" : {
-              "dynamic" : "true",
-              "properties" : {
-                "text" : {
-                  "type" : "string"
-                },
-                "start" : {
-                  "type" : "long"
-                },
-                "end" : {
-                  "type" : "long"
-                }
-              }
-            },
-            "retweet_count" : {
-              "type" : "long"
-            },
-            "created_at" : {
-              "format" : "dateOptionalTime",
-              "type" : "date"
-            },
-            "mention" : {
-              "properties" : {
-                "id" : {
-                  "type" : "long"
-                },
-                "start" : {
-                  "type" : "long"
-                },
-                "name" : {
-                  "type" : "string"
-                },
-                "screen_name" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
-                },
-                "end" : {
-                  "type" : "long"
-                }
-              }
-            },
-            "in_reply" : {
-              "properties" : {
-                "user_screen_name" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
-                },
-                "status" : {
-                  "type" : "long"
-                },
-                "user_id" : {
-                  "type" : "long"
-                }
-              }
-            },
-            "truncated" : {
-              "type" : "boolean"
-            },
-            "place" : {
-              "dynamic" : "true",
-              "properties" : {
-                "id" : {
-                  "type" : "string"
-                },
-                "name" : {
-                  "type" : "string"
-                },
-                "type" : {
-                  "type" : "string"
-                },
-                "country_code" : {
-                  "type" : "string"
-                },
-                "url" : {
-                  "type" : "string"
-                },
-                "full_name" : {
-                  "type" : "string"
-                },
-                "country" : {
-                  "type" : "string"
-                }
-              }
-            },
-            "user" : {
-              "properties" : {
-                "id" : {
-                  "type" : "long"
-                },
-                "location" : {
-                  "type" : "string"
-                },
-                "description" : {
-                  "type" : "string"
-                },
-                "name" : {
-                  "type" : "string"
-                },
-                "screen_name" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        }
-      }
 
 
 # Rails — Tire & ElasticSearch
@@ -1180,7 +1036,7 @@ JSON:
             "user" : "me",
             "password" : "secret",
             "filter": {
-               "tracks": ["elasticsearch", "mongodb", "couchdb", "rails"]
+               "tracks": ["elasticsearch", "jquery", "mongodb", "couchdb", "rails"]
             }
         },
         "index" : {
@@ -1200,14 +1056,6 @@ Routing:
     # get "tweets/index"
     match '/tweets' => 'tweets#index', :as => :tweets
 
-
-# Ruby — Tire + ElasticSearch
-
-Instalujemy gemy – *tire* i *yajl-ruby*:
-
-    gem install tire
-    gem install yajl-ruby
-
 Hurtowe indeksowanie (*bulk indexing*):
 
     :::ruby quotes.rb
@@ -1225,8 +1073,6 @@ Hurtowe indeksowanie (*bulk indexing*):
     end
 
 *Uwaga:* pola *id* oraz *type* są obowiązkowe.
-
-**TODO**: doc/elasticsearch/Tire.md
 
 
 # ElasticSearch dump ⇒ JSON
