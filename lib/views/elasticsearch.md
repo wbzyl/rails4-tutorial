@@ -953,7 +953,7 @@ i modyfikujemy *application.css*:
 
 # ElasticSearch dump ⇒ JSON
 
-**TODO:** Przerobić na skrypt Ruby. Wrzucić na Wiki.
+**TODO:** Przerobić na skrypt Ruby. Opis wrzucić na Wiki.
 
 Zobacz search API:
 
