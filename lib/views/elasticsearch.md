@@ -502,11 +502,77 @@ Cały skrypt można obejrzeć tutaj
 
 ## Twitter Stream ⇒ ElasticSearch
 
-Pora na
+Kolejny skrypt będzie miał za zadanie pobrać z Twittera interesujące
+nas statusy i zapisać je w bazie ElasticSearch. Z Twitterem możemy
+zestawić tylko jeden strumień. Zbierzemy do niego wszystkie statusy
+z interesujących nas kategorii – rails, mongodb itd.
+Przed zapisaniem ich w bazie, rozdzielimy je na typy korzystając
+mechanizmu perkolacji.
 
-Oskryptowane tutaj *fetch-nosql_tweets.rb*.
+    :::ruby fetch-nosql_tweets.rb
+    # Tire part.
 
-Pozostało zdefiniować model *NosqlTweet*. Zrobimy to za chwilę.
+    # Let's define a class to hold our data in ElasticSearch.
+
+    class NosqlTweet
+      include Tire::Model::Persistence
+
+      property :text
+      property :screen_name
+      property :created_at
+      property :hashtags
+      property :urls
+      property :user_mentions
+
+      # Let's define callback for percolation.
+      # Whenewer a new document is saved in the index, this block will be executed,
+      # and we will have access to matching queries in the `NosqlTweet#matches` property.
+      #
+      # Below, we will just print the text field of matching query.
+      on_percolate do
+        if matches.empty?
+          puts bold { "'#{text}' from @#{bold { screen_name }}" }
+        else
+          puts green { "'#{text}' from @#{bold { screen_name }}" }
+        end
+      end
+    end
+
+    def handle_tweet(s)
+      ... ✂ ...
+
+      types = h.percolate
+      puts "matched queries: #{types}"
+
+      types.to_a.each do |type|
+        NosqlTweet.document_type type
+        h.save
+      end
+    end
+
+    # TweetStream part.
+
+    client = TweetStream::Client.new
+
+    client.on_error do |message|
+      puts red { message }
+    end
+
+    # Fetch statuses from Twitter and write them to ElasticSearch.
+    client.track('rails', 'jquery', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
+      handle_tweet(status)
+    end
+
+Cały skrypt *fetch-nosql_tweets-cli.rb* można podejrzeć
+[tutaj](https://github.com/wbzyl/est/blob/master/fetch-nosql_tweets-cli.rb).
+
+Po uruchmieniu skryptu:
+
+    :::bash fetch-nosql_tweets-cli.rb
+    ruby fetch-nosql_tweets-cli.rb
+
+i odczekaniu kilku minut, aż kilka statusów zostanie zapisanych w bazie,
+wykonujemy kilka prostych testów:
 
     :::bash
     curl 'http://localhost:9200/nosql_tweets/_count'
@@ -514,7 +580,7 @@ Pozostało zdefiniować model *NosqlTweet*. Zrobimy to za chwilę.
     curl 'http://localhost:9200/nosql_tweets/_search?size=2&sort=created_at:desc&pretty=true'
     curl 'http://localhost:9200/nosql_tweets/_search?_all&sort=created_at:desc&pretty=true'
 
-Oczywiście prościej jest podejrzeć statusy
+Oczywiście można też podejrzeć statusy
 korzystając z aplikacji webowej [Elasticsearch Head](https://github.com/Aconex/elasticsearch-head).
 
 
@@ -599,7 +665,7 @@ Zobacz też:
   [Building a Twitter Filter With Sinatra, Redis, and TweetStream](http://www.digitalhobbit.com/2009/11/08/building-a-twitter-filter-with-sinatra-redis-and-tweetstream/)
 
 
-# ElasticSearch & Rails + Tire
+# Aplikacja EST
 
 Śledząc spływające statusy na konsoli i analizując
 wyniki wyszukiwania fasetowego dla hashtagów,
@@ -610,15 +676,17 @@ Napiszemy prostą aplikację Rails umożliwiającą nam przeglądanie
 statusów, które zostały zapisane w bazie, w czasie kiedy nie
 śledziliśmy statusów na konsoli.
 
-Aplikacja będzie miała jeden model *Status*, a kontroler
-jedną metodę *index*. Na stronie indeksowej umieścimy
-formularz wyszukiwania statusów, zwracane statusy będą stronicowane
-(skorzystamy z gemu *kaminari* / *will_paginate*).
-Po wejściu na stronę główną aplikacja wyświetli stronę
-z ostatnimo pobranymi statusami.
+Aplikacja będzie składała się z jednego modelu *NosqlTweet*,
+kontroler będzie miał jedną metodę *index*.
 
-**TODO:** napisać coś o gemie Tire. Dlaczego z niego korzystamy?
-Czy jest jakaś alternatywa do/dla Tire?
+Na stronie indeksowej umieścimy formularz wyszukiwania statusów,
+zwracane statusy będą stronicowane (skorzystamy z gemu
+*will_paginate*).
+
+Po wejściu na stronę główną, aplikacja wyświetli stronę z ostatnio
+pobranymi statusami.
+
+Dlaczego korzystamy z gemu Tire? Czy jest jakaś alternatywa dla Tire?
 
 
 ## Generujemy rusztowanie aplikacji
@@ -757,15 +825,12 @@ aplikacji będzie gotowa.
 
 Wszystkie użyte pliki są w repozytorium [EST](https://github.com/wbzyl/est):
 
-* [application.html.erb](https://github.com/wbzyl/est/blob/master/app/views/layouts/application.html.erb)
-  (szablon [ContainerApp](http://twitter.github.com/bootstrap/examples/container-app.html) dostosowany do Rails 3.1)
-* [_menu.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_menu.html.erb)
-* [_header.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_header.html.erb)
-* [_footer.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_footer.html.erb)
-
-Skrypt pobierający statusy z Twittera i zapisujący je w ElasticSearch:
-
-* [percolate-nosql-tweets.rb](https://github.com/wbzyl/est/blob/master/percolate-nosql-tweets.rb)
+* [application.html.erb](https://github.com/wbzyl/est/blob/master/app/views/layouts/application.html.erb) –
+  szablon [ContainerApp](http://twitter.github.com/bootstrap/examples/container-app.html) dostosowany do Rails 3.1
+* szablony częściowe:
+  * [_menu.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_menu.html.erb)
+  * [_header.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_header.html.erb)
+  * [_footer.html.erb](https://github.com/wbzyl/est/blob/master/app/views/common/_footer.html.erb)
 
 Powyżej skorzystałem z palety:
 
@@ -793,7 +858,7 @@ Kontroler:
       end
     end
 
-Widok (*TODO:* poniżej przydałoby się kilka metod pomocniczych?):
+Formularz:
 
     :::rhtml app/views/nosql_tweets/index.html.erb
     <%= form_tag nosql_tweets_path, method: :get do %>
@@ -803,8 +868,20 @@ Widok (*TODO:* poniżej przydałoby się kilka metod pomocniczych?):
     </p>
     <% end %>
 
-    <%= will_paginate @nosql_tweets.results %>
+Paginacja:
 
+    :::rhtml app/views/nosql_tweets/index.html.erb
+    <div class="digg_pagination">
+      <div clas="page_info">
+        <%= page_entries_info @nosql_tweets.results %>
+      </div>
+      <%= will_paginate @nosql_tweets.results %>
+    </div>
+
+
+Pozostała część widoku *index* (*TODO:* napisać kilka metod pomocniczych):
+
+    :::rhtml app/views/nosql_tweets/index.html.erb
     <% @nosql_tweets.results.each do |tweet| %>
     <article>
     <p>
@@ -814,41 +891,28 @@ Widok (*TODO:* poniżej przydałoby się kilka metod pomocniczych?):
     <% date = Time.parse(tweet.created_at).strftime('%d.%m.%Y %H:%M') %>
     <p class="date">published on <%= content_tag :time, date, datetime: tweet.created_at %></p>
     <p>
-     <% unless tweet.entities.urls.empty? %>
+     <% unless tweet.urls.empty? %>
        Links:
-       <% tweet.entities.urls.each_with_index do |url, index| %>
-         <%= content_tag :a, "[#{index+1}]", href: url.expanded_url, class: :entities %>
+       <% tweet.urls.each_with_index do |url, index| %>
+         <%= content_tag :a, "[#{index+1}]", href: url, class: :entities %>
        <% end %>
       <% end %>
     </p>
     </article>
     <% end %>
 
-Kilka sposobów na sprawdzenie, tego co skrypt zapisał w bazie elasticsearch:
-ile statusów jest w bazie, wyświetlamy dwa ostatnio zaindeksowane statusy oraz
-wszystkie statusy typu *elasticsearch*.
-
 Model:
 
     :::ruby app/models/nosql_tweet.rb
     class NosqlTweet
-
       include Tire::Model::Persistence
 
-      # property :id -- should be indexed ?
-      property :screen_name
       property :text
+      property :screen_name
       property :created_at
-      property :entities
-
-      # used by all types: rails, mongodb, redis, … ?
-      mapping do
-        indexes :screen_name, type: 'string', analyzer: 'keyword'
-        indexes :text, type: 'string', analyzer: 'snowball'
-        indexes :created_at, type: 'date'
-        # TODO: mapping entities; how?
-        indexes :entities
-      end
+      property :hashtags
+      property :urls
+      property :user_mentions
 
       def self.search(params)
         #Tire.search('statuses', type: 'mongodb', page: params[:page], per_page: 3) do |search|
@@ -864,9 +928,7 @@ Model:
               must { range :created_at, lte: Time.zone.now }
             end
           end
-
           search.sort { by :created_at, "desc" }
-
           search.highlight text: {number_of_fragments: 0}, options: {tag: '<mark>'}
 
           search.size per_page
@@ -889,158 +951,9 @@ i modyfikujemy *application.css*:
      *= require nosql_tweets
     */
 
-
-# Rivers allows to index streams
-
-Zamiast samemu pisać kod do pobierania statusów z Twittera możemy
-użyć do tego celu wtyczki *river-twitter*.
-
-Instalacja wtyczek *rivers* jest prosta:
-
-    :::bash
-    bin/plugin -install river-twitter
-      -> Installing river-twitter...
-      Trying http://elasticsearch.googlecode.com/svn/plugins/river-twitter/elasticsearch-river-twitter-0.18.5.zip...
-      ...
-    bin/plugin -install river-couchdb
-      -> Installing river-couchdb...
-      Trying http://elasticsearch.googlecode.com/svn/plugins/river-couchdb/elasticsearch-river-couchdb-0.18.5.zip...
-      Downloading ...DONE
-      Installed river-couchdb
-    bin/plugin -install river-wikipedia
-      -> Installing river-wikipedia...
-      Trying http://elasticsearch.googlecode.com/svn/plugins/river-wikipedia/elasticsearch-river-wikipedia-0.18.5.zip...
-      Downloading ......DONE
-      Installed river-wikipedia
-
-Repozytoria z kodem wtyczek są na Githubie [tutaj](https://github.com/elasticsearch).
-
-**Uwaga**: po instalacji wtyczki, należy zrestartować *ElasticSearch*.
-
-
-## River Twitter
-
-Usuwanie swoich rivers, na przykład:
-
-    :::bash
-    curl -XDELETE http://localhost:9200/_river/my_twitter_river
-
-Przykład tzw. *filtered stream*:
-
-    :::bash
-    curl -XPUT localhost:9200/_river/my_twitter_river/_meta -d @tweets-nosql.json
-
-gdzie w pliku *nosql-tweets.json* wpisałem:
-
-    :::json tweets-nosql.json
-    {
-        "type" : "twitter",
-        "twitter" : {
-            "user" : "wbzyl",
-            "password" : "sekret",
-            "filter": {
-               "tracks": ["elasticsearch", "mongodb", "couchdb", "rails"]
-            }
-        },
-        "index" : {
-            "index": "tweets",
-            "type" : "nosql",
-            "bulk_size" : 20
-        }
-    }
-
-Sprawdzanie statusu *river twitter*:
-
-    :::bash
-    curl -XGET http://localhost:9200/_river/my_twitter_river/_status?pretty=true
-    {
-      "_index" : "_river",
-      "_type" : "my_twitter_river",
-      "_id" : "_status",
-      "_version" : 5,
-      "exists" : true,
-      "_source" : {"ok":true,
-         "node":{"id":"aUJLtb_KSZibfW3IG9P8yQ","name":"Nobilus","transport_address":"inet[/192.168.4.4:9300]"}}
-
-A tak raportowane jest pobranie paczki z tweetami na konsoli:
-
-    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Establishing connection.
-    [2011-12-16 12:54][INFO ][cluster.metadata           ] [Hazard] [_river] update_mapping [my_rivers] (dynamic)
-    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Connection established.
-    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Receiving status stream.
-    [2011-12-16 12:57][INFO ][cluster.metadata           ] [Hazard] [tweets] update_mapping [nosql] (dynamic)
-
-Wyszukiwanie:
-
-    :::bash
-    curl 'http://localhost:9200/tweets/nosql/_search?q=text:mongodb&fields=user.name,text&pretty=true'
-    curl 'http://localhost:9200/tweets/nosql/_search?pretty=true' -d '
-    {
-        "query" : {
-            "match_all" : { }
-        }
-    }'
-
-Przy okazji możemy sprawdzić jak zaimplemetowany jest *mapping* w Tiver Twitter:
-
-    :::bash
-    curl 'http://localhost:9200/tweets/_mapping?pretty=true'
-
-
-# Rails — Tire & ElasticSearch
-
-* Rails application template.
-* Dodać klasę *Tweet* i podłączyć ją do Twitter River.
-
-JSON:
-
-    :::json tweets-nosql.json
-    {
-        "type" : "twitter",
-        "twitter" : {
-            "user" : "me",
-            "password" : "secret",
-            "filter": {
-               "tracks": ["elasticsearch", "jquery", "mongodb", "couchdb", "rails"]
-            }
-        },
-        "index" : {
-            "index": "tweets",
-            "type" : "nosql",
-            "bulk_size" : 20
-        }
-    }
-
-Twitter River:
-
-    curl -XPUT localhost:9200/_river/my_twitter_river/_meta -d @tweets-nosql.json
-
-Routing:
-
-    :::ruby config/routes.rb
-    # get "tweets/index"
-    match '/tweets' => 'tweets#index', :as => :tweets
-
-Hurtowe indeksowanie (*bulk indexing*):
-
-    :::ruby quotes.rb
-    require 'tire'
-    fortunes = [
-      { id: 1, type: 'quotes', text: "Jedną z cech głupstwa jest logika.", tags: ["logika", "głupstwo", "nauka"] },
-      { id: 2, type: 'quotes', text: "Znasz hasło do swojego wnętrza?", tags: ["hasło", "głupstwo", "czas"] },
-      { id: 3, type: 'quotes', text: "Miał lwi pazur, ale brudny.", tags: ["lew", "pazur", "nauka"] },
-      { id: 4, type: 'quotes', text: "Unikaj skarżącego się na brak czasu, chce ci zabrać twój.", tags: ["nauka", "czas"] }
-    ]
-    Tire.index 'fortunes' do
-      delete
-      import fortunes
-      refresh
-    end
-
-*Uwaga:* pola *id* oraz *type* są obowiązkowe.
-
-
 # ElasticSearch dump ⇒ JSON
+
+**TODO:** Przerobić na skrypt Ruby. Wrzucić na Wiki.
 
 Zobacz search API:
 
@@ -1126,6 +1039,103 @@ Ostatnia paczka JSON–ów:
         } ]
       }
     }
+
+
+# Rivers allows to index streams
+
+Zamiast samemu pisać kod do pobierania statusów z Twittera możemy
+użyć do tego celu wtyczki *river-twitter*.
+
+Instalacja wtyczek *rivers* jest prosta:
+
+    :::bash
+    bin/plugin -install river-twitter
+      -> Installing river-twitter...
+      Trying http://elasticsearch.googlecode.com/svn/plugins/river-twitter/elasticsearch-river-twitter-0.18.5.zip...
+      ...
+    bin/plugin -install river-couchdb
+      -> Installing river-couchdb...
+      Trying http://elasticsearch.googlecode.com/svn/plugins/river-couchdb/elasticsearch-river-couchdb-0.18.5.zip...
+      Downloading ...DONE
+      Installed river-couchdb
+    bin/plugin -install river-wikipedia
+      -> Installing river-wikipedia...
+      Trying http://elasticsearch.googlecode.com/svn/plugins/river-wikipedia/elasticsearch-river-wikipedia-0.18.5.zip...
+      Downloading ......DONE
+      Installed river-wikipedia
+
+Repozytoria z kodem wtyczek są na Githubie [tutaj](https://github.com/elasticsearch).
+
+**Uwaga**: po instalacji wtyczki, należy zrestartować *ElasticSearch*.
+
+
+## River Twitter
+
+Usuwanie swoich rivers, na przykład:
+
+    :::bash
+    curl -XDELETE http://localhost:9200/_river/my_twitter_river
+
+Przykład tzw. *filtered stream*:
+
+    :::bash
+    curl -XPUT localhost:9200/_river/my_twitter_river/_meta -d @tweets-nosql.json
+
+gdzie w pliku *nosql-tweets.json* wpisałem:
+
+    :::json tweets-nosql.json
+    {
+        "type" : "twitter",
+        "twitter" : {
+            "user" : "wbzyl",
+            "password" : "sekret",
+            "filter": {
+               "tracks": ["elasticsearch", "mongodb", "couchdb", "rails"]
+            }
+        },
+        "index" : {
+            "index": "tweets",
+            "type" : "nosql",
+            "bulk_size" : 20
+        }
+    }
+
+Sprawdzanie statusu *River Twitter*:
+
+    :::bash
+    curl -XGET http://localhost:9200/_river/my_twitter_river/_status?pretty=true
+    {
+      "_index" : "_river",
+      "_type" : "my_twitter_river",
+      "_id" : "_status",
+      "_version" : 5,
+      "exists" : true,
+      "_source" : {"ok":true,
+         "node":{"id":"aUJLtb_KSZibfW3IG9P8yQ","name":"Nobilus","transport_address":"inet[/192.168.4.4:9300]"}}
+
+A tak raportowane jest pobranie paczki z tweetami na konsoli:
+
+    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Establishing connection.
+    [2011-12-16 12:54][INFO ][cluster.metadata           ] [Hazard] [_river] update_mapping [my_rivers] (dynamic)
+    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Connection established.
+    [2011-12-16 12:54][INFO ][twitter4j.TwitterStreamImpl] Receiving status stream.
+    [2011-12-16 12:57][INFO ][cluster.metadata           ] [Hazard] [tweets] update_mapping [nosql] (dynamic)
+
+Wyszukiwanie:
+
+    :::bash
+    curl 'http://localhost:9200/tweets/nosql/_search?q=text:mongodb&fields=user.name,text&pretty=true'
+    curl 'http://localhost:9200/tweets/nosql/_search?pretty=true' -d '
+    {
+        "query" : {
+            "match_all" : { }
+        }
+    }'
+
+Przy okazji możemy sprawdzić jak zaimplemetowany jest *mapping* w Tiver Twitter:
+
+    :::bash
+    curl 'http://localhost:9200/tweets/_mapping?pretty=true'
 
 
 # Zadania
