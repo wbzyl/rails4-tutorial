@@ -8,9 +8,9 @@
  <p class="author">— John Cage (1912–1992)</p>
 </blockquote>
 
-[What's Wrong with SQL search](http://philip.greenspun.com/seia/search).
+Zaczynamy od lektury [What's Wrong with SQL search](http://philip.greenspun.com/seia/search).
 
-Strona domowa ElasticSearch, dokumentacja:
+Teraz pora, na przyjrzenie się zawartości strony domowej *ElasticSearch*:
 
 * [You know, for Search](http://www.elasticsearch.org/)
 * [Guides](http://www.elasticsearch.org/guide/):
@@ -20,7 +20,9 @@ Strona domowa ElasticSearch, dokumentacja:
   - [Mapping](http://www.elasticsearch.org/guide/reference/mapping/)
   - [Facets](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html)
 * [Setting up ElasticSearch ](http://www.elasticsearch.org/tutorials/2010/07/01/setting-up-elasticsearch.html)
-* [A web front end for an ElasticSearch cluster](https://github.com/Aconex/elasticsearch-head)
+
+Kiedyś trzeba będzie zainstalować tę wtyczkę
+[A web front end for an ElasticSearch cluster](https://github.com/Aconex/elasticsearch-head)
 
 ElasticSearch driver dla języka Ruby:
 
@@ -91,13 +93,17 @@ ElasticSearch:
 Kilka, nieco zmienionych przykładów ze strony
 [Your Data, Your Search](http://www.elasticsearch.org/blog/2010/02/12/yourdatayoursearch.html).
 
-[Rest API & JSON & Elasticsearch](http://www.elasticsearch.org/guide/reference/api/).
+Czy *elasticsearch* ma REST API?
+[REST API & JSON & Elasticsearch](http://www.elasticsearch.org/guide/reference/api/).
 
-
-**Interpretacja uri w zapytaniach kierowanych do ElasticSearch:**
+Podstawowa terminologia: indeks i jego typ.<br>
+**Interpretacja URI w zapytaniach kierowanych do ElasticSearch:**
 
 <pre>http://localhost:9200/<b>⟨index⟩</b>/<b>⟨type⟩</b>/...
 </pre>
+
+**Składnia zapytań** – [Lucene Query Parser Syntax](http://lucene.apache.org/java/2_9_1/queryparsersyntax.html).
+
 
 <blockquote>
  <p>Field names with the <b>same name</b> across types are highly
@@ -213,8 +219,7 @@ Sprawdzamy, co zostało dodane:
 
 Dla przypomnienia, interpretacja uri w zapytaniach do ElasticSearch:
 
-<pre>http://localhost:9200/_search?...
-http://localhost:9200/<b>⟨index⟩</b>/_search?...
+<pre>http://localhost:9200/<b>⟨index⟩</b>/_search?...
 http://localhost:9200/<b>⟨index⟩</b>/<b>⟨type⟩</b>/_search?...
 </pre>
 
@@ -338,7 +343,7 @@ Dlatego, przed wypisaniem statusu na ekran, powinniśmy go „oczyścić”
 ze zbędnych rzeczy. Zrobimy to za pomocą skryptu w Ruby. W skrypcie
 skorzystamy z następujących gemów:
 
-    gem install tweetstream yajl-ruby tire
+    gem install tweetstream yajl-ruby tire ansi
 
 {%= image_tag "/images/twitter_elasticsearch.jpeg", :alt => "[Twitter -> ElasticSearch]" %}
 
@@ -418,7 +423,7 @@ dostrzegać pole zawierające interesujące dane:
       user_mentions (id_str, name, screen_name)
       hashtags (text)
 
-Czyszczeniem zajmiemy się w kodzie metody *handle_tweet*:
+Czyszczenie statusów, to zadanie dla metody *handle_tweet*:
 
     :::ruby
     def handle_tweet(s)
@@ -435,124 +440,81 @@ Po wymianie na nowy kodu *handle_tweet* i ponownym uruchomieniu skryptu
 widzimy efekty. To się da czytać!
 
 Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch.
-Skorzystamy z gemu *Tire*:
 
-    gem install tire ansi
+Co oznacza *percolation*? przenikanie, przefiltrowanie, perkolacja?
 
-Zaczniemy od definicji modelu *Status*.
-
-**TODO** Od razu **percolate**?
-Let's define callback for percolation.
+„Let's define callback for percolation.
 Whenewer a new document is saved in the index, this block will be executed,
-and we will have access to matching queries in the `Status#matches` property.
-In our case, we will just print the list of matching queries.
+and we will have access to matching queries in the `NosqlTweet#matches` property.
+In our case, we will just print the list of matching queries.”
 
-    :::ruby percolate-nosql-tweets.rb
-    class Status
-      include Tire::Model::Persistence
+    :::ruby create-index-percolate_nosql_tweets.rb
+    # encoding: utf-8
+    require 'tire'
 
-      property :id
-      property :text
-      property :screen_name
-      property :created_at
-      property :entities
+    # Register several queries for percolation against the nosql_tweets index.
 
-      mapping do
-        indexes :id,           index:    :not_analyzed
-        indexes :text,         analyzer: 'snowball'
-        indexes :screen_name,  analyzer: 'keyword'
-        indexes :created_at,   type:     'date' #, :include_in_all => false
+    nosql_tweets_mapping =  {
+      :properties => {
+        :text          => { :type => 'string', :boost => 2.0,            :analyzer => 'snowball'       },
+        :screen_name   => { :type => 'string', :index => 'not_analyzed',                               },
+        :created_at    => { :type => 'date',                                                           },
+        :hashtags      => { :type => 'string', :index => 'not_analyzed', :index_name => 'hashtag'      },
+        :urls          => { :type => 'string', :index => 'not_analyzed', :index_name => 'url'          },
+        :user_mentions => { :type => 'string', :index => 'not_analyzed', :index_name => 'user_mention' }
+      }
+    }
 
-        # TODO: mapping entities? see below for an example
-        #indexes :content_size, as:       'content.size'
-        #indexes :title,        analyzer: 'snowball', boost: 100
-      end
+    mappings = { }
 
-      # Let's define callback for percolation.
-      # Whenewer a new document is saved in the index, this block will be executed,
-      # and we will have access to matching queries in the `Status#matches` property.
-      #
-      # In our case, we will just print the list of matching queries.
-
-      on_percolate do
-        puts green { "'#{text}' from @#{bold { screen_name }}" } unless matches.empty?
-      end
+    %w{rails jquery mongodb couchdb redis neo4j elasticsearch}.each do |keyword|
+      mappings[keyword.to_sym] = nosql_tweets_mapping
     end
 
-    # First, let's define the query_string queries.
+    Tire.index('nosql_tweets') do
+      delete
+      create :mappings => mappings
+    end
 
-    # TODO: add check if already defined.
+    Tire.index('nosql_tweets').refresh
 
-    q = {}
-    q[:rails] = 'rails'
-    q[:mongodb] = 'mongodb'
-    q[:redis] = 'redis'
-    q[:couchdb] = 'couchdb'
-    q[:neo4j] = 'neo4j'
-    q[:elasticsearch] = 'elasticsearch'
-
-    Status.index.register_percolator_query('rails') { |query| query.string q[:rails] }
-    Status.index.register_percolator_query('mongodb') { |query| query.string q[:mongodb] }
-    Status.index.register_percolator_query('redis') { |query| query.string q[:redis] }
-    Status.index.register_percolator_query('couchdb') { |query| query.string q[:couchdb] }
-    Status.index.register_percolator_query('neo4j') { |query| query.string q[:neo4j] }
-    Status.index.register_percolator_query('elasticsearch') { |query| query.string q[:elasticsearch] }
+    Tire.index('nosql_tweets') do
+      %w{rails jquery mongodb redis couchdb neo4j elasticsearch}.each do |keyword|
+        register_percolator_query(keyword) { string keyword }
+      end
+    end
 
     # Refresh the `_percolator` index for immediate access.
 
     Tire.index('_percolator').refresh
 
-    puts magenta { "\nYou can check out the the documents in your index with curl:\n" }
-    puts yellow  { "  curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=4&pretty=true'\n" }
+Uuruchamiamy ten skrypt i sprawdzamy czy *mapping* zostało zapisane w bazie:
 
-Podmieniamy kod *handle_tweet*. Wybieramy pola, które nas interesują:
-
-    :::ruby percolate-nosql-tweets.rb
-    def handle_tweet(s)
-      h = Status.new :id => s[:id],
-        :text => s[:text],
-        :screen_name => s[:user][:screen_name],
-        :entities => s[:entities],
-        :created_at => Time.parse(s[:created_at])
-
-      types = h.percolate
-      puts cyan { "matched queries: #{types}" }
-
-      types.to_a.each do |type|
-        Status.document_type type # czy można prościej zmienić typ dokumentu h?
-        h.save
-      end
-    end
-
-Podłączamy się do strumienia ze statusami.
-
-    :::ruby percolate-nosql-tweets.rb
-    client = TweetStream::Client.new
-
-    client.on_error do |message|
-      puts message
-    end
-
-    client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
-      handle_tweet status
-    end
+    :::bash
+    ruby create-index-percolate_nosql_tweets.rb
+    curl 'http://localhost:9200/nosql_tweets/_mapping?pretty=true'
 
 Działanie skryptu kończymy wciskając klawisze `CTRL+C`.
 
 Cały skrypt można obejrzeć tutaj
-{%= link_to "nosql-tweets.rb", "/elasticsearch/percolate-nosql-tweets.rb" %},
+[create-index-percolate_nosql_tweets.rb](https://github.com/wbzyl/est/blob/master/create-index-percolate_nosql_tweets.rb).
 
-Kilka sposobów na sprawdzenie, tego co skrypt zapisał w bazie elasticsearch:
-ile statusów jest w bazie, wyświetlamy dwa ostatnio zaindeksowane statusy oraz
-wszystkie statusy typu *elasticsearch*.
+
+## Twitter Stream ⇒ ElasticSearch
+
+Pora na
+
+Oskryptowane tutaj *fetch-nosql_tweets.rb*.
+
+Pozostało zdefiniować model *NosqlTweet*. Zrobimy to za chwilę.
 
     :::bash
-    curl 'http://localhost:9200/statuses/_count'
-    curl 'http://localhost:9200/statuses/_search?q=*&sort=created_at:desc&size=2&pretty=true'
-    curl 'http://localhost:9200/statuses/_search?size=2&sort=created_at:desc&pretty=true'
-    curl 'http://localhost:9200/statuses/_search?_all&sort=created_at:desc&pretty=true'
+    curl 'http://localhost:9200/nosql_tweets/_count'
+    curl 'http://localhost:9200/nosql_tweets/_search?q=*&sort=created_at:desc&size=2&pretty=true'
+    curl 'http://localhost:9200/nosql_tweets/_search?size=2&sort=created_at:desc&pretty=true'
+    curl 'http://localhost:9200/nosql_tweets/_search?_all&sort=created_at:desc&pretty=true'
 
-Oczywiście prościej jest podejrzeć wszystkie te rzeczy
+Oczywiście prościej jest podejrzeć statusy
 korzystając z aplikacji webowej [Elasticsearch Head](https://github.com/Aconex/elasticsearch-head).
 
 
@@ -567,25 +529,25 @@ implementations, such as statistical or date histogram facets.”
 Przykłady:
 
     :::bash
-    curl -X POST "http://localhost:9200/statuses/_count?q=couchdb&pretty=true"
-    curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
+    curl -X POST "http://localhost:9200/nosql_tweets/_count?q=couchdb&pretty=true"
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
     {
       "query" : { "query_string" : {"query" : "couchdb"} },
       "sort" : { "created_at" : { "order" : "desc" } }
     }'
-    curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
     {
       "query" : { "query_string" : {"query" : "couchdb"} },
       "sort" : { "created_at" : { "order" : "desc" } },
       "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
     }'
-    curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
     {
       "query" : { "match_all" : {} },
       "sort" : { "created_at" : { "order" : "desc" } },
       "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
     }'
-    curl -X POST "http://localhost:9200/statuses/_search?pretty=true" -d '
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
     {
       "query" : { "match_all" : {} },
       "sort" : { "created_at" : { "order" : "desc" } },
@@ -616,7 +578,6 @@ A tak wyglądają „fasetowy” JSON:
          } ]
        }
      }
-
 
 ## Trochę linków
 
@@ -862,6 +823,10 @@ Widok (*TODO:* poniżej przydałoby się kilka metod pomocniczych?):
     </p>
     </article>
     <% end %>
+
+Kilka sposobów na sprawdzenie, tego co skrypt zapisał w bazie elasticsearch:
+ile statusów jest w bazie, wyświetlamy dwa ostatnio zaindeksowane statusy oraz
+wszystkie statusy typu *elasticsearch*.
 
 Model:
 
