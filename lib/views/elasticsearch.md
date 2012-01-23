@@ -951,6 +951,11 @@ i modyfikujemy *application.css*:
      *= require nosql_tweets
     */
 
+## Fasety
+
+**TODO:** Dodać wyszukiwanie fasetowe pos hashtagach.
+
+
 # ElasticSearch dump ⇒ JSON
 
 **TODO:** Przerobić na skrypt Ruby. Opis wrzucić na Wiki.
