@@ -1,10 +1,5 @@
 #### {% title "Mongoid + OmniAuth z autoryzacją przez GitHub" %}
 
-### Uwagi
-
-[2011.11.11] Benjamin Milde. [Shapecatcher](http://shapecatcher.com/)
-– unicode  character recognition ☺☕♥
-
 ☸ Mongo links:
 
 * Ryan Bates, [Mongoid](http://railscasts.com/episodes/238-mongoid?view=asciicast) – asciicast
@@ -37,37 +32,57 @@
   ([{blog: mongolab}](http://blog.mongolab.com/))
 * [Node.js + MongoDB = Love: Guest Post from MongoLab](http://joyeur.com/2011/10/26/node-js-mongodb-love-guest-post-from-mongolab/?utm_source=NoSQL+Weekly+Newsletter&utm_campaign=4ed79d28a1-NoSQL_Weekly_Issue_49_November_3_2011&utm_medium=email)
 
+☺☕♥ ⟵ kody takich znaczków odszuka za nas [Shapecatcher](http://shapecatcher.com/)
+Benjamina Milde. My musimy je naszkicować.
+
 
 # Dziennik lekcyjny
 
-Przykładowa aplikacja CRUD listy obecności studentów.
-W aplikacji korzystamy z bazy MongoDB via gem Mongoid,
-oraz gemu OmniAuth ze strategiami *github* i *twitter*.
+Przykładowa aplikacja CRUD listy obecności studentów.  W aplikacji
+dane będziemy przechowywać w bazie MongoDB.  Skorzystamy z gemów
+Mongoid i OmniAuth ze strategią *github*.
 
-1\. Generujemy rusztowanie/szkielet aplikacji:
+1\. Tak jak to opisano
+{%= link_to "Wyszukiwanie ElasticSearch", "/rails4/elasticsearch" %}
+tworzymy rusztowanie aplikacji korzystające z framweorka Bootstrap Twitter.
 
     :::bash terminal
-    rails new dziennik -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb \
-      --skip-bundle --skip-active-record --skip-test-unit
+    rails new dziennik-lekcyjny --skip-bundle --skip-active-record --skip-test-unit
 
-2\. Dopisujemy do pliku *Gemfile* dodatkowe gemy z których będziemy korzystać:
+Dopisujemy gemy do pliku *Gemfile*:
 
     :::ruby Gemfile
+    gem 'bootstrap-sass', group: :assets
+
+    gem 'formtastic'
+
     gem 'omniauth'
     gem 'omniauth-github'
 
-    gem 'mongoid', '~> 2.3'
-    gem 'bson_ext', '~> 1.4'
+    gem 'mongoid'
+    gem 'bson_ext'
 
-Następnie instalujemy je lokalnie:
+    gem 'jbuilder'
+
+i instalujemy je lokalnie:
 
     :::bash terminal
-    cd dziennik
+    cd dziennik-lekcyjny
     bundle install --path=$HOME/.gems --binstubs
 
-OmniAuth zostanie opisany w następnej sekcji.
+**Uwaga:** Gem OmniAuth zostanie opisany później.
 
-3\. Dokończenie instalacji:
+Dalej postępujemy, tak jak to opisano poprzednio.
+Zmienimy tylko paletę kolorów:
+
+* niebieski: \#7CD7FF
+* żółty: \#FFD91C
+* pomarańczowy: \#FD6300
+* brązowy: \#94190D
+* fioletowy: \#451327 = rgb(69, 19, 39)
+
+
+2\. Dokończenie instalacji:
 
     :::bash terminal
     rails g mongoid:config
@@ -78,10 +93,12 @@ Oto wygenerowany plik konfiguracyjny Mongoid:
     :::yaml config/mongoid.yml
     development:
       host: localhost
-      database: dziennik_development
+      database: dziennik_lekcyjny_development
+
     test:
       host: localhost
-      database: dziennik_test
+      database: dziennik_lekcyjny_test
+
     # set these environment variables on your prod server
     production:
       host: <%= ENV['MONGOID_HOST'] %>
@@ -102,14 +119,14 @@ Oznacza to, że przed uruchomieniem aplikacji powinniśmy wykonać:
     :::bash terminal
     export MONGOID_HOST=localhost
     export MONGOID_PORT=27017
-    export MONGOID_DATABASE=dziennik_production
+    export MONGOID_DATABASE=dziennik_lekcyjny_production
 
 Najwygodniej jest zapisać wszystkie te polecenia w pliku,
-np. o nazwie *dziennik-config.sh*. Teraz przed uruchomieniem aplikacji
-wystarczy wykonać:
+np. o nazwie *dziennik-lekcyjny.sh*.
+Teraz przed uruchomieniem aplikacji w trybie produkcyjnym wystarczy wykonać:
 
     :::bash
-    source dziennik-config.sh
+    source dziennik-lekcyjny.sh
 
 **Uwaga 1**: Takie podejście jest wygodne, o ile zamierzamy wdrożyć
 aplikację na Heroku. Dlaczego?
@@ -120,16 +137,18 @@ skopilowanych *assets*:
     :::bash
     bin/rake assets:precompile   # Compile all the assets named in config.assets.precompile
 
-Po przejściu do trybu development, powinniśmy usunąć skopilowane pliki.
-(zwykle korzystamy z zadania *rake* o nazwie *assets:clean*).
-Jeśli tego nie zrobimy, to zmiany w plikach Javascript i CSS nie zostaną użyte.
+Po przejściu do trybu development, powinniśmy usunąć skopilowane pliki:
 
-Prawdopodobnie importowane pliki trzeba będzie dopisać do listy
-*config.assets.precompile*, na przykład
+    :::bash
+    bin/rake assets:clean
+
+Jeśli tego nie zrobimy, to zmiany w plikach JavaScript i CSS nie zostaną użyte.
+
+Importowane pliki należy dopisać do listy *config.assets.precompile*, na przykład
 
     :::ruby config/environments/production.rb
     # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-    config.assets.precompile += %w( formtastic-container-app bootstrap-container-app dziennik )
+    config.assets.precompile += %w( dziennik-lekcyjny )
 
 **i18n**: Dodajemy do katalogu *config/initializers* plik *mongoid.rb*
 w którym wpisujemy (*i18n*):
@@ -145,21 +164,22 @@ Od razu zmieniamy domyślne locale na polskie (co to znaczy?):
 Replica sets, master/slave, multiple databases – na razie
 pomijamy. Sharding – też.
 
-4\. Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
-atrybutów nieobecność i uwagi.
 
-Generujemy rusztowanie dla modelu *Student*:
+3\. Generujemy rusztowanie dla modelu *Student*.
+Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
+atrybutów nieobecność i uwagi:
 
     :::bash terminal
     rails generate scaffold Student last_name:String first_name:String \
       id_number:Integer nickname:String absences:Array comments:String \
       class_name:String group:String
+    rm app/assets/stylesheets/scaffolds.css.scss
 
-6\. Na koniec importujemy listę studentów (otrzymaną z sekretatriatu II)
+4\. Importujemy listę studentów (otrzymaną z sekretatriatu II)
 do bazy MongoDB:
 
     :::bash terminal
-    mongoimport --drop -d dziennik_development -c students --headerline --type csv wd.csv
+    mongoimport --drop -d dziennik_lekcyjny_development -c students --headerline --type csv wd.csv
 
 Oto fragment pliku CSV z nagłówkiem:
 
@@ -172,30 +192,33 @@ Oto fragment pliku CSV z nagłówkiem:
     "Kamińska","Irena",556123
     "Jankowski","Kazimierz",628942
 
-7\. Kilka uwag o robieniu kopii zapasowych danych z bazy MongoDB.
+5\. Kilka uwag o robieniu kopii zapasowych danych z bazy MongoDB.
 
 Eksport do pliku tekstowego:
 
     :::bash terminal
-    mongoexport -d dziennik_development -c students -o dziennik-$(date +%Y-%m-%d).json
+    mongoexport -d dziennik_lekcyjny_development -c students -o dziennik-$(date +%Y-%m-%d).json
 
 Wybieramy format JSON. Teraz odtworzenie bazy z kopii zapasowej
 może wyglądać tak:
 
     :::bash terminal
-    mongoimport --drop -d dziennik_development -c students dziennik-2011-11-08.json
+    mongoimport --drop -d dziennik_lekcyjny_development -c students dziennik-2011-11-08.json
 
-Zrzut do plików binarnych wykonujemy na **działającej** bazie:
+Możemy też wykonać zrzut bazy. Zrzut wykonujemy na **działającej** bazie:
 
     :::bash
-    mongodump -d dziennik_development -o backup
-    mongorestore -d test --drop backup/dziennik_development/
+    mongodump -d dziennik_lekcyjny_development -o backup
+
+A tak odtwarzamy zawartość bazy z zrzutu:
+
+    mongorestore -d test --drop backup/dziennik_lekcyjny_development/
 
 **Uwaga:** W powyższym przykładzie backup wszystkich kolekcji z bazy
-*dziennik_development* importujemy do bazy *test*, a nie
-do *dziennik_development*!
+*dziennik_lekcyjny_development* importujemy do bazy *test*, a nie
+do *dziennik_lekcyjny_development*! Tak na wszelki wypadek.
 
-7\. Pozostaje uruchomić serwer WWW:
+6\. Pozostaje uruchomić serwer WWW:
 
     :::bash terminal
     rails server -p 3000
@@ -204,14 +227,19 @@ i wejść na stronę z listą obecności:
 
     http://localhost:3000/students
 
-Jeśli aplikacja działa, to przechodzimy do następnych punktów.
+Jeśli aplikacja działa, dodajemy do routingu:
 
-8\. Dodajemy podstawową autentykację do aplikacji:
+    :::ruby config/routes.rb
+    root :to => 'students#index'
+
+i przechodzimy do następnego punktu.
+
+7\. Teraz możemy dodać podstawową autentykację do aplikacji:
 
     :::ruby app/controllers/students_controller.rb
     http_basic_authenticate_with :name => ENV['LO_NAME'], :password => ENV['LO_PASSWORD']
 
-„Tajne dane” dopiszemy do pliku *dziennik-config.sh*:
+„Tajne dane” dopiszemy do pliku *dziennik-lekcyjny.sh*:
 
     :::bash
     export LO_NAME="admin"
@@ -223,40 +251,15 @@ do środowiska powłoki:
     :::bash terminal
     source dziennik-config.sh
 
-9\. Dodatkowy kod CSS umieścimy w pliku *dziennik.css.scss*.
-Skorzystamy też [CSS3 Social Sign-in Buttons](http://nicolasgallagher.com/lab/css3-social-signin-buttons/).
-Na stronie głównej aplikacji umieścimy suwaki.
-Każdy suwak to widżet *Slider* z *jQuery-UI*.
-Dopisujemy wszystkie te pliki do *application.css.sass*:
 
-    :::css app/assets/stylesheets/application.css.scss
-    /*
-    *= require bootstrap
-    *= require auth-buttons.css
-    *= require formtastic
-    *= jquery-ui-1.8.16.custom.css
-    *= require_self
-    */
-    @import "formtastic-container-app.css.scss";
-    @import "bootstrap-container-app.css.scss";
-    @import "dziennik";
-
-Pliki *auth-buttons.css*, *auth-icons.png*, *jquery-ui-1.8.16.custom.css*
-po ściągnieciu z [GitHuba](https://github.com/necolas/css3-social-signin-buttons)
-oraz [jQuery UI](http://jqueryui.com/download/)
-(widżet *Slider*, efekty *Explode* i *Fade*) zapiszemy w katalogu:
-
-    vendor/assets/stylesheets/
-
-**TODO:** Link do *dziennik.css.scss*.
-
-
-## Zaczynamy od modelu Student
+## Model Student
 
 Co to są wirtualne atrybuty?
 [More on Virtual Attributes](http://railscasts.com/episodes/167-more-on-virtual-attributes?view=asciicast).
 
-Inne podejście, [Array of hashes form builder](http://stackoverflow.com/questions/8887016/array-of-hashes-form-builder)
+Inne podejście do tablic:
+
+* [Array of hashes form builder](http://stackoverflow.com/questions/8887016/array-of-hashes-form-builder)
 z [Mongoid + filtering result set(?)](http://mongoid.org/docs/querying/scopes.html).
 
 Dodajemy metody getter i setter dla **wirtualnych atrybutów**
@@ -306,26 +309,33 @@ oraz ustawiamy domyślne sortowanie rekordów:
     end
 
 
-## TODO: Nowa strona główna aplikacji
+## Nowa strona główna aplikacji
 
-**TODO: uaktualnić** (wskażnik myszki na tle odsyłacza do Edit).
-
-Obrazek pokazujący o co nam chodzi:
+**TODO:** Obrazek pokazujący o co nam chodzi:
 
 {%= image_tag "/images/lista-obecnosci.png", :alt => "[lista obecnosci: /index]" %}
 
-Są cztery grupy studentów: niebieska, zielona, czerwona oraz
-*unknown*.  Kliknięcie w śmieszek dopisuje do dokumentu studenta
+Informacje o wszystkich studentach z jednego roku zostaną umieszczone
+na jednej stronie. Uzyjemy różnych kolorow, do pokolorwania
+danych studentów z jedenj grupy.
+Na obrzku poniżej mamy trzy grupy studentów: niebieskę, zieloną i czerwoną
+
+Kliknięcie w śmieszek po lewej stronie dopisuje do dokumentu studenta
 nieobecność, przeładowuje stronę na której zostaje wypisana
 pomarańczowa kropka przy nazwisku. Kropki po prawej stronie nazwiska
 to liczba nieobecności.
 
-Do generowania kropek używamy metody pomocniczej *bullets*. Suwak
-pokazuje liczbę punktów, w zakresie 0–100, zdobytych przez studenta na
-laboratorium.
+Na tej stronie prowadzący będzie mógł uaktualniać dane studenta.
+Student, będzie mógł podejrzeć swoje dane oraz dopisać
+coś w polu komentarze.
+Usunąć dane studenta będzie mial prawo tylko prowadzący zajęcia.
+Do usuwanie danych – przygotuję osobną stronę.
 
-Zmiany zaczniemy wprowadzać od dodania do routingu metody
-*not_present*:
+Do generowania kropek używamy metody pomocniczej *bullets*. Element
+*progress* wskazuje na „progress” (w procentach) studenta
+(liczbę punktów zdobytych przez studenta).
+
+Zmiany te zaczniemy wprowadzać od dodania do routingu metody *not_present*:
 
     :::ruby config/routes.rb
     resources :students do
@@ -342,12 +352,13 @@ Następnie przemodelujemy szablon strony głównej:
         <div class="full-name <%= student.group %>"><%= link_to student.full_name, student %></div>
         <div class="absences"><%= bullets(student.absences) %></div>
         <div class="links">
-          <%= link_to '✎', edit_student_path(student) %>
-          <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
+          <%= link_to '✎ Edit', edit_student_path(student), class: "btn" %>
         </div>
       </div>
     </article>
     <% end %>
+
+    <div class="link"><%= link_to 'New Student', new_student_path, class: "btn primary" %></div>
 
 Kod użytej powyżej metody pomocniczej *bullets*:
 
@@ -395,6 +406,9 @@ Po zapisaniu zmian w bazie przechodzimy na stronę główną:
         render action: "edit"
       end
     end
+
+Na koniec dopisujemy trochę kodu do
+[students.css.scss](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/assets/stylesheets/students.css.scss).
 
 
 ### Zmiany w pozostałych widokach

@@ -500,7 +500,7 @@ Cały skrypt można obejrzeć tutaj
 [create-index-percolate_nosql_tweets.rb](https://github.com/wbzyl/est/blob/master/create-index-percolate_nosql_tweets.rb).
 
 
-## Twitter Stream ⇒ ElasticSearch
+## Twitter Stream ⟿ ElasticSearch
 
 Kolejny skrypt będzie miał za zadanie pobrać z Twittera interesujące
 nas statusy i zapisać je w bazie ElasticSearch. Z Twitterem możemy
