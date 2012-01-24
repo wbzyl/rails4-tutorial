@@ -55,6 +55,7 @@ Dopisujemy gemy do pliku *Gemfile*:
     gem 'bootstrap-sass', group: :assets
 
     gem 'formtastic'
+    gem 'formtastic-bootstrap'
 
     gem 'omniauth'
     gem 'omniauth-github'
@@ -128,10 +129,27 @@ Teraz przed uruchomieniem aplikacji w trybie produkcyjnym wystarczy wykonać:
     :::bash
     source dziennik-lekcyjny.sh
 
-**Uwaga 1**: Takie podejście jest wygodne, o ile zamierzamy wdrożyć
+**Uwaga**: Takie podejście jest wygodne, o ile zamierzamy wdrożyć
 aplikację na Heroku. Dlaczego?
 
-**Uwaga 2**: Domyślnie, w trybie produkcyjnym, aplikacja korzysta ze
+Dokończenie instalacji *formtastic* i *formtastic-bootstrap*:
+
+Initializers:
+
+    :::ruby config/initializers/formtastic.rb
+    Formtastic::Helpers::FormHelper.builder = FormtasticBootstrap::FormBuilder
+    # Set the default text area height when input is a text. Default is 20.
+    Formtastic::FormBuilder.default_text_area_height = 8
+
+CSS (ostatnie dwa pliki dodajem przy okazji teraz):
+
+    :::css app/assets/stylesheets/application.css
+    *= require_self
+    *= require formtastic-bootstrap
+    *= require dziennik-lekcyjny
+    *= require students
+
+**Uwaga**: Domyślnie, w trybie produkcyjnym, aplikacja korzysta ze
 skopilowanych *assets*:
 
     :::bash
@@ -263,7 +281,8 @@ Inne podejście do tablic:
 z [Mongoid + filtering result set(?)](http://mongoid.org/docs/querying/scopes.html).
 
 Dodajemy metody getter i setter dla **wirtualnych atrybutów**
-oraz ustawiamy domyślne sortowanie rekordów:
+*full_name* i *absences_list* oraz ustawiamy domyślne sortowanie
+rekordów:
 
     :::ruby app/models/student.rb
     class Student
@@ -311,14 +330,14 @@ oraz ustawiamy domyślne sortowanie rekordów:
 
 ## Nowa strona główna aplikacji
 
-**TODO:** Obrazek pokazujący o co nam chodzi:
+Informacje o wszystkich studentach z jednego roku zostaną umieszczone
+na jednej stronie.
+
+Dane studentów z tej samej grupy zostaną wypisane tym samym kolorem.
+Na obrazku poniżej wypisne są informacje
+dla studentów z trzech grup: niebieskiej, zielonej i czerwonej.
 
 {%= image_tag "/images/lista-obecnosci.png", :alt => "[lista obecnosci: /index]" %}
-
-Informacje o wszystkich studentach z jednego roku zostaną umieszczone
-na jednej stronie. Uzyjemy różnych kolorow, do pokolorwania
-danych studentów z jedenj grupy.
-Na obrzku poniżej mamy trzy grupy studentów: niebieskę, zieloną i czerwoną
 
 Kliknięcie w śmieszek po lewej stronie dopisuje do dokumentu studenta
 nieobecność, przeładowuje stronę na której zostaje wypisana
@@ -342,23 +361,23 @@ Zmiany te zaczniemy wprowadzać od dodania do routingu metody *not_present*:
       put 'not_present', :on => :member
     end
 
-Następnie przemodelujemy szablon strony głównej:
+Następnie podmienimy szablon strony głównej:
 
     :::rhtml app/views/students/index.html.erb
     <% @students.each do |student| %>
     <article class="index">
-      <div class="attribute">
+      <div class="student clearfix">
         <div class="presence"><%= link_to '☺', not_present_student_path(student), method: :put %></div>
-        <div class="full-name <%= student.group %>"><%= link_to student.full_name, student %></div>
+        <% group = student.group %>
+        <div class="full-name"><%= link_to student.full_name, student, class: group %></div>
         <div class="absences"><%= bullets(student.absences) %></div>
         <div class="links">
-          <%= link_to '✎ Edit', edit_student_path(student), class: "btn" %>
+          <%= link_to '✎ Edit', edit_student_path(student), class: "btn small" %>
         </div>
       </div>
     </article>
     <% end %>
-
-    <div class="link"><%= link_to 'New Student', new_student_path, class: "btn primary" %></div>
+    <div class="link"><%= link_to 'New Student', new_student_path, class: "btn" %></div>
 
 Kod użytej powyżej metody pomocniczej *bullets*:
 
@@ -372,7 +391,7 @@ Kod użytej powyżej metody pomocniczej *bullets*:
       end
     end
 
-i metody *today_absence*:
+metody *today_absence*:
 
     :::ruby app/controllers/application_controller.rb
     helper_method :today_absence
@@ -382,7 +401,7 @@ i metody *today_absence*:
       "#{time.month}-#{time.day}"
     end
 
-oraz metody *not_present*:
+metody *not_present*:
 
     :::ruby app/controllers/students_controller.rb
     # PUT /students/1/not_present
@@ -407,8 +426,18 @@ Po zapisaniu zmian w bazie przechodzimy na stronę główną:
       end
     end
 
-Na koniec dopisujemy trochę kodu do
-[students.css.scss](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/assets/stylesheets/students.css.scss).
+
+### Od SASSa do CSS
+
+Wygenerowany HTML musimy jakoś wystylizować.
+Konieczne poprawki dopisuję na bieżąco do plików:
+*dziennik-lekcyjny.css.scss* i *students.css.scss*.
+
+Wersje tych plików dla ostatniej wersji aplikacji można
+podejrzeć na repo na Githubie:
+
+* [dziennik-lekcyjny.css.scss](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/assets/stylesheets/dziennik-lekcyjny.css.scss)
+* [students.css.scss](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/assets/stylesheets/students.css.scss)
 
 
 ### Zmiany w pozostałych widokach
@@ -416,10 +445,14 @@ Na koniec dopisujemy trochę kodu do
 Zmieniany fragment w *show.html.erb*:
 
     :::rhtml app/views/students/show.html.erb
-    <article class="single">
-      <div class="attribute">
-        <span class="value <%= @student.group %>"><%= @student.full_name %></span>
+    <article class="show">
+      <h2>
+        <span><%= @student.full_name %></span>
         <span class="absences"><%= @student.absences_list %></span>
+      </h2>
+      <div class="attribute">
+        <span class="name">Nickname:</span>
+        <span class="value"><%= @student.nickname %></span>
       </div>
       <div class="attribute">
         <span class="name">Id:</span>
@@ -427,21 +460,17 @@ Zmieniany fragment w *show.html.erb*:
       </div>
       <div class="attribute">
         <span class="name">Course:</span>
-        <span class="value"><%= @student.course %></span>
+        <span class="value"><%= @student.class_name %></span>
       </div>
       <div class="attribute">
         <div class="name">Comments:</div>
-        <div class="value comments"><%= @student.comment %></div>
+        <div class="value comments"><%= @student.comments %></div>
       </div>
-      <div class="link">
-        <%= link_to 'Edit', edit_student_path(@student) %> |
-        <%= link_to 'Back', students_path %>
+      <div class="links">
+        <%= link_to 'Back', students_path, class: "btn primary" %>
+        <%= link_to 'Edit', edit_student_path(@student), class: "btn" %>
       </div>
     </article>
-
-
-Na co zamienić napisy *Show*, *Edit*, *Back*, *New Student* i *Edit Student*?
-Jakieś pomysły?
 
 
 ## Poprawiamy wygenerowany formularz
@@ -453,14 +482,22 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
     :::rhtml app//views/students/_form.html.erb
     <%= semantic_form_for @student do |f| %>
       <%= f.inputs do %>
-        <%= f.input :full_name, :as => :string %>
-        <%= f.input :absences_list, :as => :string %>
-        <%= f.input :id_number %>
-        <%= f.input :course, :as => :select,
-           :collection => ["Unknown", "Aplikacje internetowe i bazy danych", "Algorytmy i struktury danych"] %>
-        <%= f.input :group, :as => :select,
-           :collection => ["unknown", "red", "green", "blue"] %>
-        <%= f.input :comment, :as => :text, :input_html => {:rows => 8} %>
+        <%= f.input :full_name, :input_html => { class: "span10" } %>
+        <%= f.input :id_number, :input_html => { class: "span10" } %>
+        <%= f.input :nickname, :input_html => { class: "span10" } %>
+        <%= f.input :absences, :input_html => { class: "span10" } %>
+        <%= f.input :comments, as: :text, :input_html => { class: "span10" } %>
+        <%= f.input :class_name, :as => :select,
+              :collection => {"niewiadoma" => "unknown",
+                              "języki programowania" => "jp2011l",
+                              "technologie nosql" => "nosql2011l" },
+              :input_html => { class: "span10" } %>
+        <%= f.input :group,:as => :select,
+              :collection => {"niewiadoma" => "unknown",
+                              "niebieska" => "blue",
+                              "zielona" => "green",
+                              "czerwona" => "red"},
+              :input_html => { class: "span10" } %>
       <% end %>
       <%= f.buttons do %>
         <%= f.commit_button %>
@@ -471,7 +508,7 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
 ## Samo życie
 
 Zapomniałem o linkach do repozytoriów z projektami na Githubie.
-Brakuje też bieżącej oceny.
+Brakuje też bieżącego rankingu.
 
 1\. Poprawki w modelu:
 
@@ -482,34 +519,54 @@ Brakuje też bieżącej oceny.
 2\. Poprawki w szablonie formularza:
 
     :::rhtml app/views/students/_form.html.erb
-    <%= f.input :repositories %>
-    <%= f.input :rank %>
+    <%= f.input :rank, :input_html => { class: "span10" } %>
+    <%= f.input :repositories, :input_html => { class: "span10" } %>
 
 W których miejscach to wkleić?
 
 3\. Poprawki w szablonie widoku:
 
     :::rhtml app/views/students/show.html.erb
-    <% title "#{@student.full_name} \##{@student.rank}", false %>
-    <h2 id="rank"><%= "\##{@student.rank}" %></h2>
+    <article class="show">
+      <h2>
+        <span id="rank"><%= progress(@student.rank) %></span><span><%= @student.full_name %></span>
+        <span class="absences"><%= @student.absences_list %></span>
+      </h2>
+      <div class="attribute">
+        <span class="name">Repo URL:</span>
+        <span class="value uri"><%= @student.repositories %></span>
+      </div>
 
-    <div class="attribute">
-      <span class="name">Rank:</span>
-      <span class="value rank"><%= @student.rank %></span>
-    </div>
-    <div class="attribute">
-      <span class="name">Repository URL:</span>
-      <span class="value uri"><%= @student.repositories %></span>
-    </div>
+Kod użytej powyżej metody pomocniczej *progress*:
 
-Jakieś inne pomysły?
+    :::ruby app/helpers/students_helper.rb
+    module StudentsHelper
+      def progress(n)
+        if n.blank?
+          "\#0"
+        else
+          "\##{@student.rank}"
+        end
+      end
+    end
+
+*Pytanie:* Czy link do repozytorium wstawić do elementu A?
+Argumenty za? przeciw?
 
 Gotowe. Można żyć bez migracji. Odjazd!
 
-*Pytanie:* Klikalny link do repozytorium. Argumenty za? przeciw?
+
+## Zmiany w widoku New
+
+Musimy tylko przerobić link *Back* na przycisk.
+
+    :::rhtml app/views/students/show.html.erb
+    <div class="links">
+      <%= link_to 'Back', students_path, class: "btn primary" %>
+    </div>
 
 
-## Implementujemy suwak
+# TODO: Implementujemy suwak
 
 Do pokazania na stronie głównej wartości atrybutu *rank* wykorzystamy
 widżet *jQuery UI* o nazwie *Slider*.
@@ -1274,7 +1331,7 @@ Wrzucić *mongoimport* do *seeds.rb*?
 
 # Co oznacza zwrot *progressive enhancements*
 
-1\. Dodawanie obecności bez przełowdowywania strony głównej.
+1\. Dodawanie obecności bez przeławdowywania strony głównej.
 
 Na początek można zacząć od modyfikacji tego kodu:
 
