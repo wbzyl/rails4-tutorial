@@ -48,6 +48,7 @@ tworzymy rusztowanie aplikacji korzystające z framweorka Bootstrap Twitter.
 
     :::bash terminal
     rails new dziennik-lekcyjny --skip-bundle --skip-active-record --skip-test-unit
+    rm dziennik-lekcyjny/public/index.html
 
 Dopisujemy gemy do pliku *Gemfile*:
 
@@ -81,6 +82,13 @@ Zmienimy tylko paletę kolorów:
 * pomarańczowy: \#FD6300
 * brązowy: \#94190D
 * fioletowy: \#451327 = rgb(69, 19, 39)
+
+Tworzymy szablon aplikacji wzorowany na *ContainerApp*
+z Twitter Bootstrap, dopisujemy metode *title* klasy
+*ApplicationHelper*:
+
+* [application.html.erb](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/views/layouts/application.html.erb)
+* [application_helper.erb](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/helpers/application_helper.rb)
 
 
 2\. Dokończenie instalacji:
@@ -132,7 +140,7 @@ Teraz przed uruchomieniem aplikacji w trybie produkcyjnym wystarczy wykonać:
 **Uwaga**: Takie podejście jest wygodne, o ile zamierzamy wdrożyć
 aplikację na Heroku. Dlaczego?
 
-Dokończenie instalacji *formtastic* i *formtastic-bootstrap*:
+Dokończenie instalacji *formtastic* i *formtastic-bootstrap*.
 
 Initializers:
 
@@ -230,6 +238,7 @@ Możemy też wykonać zrzut bazy. Zrzut wykonujemy na **działającej** bazie:
 
 A tak odtwarzamy zawartość bazy z zrzutu:
 
+    :::bash
     mongorestore -d test --drop backup/dziennik_lekcyjny_development/
 
 **Uwaga:** W powyższym przykładzie backup wszystkich kolekcji z bazy
@@ -287,23 +296,26 @@ rekordów:
     :::ruby app/models/student.rb
     class Student
       include Mongoid::Document
-      field :last_name, :type => String
-      field :first_name, :type => String
-      field :id_number, :type => Integer
-      field :nickname, :type => String
-      field :absences, :type => Array
-      field :comments, :type => String
-      field :class_name, :type => String
-      field :group, :type => String
+      include Mongoid::MultiParameterAttributes # zob. Formtastic FAQ
+
+      field :last_name, type: String
+      field :first_name, type: String
+      field :id_number, type: Integer
+      field :nickname, type: String
+      field :absences, type: Array
+      field :comments, type: String
+      field :class_name, type: String, default: "unknown"
+      field :group, type: String, default: "unknown"
 
       # getter and setter
       def full_name
-        [first_name, last_name].join(' ')
+        [last_name, first_name].join(' ')
       end
+
       def full_name=(name)
         split = name.split(/\s+/, 2)
-        self.first_name = split.first
-        self.last_name = split.last
+        self.last_name = split.first
+        self.first_name = split.last
       end
 
       # obróbka tablicy w formularzu
@@ -317,14 +329,15 @@ rekordów:
 
       default_scope asc(:group, :last_name, :first_name)
 
-      set_callback(:save, :before) do |document|
-        if document.class_name.empty?
-          document.class_name = "unknown"
-        end
-        if document.group.empty?
-          document.group = "unknown"
-        end
-      end
+      # use defaults
+      # set_callback(:save, :before) do |document|
+      #   if document.class_name.empty?
+      #     document.class_name = "unknown"
+      #   end
+      #   if document.group.empty?
+      #     document.group = "unknown"
+      #   end
+      # end
     end
 
 
@@ -337,7 +350,7 @@ Dane studentów z tej samej grupy zostaną wypisane tym samym kolorem.
 Na obrazku poniżej wypisne są informacje
 dla studentów z trzech grup: niebieskiej, zielonej i czerwonej.
 
-{%= image_tag "/images/lista-obecnosci.png", :alt => "[lista obecnosci: /index]" %}
+{%= image_tag "/images/dziennik-lekcyjny.png", :alt => "[dziennik lekcyjny]" %}
 
 Kliknięcie w śmieszek po lewej stronie dopisuje do dokumentu studenta
 nieobecność, przeładowuje stronę na której zostaje wypisana
@@ -369,7 +382,7 @@ Następnie podmienimy szablon strony głównej:
       <div class="student clearfix">
         <div class="presence"><%= link_to '☺', not_present_student_path(student), method: :put %></div>
         <% group = student.group %>
-        <div class="full-name"><%= link_to student.full_name, student, class: group %></div>
+        <div class="full-name"><%= link_to student.full_name, student, class: group, target: "_new" %></div>
         <div class="absences"><%= bullets(student.absences) %></div>
         <div class="links">
           <%= link_to '✎ Edit', edit_student_path(student), class: "btn small" %>
@@ -377,7 +390,10 @@ Następnie podmienimy szablon strony głównej:
       </div>
     </article>
     <% end %>
+
     <div class="link"><%= link_to 'New Student', new_student_path, class: "btn" %></div>
+
+W jakim celu dodano atrybut `target:"_new"` powyżej? Podpowiedź: UI.
 
 Kod użytej powyżej metody pomocniczej *bullets*:
 
@@ -412,7 +428,7 @@ metody *not_present*:
       redirect_to students_url
     end
 
-Po zapisaniu zmian w bazie przechodzimy na stronę główną:
+Po zapisaniu zmian w bazie przechodzimy na stronę *show* (default?):
 
     :::ruby app/controllers/students_controller.rb
     # PUT /students/1
@@ -420,7 +436,7 @@ Po zapisaniu zmian w bazie przechodzimy na stronę główną:
       @student = Student.find(params[:id])
 
       if @student.update_attributes(params[:student])
-        redirect_to students_url, notice: 'Student was successfully updated'
+        redirect_to student_url(@student), notice: 'Student was successfully updated'
       else
         render action: "edit"
       end
@@ -434,7 +450,7 @@ Konieczne poprawki dopisuję na bieżąco do plików:
 *dziennik-lekcyjny.css.scss* i *students.css.scss*.
 
 Wersje tych plików dla ostatniej wersji aplikacji można
-podejrzeć na repo na Githubie:
+podejrzeć na repo na GitHubie:
 
 * [dziennik-lekcyjny.css.scss](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/assets/stylesheets/dziennik-lekcyjny.css.scss)
 * [students.css.scss](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/assets/stylesheets/students.css.scss)
@@ -442,9 +458,11 @@ podejrzeć na repo na Githubie:
 
 ### Zmiany w pozostałych widokach
 
-Zmieniany fragment w *show.html.erb*:
+Zamiany w *show.html.erb*:
 
     :::rhtml app/views/students/show.html.erb
+    <% title @student.full_name, false %>
+
     <article class="show">
       <h2>
         <span><%= @student.full_name %></span>
@@ -472,6 +490,20 @@ Zmieniany fragment w *show.html.erb*:
       </div>
     </article>
 
+Zamiany w *edit.html.erb*:
+
+    :::rhtml app/views/students/edit.html.erb
+    <% title @student.full_name, false %>
+
+    <h1>Editing student</h1>
+
+    <%= render 'form' %>
+
+    <div class="link">
+      <%= link_to 'Back', students_path, class: "btn primary" %>
+      <%= link_to 'Show', student_path(@student), class: "btn primary" %>
+    </div>
+
 
 ## Poprawiamy wygenerowany formularz
 
@@ -482,15 +514,15 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
     :::rhtml app//views/students/_form.html.erb
     <%= semantic_form_for @student do |f| %>
       <%= f.inputs do %>
-        <%= f.input :full_name, :input_html => { class: "span10" } %>
+        <%= f.input :full_name, :input_html => { class: "span10", placeholder: "Nazwisko Imię" } %>
         <%= f.input :id_number, :input_html => { class: "span10" } %>
         <%= f.input :nickname, :input_html => { class: "span10" } %>
         <%= f.input :absences, :input_html => { class: "span10" } %>
         <%= f.input :comments, as: :text, :input_html => { class: "span10" } %>
         <%= f.input :class_name, :as => :select,
               :collection => {"niewiadoma" => "unknown",
-                              "języki programowania" => "jp2011l",
-                              "technologie nosql" => "nosql2011l" },
+                              "języki programowania" => "jp",
+                              "technologie nosql" => "nosql" },
               :input_html => { class: "span10" } %>
         <%= f.input :group,:as => :select,
               :collection => {"niewiadoma" => "unknown",
@@ -510,19 +542,23 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
 Zapomniałem o linkach do repozytoriów z projektami na Githubie.
 Brakuje też bieżącego rankingu.
 
+Aha, jeszcze dodałbym rok i semestr: zima, lato.
+
 1\. Poprawki w modelu:
 
     :::ruby app/models/student.rb
-    field :repositories, :type => String
-    field :rank, :type => Integer
+    field :repositories, type: String
+    field :rank, type: Integer
+    field :year, type: Integer
+    field :semester, type: Integer
 
 2\. Poprawki w szablonie formularza:
 
     :::rhtml app/views/students/_form.html.erb
     <%= f.input :rank, :input_html => { class: "span10" } %>
     <%= f.input :repositories, :input_html => { class: "span10" } %>
-
-W których miejscach to wkleić?
+    <%= f.input :semester, :as => :check_boxes, :collection => { "zima" => "winter", "lato" => "summer" } %>
+    <%= f.input :year, :as => :radio, :collection => ["2011", "2012"] %>
 
 3\. Poprawki w szablonie widoku:
 
@@ -566,54 +602,107 @@ Musimy tylko przerobić link *Back* na przycisk.
     </div>
 
 
-# TODO: Implementujemy suwak
+## Usuwanie danych
+
+Tak jak to było obiecane, dodamy widok *admin*, gdzie będzie można
+usunąć dane studenta z bazy.
+
+Routing:
+
+    :::ruby config/routes.rb
+    resources :students do
+      put 'not_present', :on => :member
+      get 'admin', :on => :collection
+    end
+
+Kontroler:
+
+    :::ruby app/controllers/students_controller.rb
+    # GET /students/admin
+    def admin
+      @students = Student.all
+    end
+
+    def destroy
+      @student = Student.find(params[:id])
+      @student.destroy
+
+      respond_to do |format|
+        format.html { redirect_to admin_students_url, notice: 'Student was successfully destroyed' }
+        format.json { head :no_content }
+      end
+    end
+
+Widok:
+
+    :::html app/views/students/admin.html.erb
+    <h1>Admin page</h1>
+
+    <% @students.each do |student| %>
+    <article class="delete">
+      <div class="student clearfix">
+        <div class="link">
+          <%= link_to '✖ Destroy', student, confirm: 'Are you sure?',
+                class: "btn danger small", method: :delete %>
+        </div>
+        <% group = student.group %>
+        <div class="full-name"><%= link_to student.full_name, student, class: group, target: "_new" %></div>
+        <div class="absences"><%= bullets(student.absences) %></div>
+      </div>
+    </article>
+    <% end %>
+
+
+# Dodajemy progress bar
 
 Do pokazania na stronie głównej wartości atrybutu *rank* wykorzystamy
-widżet *jQuery UI* o nazwie *Slider*.
+element *progress*.
 
-Zanim się do tego zabierzemy, przeanalizujemy demo i dokumentację:
+Kilka uwag o tym elemencie:
 
-* [Slider Demo](http://jqueryui.com/demos/slider/)
-* [UI/API/1.8/Slider](http://docs.jquery.com/UI/Slider)
+* [HTML5 Please](http://html5please.us/),
+  Lea Verou, [HTML5-Progress-polyfill](https://github.com/LeaVerou/HTML5-Progress-polyfill)
+* [Bootstrap v2.0, from Twitter](http://markdotto.com/bs2/docs/index.html),
+  [Progress bars](http://markdotto.com/bs2/docs/components.html#progress)
 
-Do stylizacji suwaka użyję gotowego tematu o nazwie *UI lightness* ze
-strony [Build Your Download](http://jqueryui.com/download).
+Na razie element ten wystylizujemy korzystając ze wskazówek z bloga
+Mounir Lamour, [The HTML progress element in Firefox](http://blog.oldworld.fr/index.php?post/2011/07/The-HTML5-progress-element-in-Firefox).
 
-Można też zrobić własny temat. Wystarczy wejść na stronę.
+Zaczniemy od dopisania widoku *index*, po elemencie *div.absences*
+elementu *progress*:
 
-* [ThemeRoller](http://jqueryui.com/themeroller/)
+    :::rhtml app/views/students/index.html.erb
+    <div class="rank"><progress value='<%= student.rank/100.0 || 0.0 %>'>
+       <i>Your browser does not support the progress element!</i></progress>
+    </div>
 
+Trochę SASSa [students.css.scss](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/assets/stylesheets/students.css.scss#L104)
+i [formtastic-form.css.scss](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/assets/stylesheets/formtastic-form.css.scss#L17)
+oraz trochę kodu JavaScript załatwia kolorowanie postępów w nauce:
 
-### Dodajemy jQuery UI Theme do aplikacji
+    :::js app/assets/javascripts/students.js
+    $(document).ready(function() {
+      $('.index progress').map(function () {
+        var progress = $(this).attr('value');
 
-Wchodzimy na konsolę Rails, gdzie wykonujemy:
+        switch(true) {
+        case (progress <= .4):
+          $(this).addClass('ndst');
+          break;
+        case (progress <= .6):
+          $(this).addClass('dst');
+          break;
+        case (progress <= .8):
+          $(this).addClass('db');
+          break;
+        case (progress <= 1):
+          $(this).addClass('bdb');
+          break;
+        }
+        //console.log($(this).attr('value'));
 
-    :::ruby
-    Rails.application.config.assets.paths.each {|p| puts p } ; 0
-    ...
-    /home/wbzyl/repos/dydaktyka/lista-obecnosci-rails-mongoid-omniauth/vendor/assets/stylesheets
-    ...
-
-Rozpakowujemy pobrany temat *UI Lightness* w jakimś katalogu tymczasowym.
-Odszukujemy plik *jquery-ui-1.8.16.custom.css* i katalog *images*.
-Kopiujemy je do katalogu *vendor/assets/stylesheets*.
-
-Dopisujemy *jquery-ui-1.8.16.custom.css* do *application.css.scss*:
-
-    :::css app/assets/stylesheets/application.css.scss
-    /*
-     *= require jquery-ui-1.8.16.custom
-     *= require_self
-     */
-
-Stylizujemy suwak, tak aby pasował do strony głównej.
-W tym celu wklepujemy w *layout.css.scss*:
-
-    :::css app/assets/stylesheets/layout.css.scss
-    /* jQuery UI slider */
-    .ui-slider .ui-slider-handle { width: 1em; height: 1em; }
-    .ui-slider-horizontal { margin-top: .25em; height: .6em; }
-    .ui-slider-horizontal .ui-slider-handle { top: -.25em; margin-left: -.5em; }
+        });
+    });
 
 
 ### Dodajemy suwaki do strony
