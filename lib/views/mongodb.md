@@ -705,194 +705,119 @@ oraz trochę kodu JavaScript załatwia kolorowanie postępów w nauce:
     });
 
 
-### Dodajemy suwaki do strony
+## TODO: Classes – wyszukiwanie po params
 
-Dodajemy suwaki do strony głównej:
+Menu: rozwinięte obrazek.
 
-    :::rhtml app/views/students/index.html.erb
-    <% @students.each do |student| %>
-    <article class="index">
-      <div class="attribute">
-        <div class="presence"><%= link_to '☺', not_present_student_path(student), method: :put %></div>
-        <div class="full-name"><%= link_to student.full_name, student, :class => student.group %></div>
-        <div class="absences"><%= bullets(student.absences) %></div>
-        <div class="links">
-          <%= link_to '✎', edit_student_path(student) %>
-          <%= link_to '✖', student, confirm: 'Are you sure?', method: :delete %>
-        </div>
-        <div data-student-rank="<%= student.rank.to_i %>"
-             data-rank-student-path="<%= rank_student_path(student) %>">
-        </div>
-      </div>
-    </article>
-    <% end %>
-
-    <div class="link">
-      <%= link_to 'New Student', new_student_path %>
-    </div>
-
-Inicjalizacja suwaków:
-
-* rodzaj suwaka ← *"min"*
-* pozycja uchwytu ← wartość atrybutu *data-student-rank*, której
-  wcześniej nadaliśmy wartość pobraną z bazy
-
-A tak to zakodujemy:
-
-    :::javascript app/assets/javascripts/students.js
-    $(function() {
-
-      // Add sliders to div elements
-      $('div[data-student-rank]').slider({
-          range: "min",
-          create: function(event, ui) {
-              $(this).slider({ value: $(this).data("student-rank") });
-          }
-      });
-
-    });
-
-Dopisujemy plik inicjalizujący suwaki do pliku *application.js*:
-
-    :::javascript app/assets/javascripts/application.js
-    //= require jquery
-    //= require jquery-ui
-    //= require jquery_ujs
-    //= require students
-
-I już możemy sprawdzić jak prezentują się suwaki na stronie głównej.
-
-
-### Ajaxujemy suwaki
-
-Oznacza to, że po przeciągnięciu uchwytu suwaka studenta na inną pozycję,
-powinniśmy uaktualnić jego *rank*, zapisując w bazie aktualną
-wartość suwaka. (Nasze suwaki używają domyślnego zakresu **0..100**.)
-
-W tym celu skorzystamy ze zdarzenia *change*.
-Na początek przyjrzymy się czy i jak działa to zdarzenie:
-
-    :::javascript app/assets/javascripts/students.js
-    $('div[role="main"]').bind("slidechange", function(event, ui) {
-      console.log($(ui.handle).parent().data("rank-student-path"));
-      console.log(ui.value);
-    });
-
-Sprawdzamy logi na konsoli przegladarki. Jest OK!
-
-Do routingu wstawiliśmy już wcześniej metodę *rank*. Dla przypomnienia:
+Wyszukiwanie:
 
     :::ruby
-    rank_student PUT  /students/:id/rank  {:action=>"rank", :controller=>"students"}
+    # GET /students
+    # GET /students.json
+    def index
+      # logger.info "☻ request query parameters: #{request.query_parameters}"
 
-Teraz przechodzimy do implementacji. Implementujemy kolejno:
+      class_name = params[:class_name] || "unknown"
+      year = params[:year] || "2011"
+      semester = params[:semester] || "summer"
 
-zdarzenie *change* suwaka:
-
-    :::javascript app/assets/javascripts/students.js
-    $('div[role="main"]').bind("slidechange", function(event, ui) {
-      $.ajax({
-        url: $(ui.handle).parent().data("rank-student-path"),
-        type: 'PUT',
-        data: { slider_value: ui.value },
-        success: function(data) {
-          delete data._id; delete data.course; delete data.comment;
-          console.log(JSON.stringify(data));
-        }
-      });
-    });
-
-metodę *rank* kontrolera, która odpowie na żądanie zgłoszone przez
-suwak:
-
-    :::ruby app/controllers/students_controller.rb
-    # PUT /students/1/rank
-    def rank
-      @student = Student.find(params[:id])
-      logger.info "☻ #{@student.full_name} rank change #{@student.rank.to_i} → #{params[:slider_value]}"
-      @student.rank = params[:slider_value]
-      if @student.save
-        render json: @student
+      if params[:class_name]
+        @students = Student.where(class_name: class_name, year: year, semester: semester)
       else
-        redirect_to students_url, alert: "There were problems with saving student's rank!"
+        @students = Student.where(year: 2011)
+      end
+
+      respond_to do |format|
+        format.html # index.html.erb
+        format.json { render json: @students }
       end
     end
 
+Zmiany w menu:
 
-## Arkusz stylów
+    :::rhtml app/views/common/_menu.html.erb
+    <%= link_to "Dziennik lekcyjny, lato 11/12", root_path, class: "brand" %>
 
-**TODO** Usunąć. Zostawić tylko link. Oto obiecany powyżej arkusz stylów:
+    <ul class="nav">
+      <li class="active"><a href="http://tao.inf.ug.edu.pl">Home</a>
+      <li><%= link_to "About", root_path %>
+      <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">Classes</a>
+        <ul class="dropdown-menu">
+          <li><%= link_to "architektura serwisów internetowych", students_path(class_name: "asi", year: 2011, semester: "summer") %>
+          <li><%= link_to "techologie nosql", students_path(class_name: "nosql", year: 2011, semester: "summer") %>
+          <li class="divider"></li>
+          <li><a href="http://inf.ug.edu.pl/plan">plan zajęć</a>
+        </ul>
+      </li>
+      <li><%= link_to "Admin", admin_students_path %>
+    </ul>
+    <form action="" class="pull-right">
+      <button class="btn" type="submit">Sign in through GitHub</button>
+    </form>
 
-    :::css dziennik.css.scss
-    a {
-      color: black; }
-    .red, a.red {
-      color: red; }
-    .green, a.green {
-      color: green; }
-    .blue, a.blue {
-      color: blue; }
-    .unknown, a.unknown {
-      color: cyan; }
-    .today {
-      color: #E82C0C; }
-    .index {
-      .attribute {
-         clear: both;
-         div[data-student-rank] { // sliders
-            width: 200px;
-            float: right;
-            margin-right: 0.5em; }
-         .full-name, .presence, .absences {
-            float: left; }
-         .full-name {
-            a {
-              text-decoration: none; } }
-         .presence {
-            cursor: pointer;
-            margin-right: 1em;
-            a {
-              text-decoration: none;
-              color: #E82C0C; } }
-         .absences {
-            margin-left: 1em;
-            position: relative;
-            top: -0.1ex; }
-         .links {
-            float: right;
-            a {
-              margin-left: 0.5em;
-              text-decoration: none;
-              color: #E80C7A; } } } }
-    .single {
-      .attribute {
-        .uri {
-           font-style: italic; }
-        .absences {
-           margin-left: 2em;
-           font-weight: bold; } } }
+## Dodajemy nieobecność via AJAX
 
-    #rank {
-      color: #E80C7A; }
+**TODO:**: dopisać *remote*?
 
-    .link {
-      margin-top: 2em;
-      clear: both; }
-    .attribute {
-      margin-top: 0.5em; }
-    ul.hmenu {
-      float: right;
-      list-style: none;
-      margin: 0 0 2em;
-      padding: 0;
-      li {
-        padding-left: 1em;
-        display: inline;
-        a {
-          text-decoration: none;
-          color: yellow; } } }
+Widok *index*:
 
-Jakiś taki nieuporządkowany jest ten arkusz. *TODO:* uporządkować arkusz!
+    :::rhtml
+    <div class="attribute">
+      <div class="presence"><%= link_to '☺', not_present_student_path(student), method: :put %></div>
+
+JavaScript:
+
+    :::js students.js
+    $('div[role="main"]').click(function(event) {
+        var link = $(event.target); // see index.html.erb
+        var div = link.parent();
+        var absences = div.parent().find('div.absences');
+        if (div.hasClass('presence')) {
+            div.html('☻'); // replace link with black smiley
+            $.ajax({
+                url: link.attr('href'),
+                type: 'PUT'
+            }).done(function(data) {
+                //console.log(data.value);
+                absences.html(data.value);
+            });
+            return false;
+        };
+    });
+
+Kontroler:
+
+    :::rhtml
+    # PUT /students/1/not_present
+    def not_present
+      @student = Student.find(params[:id])
+      logger.info "☻ #{@student.full_name} absent at #{params[:absent]}"
+      @student.add_to_set(:absences, today_absence)
+      render :json => { value: bullets(@student.absences) }.to_json
+    end
+
+    # PUT /students/1/not_present
+    def not_present
+      @student = Student.find(params[:id])
+      logger.info "☻ #{@student.full_name} absent at #{params[:absent]}"
+      @student.add_to_set(:absences, today_absence)
+      redirect_to students_url
+    end
+
+    # def update
+    #   @student = Student.find(params[:id])
+
+    #   respond_to do |format|
+    #     if @student.update_attributes(params[:student])
+    #       format.html { redirect_to @student, notice: 'Student was successfully updated.' }
+    #       format.json { head :no_content }
+    #     else
+    #       format.html { render action: "edit" }
+    #       format.json { render json: @student.errors, status: :unprocessable_entity }
+    #     end
+    #   end
+    # end
 
 
 # OmniAuth + Github
@@ -1223,75 +1148,60 @@ Praktycznie każda implementacja autentykacji implementuje te metody:
     end
 
 
-## Strona do zarządzania danymi użytkowników
+# TODO: AJAX
 
-Czyli coś dla administratora.
-Na pierwszy ogień pójdą model i widok:
+Oznacza to, że po przeciągnięciu uchwytu suwaka studenta na inną pozycję,
+powinniśmy uaktualnić jego *rank*, zapisując w bazie aktualną
+wartość suwaka. (Nasze suwaki używają domyślnego zakresu **0..100**.)
 
-    :::bash terminal
-    rails generate controller admin index
+W tym celu skorzystamy ze zdarzenia *change*.
+Na początek przyjrzymy się czy i jak działa to zdarzenie:
 
-Dopisujemy w modelu:
+    :::javascript app/assets/javascripts/students.js
+    $('div[role="main"]').bind("slidechange", function(event, ui) {
+      console.log($(ui.handle).parent().data("rank-student-path"));
+      console.log(ui.value);
+    });
 
-    :::ruby models/user.rb
-    default_scope asc(:nickname, :provider)
+Sprawdzamy logi na konsoli przegladarki. Jest OK!
 
-oraz w widoku:
+Do routingu wstawiliśmy już wcześniej metodę *rank*. Dla przypomnienia:
 
-    :::rhtml app/views/admin/index.html.erb
-    <% title "Admin page" %>
-    <h3>Users list</h3>
-    <ol>
-    <% @users.each do |user| %>
-      <li><%= user.name %> <i>via</i> <%= user.provider %></li>
-    <% end %>
-    </ol>
+    :::ruby
+    rank_student PUT  /students/:id/rank  {:action=>"rank", :controller=>"students"}
 
-Na koniec poprawiamy routing:
+Teraz przechodzimy do implementacji. Implementujemy kolejno:
 
-    :::ruby config/routes.rb
-    # get "admin/index" -- zmieniamy na
-    match '/admin' => 'admin#index', :as => :admin
+zdarzenie *change* suwaka:
 
-Teraz wchodzimy na stronę:
+    :::javascript app/assets/javascripts/students.js
+    $('div[role="main"]').bind("slidechange", function(event, ui) {
+      $.ajax({
+        url: $(ui.handle).parent().data("rank-student-path"),
+        type: 'PUT',
+        data: { slider_value: ui.value },
+        success: function(data) {
+          delete data._id; delete data.course; delete data.comment;
+          console.log(JSON.stringify(data));
+        }
+      });
+    });
 
-    http://localhost:3000/admin
+metodę *rank* kontrolera, która odpowie na żądanie zgłoszone przez
+suwak:
 
-
-## Poprawiamy layout aplikacji
-
-**TODO**
-
-SASS:
-
-    :::css app//assets/stylesheets/dziennik.css.scss
-    ul.hmenu {
-      list-style: none;
-      margin: 0 0 2em;
-      padding: 0;
-      li {
-        display: inline; } }
-
-Nawigacja (do poprawki, HTML5):
-
-    :::rhtml app/views/shared/_navigation.html.erb
-    <% if current_user %>
-      <li>Logged in <%= current_user.name %>
-      <li><%= link_to('Logout', signout_path) %>
-    <% else %>
-      <li><%= link_to('Login (via github)', signin_path)  %>
-    <% end %>
-
-Layout (dopisujemy pod znacznikiem *header*):
-
-    :::rhtml app/views/layouts/application.html.erb
-    <header>
-      <ul class="hmenu">
-        <%= render 'shared/navigation' %>
-      </ul>
-      <%= content_tag :h1, "Lista obecności ASI, 2011/12" %>
-
-I sprawdzamy jak wygląda nawigacja w działającej aplikacji.
+    :::ruby app/controllers/students_controller.rb
+    # PUT /students/1/rank
+    def rank
+      @student = Student.find(params[:id])
+      logger.info "☻ #{@student.full_name} rank change #{@student.rank.to_i} → #{params[:slider_value]}"
+      @student.rank = params[:slider_value]
+      if @student.save
+        render json: @student
+      else
+        redirect_to students_url, alert: "There were problems with saving student's rank!"
+      end
+    end
 
 
 ## Dodajemy access control
@@ -1392,6 +1302,41 @@ i kontroler sesji:
     end
 
 Zrobione!
+
+
+# TODO: Strona do zarządzania danymi użytkowników
+
+Czyli coś dla administratora.
+Na pierwszy ogień pójdą model i widok:
+
+    :::bash terminal
+    rails generate controller admin index
+
+Dopisujemy w modelu:
+
+    :::ruby models/user.rb
+    default_scope asc(:nickname, :provider)
+
+oraz w widoku:
+
+    :::rhtml app/views/admin/index.html.erb
+    <% title "Admin page" %>
+    <h3>Users list</h3>
+    <ol>
+    <% @users.each do |user| %>
+      <li><%= user.name %> <i>via</i> <%= user.provider %></li>
+    <% end %>
+    </ol>
+
+Na koniec poprawiamy routing:
+
+    :::ruby config/routes.rb
+    # get "admin/index" -- zmieniamy na
+    match '/admin' => 'admin#index', :as => :admin
+
+Teraz wchodzimy na stronę:
+
+    http://localhost:3000/admin
 
 
 # TODO
