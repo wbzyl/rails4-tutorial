@@ -363,7 +363,7 @@ coś w polu komentarze.
 Usunąć dane studenta będzie mial prawo tylko prowadzący zajęcia.
 Do usuwanie danych – przygotuję osobną stronę.
 
-Do generowania kropek używamy metody pomocniczej *bullets*. Element
+Do generowania kropek używamy metody pomocniczej *bullets*. Eement
 *progress* wskazuje na „progress” (w procentach) studenta
 (liczbę punktów zdobytych przez studenta).
 
@@ -699,15 +699,13 @@ oraz trochę kodu JavaScript załatwia kolorowanie postępów w nauce:
           $(this).addClass('bdb');
           break;
         }
-        //console.log($(this).attr('value'));
-
-        });
+      });
     });
 
 
-## TODO: Classes – wyszukiwanie po params
+## Wyszukiwanie grup studentów
 
-Menu: rozwinięte obrazek.
+W menu umieśiłem wszystkie swoje grupy laboratoryjne
 
 Wyszukiwanie:
 
