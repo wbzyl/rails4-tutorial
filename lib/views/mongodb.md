@@ -423,7 +423,6 @@ metody *not_present*:
     # PUT /students/1/not_present
     def not_present
       @student = Student.find(params[:id])
-      logger.info "☻ #{@student.full_name} absent at #{params[:absent]}"
       @student.add_to_set(:absences, today_absence)
       redirect_to students_url
     end
@@ -705,9 +704,38 @@ oraz trochę kodu JavaScript załatwia kolorowanie postępów w nauce:
 
 ## Wyszukiwanie grup studentów
 
-W menu umieśiłem wszystkie swoje grupy laboratoryjne
+W menu umieściłem wszystkie swoje grupy laboratoryjne
+w semestrze letnim, r. akad. 2011/12:
 
-Wyszukiwanie:
+{%= image_tag "/images/dziennik-menu.png", :alt => "[dziennik menu]" %}
+
+Dane studentów zapisywane są w kolekcji *students*.
+Aby wyszukać wszystkich studentów z jednej grupy w zapytaniu
+dodaję: nazwę grupy, rok i semestr:
+
+    :::rhtml app/views/common/_menu.html.erb
+    <%= link_to "Dziennik lekcyjny, lato 11/12", root_path, class: "brand" %>
+
+    <ul class="nav">
+      <li class="active"><a href="http://tao.inf.ug.edu.pl">Home</a>
+      <li><%= link_to "About", root_path %>
+      <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">Classes</a>
+        <ul class="dropdown-menu">
+          <li><%= link_to "architektura serwisów internetowych", students_path(class_name: "asi", year: 2011, semester: "summer") %>
+          <li><%= link_to "techologie nosql", students_path(class_name: "nosql", year: 2011, semester: "summer") %>
+          <li class="divider"></li>
+          <li><a href="http://inf.ug.edu.pl/plan">plan zajęć</a>
+        </ul>
+      </li>
+      <li><%= link_to "Admin", admin_students_path %>
+    </ul>
+    <form action="" class="pull-right">
+      <button class="btn" type="submit">Sign in through GitHub</button>
+    </form>
+
+Studentów wyszukuję w metodzie *index* kontrolera.
+Docelowo, należałoby przenieść wyszukiwanie do modelu.
 
     :::ruby
     # GET /students
@@ -731,94 +759,90 @@ Wyszukiwanie:
       end
     end
 
-Zmiany w menu:
 
-    :::rhtml app/views/common/_menu.html.erb
-    <%= link_to "Dziennik lekcyjny, lato 11/12", root_path, class: "brand" %>
+## Dodawanie nieobecności
 
-    <ul class="nav">
-      <li class="active"><a href="http://tao.inf.ug.edu.pl">Home</a>
-      <li><%= link_to "About", root_path %>
-      <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">Classes</a>
-        <ul class="dropdown-menu">
-          <li><%= link_to "architektura serwisów internetowych", students_path(class_name: "asi", year: 2011, semester: "summer") %>
-          <li><%= link_to "techologie nosql", students_path(class_name: "nosql", year: 2011, semester: "summer") %>
-          <li class="divider"></li>
-          <li><a href="http://inf.ug.edu.pl/plan">plan zajęć</a>
-        </ul>
-      </li>
-      <li><%= link_to "Admin", admin_students_path %>
-    </ul>
-    <form action="" class="pull-right">
-      <button class="btn" type="submit">Sign in through GitHub</button>
-    </form>
+Aktualnie kliknięcie w „buźkę” przy nazwisku studenta, przeładowuje stronę
+wyświetlając ją z dodaną kropką (nieobecność).
 
-## Dodajemy nieobecność via AJAX
+Po przeładowaniu, strona wyświetla się od początku, a nie od miejsca
+w w którym kliknęliśmy. Takie zachowanie jest szczególnie uciążliwe
+przy kilku stronicowych listach studentów. Użyję Ajaxa aby to zmienić.
 
-**TODO:**: dopisać *remote*?
+Zaczniemy od dodania formatu JSON do metody *not_present*:
 
-Widok *index*:
+    :::ruby app/controllers/students_controller.rb
+    # PUT /students/1/not_present
+    # PUT /students/1/not_present.json
+    def not_present
+      @student = Student.find(params[:id])
 
-    :::rhtml
-    <div class="attribute">
-      <div class="presence"><%= link_to '☺', not_present_student_path(student), method: :put %></div>
+      respond_to do |format|
+        if @student.add_to_set(:absences, today_absence)
+          format.html { redirect_to students_url, notice: 'Student absences were successfully updated.' }
+          format.json { render :json => { value: bullets(@student.absences) }.to_json }
+        else
+          format.html { render action: "edit" }
+          format.json { render json: @student.errors, status: :unprocessable_entity }
+        end
+      end
+    end
 
-JavaScript:
+Po podmianie kodu, mamy problemy. Po kliknięciu '☺' w oknie przeglądarki
+pojawia się komunikat:
+
+    undefined method `bullets' for #<StudentsController:0x00...>
+
+Oznacza to, że musimy przenieść kod metody pomocniczej *bullets* do
+*ApplicationController* i dodać ją z powrotem do metod pomocniczych:
+
+    :::ruby app/controllers/application_controller.rb
+    class ApplicationController < ActionController::Base
+      helper_method :today_absence, :bullets
+      ...
+
+Aby po kliknięciu w link z '☺' wykonał się kod z *format.json*
+wystarczy, bo korzystamy z adapteru *jQuery-UJS*,
+zmodyfikować *link_to* w taki sposób:
+
+    :::rhtml app/views/students/index.html.erb
+    <div class="presence"><%= link_to '☺', not_present_student_path(student),
+        method: :put, remote: true, data: { type: :json } %>
+    </div>
+
+Adapter *jQuery-UJS* zmienia funkcję każdego linku z atrybutem *data-remote*
+(generowanym przez *link_to* z argumentem *remote: true*).
+Taki link wysyła żądanie *jQuery.ajax()*.
+
+Po tej zmianie w kodzie, strona nie powinna być przeładowywana.
+Pozostaje uaktualnić jej zawartość.
+
+Na początek przyjrzymy się na konsoli przeglądarki wysyłanym
+żądaniom i odbieranym odpowiedziom:
 
     :::js students.js
-    $('div[role="main"]').click(function(event) {
-        var link = $(event.target); // see index.html.erb
-        var div = link.parent();
-        var absences = div.parent().find('div.absences');
-        if (div.hasClass('presence')) {
-            div.html('☻'); // replace link with black smiley
-            $.ajax({
-                url: link.attr('href'),
-                type: 'PUT'
-            }).done(function(data) {
-                //console.log(data.value);
-                absences.html(data.value);
-            });
-            return false;
-        };
+    $('a[data-type=\"json\"]').bind('ajax:success', function(event, data, status, xhr) {
+      var link = $(this);
+      console.log(link);
+      console.log(JSON.stringify(data)); // prettyprint JSON object
     });
 
-Kontroler:
+Z tego co widać, wystarczy odebrać wysłany przez naszą
+aplikację obiekt JSON i uaktualnić zawartość strony:
 
-    :::rhtml
-    # PUT /students/1/not_present
-    def not_present
-      @student = Student.find(params[:id])
-      logger.info "☻ #{@student.full_name} absent at #{params[:absent]}"
-      @student.add_to_set(:absences, today_absence)
-      render :json => { value: bullets(@student.absences) }.to_json
-    end
+    :::ruby students.js
+    $('a[data-type=\"json\"]').bind('ajax:success', function(event, data, status, xhr) {
+      var div = $(this).parent();
+      div.html('☻'); // replace content div.presence with the black smiley
 
-    # PUT /students/1/not_present
-    def not_present
-      @student = Student.find(params[:id])
-      logger.info "☻ #{@student.full_name} absent at #{params[:absent]}"
-      @student.add_to_set(:absences, today_absence)
-      redirect_to students_url
-    end
+      var absences = div.parent().find('.absences');
+      absences.html(data.value);
+    });
 
-    # def update
-    #   @student = Student.find(params[:id])
-
-    #   respond_to do |format|
-    #     if @student.update_attributes(params[:student])
-    #       format.html { redirect_to @student, notice: 'Student was successfully updated.' }
-    #       format.json { head :no_content }
-    #     else
-    #       format.html { render action: "edit" }
-    #       format.json { render json: @student.errors, status: :unprocessable_entity }
-    #     end
-    #   end
-    # end
+Gotowe!
 
 
-# OmniAuth + Github
+# TODO: OmniAuth + Github
 
 Zaczynamy od zarejestowania aplikacji na [Githubie](https://github.com/account/applications).
 
@@ -1146,61 +1170,6 @@ Praktycznie każda implementacja autentykacji implementuje te metody:
     end
 
 
-# TODO: AJAX
-
-Oznacza to, że po przeciągnięciu uchwytu suwaka studenta na inną pozycję,
-powinniśmy uaktualnić jego *rank*, zapisując w bazie aktualną
-wartość suwaka. (Nasze suwaki używają domyślnego zakresu **0..100**.)
-
-W tym celu skorzystamy ze zdarzenia *change*.
-Na początek przyjrzymy się czy i jak działa to zdarzenie:
-
-    :::javascript app/assets/javascripts/students.js
-    $('div[role="main"]').bind("slidechange", function(event, ui) {
-      console.log($(ui.handle).parent().data("rank-student-path"));
-      console.log(ui.value);
-    });
-
-Sprawdzamy logi na konsoli przegladarki. Jest OK!
-
-Do routingu wstawiliśmy już wcześniej metodę *rank*. Dla przypomnienia:
-
-    :::ruby
-    rank_student PUT  /students/:id/rank  {:action=>"rank", :controller=>"students"}
-
-Teraz przechodzimy do implementacji. Implementujemy kolejno:
-
-zdarzenie *change* suwaka:
-
-    :::javascript app/assets/javascripts/students.js
-    $('div[role="main"]').bind("slidechange", function(event, ui) {
-      $.ajax({
-        url: $(ui.handle).parent().data("rank-student-path"),
-        type: 'PUT',
-        data: { slider_value: ui.value },
-        success: function(data) {
-          delete data._id; delete data.course; delete data.comment;
-          console.log(JSON.stringify(data));
-        }
-      });
-    });
-
-metodę *rank* kontrolera, która odpowie na żądanie zgłoszone przez
-suwak:
-
-    :::ruby app/controllers/students_controller.rb
-    # PUT /students/1/rank
-    def rank
-      @student = Student.find(params[:id])
-      logger.info "☻ #{@student.full_name} rank change #{@student.rank.to_i} → #{params[:slider_value]}"
-      @student.rank = params[:slider_value]
-      if @student.save
-        render json: @student
-      else
-        redirect_to students_url, alert: "There were problems with saving student's rank!"
-      end
-    end
-
 
 ## Dodajemy access control
 
@@ -1335,62 +1304,6 @@ Na koniec poprawiamy routing:
 Teraz wchodzimy na stronę:
 
     http://localhost:3000/admin
-
-
-# TODO
-
-Różne rzeczy, które należałoby zaprogramować lub poprawić.
-
-## Usuwanie baz danych aplikacji
-
-Dopisujemy do pliku *seeds.rb*:
-
-    :::ruby db/seeds.rb
-    puts 'Empty the MongoDB database'
-    Mongoid.master.collections.reject do |c|
-      c.name =~ /^system/
-    end.each(&:drop)
-
-Teraz:
-
-    rake db:seed
-
-usuwa kolekcje *students* i *users* z bazy. Dziwne to!
-Lepiej byłoby dodać (osobne dla każdej kolekcji) zadania dla rake.
-
-Wrzucić *mongoimport* do *seeds.rb*?
-
-
-# Co oznacza zwrot *progressive enhancements*
-
-1\. Dodawanie obecności bez przeławdowywania strony głównej.
-
-Na początek można zacząć od modyfikacji tego kodu:
-
-    :::javascript app/assets/javascripts/students.js
-    $(document).ready(function() {
-        $('div[role="main"]').click(function(event) {
-          var clicked_element = $(event.target);
-          if (clicked_element.hasClass('presence')) {
-            clicked_element.html('☻');
-            var link_element = clicked_element.parent().find('a:eq(0)');
-            // url = /students/4eb2f22a329855e103cdcfd0
-            var date = new Date();
-            var today = (date.getMonth() + 1) + '-' + date.getDate();
-            $.ajax({
-              url: link_element.attr('href'),
-              type: 'PUT',
-              data: { absent: today },
-              success: function(data) {
-                console.log(data);
-              }
-            });
-          };
-          // event.stopPropagation(); deactivates destroy link – bug?
-        });
-    });
-
-2\. Inne propozycje?
 
 
 # Misz masz do poczytania

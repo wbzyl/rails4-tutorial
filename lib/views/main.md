@@ -14,7 +14,7 @@
 Nowy termin wtorek, 24.02, g. 11.30, p. 228
 
 
-## Zaczynamy!! czy Zaczynamy??
+## Zaczynamy ! czy Zaczynamy ?
 
 Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/)
 albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/).
@@ -44,12 +44,12 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Zapoznajemy się z Ruby", "/ruby19" %}
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "Makieta aplikacji, czyli layout", "/layouty" %}
+1. {%= link_to "Remote links", "/remote-links" %}
 1. {%= link_to "Wyszukiwanie z ElasticSearch", "/elasticsearch" %}
 1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
 1. {%= link_to "TDD, BDD…", "/testowanie" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
-1. {%= link_to "Remote links", "/remote-links" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
 1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}
 1. {%= link_to "Wysyłanie poczty", "/mail" %}
