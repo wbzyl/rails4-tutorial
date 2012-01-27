@@ -920,22 +920,22 @@ Zobacz też Heroku,
 Powyższe podejście nie działa jeśli aplikację uruchomimy
 za pomocą *Nginx + Passenger*.
 
-W tym przypadku postępuję tak:
+W tym przypadku postępuję tak.
+Moje prywatne dane trzymam poza repozytorium
+w katalogu *$HOME/.credentials*. Dane są zapisane
+w formacie YAML:
 
-Tajne dane, trzymamy poza repozytorium:
-
-    :::yaml config/oauth2_apps_config.yml
+    :::yaml HOME/.credentials/services.yml
     github:
       key: 11111111111111111111
       secret: 1111111111111111111111111111111111111111
 
-Initializer:
+Dodaję do aplikacj plik inicjujący:
 
     :::ruby config/initializers/github.rb
-    raw_config = File.read("#{Rails.root}/config/oauth2_apps_config.yml")
-    OAUTH2_APPS_CONFIG = YAML.load(raw_config)
+    raw_config = File.read("#{ENV['HOME']}/.credentials/services.yml")
 
-    github = OAUTH2_APPS_CONFIG['github']
+    github = YAML.load(raw_config)['github']
 
     Rails.application.config.middleware.use OmniAuth::Builder do
       provider :github, github['key'], github['secret']
@@ -965,27 +965,17 @@ Do pliku konfiguracyjnego OmniAuth wklepujemy:
     end
 
 
-## TODO: Generujemy model dla użytkowników
-
-**Opisać o co tutaj nam chodzi?**
-
-Po pomyślnej autentykacji, dane użytkownika będziemy zapisywać w bazie:
-
-    rails generate model User provider:string uid:string name:string email:string
-
-
 ## Generujemy kontroler dla sesji
 
-…na przykład tak (używamy liczby mnogiej, chociaż bardziej poprawne
-byłoby *Session*; dlaczego?):
+…oczywiście skorzystamy z generatora:
 
     :::bash terminal
-    rails generate controller Sessions
+    rails generate controller Session
 
 Dopisujemy do wygenerowanego kodu kilka metod:
 
     :::ruby app/controllers/sessions_controller.rb
-    class SessionsController < ApplicationController
+    class SessionController < ApplicationController
       def new
         redirect_to '/auth/github'
         # redirect_to '/auth/twitter'
@@ -1006,6 +996,7 @@ Dopisujemy do wygenerowanego kodu kilka metod:
 Po pomyślnej autentykacji każdy provider zwraca nieco inne
 dane, na razie w metodzie **create** zgłaszamy wyjątek,
 po to, by podejrzeć dane przesłane przez Github’a.
+Zob. opis routing poniżej.
 
 
 ## Routing
@@ -1020,31 +1011,74 @@ Dla Githuba jest to:
 Dlatego w pliku *routes.rb* wpisujemy:
 
     :::ruby config/routes.rb
-    match '/auth/:provider/callback' => 'sessions#create'
-    match '/auth/failure' => 'sessions#failure'
+    match '/auth/:provider/callback' => 'session#create'
+    match '/auth/failure' => 'session#failure'
 
 Metody pomocnicze *signout_path*, *signin_path* też zwiększą
 czytelność kodu:
 
     :::ruby config/routes.rb
-    match '/signout' => 'sessions#destroy', :as => :signout
-    match '/signin' => 'sessions#new', :as => :signin
-
-Przy okazji dodajemy też:
-
-    :::ruby config/routes.rb
-    root :to => 'students#index'
+    match '/signout' => 'session#destroy', :as => :signout
+    match '/signin' => 'session#new', :as => :signin
 
 Teraz możemy przetestować jak to działa!
 Ręcznie wpisujemy w przeglądarce następujące uri:
 
-    http://localhost:3000/auth/github
-    http://localhost:3000/auth/twitter  # 2011.11.11 – nie działa
+    http://localhost:3000/signin
+    # http://localhost:3000/auth/github
 
 Po pomyślnym zalogowaniu w metodzie *create* zgłaszany
 jest wyjątek, a my widzimy stronę z **RuntimeError**.
 
-Twitter zwraca masę danych. Poniżej, to tylko mały wyjątek:
+Github zwraca tylko tyle:
+
+    :::yaml
+    ---
+    provider: github
+    uid: 8049
+    info:
+      nickname: wbzyl
+      email: ...
+      name: Wlodek Bzyl
+      urls:
+        GitHub: https://github.com/wbzyl
+        Blog: !!null
+    credentials:
+      token: ...
+      expires: false
+    extra:
+      raw_info:
+        total_private_repos: 0
+        html_url: https://github.com/wbzyl
+        type: User
+        location: ''
+        owned_private_repos: 0
+        public_repos: 76
+        company: Instytut Informatyki, UG
+        followers: 99
+        created_at: '2008-04-21T08:24:47Z'
+        email: ...
+        disk_usage: ...
+        avatar_url: ...
+        gravatar_id: ...
+        collaborators: 0
+        plan:
+          private_repos: 0
+          space: ...
+          collaborators: 0
+          name: free
+        public_gists: 33
+        hireable: false
+        following: 0
+        name: Wlodek Bzyl
+        login: wbzyl
+        private_gists: 2
+        bio: !!null
+        url: https://api.github.com/users/wbzyl
+        id: 8049
+        blog: !!null
+
+Dla odmiany, Twitter zwraca masę danych. Poniżej mały wyjątek:
 
     :::yaml
     ---
@@ -1054,34 +1088,26 @@ Twitter zwraca masę danych. Poniżej, to tylko mały wyjątek:
       nickname: wbzyl
       name: Wlodek Bzyl
       location: ''
-      image: http://a3.twimg.com/profile_images/1272548001/mondrian_normal.png
+      image: http://a3.twimg.com/profile_images/.../mondrian_normal.png
       description: ''
       urls:
         Website: http://sigma.ug.edu.pl/~wbzyl/
         Twitter: http://twitter.com/wbzyl
     credentials:
-      token: 111111111111111111111111111111111111111111111111111111
-      secret: 11111111111111111111111111111111111111111
+      token: ...
+      secret: ...
     extra:
       access_token: !ruby/object:OAuth::AccessToken
 
-Dla odmiany Github zwraca tylko tyle:
 
-    :::yaml
-    ---
-    provider: github
-    uid: 8049
-    info:
-      nickname: wbzyl
-      email: matwb@univ.gda.pl
-      name: Wlodek Bzyl
-      urls:
-        GitHub: https://github.com/wbzyl
-        Blog: !!null
-    credentials:
-      token: 1111111111111111111111111111111111111111
-      expires: false
-    extra: {}
+## Tworzymy model User
+
+Po pomyślnej autentykacji, dane użytkownika będziemy zapisywać
+w kolekcji *users*:
+
+    rails generate model User provider:string uid:string name:string email:string url:string
+
+Dlaczego tak? Jaki zrobimy z tego użytek?
 
 
 ## Zapisujemy powyższe dane w bazie MongoDB
@@ -1095,24 +1121,25 @@ Dodajemy metodę do modelu *User*:
       field :uid, :type => String
       field :name, :type => String
       field :email, :type => String
+      field :nickname, :type => String
+      field :url, :type => String
 
       def self.create_with_omniauth(auth)
         begin
           create! do |user|
-            user.provider = auth['provider']
-            user.uid = auth['uid']
+            user.provider = auth['provider'] # można krócej: auth.provider
+            user.uid = auth['uid']           #               auth.uid
             if auth['info']
-              # logger.info("#{auth['info'].to_json}")
-              user.name = auth['info']['name'] || ""          # tylko GitHub, Twitter
-              user.email = auth['info']['email'] || ""
               user.nickname = auth['info']['nickname'] || ""
+              user.email = auth['info']['email'] || ""
+              user.name = auth['info']['name'] || ""
+              user.url = auth['info']['urls']['GitHub'] || ""
             end
           end
         rescue Exception
           raise Exception, "Cannot create user record!"
         end
       end
-
     end
 
 Modyfikujemy metodę *create* kontrolera:
@@ -1123,21 +1150,23 @@ Modyfikujemy metodę *create* kontrolera:
       user = User.where(:provider => auth['provider'], :uid => auth['uid']).first ||
           User.create_with_omniauth(auth)
       session[:user_id] = user.id
-      redirect_to root_url, :notice => "User #{user.name} signed in via #{user.provider}"
+      redirect_to root_url, :notice => "User #{user.name} signed in through #{user.provider}"
     end
 
-Dodajemy wiadomości flash do widoku *index*:
+Jeszcze raz się logujemy
 
-    :::rhtml app/views/students/index.html.erb
-    <% if notice -%>
-    <div id="notice"><%= notice %></div>
-    <% end -%>
-    <% if alert -%>
-    <div id="error"><%= alert %></div>
-    <% end -%>
+     http://localhost:3000/signin
+
+i podglądamy log aplikacji. Na koniec sprawdzamy na konsoli co się
+zapisało w kolekcji *users*:
+
+    :::ruby
+    User.count
+    User.first
+    User.all.each { |user| y user }
 
 
-## Kilka zwyczajowych metod pomocniczych
+## TODO: Kilka zwyczajowych metod pomocniczych
 
 Praktycznie każda implementacja autentykacji implementuje te metody:
 
@@ -1168,7 +1197,6 @@ Praktycznie każda implementacja autentykacji implementuje te metody:
         end
       end
     end
-
 
 
 ## Dodajemy access control
