@@ -1166,7 +1166,12 @@ zapisało w kolekcji *users*:
     User.all.each { |user| y user }
 
 
-## TODO: Kilka zwyczajowych metod pomocniczych
+## TODO: CanCan
+
+Prawie wszystko jest przygotowane do odtańczenia CanCana…
+
+
+### Kilka zwyczajowych metod pomocniczych
 
 Praktycznie każda implementacja autentykacji implementuje te metody:
 
@@ -1243,60 +1248,6 @@ Na ostatek modyfikujemy widok *index.html.erb*:
       <li><%= link_to user.name, user %> <i>via</i> <%= user.provider %></li>
       <% end %>
     </ol>
-
-
-### Zmiana adresu email
-
-Użytkownika bez adresu email będziemy przekierowywać
-na stronę, gdzie będzie mógł go wpisać.
-
-W tym celu zmieniamy routing:
-
-    :::ruby config/routes.rb
-    resources :users, :only => [ :show, :edit, :update ]
-
-kontroler użytkownika:
-
-    :::ruby controllers/users_controller.rb
-    def edit
-      @user = User.find(params[:id])
-    end
-    def update
-      @user = User.find(params[:id])
-      if @user.update_attributes(params[:user])
-        redirect_to @user
-      else
-        render :edit
-      end
-    end
-
-oraz widok *edit.html.erb*:
-
-    :::rhtml app/views/users/edit.html.erb
-    <% title "Change Email" %>
-    <%= semantic_form_for @user do |f| %>
-      <%= f.input :email %>
-      <%= f.buttons do %>
-        <%= f.commit_button %>
-      <% end %>
-    <% end %>
-
-i kontroler sesji:
-
-    :::ruby app/controllers/sessions_controller.rb
-    def create
-      auth = request.env["omniauth.auth"]
-      user = User.where(:provider => auth['provider'], :uid => auth['uid']).first ||
-          User.create_with_omniauth(auth)
-      session[:user_id] = user.id
-      if user.email == ""
-        redirect_to edit_user_path(user), :alert => 'Please enter your email address.'
-      else
-        redirect_to root_url, :notice => 'Signed in!'
-      end
-    end
-
-Zrobione!
 
 
 # TODO: Strona do zarządzania danymi użytkowników
