@@ -154,6 +154,7 @@ CSS (ostatnie dwa pliki dodajem przy okazji teraz):
     :::css app/assets/stylesheets/application.css
     *= require_self
     *= require formtastic-bootstrap
+    *= require formtastic-form
     *= require dziennik-lekcyjny
     *= require students
 
@@ -210,13 +211,13 @@ do bazy MongoDB:
 Oto fragment pliku CSV z nagłówkiem:
 
     :::csv wd.csv
-    last_name,first_name,id_number
-    "Kuszelas","Jan",123123
-    "Klonowski","Felicjan",221321
-    "Korolczyk","Joga",356123
-    "Grabczyk","Simona",491231
-    "Kamińska","Irena",556123
-    "Jankowski","Kazimierz",628942
+    last_name,first_name,id_number,year,semester
+    "Kuszelas","Jan",123123,2011,summer
+    "Klonowski","Felicjan",221321,2011,summer
+    "Korolczyk","Joga",356123,2011,summer
+    "Grabczyk","Simona",491231,2011,summer
+    "Kamińska","Irena",556123,2011,summer
+    "Jankowski","Kazimierz",628942,2011,summer
 
 5\. Kilka uwag o robieniu kopii zapasowych danych z bazy MongoDB.
 
@@ -354,7 +355,7 @@ dla studentów z trzech grup: niebieskiej, zielonej i czerwonej.
 
 Kliknięcie w śmieszek po lewej stronie dopisuje do dokumentu studenta
 nieobecność, przeładowuje stronę na której zostaje wypisana
-pomarańczowa kropka przy nazwisku. Kropki po prawej stronie nazwiska
+pomarańczowa kropka przy nazwisku. Liczba kropek po prawej stronie nazwiska
 to liczba nieobecności.
 
 Na tej stronie prowadzący będzie mógł uaktualniać dane studenta.
@@ -842,21 +843,24 @@ aplikację obiekt JSON i uaktualnić zawartość strony:
 Gotowe!
 
 
-# TODO: OmniAuth + Github
+# OmniAuth + Github
 
 Zaczynamy od zarejestowania aplikacji na [Githubie](https://github.com/account/applications).
 
 Jeśli aplikacja będzie działać na *localhost*, rejstrujemy ją wpisując:
 
     URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
-    Callback: http://127.0.0.1:3000
+    Callback: http://localhost:3000
+
+(Oczywiście, powyżej podajemy jakiś swój URL.)
 
 Jeśli — na *sigma.ug.edu.pl*, to wpisujemy:
 
     URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
     Callback: http://sigma.ug.edu.pl:3000
 
-Zamiast portu *3000* podajemy port na którym będzie działać aplikacja.
+Zamiast portu *3000* podajemy port na którym będzie działać nasza
+aplikacja na Sigmie.
 
 Następnie ze strony [omniauth-github](https://github.com/intridea/omniauth-github)
 przeklikowujemy do pliku *github.rb* kawałek kodu, który
@@ -947,8 +951,10 @@ Dodaję do aplikacj plik inicjujący:
 Konfiguracja OmniAuth dla *Twittera* jest analogiczna.
 Aplikację rejestrujemy [tutaj](https://dev.twitter.com/apps/new):
 
-    URL:      http://localhost:3000
-    Callback: http://127.0.0.1:3000
+    URL:      http://tao.inf.ug.edu.pl
+    Callback: http://localhost:3000
+
+(Oczywiście, powyżej podajemy jakiś swój URL.)
 
 Klucze zapisujemy w pliku *twitter.sh*, który będziemy
 też trzymać poza repozytorium:
@@ -1142,7 +1148,10 @@ Dodajemy metodę do modelu *User*:
       end
     end
 
-Modyfikujemy metodę *create* kontrolera:
+Modyfikujemy metodę *create* kontrolera.
+Po autentykacji na Githubie, sprawdzamy czy dane użytkownika są
+już zapisane w kolekcji *users*. Jeśli nie to zapisujemy
+dane pobrane z Githuba w kolekcji.
 
     :::ruby app/controllers/sessions_controller.rb
     def create
