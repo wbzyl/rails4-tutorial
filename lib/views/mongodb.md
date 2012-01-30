@@ -984,16 +984,17 @@ Dopisujemy do wygenerowanego kodu kilka metod:
     class SessionController < ApplicationController
       def new
         redirect_to '/auth/github'
-        # redirect_to '/auth/twitter'
       end
+
       def create
         raise request.env["omniauth.auth"].to_yaml
       end
+
       def destroy
-        # session[:user_id] = nil
         reset_session
         redirect_to root_url, :notice => "User signed out!"
       end
+
       def failure
         redirect_to root_url, :alert => "Authentication error: #{params[:message].humanize}"
       end
@@ -1175,12 +1176,113 @@ zapisało w kolekcji *users*:
     User.all.each { |user| y user }
 
 
-## TODO: CanCan
+## Dodajemy widok index dla modelu User
 
-Prawie wszystko jest przygotowane do odtańczenia CanCana…
+Po co to robimy?
+
+Korzystamy z generatora:
+
+    :::bash
+    rails g controller users index
+
+Dodajemy *Users* do menu (dopisujemy pod "Admin"):
+
+    :::rhtml app/views/common/_menu.html.erb
+    <li><%= link_to "Admin", admin_students_path %>
+    <li><%= link_to "Users", users_index_path %>
+
+W kontrolerze dodajemy tylko metodę *index*:
+
+    :::ruby app/controllers/users_controller.rb
+    class UsersController < ApplicationController
+      def index
+        @users = User.all
+      end
+    end
+
+Piszemy prosty widok:
+
+    :::rhtml app/views/users/index.html.erb
+    <h1>GitHub Users</h1>
+
+    <% @users.each do |student| %>
+    <article class="users">
+      <div class="user">
+        <div class="uid"><span class="span2">UID:</span> <%= student.uid %></div>
+        <div class="name"><span class="span2">Name:</span> <%= student.name %></div>
+        <div class="email"><span class="span2">Email:</span> <%= student.email %></div>
+        <div class="nickname"><span class="span2">Nickname:</span> <%= student.nickname %></div>
+        <div class="url"><span class="span2">URL:</span> <%= student.url %></div>
+      </div>
+    </article>
+    <% end %>
+
+Dodajemy trochę CSS. I już!
+
+Paginacją zajmiemy się później.
 
 
-### Kilka zwyczajowych metod pomocniczych
+# Autoryzacja
+
+Autoryzację zaimplementujemy korzystając z gemu
+[CanCan](https://github.com/ryanb/cancan).
+Dopisujemy go do *Gemfile*:
+
+    :::ruby
+    gem 'cancan'
+
+i instalujemy:
+
+    :::bash
+    bundle
+
+Do aplikacji dodamy dwie role:
+
+    admin — czyli ja, może wszystko
+    user — może przeglądać co? **TODO **
+
+Zgodnie z README:
+
+    rails g cancan:ability
+
+Wygenerowana klasa:
+
+    :::ruby app/models/ability.rb
+    class Ability
+      include CanCan::Ability
+
+      def initialize(user)
+        # Define abilities for the passed in user here. For example:
+        #
+        #   user ||= User.new # guest user (not logged in)
+        #   if user.admin?
+        #     can :manage, :all
+        #   else
+        #     can :read, :all
+        #   end
+        #
+        # The first argument to `can` is the action you are giving the user permission to do.
+        # If you pass :manage it will apply to every action. Other common actions here are
+        # :read, :create, :update and :destroy.
+        #
+        # The second argument is the resource the user can perform the action on. If you pass
+        # :all it will apply to every resource. Otherwise pass a Ruby class of the resource.
+        #
+        # The third argument is an optional hash of conditions to further filter the objects.
+        # For example, here the user can only update published articles.
+        #
+        #   can :update, Article, :published => true
+        #
+        # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
+      end
+    end
+
+**TODO:** poprawki.
+
+
+
+
+### TODO: Kilka zwyczajowych metod pomocniczych
 
 Praktycznie każda implementacja autentykacji implementuje te metody:
 
@@ -1211,87 +1313,6 @@ Praktycznie każda implementacja autentykacji implementuje te metody:
         end
       end
     end
-
-
-## Dodajemy access control
-
-Użyjemy autentykacji do tego, aby zalogowany użytkownik mógł obejrzeć
-(**TODO** tylko) swoje wszystkie dane (tutaj używamy liczby mnogiej
-**users**):
-
-    :::bash terminal
-    rails generate controller users show edit
-
-Routing:
-
-    :::ruby config/routes.rb
-    # get "users/show"  -- wykomentowujemy
-    resources :users, :only => :show
-
-Dopisujemy w kontrolerze:
-
-    :::ruby controllers/users_controller.rb
-    before_filter :authenticate_user!
-    before_filter :correct_user?
-
-    def show
-      @user = User.find(params[:id])
-    end
-
-Widok *show* (**TODO** też do poprawki):
-
-    :::rhtml app/views/users/show.html.erb
-    <% title "User Profile" %>
-
-    <p>Name: <%= @user.name %></p>
-    <p>Provider: <%= @user.provider %></p>
-    <p>UID: <%= @user.uid %></p>
-    <p>Email: <%= @user.email %></p>
-    <p>Nickname: <%= @user.nickname %></p>
-
-Na ostatek modyfikujemy widok *index.html.erb*:
-
-    :::rhtml app/views/admin/index.html.erb
-    <ol>
-      <% @users.each do |user| %>
-      <li><%= link_to user.name, user %> <i>via</i> <%= user.provider %></li>
-      <% end %>
-    </ol>
-
-
-# TODO: Strona do zarządzania danymi użytkowników
-
-Czyli coś dla administratora.
-Na pierwszy ogień pójdą model i widok:
-
-    :::bash terminal
-    rails generate controller admin index
-
-Dopisujemy w modelu:
-
-    :::ruby models/user.rb
-    default_scope asc(:nickname, :provider)
-
-oraz w widoku:
-
-    :::rhtml app/views/admin/index.html.erb
-    <% title "Admin page" %>
-    <h3>Users list</h3>
-    <ol>
-    <% @users.each do |user| %>
-      <li><%= user.name %> <i>via</i> <%= user.provider %></li>
-    <% end %>
-    </ol>
-
-Na koniec poprawiamy routing:
-
-    :::ruby config/routes.rb
-    # get "admin/index" -- zmieniamy na
-    match '/admin' => 'admin#index', :as => :admin
-
-Teraz wchodzimy na stronę:
-
-    http://localhost:3000/admin
 
 
 # Misz masz do poczytania
