@@ -1071,7 +1071,11 @@ Instalacja wtyczek *rivers* jest prosta:
 
 Repozytoria z kodem wtyczek są na Githubie [tutaj](https://github.com/elasticsearch).
 
-**Uwaga**: po instalacji wtyczki, należy zrestartować *ElasticSearch*.
+MongoDB River Plugin for ElasticSearch:
+
+* [elasticsearch-river-mongodb](https://github.com/richardwilly98/elasticsearch-river-mongodb)
+
+**Uwaga**: Po instalacji wtyczki, należy zrestartować *ElasticSearch*.
 
 
 ## River Twitter
