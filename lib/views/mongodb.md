@@ -199,7 +199,7 @@ atrybutów nieobecność i uwagi:
     :::bash terminal
     rails generate scaffold Student last_name:String first_name:String \
       id_number:Integer nickname:String absences:Array comments:String \
-      class_name:String group:String
+      class_name:String group:String uid:Integer
     rm app/assets/stylesheets/scaffolds.css.scss
 
 4\. Importujemy listę studentów (otrzymaną z sekretatriatu II)
@@ -303,6 +303,7 @@ rekordów:
       field :first_name, type: String
       field :id_number, type: Integer
       field :nickname, type: String
+      field :uid, type: Integer       # uid z GitHub, http://caius.github.com/github_id/
       field :absences, type: Array
       field :comments, type: String
       field :class_name, type: String, default: "unknown"
@@ -517,6 +518,10 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
         <%= f.input :full_name, :input_html => { class: "span10", placeholder: "Nazwisko Imię" } %>
         <%= f.input :id_number, :input_html => { class: "span10" } %>
         <%= f.input :nickname, :input_html => { class: "span10" } %>
+        <%= f.input :uid,
+              :hint => "<a href='http://caius.github.com/github_id/'>check it here</a>".html_safe,
+              :input_html => { class: "span8" } %>
+
         <%= f.input :absences, :input_html => { class: "span10" } %>
         <%= f.input :comments, as: :text, :input_html => { class: "span10" } %>
         <%= f.input :class_name, :as => :select,
@@ -1131,20 +1136,19 @@ Dodajemy metodę do modelu *User*:
       field :nickname, :type => String
       field :url, :type => String
 
+      def self.from_omniauth(auth)
+        where(:provider => auth['provider'], :uid => auth['uid']).first || create_with_omniauth(auth)
+      end
+
       def self.create_with_omniauth(auth)
-        begin
-          create! do |user|
-            user.provider = auth['provider'] # można krócej: auth.provider
-            user.uid = auth['uid']           #               auth.uid
-            if auth['info']
-              user.nickname = auth['info']['nickname'] || ""
-              user.email = auth['info']['email'] || ""
-              user.name = auth['info']['name'] || ""
-              user.url = auth['info']['urls']['GitHub'] || ""
-            end
-          end
-        rescue Exception
-          raise Exception, "Cannot create user record!"
+        create! do |user|
+          user.provider = auth["provider"]
+          user.uid = auth["uid"]
+
+          user.nickname = auth['info']['nickname']
+          user.email = auth['info']['email']
+          user.name = auth['info']['name']
+          user.url = auth['info']['urls']['GitHub']
         end
       end
     end
@@ -1156,10 +1160,9 @@ dane pobrane z Githuba w kolekcji.
 
     :::ruby app/controllers/sessions_controller.rb
     def create
-      auth = request.env["omniauth.auth"]
-      user = User.where(:provider => auth['provider'], :uid => auth['uid']).first ||
-          User.create_with_omniauth(auth)
+      user = User.from_omniauth(env["omniauth.auth"])
       session[:user_id] = user.id
+
       redirect_to root_url, :notice => "User #{user.name} signed in through #{user.provider}"
     end
 
@@ -1212,7 +1215,7 @@ Piszemy prosty widok:
         <div class="name"><span class="span2">Name:</span> <%= student.name %></div>
         <div class="email"><span class="span2">Email:</span> <%= student.email %></div>
         <div class="nickname"><span class="span2">Nickname:</span> <%= student.nickname %></div>
-        <div class="url"><span class="span2">URL:</span> <%= student.url %></div>
+        <div class="url"><span class="span2">URL:</span> <%= link_to student.url, student.url %></div>
       </div>
     </article>
     <% end %>
@@ -1239,7 +1242,8 @@ i instalujemy:
 Do aplikacji dodamy dwie role:
 
     admin — czyli ja, może wszystko
-    user — może przeglądać co? **TODO **
+    student — może przeglądać swoje dane, może modyfikować
+      *comments*, …
 
 Zgodnie z README:
 
