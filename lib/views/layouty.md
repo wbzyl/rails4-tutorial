@@ -98,8 +98,7 @@ Rusztowanie aplikacji wygenerujemy korzystając mojego szablonu aplikacji
     rails new ⟨app name⟩ -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb --skip-bundle
 
 Szablon aplikacji korzysta z layoutu
-[Starter template](http://twitter.github.com/bootstrap/examples.html).
-
+[Starter template](http://twitter.github.com/bootstrap/examples/starter-template.html)
 
 Szablon aplikacji korzysta z gemu
 [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap),
@@ -115,6 +114,7 @@ Użyteczne linki:
 * [{less}](http://lesscss.org/) – the dynamic stylesheet language
 * [Customize Bootstrap variables](http://twitter.github.com/bootstrap/download.html#variables)
 * [Using LESS with Bootstrap](http://twitter.github.com/bootstrap/less.html)
+* [Beautiful Buttons for Twitter Bootstrappers](http://charliepark.org/bootstrap_buttons/)
 
 Warto też przeczytać trzy posty Pata Shaughnessy:
 
