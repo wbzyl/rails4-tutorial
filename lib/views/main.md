@@ -1,4 +1,4 @@
-# Zmiana terminu egzaminu
+# Zaczynamy !
 
 <blockquote>
   {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
@@ -10,11 +10,11 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
-[22.01.2012] **Zmiana terminu egzaminu.**
-Nowy termin wtorek, 24.02, g. 11.30, p. 228
+[2.02.2012] Przykładowe aplikacje powinny korzystać z Rails
+w wersji co najmniej 3.2.1.
 
 
-## Zaczynamy ! czy Zaczynamy ?
+## Praktyczne rzeczy…
 
 Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/)
 albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/).

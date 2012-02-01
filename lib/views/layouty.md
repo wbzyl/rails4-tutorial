@@ -2,9 +2,9 @@
 
 <blockquote>
  <p>
-  {%= image_tag "/images/html5-layout-1.png", :alt => "[HTML5 Layout 1.]" %}
+  {%= image_tag "/images/html5-blog.png", :alt => "[HTML5 Blog]" %}
  </p>
- <p class="author">źródło: <a href="http://scottgale.com/blog/wp-content/uploads/2010/04/html5-layout-sm.png">Scot Gale</a></p>
+ <p class="author">źródło: <a href="http://html5doctor.com/designing-a-blog-with-html5/">html5 doctor</a></p>
 </blockquote>
 
 Co oznacza słowo *layout*:
@@ -13,26 +13,22 @@ Co oznacza słowo *layout*:
 * rozmieszczenie, rozplanowanie elementów na stronie
 * rozkład, plan techniczny, kompozycja
 
-*Rails Guides*,
-[Layouts and Rendering in Rails](http://edgeguides.rubyonrails.org/layouts_and_rendering.html) –
-this guide covers the basic layout features of Action Controller and Action View.
+Jak korzystać z layoutów w aplikacjach Rails opisano w przewodniku
+[Layouts and Rendering in Rails](http://guides.rubyonrails.org/layouts_and_rendering.html).
 
-Projekt [web-app-theme](https://github.com/pilu/web-app-theme) (autor Andrea Franz)
-jest drugi w kategorii „Most Watched Overall Javascript project” na githubie.
-
-Szablony na dobry początek:
-
-* [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/)
-* [HTML KickStart](http://www.99lime.com/) –
+Layout na dobry początek: [HTML KickStart](http://www.99lime.com/) –
 is an ultra–lean set of HTML5, CSS, and jQuery (javascript) files,
 layouts, and elements designed to give you a headstart and save you
-10's of hours on your next web project
+10’s of hours on your next web project.
+
+Layout „HTML KickStart” przystosowujemy do Rails analogicznie jak to jest
+zrobione poniżej dla layoutu „HTML Boilerplate”.
 
 
-## Layout aplikacji
+## Przykładowy layout aplikacji Rails
 
-Przykładowy layout aplikacji, po liftingu
-(pl, utf-8, domyślny tytuł):
+Poniższy layout to [HTML5 Boilerplate](http://html5boilerplate.com/)
+po małym liftingu (pl, utf-8, domyślny tytuł):
 
     :::rhtml app/views/layouts/application.html.erb
     <!doctype html>
@@ -44,27 +40,15 @@ Przykładowy layout aplikacji, po liftingu
     <!--[if gt IE 8]><!--> <html class="no-js" lang="pl"> <!--<![endif]-->
     <head>
       <meta charset="utf-8">
-
-      <!-- Use the .htaccess and remove these lines to avoid edge case issues.
-           More info: h5bp.com/b/378 -->
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
       <title><%= content_for?(:title) ? yield(:title) : "Fortunka" %></title>
+
       <meta name="description" content="">
       <meta name="author" content="">
-
-      <!-- Mobile viewport optimized: j.mp/bplateviewport -->
       <meta name="viewport" content="width=device-width,initial-scale=1">
 
-      <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
-
       <%= stylesheet_link_tag "application" %>
-
-      <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
-
-      <!-- All JavaScript at the bottom, except this Modernizr build incl. Respond.js
-           Respond is a polyfill for min/max-width media queries. Modernizr enables HTML5 elements & feature detects;
-           for optimal performance, create your own custom Modernizr build: www.modernizr.com/download/ -->
       <%= javascript_include_tag "application" %>
       <%= csrf_meta_tags %>
     </head>
@@ -82,17 +66,10 @@ Przykładowy layout aplikacji, po liftingu
     </body>
     </html>
 
-<blockquote>
- <p>
-  {%= image_tag "/images/html5-blog.png", :alt => "[HTML5 Blog]" %}
- </p>
- <p class="author">źródło: <a href="http://html5doctor.com/designing-a-blog-with-html5/">html5 doctor</a></p>
-</blockquote>
+Powyżej użyliśmy metody *show_title?*.
+Tę metodę oraz kilka innych dopisujemy do pliku *layout_helper.rb*.
 
-Generator *nifty:layout* definiuje kilka użytecznych metod
-pomocniczych. Warto je dopisać do pliku *app/helpers/layout_helper.rb*:
-
-    :::ruby
+    :::ruby app/helpers/layout_helper.rb
     module LayoutHelper
       def title(page_title, show_title = true)
         content_for(:title) { page_title.to_s }
@@ -110,16 +87,44 @@ pomocniczych. Warto je dopisać do pliku *app/helpers/layout_helper.rb*:
       end
     end
 
+Powyższe metody zostały skopiowane z generatora *nifty:layout*.
 
-## Linki
 
-Bootstrap:
+## Rusztowanie korzystające z frameworka Bootstrap
 
-* [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/)
-* Pat Shaughnessy:
-  - [Twitter Bootstrap, Less, and Sass: Understanding Your Options for Rails 3.1](http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/)
-  - [Too good to be true! Twitter Bootstrap meets Formtastic and Tabulous](http://rubysource.com/too-good-to-be-true-twitter-bootstrap-meets-formtastic-and-tabulous/)
-  - [How to Customize Twitter Bootstrap’s Design in a Rails app](http://rubysource.com/how-to-customize-twitter-bootstrap%E2%80%99s-design-in-a-rails-app/)
+Rusztowanie aplikacji wygenerujemy korzystając mojego szablonu aplikacji
+(*application template*) o nazwie „html5-bootstrap.rb”:
+
+    rails new ⟨app name⟩ -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb --skip-bundle
+
+Szablon aplikacji korzysta z layoutu
+[Starter template](http://twitter.github.com/bootstrap/examples.html).
+
+
+Szablon aplikacji korzysta z gemu
+[less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap),
+którego autorem jest Ken Collins.
+Ken opisał jak korzystać *less-rails-bootstrap* na swoim blogu
+w [LESS Is More - Using Twitter's Bootstrap In The Rails 3.1 Asset Pipeline](http://metaskills.net/2011/09/26/less-is-more-using-twitter-bootstrap-in-the-rails-3-1-asset-pipeline/).
+
+Użyteczne linki:
+
+* [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/) –
+  simple and flexible HTML, CSS, and Javascript for popular user
+  interface components and interactions
+* [{less}](http://lesscss.org/) – the dynamic stylesheet language
+* [Customize Bootstrap variables](http://twitter.github.com/bootstrap/download.html#variables)
+* [Using LESS with Bootstrap](http://twitter.github.com/bootstrap/less.html)
+
+Warto też przeczytać trzy posty Pata Shaughnessy:
+
+- [Twitter Bootstrap, Less, and Sass: Understanding Your Options for Rails 3.1](http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/)
+- [Too good to be true! Twitter Bootstrap meets Formtastic and Tabulous](http://rubysource.com/too-good-to-be-true-twitter-bootstrap-meets-formtastic-and-tabulous/)
+- [How to Customize Twitter Bootstrap’s Design in a Rails app](http://rubysource.com/how-to-customize-twitter-bootstrap%E2%80%99s-design-in-a-rails-app/)
+
+
+### Różne rzeczy
+
 * Inayaili de León. [Have a Field Day with HTML5 Forms](http://24ways.org/2009/have-a-field-day-with-html5-forms)
 * [Coding A HTML 5 Layout From Scratch](http://www.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/)
 * [Coding a CSS3 & HTML5 One-Page Website Template](http://tutorialzine.com/2010/02/html5-css3-website-template/)
