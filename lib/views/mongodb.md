@@ -362,14 +362,15 @@ to liczba nieobecności.
 Na tej stronie prowadzący będzie mógł uaktualniać dane studenta.
 Student, będzie mógł podejrzeć swoje dane oraz dopisać
 coś w polu komentarze.
-Usunąć dane studenta będzie mial prawo tylko prowadzący zajęcia.
-Do usuwanie danych – przygotuję osobną stronę.
+Usunąć dane studenta będzie mial prawo tylko Admin.
+Do usuwania danych studenta przygotuję osobną stronę.
 
-Do generowania kropek używamy metody pomocniczej *bullets*. Eement
-*progress* wskazuje na „progress” (w procentach) studenta
-(liczbę punktów zdobytych przez studenta).
+Do generowania kropek używamy metody pomocniczej *bullets*. Element
+*progress* wskazuje na „progress” (w procentach) studenta,
+czyli liczbę punktów zdobytych na zajęciach.
 
-Zmiany te zaczniemy wprowadzać od dodania do routingu metody *not_present*:
+Kodowanie nowych rzeczy zaczniemy od dodania do routingu metody
+*not_present*:
 
     :::ruby config/routes.rb
     resources :students do
@@ -446,6 +447,10 @@ Po zapisaniu zmian w bazie przechodzimy na stronę *show* (default?):
 
 ### Od SASSa do CSS
 
+[2012.02.08] Połączenie Bootstrap + SASS nie było dobrym pomysłem.
+Należało użyć **Bootstrap + LESS**, tak jak to opisano
+w podsekcji {%= link_to "Aplikacja EST", "/elasticsearch" %}.
+
 Wygenerowany HTML musimy jakoś wystylizować.
 Konieczne poprawki dopisuję na bieżąco do plików:
 *dziennik-lekcyjny.css.scss* i *students.css.scss*.
@@ -459,7 +464,7 @@ podejrzeć na repo na GitHubie:
 
 ### Zmiany w pozostałych widokach
 
-Zamiany w *show.html.erb*:
+Zmiany w *show.html.erb*:
 
     :::rhtml app/views/students/show.html.erb
     <% title @student.full_name, false %>
@@ -591,7 +596,7 @@ Kod użytej powyżej metody pomocniczej *progress*:
       end
     end
 
-*Pytanie:* Czy link do repozytorium wstawić do elementu A?
+*Pytanie:* Czy link do repozytorium wstawić do elementu anchor (a)?
 Argumenty za? przeciw?
 
 Gotowe. Można żyć bez migracji. Odjazd!
@@ -1115,8 +1120,9 @@ Dla odmiany, Twitter zwraca masę danych. Poniżej mały wyjątek:
 ## Tworzymy model User
 
 Po pomyślnej autentykacji, dane użytkownika będziemy zapisywać
-w kolekcji *users*:
+w kolekcji *users*:
 
+    :::bash terminal
     rails generate model User provider:string uid:string name:string email:string url:string
 
 Dlaczego tak? Jaki zrobimy z tego użytek?
