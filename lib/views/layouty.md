@@ -118,7 +118,8 @@ Użyteczne linki:
 * [Customize Bootstrap variables](http://twitter.github.com/bootstrap/download.html#variables)
 * [Using LESS with Bootstrap](http://twitter.github.com/bootstrap/less.html)
 * [Bootstrap Generators](https://github.com/decioferreira/bootstrap-generators) –
-  provides Twitter Bootstrap generators for Rails 3
+  provides Twitter Bootstrap generators for Rails 3;
+  [więcej informacji](http://decioferreira.github.com/bootstrap-generators/)
 * [Beautiful Buttons for Twitter Bootstrappers](http://charliepark.org/bootstrap_buttons/)
 
 Warto też przeczytać trzy posty Pata Shaughnessy:
