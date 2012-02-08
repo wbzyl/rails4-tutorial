@@ -331,15 +331,6 @@ rekordów:
 
       default_scope asc(:group, :last_name, :first_name)
 
-      # use defaults
-      # set_callback(:save, :before) do |document|
-      #   if document.class_name.empty?
-      #     document.class_name = "unknown"
-      #   end
-      #   if document.group.empty?
-      #     document.group = "unknown"
-      #   end
-      # end
     end
 
 
@@ -513,7 +504,7 @@ Zamiany w *edit.html.erb*:
 
 ## Poprawiamy wygenerowany formularz
 
-Lista wyboru: *unknown*, *red*, *green*, *blue* dla grup,
+Lista wyboru: *nieprzydzielony*, *red*, *green*, *blue* dla grup,
 element *textarea* dla *comment*, oraz wirtualne atrybuty
 *full_name* i *absences_list*
 
@@ -530,12 +521,12 @@ element *textarea* dla *comment*, oraz wirtualne atrybuty
         <%= f.input :absences, :input_html => { class: "span10" } %>
         <%= f.input :comments, as: :text, :input_html => { class: "span10" } %>
         <%= f.input :class_name, :as => :select,
-              :collection => {"niewiadoma" => "unknown",
+              :collection => {"nieprzydzielony" => "unknown",
                               "języki programowania" => "jp",
                               "technologie nosql" => "nosql" },
               :input_html => { class: "span10" } %>
         <%= f.input :group,:as => :select,
-              :collection => {"niewiadoma" => "unknown",
+              :collection => {"nieprzydzielony" => "unknown",
                               "niebieska" => "blue",
                               "zielona" => "green",
                               "czerwona" => "red"},
@@ -1123,7 +1114,7 @@ Po pomyślnej autentykacji, dane użytkownika będziemy zapisywać
 w kolekcji *users*:
 
     :::bash terminal
-    rails generate model User provider:string uid:string name:string email:string url:string
+    rails generate model User provider:string uid:integer name:string email:string url:string
 
 Dlaczego tak? Jaki zrobimy z tego użytek?
 
@@ -1136,7 +1127,7 @@ Dodajemy metodę do modelu *User*:
     class User
       include Mongoid::Document
       field :provider, :type => String
-      field :uid, :type => String
+      field :uid, :type => Integer
       field :name, :type => String
       field :email, :type => String
       field :nickname, :type => String
@@ -1240,19 +1231,22 @@ Dopisujemy go do *Gemfile*:
     :::ruby
     gem 'cancan'
 
-i instalujemy:
-
-    :::bash
-    bundle
+i instalujemy wykonując polecenie *bundle*.
 
 Do aplikacji dodamy dwie role:
 
     admin — czyli ja, może wszystko
     student — może przeglądać swoje dane, może modyfikować
       atrybuty: *comments*, inne atrybuty?
+
+Będzie też „guest user”:
+
     guest – może przeglądać dane na stronie głównej
 
-[CanCan README](https://github.com/ryanb/cancan):
+
+## CanCan Abilities
+
+* [CanCan README](https://github.com/ryanb/cancan)
 
 1\. Handle Unauthorized Access:
 
@@ -1270,8 +1264,11 @@ W *StudentsController* dopisujemy:
       load_and_authorize_resource
       skip_authorize_resource :only => :index
 
-**TODO:** w_innych kontrolerach też?
+W *UsersController* dopisujemy:
 
+    :::ruby app/controllers/users_controller.rb
+    class UsersController < ApplicationController
+      load_and_authorize_resource
 
 Zobacz też [Exception Handling](https://github.com/ryanb/cancan/wiki/exception-handling).
 
@@ -1287,31 +1284,18 @@ Wygenerowana klasa, po poprawkach:
       include CanCan::Ability
 
       def initialize(user)
-        # Define abilities for the passed in user here. For example:
-        #
-        user ||= User.new    # guest user (not logged in)
+        user ||= User.new     # guest user (not logged in)
+
         if user.admin?
           can :manage, :all
         elsif user.student?
-          can :read, Student
+          can :manage, Student, uid: user.uid
+          cannot :admin, Student
         else
-          # guest user
+          can :index, Student
         end
-        #
-        # The first argument to `can` is the action you are giving the user permission to do.
-        # If you pass :manage it will apply to every action. Other common actions here are
-        # :read, :create, :update and :destroy.
-        #
-        # The second argument is the resource the user can perform the action on. If you pass
-        # :all it will apply to every resource. Otherwise pass a Ruby class of the resource.
-        #
-        # The third argument is an optional hash of conditions to further filter the objects.
-        # For example, here the user can only update published articles.
-        #
-        #   can :update, Article, :published => true
-        #
-        # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
       end
+
     end
 
 Dopisujemy do *ApplicationController*:
@@ -1338,52 +1322,10 @@ Do modelu *User* dopisujemy:
     def admin?
       uid == 8049 # mój id na githubie
     end
-
     def student?
-      uid != 8049
+      (uid != nil) && (uid != 8049)
     end
 
-**TODO:** podmienić w pasku tekst:
-
-    Sign in through GitHub
-
-na:
-
-    Logged as nickname || Githubber
-
-
-
-### TODO: Kilka zwyczajowych metod pomocniczych
-
-Praktycznie każda implementacja autentykacji implementuje te metody:
-
-    :::ruby app/controllers/application_controller.rb
-    class ApplicationController < ActionController::Base
-      protect_from_forgery
-
-      helper_method :current_user
-      helper_method :correct_user?
-
-      private
-      def current_user
-        begin
-          @current_user ||= User.find(session[:user_id]) if session[:user_id]
-        rescue Mongoid::Errors::DocumentNotFound
-          nil
-        end
-      end
-      def correct_user?                  # a to po co?
-        @user = User.find(params[:id])
-        unless current_user == @user
-          redirect_to root_url, :alert => "Access denied!"
-        end
-      end
-      def authenticate_user!
-        if !current_user
-          redirect_to root_url, :alert => 'You need to sign in for access to this page!'
-        end
-      end
-    end
 
 
 # Misz masz do poczytania
