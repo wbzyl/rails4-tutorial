@@ -1257,6 +1257,8 @@ Będzie też „guest user”:
       end
     end
 
+Zobacz [Exception Handling](https://github.com/ryanb/cancan/wiki/exception-handling).
+
 W *StudentsController* dopisujemy:
 
     :::ruby app/controllers/students_controller.rb
@@ -1269,8 +1271,6 @@ W *UsersController* dopisujemy:
     :::ruby app/controllers/users_controller.rb
     class UsersController < ApplicationController
       load_and_authorize_resource
-
-Zobacz też [Exception Handling](https://github.com/ryanb/cancan/wiki/exception-handling).
 
 2\. [Define Abilities](https://github.com/ryanb/cancan/wiki/Defining-Abilities):
 
