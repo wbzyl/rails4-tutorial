@@ -92,9 +92,12 @@ Powyższe metody zostały skopiowane z generatora *nifty:layout*.
 
 ## Rusztowanie korzystające z frameworka Bootstrap
 
+[2012.02.02] **TODO**
+
 Rusztowanie aplikacji wygenerujemy korzystając mojego szablonu aplikacji
 (*application template*) o nazwie „html5-bootstrap.rb”:
 
+    :::bash terminal
     rails new ⟨app name⟩ -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb --skip-bundle
 
 Szablon aplikacji korzysta z layoutu
@@ -114,6 +117,8 @@ Użyteczne linki:
 * [{less}](http://lesscss.org/) – the dynamic stylesheet language
 * [Customize Bootstrap variables](http://twitter.github.com/bootstrap/download.html#variables)
 * [Using LESS with Bootstrap](http://twitter.github.com/bootstrap/less.html)
+* [Bootstrap Generators](https://github.com/decioferreira/bootstrap-generators) –
+  provides Twitter Bootstrap generators for Rails 3
 * [Beautiful Buttons for Twitter Bootstrappers](http://charliepark.org/bootstrap_buttons/)
 
 Warto też przeczytać trzy posty Pata Shaughnessy:
