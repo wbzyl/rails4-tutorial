@@ -1326,6 +1326,12 @@ Do modelu *User* dopisujemy:
     end
 
 
+Jak zabezpieczyć się przed „mass-assignment”:
+
+* [ActiveModel::MassAssignmentSecurity::ClassMethods](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html)
+* [attr_protected](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html#method-i-attr_protected)
+* [attr_accessible](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html#method-i-attr_accessible)
+
 
 # Misz masz do poczytania
 
