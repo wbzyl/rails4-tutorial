@@ -1332,6 +1332,11 @@ Jak zabezpieczyć się przed „mass-assignment”:
 * [attr_protected](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html#method-i-attr_protected)
 * [attr_accessible](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html#method-i-attr_accessible)
 
+Cytat: „Mass assignment security provides an interface for protecting
+attributes from end-user assignment. For more complex permissions,
+mass assignment security may be handled outside the model by extending
+a non-ActiveRecord class, such as a controller, with this behavior.”
+
 
 # Misz masz do poczytania
 
