@@ -303,11 +303,11 @@ rekordów:
       field :first_name, type: String
       field :id_number, type: Integer
       field :nickname, type: String
-      field :uid, type: Integer       # uid z GitHub, http://caius.github.com/github_id/
+      field :uid, type: Integer         # uid z GitHub, http://caius.github.com/github_id/
       field :absences, type: Array
       field :comments, type: String
-      field :class_name, type: String, default: "unknown"
-      field :group, type: String, default: "unknown"
+      field :class_name, type: String, default: "unallocated"
+      field :group, type: String, default: "unallocated"
 
       # getter and setter
       def full_name
@@ -551,7 +551,7 @@ Aha, jeszcze dodałbym rok i semestr: zima, lato.
     field :repositories, type: String
     field :rank, type: Integer
     field :year, type: Integer
-    field :semester, type: Integer
+    field :semester, type: String
 
 2\. Poprawki w szablonie formularza:
 
@@ -752,7 +752,7 @@ Docelowo, należałoby przenieść wyszukiwanie do modelu.
       if params[:class_name]
         @students = Student.where(class_name: class_name, year: year, semester: semester)
       else
-        @students = Student.where(year: 2011)
+        @students = Student.where(year: 2011) # dodać class_name: "unallocated" ?
       end
 
       respond_to do |format|
@@ -1163,7 +1163,7 @@ dane pobrane z Githuba w kolekcji.
       redirect_to root_url, :notice => "User #{user.name} signed in through #{user.provider}"
     end
 
-Jeszcze raz się logujemy
+Jeszcze raz się logujemy:
 
      http://localhost:3000/signin
 
@@ -1233,15 +1233,15 @@ Dopisujemy go do *Gemfile*:
 
 i instalujemy wykonując polecenie *bundle*.
 
-Do aplikacji dodamy dwie role:
+Do aplikacji dodamy trzy role:
 
-    admin — czyli ja, może wszystko
-    student — może przeglądać swoje dane, może modyfikować
-      atrybuty: *comments*, inne atrybuty?
+* **admin** — czyli ja, może wszystko
+* **student** — może przeglądać swoje dane, może modyfikować
+  atrybuty: *comments*, inne atrybuty?
 
 Będzie też „guest user”:
 
-    guest – może przeglądać dane na stronie głównej
+* **guest** – może przeglądać dane na stronie głównej
 
 
 ## CanCan Abilities
@@ -1264,7 +1264,7 @@ W *StudentsController* dopisujemy:
     :::ruby app/controllers/students_controller.rb
     class StudentsController < ApplicationController
       load_and_authorize_resource
-      skip_authorize_resource :only => :index
+      # skip_authorize_resource :only => :index
 
 W *UsersController* dopisujemy:
 
@@ -1319,7 +1319,7 @@ Do modelu *User* dopisujemy:
 
     :::ruby app/models/user.rb
     def admin?
-      uid == 8049 # mój id na githubie
+      uid == 8049  # mój id na githubie
     end
     def student?
       (uid != nil) && (uid != 8049)
