@@ -10,6 +10,8 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
+[10.2.2012] [Spree 1.0.0 Released](http://spreecommerce.com/blog/2012/02/09/spree-1-0-0-released/).
+
 [2.02.2012] Przykładowe aplikacje powinny korzystać z Rails
 w wersji co najmniej 3.2.1.
 
