@@ -612,13 +612,13 @@ Przykłady:
     {
       "query" : { "query_string" : {"query" : "couchdb"} },
       "sort" : { "created_at" : { "order" : "desc" } },
-      "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
+      "facets" : { "hashtags" : { "terms" :  { "field" : "hashtags" } } }
     }'
     curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
     {
       "query" : { "match_all" : {} },
       "sort" : { "created_at" : { "order" : "desc" } },
-      "facets" : { "hashtags" : { "terms" :  { "field" : "entities.hashtags.text" } } }
+      "facets" : { "hashtags" : { "terms" :  { "field" : "hashtags" } } }
     }'
     curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
     {
@@ -965,7 +965,7 @@ i modyfikujemy *application.css*:
 
 # ElasticSearch dump ⇒ JSON
 
-**TODO:** Przerobić na skrypt Ruby. Opis wrzucić na Wiki.
+**TODO:** Przerobić zapytania z *curl* poniżej na skrypt w Ruby.
 
 Zobacz search API:
 
@@ -1160,5 +1160,6 @@ Przy okazji możemy sprawdzić jak zaimplemetowany jest *mapping* w Tiver Twitt
 
 2\. Przeczytać [Creating a pluggable REST endpoint](http://www.elasticsearch.org/tutorials/2011/09/14/creating-pluggable-rest-endpoints.html).
 
-* Zainstalować wtyczkę [hello world](https://github.com/brusic/elasticsearch-hello-world-plugin/).
-* Napisać swoją wtyczkę.
+3\. Zainstalować wtyczkę [hello world](https://github.com/brusic/elasticsearch-hello-world-plugin/).
+
+4\. Napisać swoją wtyczkę do Elasticsearch.
