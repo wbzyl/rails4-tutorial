@@ -627,7 +627,7 @@ Przykłady:
       "facets" : { "statuses_per_day" : { "date_histogram" :  { "field" : "created_at", "interval": "day" } } }
     }'
 
-A tak wyglądają „fasetowy” JSON:
+A tak wygląda „fasetowy” JSON:
 
     :::json
     "facets" : {
