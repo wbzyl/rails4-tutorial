@@ -47,6 +47,6 @@ client.on_error do |message|
   puts message
 end
 
-client.track('rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
+client.track('jquery', 'backbone', 'rails', 'mongodb', 'couchdb', 'redis', 'neo4j', 'elasticsearch') do |status|
   handle_tweet status
 end
