@@ -69,7 +69,7 @@ I już! Domyślnie ElasticSearch nasłuchuje na porcie 9200:
     :::bash
     xdg-open http://localhost:9200
 
-ElasticSearch zwaraca wynik wyszukiwania w formacie JSON.
+ElasticSearch zwraca wynik wyszukiwania w formacie JSON.
 Jeśli preferujemy pracę w przeglądarce, to użyteczny
 może być dodatek do Firefoks o nazwie
 [JSONView](http://jsonview.com/) – that helps you view JSON documents
