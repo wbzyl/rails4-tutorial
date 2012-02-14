@@ -80,7 +80,7 @@ ElasticSearch:
 
     :::bash
     elasticsearch-0.18.7/bin/plugin -install Aconex/elasticsearch-head
-    xdg-open http://localhost:9200/_plugin/head
+    xdg-open http://localhost:9200/_plugin/head/
 
 
 <blockquote>
