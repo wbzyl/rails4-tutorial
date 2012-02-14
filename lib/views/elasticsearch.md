@@ -172,18 +172,18 @@ Wyszukiwanie po kilku typach:
 Teraz pora na posprzątanie po sobie. Usuwamy indeks **amazon**:
 
     :::bash
-    curl -XDELETE 'http://127.0.0.1:9200/amazon'
+    curl -XDELETE 'http://localhost:9200/amazon'
 
 albo, za jednym razem usuwamy **wszystkie** indeksy
 (zalecana ostrożność):
 
     :::bash
-    curl -XDELETE 'http://127.0.0.1:9200/_all'
+    curl -XDELETE 'http://localhost:9200/_all'
 
 Na koniec, zapytanie o zdrowie klastra ElasticSearch:
 
     :::bash
-    curl 'http://127.0.0.1:9200/_cluster/health?pretty=true'
+    curl 'http://localhost:9200/_cluster/health?pretty=true'
 
 
 ### Zapytania, korzystające z JSON Query Language
