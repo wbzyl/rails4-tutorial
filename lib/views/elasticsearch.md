@@ -439,20 +439,35 @@ Czyszczenie statusów, to zadanie dla metody *handle_tweet*:
 Po wymianie na nowy kodu *handle_tweet* i ponownym uruchomieniu skryptu
 widzimy efekty. To się da czytać!
 
-Teraz zabierzemy się za zapisywanie oczyszczonych statusów w ElasticSearch.
+
+## Twitter Stream ⟿ ElasticSearch
+
+Teraz zabierzemy się za zapisywanie oczyszczonych statusów
+w ElasticSearch.  W tym celu napiszemy skrypt w Ruby i skorzystamy
+z wygodnego DSL dla ElasticSearch oferowanego przez gem Tire.
+
+Z Twitterem możemy zestawić tylko jeden strumień (co można wyczytać
+w dokumentacji do API Twittera).
+Dlatego zbierzemy wszystkie statusy z interesujących nas kategorii – rails,
+mongodb itd. do jednego strumienia.
+Rozdzielimy je na typy, na chwilę przed zapisaniem w bazie.
+Wykorzystamy w tym celu mechanizm perkolacji.
 
 Co oznacza *percolation*? przenikanie, przefiltrowanie, perkolacja?
-
 „Let's define callback for percolation.
 Whenewer a new document is saved in the index, this block will be executed,
-and we will have access to matching queries in the `NosqlTweet#matches` property.
-In our case, we will just print the list of matching queries.”
+and we will have access to matching queries in the `NosqlTweet#matches` property.”
+
+Przy okazji zdefinujemy *mapping* dla statusów zapisywanych w bazie ElasticSearch.
+
+Co to jest *mapping*?
+„Mapping is the process of defining how a document should be mapped to
+the Search Engine, including its searchable characteristics such as
+which fields are searchable and if/how they are tokenized.”
 
     :::ruby create-index-percolate_nosql_tweets.rb
     # encoding: utf-8
     require 'tire'
-
-    # Register several queries for percolation against the nosql_tweets index.
 
     nosql_tweets_mapping =  {
       :properties => {
@@ -478,6 +493,8 @@ In our case, we will just print the list of matching queries.”
 
     Tire.index('nosql_tweets').refresh
 
+    # Register several queries for percolation against the nosql_tweets index.
+
     Tire.index('nosql_tweets') do
       %w{rails jquery mongodb redis couchdb neo4j elasticsearch}.each do |keyword|
         register_percolator_query(keyword) { string keyword }
@@ -494,24 +511,14 @@ Uuruchamiamy ten skrypt i sprawdzamy czy *mapping* zostało zapisane w bazie:
     ruby create-index-percolate_nosql_tweets.rb
     curl 'http://localhost:9200/nosql_tweets/_mapping?pretty=true'
 
-Działanie skryptu kończymy wciskając klawisze `CTRL+C`.
-
-Cały skrypt można obejrzeć tutaj
+Cały skrypt można obejrzeć na GitHubie –
 [create-index-percolate_nosql_tweets.rb](https://github.com/wbzyl/est/blob/master/create-index-percolate_nosql_tweets.rb).
 
-
-## Twitter Stream ⟿ ElasticSearch
-
-Kolejny skrypt będzie miał za zadanie pobrać z Twittera interesujące
-nas statusy i zapisać je w bazie ElasticSearch. Z Twitterem możemy
-zestawić tylko jeden strumień. Zbierzemy do niego wszystkie statusy
-z interesujących nas kategorii – rails, mongodb itd.
-Przed zapisaniem ich w bazie, rozdzielimy je na typy korzystając
-mechanizmu perkolacji.
+Dopiero po tych wstępnych robótkach ręcznych, zabierzemy się za
+skrypt zapisujący statusy indeksie *nosql_tweets* i w typach
+o nazwach takich samych jak słowa kluczowe.
 
     :::ruby fetch-nosql_tweets.rb
-    # Tire part.
-
     # Let's define a class to hold our data in ElasticSearch.
 
     class NosqlTweet
