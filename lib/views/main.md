@@ -20,8 +20,9 @@ w wersji co najmniej 3.2.1.
 
 ## Praktyczne rzeczy…
 
-Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/)
-albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/).
+Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/);
+albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw);
+albo coś prostszego [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 
 Nigdy nie korzystałeś z frameworka MVC, wejdź na
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies).
