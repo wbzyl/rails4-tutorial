@@ -129,7 +129,7 @@ Różne:
     nums.sort.take_while {|n| n < 3}  # 1.9
 
 
-## Metody, Procs, … (TODO)
+## Metody, Procs, …
 
 Jawne przekazywanie obiektu Proc:
 
@@ -183,7 +183,7 @@ Za to mamy:
 ## Kodowanie
 
     :::ruby
-    str = "witaj świecie'
+    str = "witaj świecie"
     str.encoding
 
 Zadawanie kodowania w pliku via *magic comments*:
@@ -333,7 +333,7 @@ Two in one: c2f and f2c:
     end
 
 
-## Więcej przykładów – silnia i wieża Hanoi
+## Rekurencja – silnia i wieża Hanoi
 
 Tak wygląda zwykła implementacja:
 
