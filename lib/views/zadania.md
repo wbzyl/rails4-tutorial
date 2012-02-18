@@ -8,21 +8,16 @@
 <p class="author">— Rick Osborne</p>
 </blockquote>
 
-* Z Pythona na Ruby.<br>
-  Termin oddania: 9.10.11.
-* Prosta aplikacja Rails (Fortunka, Trekking, …)<br>
-  Termin oddania: 23.10.11.
-* Przechodzimy na nierelacyjną bazę danych (MongoDB, …)<br>
-  Termin oddania: 7.11.2011.
-* Projekt zespołowy – wybór tematu projektu (podział na grupy, założenie repozytoriów, …)<br>
-  Termin oddania: 20.11.2011.
-* Rozliczenie projektu zespołowego<br>
-  Termin oddania: 18.12.2011.
-* Prezentacje gotowych projektów<br>
-  Termin: styczeń 2012.
+Projekty indywidualne:
 
-Projekty należy umieścić w osobnych repozytoriach git
-na swoim koncie na *github.com*.
+* Prosta aplikacja Rails (Fortunka, Trekking, …)
+* Prosta aplikacja korzystająca z nierelacyjnej bazy danych (MongoDB, Redis, CouchDB, …)
+
+Projekty zespołowe:
+
+* Wybór tematu projektu, podział na grupy, założenie repozytoriów: 11.03.2012
+* Rozliczenie projektu zespołowego: 13.05.2012
+* Prezentacje gotowych projektów: 20.05.2012
 
 
 <blockquote>
@@ -35,26 +30,157 @@ na swoim koncie na *github.com*.
 <p class="author">— Ralph Waldo Emerson (1803–1882)</p>
 </blockquote>
 
-# Egzamin
 
-Na egzamin należy przygotować i uruchomić serwis www wg własnego
-pomysłu. Serwis piszemy w zespołach 4–5 programistów.<br/>
-Prezentacje projektów: styczeń 2012. Harmonogram: grudzień 2011.
+## Zapoznajemy się z językiem Ruby
+
+1\. **Sprawdzamy instalację języka Ruby na Sigmie.**
+
+Wykonujemy polecenie:
+
+    :::bash terminal
+    rvm list
+
+Wynik wykonania tego polecenia powinien być taki:
+
+    rvm rubies
+
+       ree-1.8.7-2011.03 [ i686 ]
+       ruby-1.9.2-p180 [ i686 ]
+       ruby-1.9.2-p290 [ i686 ]
+    =* ruby-1.9.3-p0 [ i686 ]
+
+    # => - current
+    # =* - current && default
+    #  * - default
+
+Wchodzimy na konsolę języka Ruby:
+
+    :::bash terminal
+    irb
+
+Na konsoli wpisujemy kod i uruchamiamy go:
+
+    :::ruby irb
+    2 + 2
+    [1,2,3,4].map { |x| x + 1 }
+
+Rezultat wykonania tych poleceń:
+
+    => 4
+    => [2, 3, 4, 5]
+
+Jeśli wszystko działa, to można spróbować instalacji
+[RVM](http://beginrescueend.com/) na swoim laptopie.
+Następnie należy doinstalować pozostałe wymagane pakiety.
+Jakie? Odpowiedź uzyskamy wykonując polecenie:
+
+    :::bash terminal
+    rvm requirements
+
+Dopiero teraz możemy zainstalować wersję Ruby
+z której będziemy korzystać na zajęciach:
+
+    :::bash terminal
+    rvm install 1.9.3
+
+Pozostałe szczegóły instalacji opisano {%= link_to "tutaj", "/konfiguracja" %}.
+
+2\. Rozwiązujemy wszystkie zadania na [Ruby Monk](http://rubymonk.com/).
+
+3\. Na koniec przerabiamy kurs [Rails for Zombies](http://railsforzombies.org/).
 
 
-# FAQ
+## Prosta aplikacja Rails
 
-1. Co będzie jak nie oddam projektu w terminie?
-   *Odpowiedź:* Ocena z laboratorium zostanie obniżona o 1.
-1. Co będzie jeśli zespół nie zaprezentuje swojego projektu
-   na jednym z wykładów w styczniu.
-   *Odpowiedź:* Maksymalna ocena za taki projekt to 3.
+Piszemy prostą aplikację Rails. Co oznacza „prosta aplikacja”
+jest wyjaśnione poniżej na przykładzie aplikacji *Fortunka v2.0*
+oraz *Trekking*.
 
 
-# Zadania
+### Fortunka v2.0
 
-…wraz opisem o co chodzi i co nalezy zaprogramować.
+Funkcjonalność aplikacji Fortunka v1.0 można powiększyć dodając przykładowo:
 
+1. Paginację do widoku *index*.
+Skorzystać z gemu [kaminari](https://github.com/amatsuda/kaminari).
+Wystylizować linki do kolejnych „stron”.
+Jak to się robi opisał Vitaly Friedman,
+[Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) i Mislav Marohnić,
+[Samples of pagination styling for will_paginate](http://mislav.uniqpath.com/will_paginate/).
+2. „AJAX rating” dla komentarzy.
+Skorzystać z jakiejś gotowej wtyczki lub gemu
+(wcześniej sprawdzić czy wybrana biblioteka działa z jQuery 1.6+ Rails 3.1+).
+3. Autentykację. Zrobić to tak jak, to
+przedstawił R. Bates w screencaście
+[Simple OmniAuth](http://railscasts.com/episodes/241-simple-omniauth).
+4. Komentarze.
+
+Warto już teraz uprościć kod formularzy. Jak?
+Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
+Następnie zamienić wygenerowane formularze na formularze korzystajęce
+z metod [tego gemu](http://github.com/plataformatec/simple_form).
+
+
+### Trekking
+
+O co może chodzić w aplikacji Trekking? Najprościej jest przekonać się
+samemu wchodząc na stronę
+[Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html).
+
+Mniej lub bardziej użyteczne linki:
+
+* wtyczka jQuery [gMap](http://labs.mario.ec/jquery-gmap/) –
+  gMap helps you embed Google Maps into your website.
+  With only 2 KB in size it is very flexible and highly customizable
+* [map icons collection](http://mapicons.nicolasmollet.com/)
+* gem [Cartographer](https://github.com/joshuamiller/cartographer) (?)
+
+
+### O czym warto pamiętać
+
+Użyteczne są następujące rozszerzenia do przeglądarki Firefox:
+
+* [Firebug](http://getfirebug.com/)
+* [FireQuery](https://addons.mozilla.org/en-US/firefox/addon/firequery/)
+
+oraz do przeglądarki Chrome:
+
+* [PageSpeed](http://code.google.com/intl/pl-PL/speed/page-speed/docs/using_chrome.html)
+* [Yslow](http://developer.yahoo.com/yslow/)
+
+1\. Koniecznie należy uruchomić aplikację w trybie *production*.
+Sprawdzić jaką uzyska ocenę od *YSlow* a jaką od *PageSpeed*.
+
+**Zacząć** od [Page Speed Online](http://pagespeed.googlelabs.com/pagespeed/).
+
+**Ciekawy ekperyment:**
+Jaką ocenę uzyskuje strona [Instytutu Informatyki](http://inf.ug.edu.pl/)
+od [PageSpeed Online](http://pagespeed.googlelabs.com/pagespeed/)?
+
+
+## Przechodzimy na nierelacyjną bazę danych
+
+W swojej aplikacji zamienić relacyjną bazę danych na dokumentową bazę
+danych, na przaykład MongoDB, albo CouchDB, albo Redis, albo jakąś inną.
+
+Kilka linków dla wariantu z bazą MongoDB:
+
+* dokumentacja do gemu [Mongo](http://api.mongodb.org/ruby/current/)
+* screencast R. Batesa, [Mongoid](http://railscasts.com/episodes/238-mongoid).
+
+
+
+
+# Zadania różne
+
+Kilka pomysłów, gemów do wykorzystania w swoich projektach.
+
+<blockquote>
+ <p>
+  {%= image_tag "/images/wesole_kontakty.jpg", :alt => "[wesołe kontakty]" %}
+ </p>
+ <p class="author">Wesołe kontakty</p>
+</blockquote>
 
 ## Z Pythona na Ruby
 
@@ -69,107 +195,6 @@ Mniej lub bardziej użyteczne linki do tego zadania:
 * [The Google Elevation API](http://code.google.com/intl/pl-PL/apis/maps/documentation/elevation/).
 * [Google Maps API Family](http://code.google.com/intl/pl-PL/apis/maps/)
 * [Google Maps Javascript API V3 Reference](http://code.google.com/intl/pl-PL/apis/maps/documentation/javascript/reference.html)
-
-
-## Prosta aplikacja Rails
-
-Aplikacja powinna korzystać z layoutu przygotowanego z szablonu
-[html5-boilerplate](https://github.com/paulirish/html5-boilerplate/blob/master/index.html).
-Kod szablonu jest opisany na stronie [HTML5 Boilerplate](http://html5boilerplate.com/).
-
-Na stronie [Initializr 2](http://www.initializr.com/) można wygenerować
-„a clean customizable template based on Boilerplate with just what you need to start”.
-
-Przykładowy [Rails 3.1+ compatible **Application Template** based on the HTML5 Boilerplate project](https://github.com/russfrisch/h5bp-rails)
-przygotował [Russ Frisch](https://github.com/russfrisch).
-
-
-### Fortunka v2.0
-
-Funkcjonalność aplikacji można zwiększyć dodając na przykład:
-
-1. Paginację do widoku *index*.
-Skorzystać z gemu [kaminari](https://github.com/amatsuda/kaminari).
-Wystylizować linki do kolejnych „stron”.
-Jak to się robi opisał Vitaly Friedman,
-[Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) i Mislav Marohnić,
-[Samples of pagination styling for will_paginate](http://mislav.uniqpath.com/will_paginate/).
-2. „AJAX rating” dla komentarzy.
-Skorzystać z jakiejś gotowej wtyczki lub gemu
-(wcześniej sprawdzić czy wybrana biblioteka działa z jQuery 1.6+ Rails 3.1+).
-3. Autentykację. Zrobić to tak jak, to
-przedstawił R. Bates w screencaście
-[Simple OmniAuth](http://railscasts.com/episodes/241-simple-omniauth).
-4. Komentarze, tak jak to będzie przedstawione na wykładzie.
-
-Warto już teraz uprościć kod formularzy. Jak?
-Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
-Następnie zamienić wygenerowane formularze na formularze korzystajęce
-z metod [tego gemu](http://github.com/plataformatec/simple_form).
-
-
-### Trekking
-
-O co chodzi w aplikacji Trekking? Najprościej jest przekonać się
-samemu wchodząc na stronę
-[Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html).
-
-Mniej lub bardziej użyteczne linki:
-
-* wtyczka jQuery [gMap](http://labs.mario.ec/jquery-gmap/) –
-  gMap helps you embed Google Maps into your website.
-  With only 2 KB in size it is very flexible and highly customizable
-* [map icons collection](http://mapicons.nicolasmollet.com/)
-* gem [Cartographer](https://github.com/joshuamiller/cartographer) (?)
-
-Zainstalować następujące rozszerzenia do przeglądarki Firefox:
-
-* [Firebug](http://getfirebug.com/)
-* [FireQuery](https://addons.mozilla.org/en-US/firefox/addon/firequery/)
-* [CSS Usage](https://addons.mozilla.org/en-US/firefox/addon/css-usage/)
-
-oraz do przgladarki Chrome:
-
-* [PageSpeed](http://code.google.com/intl/pl-PL/speed/page-speed/docs/using_chrome.html)
-* [Yslow](http://developer.yahoo.com/yslow/)
-
-1\. Działającą aplikację uruchomić w trybie *production*.
-Sprawdzić jaką uzyska ocenę od *YSlow* a jaką od *PageSpeed*.
-
-2\. Powtórzyć ocenę dla aplikacji uruchomionej w trybie *development*.
-
-3\. Sprawdzić jakość kodu CSS za pomocą rozszerzenia *CSS Usage*.
-
-**Zacząć** od [Page Speed Online](http://pagespeed.googlelabs.com/pagespeed/).
-
-**Ciekawy ekperyment:**
-[Strona www Instytutu Informatyki](http://inf.ug.edu.pl/) +
-[PageSpeed Online](http://pagespeed.googlelabs.com/pagespeed/) +
-[SpriteMe](http://spriteme.org/).
-
-
-## Przechodzimy na nierelacyjną bazę danych
-
-W swojej aplikacji zamienić relacyjną bazę danych na dokumentową bazę
-danych MongoDB.
-
-Kilka linków:
-
-* dokumentacja do gemu [Mongo](http://api.mongodb.org/ruby/current/)
-* screencast R. Batesa, [Mongoid](http://railscasts.com/episodes/238-mongoid).
-
-
-# Zadania różne
-
-Kilka pomysłów, gemów do wykorzystania w swoich projektach.
-
-
-<blockquote>
- <p>
-  {%= image_tag "/images/wesole_kontakty.jpg", :alt => "[wesołe kontakty]" %}
- </p>
- <p class="author">Wesołe kontakty</p>
-</blockquote>
 
 ## Aplikacja „Kontakty”
 
