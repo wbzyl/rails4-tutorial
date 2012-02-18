@@ -14,9 +14,6 @@
 
 [10.02.2012] [Spree 1.0.0 Released](http://spreecommerce.com/blog/2012/02/09/spree-1-0-0-released/).
 
-[2.02.2012] Przykładowe aplikacje powinny korzystać z Rails
-w wersji co najmniej 3.2.1.
-
 
 ## Praktyczne rzeczy…
 
@@ -31,7 +28,7 @@ Wszystkie projekty przygotowywane na zajęciach należy trzymać na swoim
 koncie na *github.com*.
 Oczywiście, wcześniej należy założyć tam sobie konto.
 
-Projekty piszemy w **Rails** w wersji co najmniej **3.2**.
+Aplikacje tworzymy w **Rails** w wersji co najmniej **3.2.1**.
 
 Przed utworzeniem pierwszego repozytorium
 należy podać Gitowi swoje **prawdziwe i aktualne** dane:
