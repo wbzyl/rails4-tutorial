@@ -57,12 +57,13 @@ module WB
 
     get %r{^([-_\w\/]+)\/([-_\w]+)\.((\w{1,4})(\.\w{1,4})?)$} do
 
-      translate = { # to ultraviolet syntax names: uv -l syntax
+      translate = { # to coderay syntax names
         'html.erb' => 'erb',
         'text.erb' => 'text',
+        'erb' => 'erb',
         'rb' => 'ruby',
         'ru' => 'ruby',
-        'js' => 'java_script',
+        'js' => 'javascript',
         'yml' => 'yaml',
         'sh' => 'bash',
         'sql' => 'sql',

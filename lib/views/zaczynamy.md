@@ -136,7 +136,8 @@ to możemy zainstalować gemy globalnie (niezalecane, dlaczego?):
     bundle install --binstubs
 
 *Uwaga:* Jeśli gemy wpisane do *Gemfile* (oraz gemy od nich zależne)
-mamy zainstalowane w systemie, to to polecenie wykona się dużo szybciej:
+mamy zainstalowane w systemie, to poniższe polecenie wykona się dużo
+szybciej:
 
     :::bash
     bundle install --local --binstubs --path=$HOME/.gems
@@ -414,7 +415,7 @@ Oto utworzony przez generator kontroler:
     :::ruby
     respond_to do |format|
       format.html  { redirect_to fortunes_url }
-      format.js      # destroy.js.erb
+      format.js    # destroy.js.erb
       format.json  { render json: @fortunes }
     end
 
@@ -541,14 +542,15 @@ z kontrolera. Tak będzie wyglądał odchudzony *UsersController*:
     end
 
 Taka edytowanie kodu dla każdego wygenerowanego kontrolera
-byłoby męczące. Unikniemy tego umieszczając w katalogu:
+byłoby męczące. Możemy tego uniknąć wstawiając do katalogu:
 
     lib/templates/rails/scaffold_controller/
 
-plik {%= link_to "controler.rb", "/doc/rails31/scaffold/controller.rb" %}.
+swój szablon {%= link_to "controler.rb", "/rails31/scaffold/controller.erb" %}
+({%= link_to "źródło", "/doc/rails31/scaffold/controller.rb" %}).
 
 
-## Krok 8 - umieszczamy jakieś dane w bazie
+## Krok 8 - zapisujemy jakieś dane w bazie
 
 Przećwiczymy proste zastosowania gemóww *Faker*
 i *Populator* (o ile już działa z Rails 3.1)
