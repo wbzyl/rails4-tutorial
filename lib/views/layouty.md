@@ -89,49 +89,8 @@ Tę metodę oraz kilka innych dopisujemy do pliku *layout_helper.rb*.
 
 Powyższe metody zostały skopiowane z generatora *nifty:layout*.
 
+Na ostatek jeszcze przyjrzymy się HTML5:
 
-## Rusztowanie korzystające z frameworka Bootstrap
-
-[2012.02.02] **TODO**
-
-Rusztowanie aplikacji wygenerujemy korzystając mojego szablonu aplikacji
-(*application template*) o nazwie „html5-bootstrap.rb”:
-
-    :::bash terminal
-    rails new ⟨app name⟩ -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb --skip-bundle
-
-Szablon aplikacji korzysta z layoutu
-[Starter template](http://twitter.github.com/bootstrap/examples/starter-template.html)
-
-Szablon aplikacji korzysta z gemu
-[less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap),
-którego autorem jest Ken Collins.
-Ken opisał jak korzystać *less-rails-bootstrap* na swoim blogu
-w [LESS Is More - Using Twitter's Bootstrap In The Rails 3.1 Asset Pipeline](http://metaskills.net/2011/09/26/less-is-more-using-twitter-bootstrap-in-the-rails-3-1-asset-pipeline/).
-
-Użyteczne linki:
-
-* [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/) –
-  simple and flexible HTML, CSS, and Javascript for popular user
-  interface components and interactions
-* [{less}](http://lesscss.org/) – the dynamic stylesheet language
-* [Customize Bootstrap variables](http://twitter.github.com/bootstrap/download.html#variables)
-* [Using LESS with Bootstrap](http://twitter.github.com/bootstrap/less.html)
-* [Bootstrap Generators](https://github.com/decioferreira/bootstrap-generators) –
-  provides Twitter Bootstrap generators for Rails 3;
-  [więcej informacji](http://decioferreira.github.com/bootstrap-generators/)
-* [Beautiful Buttons for Twitter Bootstrappers](http://charliepark.org/bootstrap_buttons/)
-
-Warto też przeczytać trzy posty Pata Shaughnessy:
-
-- [Twitter Bootstrap, Less, and Sass: Understanding Your Options for Rails 3.1](http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/)
-- [Too good to be true! Twitter Bootstrap meets Formtastic and Tabulous](http://rubysource.com/too-good-to-be-true-twitter-bootstrap-meets-formtastic-and-tabulous/)
-- [How to Customize Twitter Bootstrap’s Design in a Rails app](http://rubysource.com/how-to-customize-twitter-bootstrap%E2%80%99s-design-in-a-rails-app/)
-
-
-### Różne rzeczy
-
-* Inayaili de León. [Have a Field Day with HTML5 Forms](http://24ways.org/2009/have-a-field-day-with-html5-forms)
 * [Coding A HTML 5 Layout From Scratch](http://www.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/)
 * [Coding a CSS3 & HTML5 One-Page Website Template](http://tutorialzine.com/2010/02/html5-css3-website-template/)
 
@@ -200,6 +159,7 @@ Albo wykonujemy ping:
  </p>
  <p class="author">źródło: <a href="http://boblet.tumblr.com/post/141239118/html5-structure4">@boblet</a></p>
 </blockquote>
+
 
 # Różne rzeczy…
 
