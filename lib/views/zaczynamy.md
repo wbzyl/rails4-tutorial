@@ -101,9 +101,9 @@ Dobrze jest od razu zmienić rozmiar fontu na
 
     :::ruby Gemfile
     # Łatwiejsze w użyciu formularze
-    gem 'formtastic'
+    gem 'simple_form'
     # albo
-    # gem 'simple_form'
+    # gem 'formtastic'
 
     # Alternatywne dla WEBricka serwery WWW
     # gem 'thin'

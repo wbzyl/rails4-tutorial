@@ -68,7 +68,6 @@ Różne:
     str = "hello\nworld"
     str.to_a
     4.to_a # warning: default 'to_a' will be obsolete
-    *c = 1, 2, 3, 4
 
 ## Symbole
 
@@ -174,6 +173,7 @@ Za to mamy:
 
     :::ruby
     str.each_char   str.chars
+    str.each_char.class
     str.each_byte   str.bytes
     mstr = "hello\nworld"
     mstr.each_line {|l| puts l.upcase}
