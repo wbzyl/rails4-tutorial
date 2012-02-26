@@ -231,8 +231,7 @@ Oczywiście możemy też skorzystać z jakiegoś gotowego szablonu.
 Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rails31-html5-templates):
 
     :::bash
-    rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-boilerplate.rb --skip-bundle
-    rails new fortunka -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb --skip-bundle
+    rails new ⟨app_name⟩ -m https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb --skip-bundle
 
 
 ## Krok 3 - dodajemy nowe gemy
