@@ -1,39 +1,42 @@
 #### {% title "Bootstraping Rails application" %}
 
+*Bootstraping*, to „stawanie na własne nogi”,
+a w informatyce — inicjowanie początkowe aplikacji.
 
-*Bootstraping* może oznaczać „stawanie na własne nogi”, albo,
-w informatyce, inicjowanie początkowe lub rozwijanie aplikacji.
-
-Przez „bootstraping Rails application” rozumiem utworzenie
-szablonu aplikacji z ulubionymi gemami dopisanymi
-do pliku *Gemfile*, zainstalowanymi własnymi wtyczkami,
-usuniętym plikiem *public/index.html*, dodanym preferowanym layoutem itp.
+Tak więc, przez „bootstraping Rails application” możemy
+rozumieć zainicjalizowanie szablonu aplikacji ulubionymi gemami,
+własnymi wtyczkami, dodanie szablonu z atrakcyjnym layoutem,
+usunięcie niepotrzebnych plików, itp.
 
 W ostatnich wersjach Rails cały taki proces można
 zautomatyzować za pomocą tzw. *Rails application templates*.
 Szablon aplikacji Rails, to skrypt w języku Ruby korzystający z metod
-[Rails template API](http://guides.rubyonrails.org/rails_application_templates.html).
+[Rails template API][rta].
 
-Poniżej opiszę swój szablon aplikacji Rails o nazwie *html5-twitter-bootstrap.rb*.
+Poniżej opiszę swój szablon aplikacji Rails, który nazwałem *html5-twitter-bootstrap.rb*.
 
-Aby wygenerować szablon aplikacji z powyższego szablonu wystarczy
-podać ścieżkę (lub URL) do pliku z szablonem w poleceniu *rails*, na
-przykład:
+Aby skorzystać z powyższego szablonu wystarczy podać ścieżkę (lub URL)
+do pliku z szablonem w poleceniu *rails*, na przykład:
 
     :::bash terminal
-    rails new ⟨app_name⟩ -m html5-twitter-bootstrap.rb --skip-bundle
-    rails new ⟨app_name⟩ -m https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb --skip-bundle
+    rails new ⟨app_name⟩ --template html5-twitter-bootstrap.rb --skip-bundle
+    rails new ⟨app_name⟩ \
+      --template https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb \
+      --skip-bundle
+
+[bv]: http://twitter.github.com/bootstrap/download.html#variables
+[rta]: http://guides.rubyonrails.org/rails_application_templates.html
 
 
-## Podstawy
+## Porządki po *rails new*
 
-Zaczynamy od usunięcia niepotrzebnych rzeczy:
+Zaczynamy od usunięcia niepotrzebnych plików:
 
     :::ruby html5-twitter-bootstrap.rb
     remove_file 'public/index.html'
     remove_file 'app/assets/images/rails.png'
 
-Przy okazji przechodzimy z RDoc na Markdown:
+Przy okazji przechodzimy z notacji RDoc na Markdown:
 
     :::ruby
     remove_file 'README.rdoc'
@@ -45,81 +48,187 @@ Przy okazji przechodzimy z RDoc na Markdown:
 
 ## Bootstrap, from Twitter
 
-Skorzystamy z gemów *less-rails*, *less-rails-bootstrap*.
-
-Lektura:
+Dlaczego korzystam z frameworka Bootstrap?
 
 * [{less}](http://lesscss.org/) – the dynamic stylesheet language
-* [rails know-how](http://metaskills.net/2011/09/26/less-is-more-using-twitter-bootstrap-in-the-rails-3-1-asset-pipeline/)
-* [less-rails](https://github.com/metaskills/less-rails)
-* [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
+* Ken Collins
+  - [LESS Is More - Using Twitter's Bootstrap In The Rails 3.1 Asset Pipeline](http://metaskills.net/2011/09/26/less-is-more-using-twitter-bootstrap-in-the-rails-3-1-asset-pipeline/) – Rails know-how
+  - [less-rails](https://github.com/metaskills/less-rails)
+  - [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
+* Bootstrap, [Customize variables](http://twitter.github.com/bootstrap/download.html#variables):
 
-Gemy:
+Gemy *less-rails*, *less-rails-bootstrap* potrzebują do działania
+jakiegoś *JavaScript runtime*. Najprostsza instalacja *runtime*
+prowadzi przez instalację tych gemów:
 
     :::ruby
     gem 'execjs', :group => :development
     gem 'therubyracer', :group => :development
 
+Pozostały kod:
+
+    :::ruby
     gem 'less-rails'
     gem 'less-rails-bootstrap'
 
-Poprawki w wygenerowanym przez *rails* JS:
+    inside('app/assets/stylesheets') do
+      remove_file 'application.css'
+      navbar_color = ask("Gimme your navbar color: ", :magenta)
 
-    :::js application.js
-    //= require twitter/bootstrap
+      create_file 'application.css.less' do
+        <<-APPLICATION.gsub(/^\s{4}/, '')
+        @import "twitter/bootstrap";
+        @baseFontSize: 18px;
+        @baseLineHeight: 24px;
+        @navbarBackgroundHighlight: #{navbar_color};
+        @navbarBackground: darken(#{navbar_color}, 20%);
+        body {
+          padding-top: 60px;
+        }
+        footer {
+          margin-top: 36px;
+        }
+        .navbar-inner {
+             #gradient > .vertical(@navbarBackgroundHighlight, @navbarBackground);
+        }
+        .navbar {
+           .brand {
+             font-size: 24px;
+           }
+        }
+        APPLICATION
+      end
+    end
 
-    $(document).ready(function(){
-      //...
-    });
+    inside('app/assets/javascripts') do
+      gsub_file 'application.js', /\/\/= require_tree \./ do
+        "//= require twitter/bootstrap\n\n" +
+        "$(document).ready(function(){\n  //...\n});\n"
+      end
+    end
 
-oraz CSS:
+Wygenerowana aplikacja korzysta z layoutu o nazwie
+[Bootstrap starter template](http://twitter.github.com/bootstrap/examples/starter-template.html):
 
-    :::css application.css.less
-    @import "twitter/bootstrap";
+    :::ruby
+    inside('app/views/layouts') do
+      remove_file 'application.html.erb'
+      get "https://raw.github.com/wbzyl/rat/master/templates/starter-template.html.erb", "application.html.erb"
+      gsub_file "application.html.erb", /Bootstrap, from Twitter/, "#{app_name}"
+    end
 
-    #foo {
-      .border-radius(4px);
-    }
-
-Pozostałe gemy.
+(link do [application.html.erb](https://github.com/wbzyl/rat/blob/master/templates/starter-template.html.erb))
 
 
-### Formularze
+## Refaktoryzacja szablonów częściowych
+
+Z layoutu aplikacji przenioslem kilka rzeczy do szablonów częściowych:
+
+    :::ruby
+    inside('app/views/common') do
+      get 'https://raw.github.com/wbzyl/rat/master/templates/common/_flashes.html.erb'
+      get 'https://raw.github.com/wbzyl/rat/master/templates/common/_footer.html.erb'
+      get 'https://raw.github.com/wbzyl/rat/master/templates/common/_header.html.erb'
+      get 'https://raw.github.com/wbzyl/rat/master/templates/common/_menu.html.erb'
+      gsub_file "_menu.html.erb", /Project name/, "#{app_name}"
+    end
+
+Linki do źródeł:
+
+* [_flashes.html.erb](https://github.com/wbzyl/rat/blob/master/templates/common/_flashes.html.erb)
+* [_footer.html.erb](https://github.com/wbzyl/rat/blob/master/templates/common/_footer.html.erb)
+* *_header.html.erb* – na razie nie użyty w layoucie
+* [_menu.html.erb](https://github.com/wbzyl/rat/blob/master/templates/common/_menu.html.erb)
+
+*TODO:* dostosować do wersji Bootstrap 2.0.
+
+
+## Formularze
+
+Z pozostałych gemów, na pierwszy ogień idzie mój faworyt:
 
     :::ruby
     gem 'simple_form'
 
+Poniżej wkleiłem komunikat, który pojawił się w trakcie instalacji:
 
-### Gemy użyteczne w development
+Inside your views, use the `simple_form_for` with one of the Bootstrap form
+classes, `.form-horizontal`, `.form-inline`, `.form-search` or
+`.form-vertical`, as the following:
+
+    :::ruby
+    simple_form_for(@user, :html => {:class => 'form-horizontal' }) do |form|
+
+Linki do dokumentacji:
+
+* [Simple Form](https://github.com/plataformatec/simple_form) –
+  forms made easy for Rails! It's tied to a simple DSL, with no opinion on markup
+* [simple_form-bootstrap](https://github.com/rafaelfranca/simple_form-bootstrap) –
+  example application with SimpleForm and Twitter Bootstrap
+* [posts tagged *simple_form*](http://blog.plataformatec.com.br/tag/simple_form/)
+  z bloga [\<plataforma/>](http://blog.plataformatec.com.br/)
+
+## Gemy użyteczne w development
+
+Moje ulubione gemy:
 
     :::ruby
     gem 'wirble', :group => :development
     gem 'hirb', :group => :development
 
+(zob. też konfiguracja *irb* oraz konsoli Rails)
 
-## Instalacja gemów oraz post install
+
+## Instalacja gemów
+
+To jest proste:
 
     :::ruby
-    #run 'bundle --local --path=$HOME/.gems install --binstubs'
-
+    #run 'bundle --path=$HOME/.gems install --binstubs --local'
     run 'bundle --path=$HOME/.gems install --binstubs'
 
-    # remove_file 'app/views/layouts/application.html.erb'
+## Post install
 
-    generate 'simple_form:install'
+Koniecznie musimy wykonać polecenie:
 
-    # generate 'bootstrap:install --layout=hero --stylesheet-engine=less'
+    :::ruby
+    generate 'simple_form:install --bootstrap'
+
+Dlaczego?  Poneważ kopiowane są szablony. Skąd i jakie?
+
+* [SimpleForm 2.0 + Bootstrap: for you with love](http://blog.plataformatec.com.br/2012/02/simpleform-2-0-bootstrap-for-you-with-love/)
+
+
+## Podmiana widoku – przechodzę na HTML5
+
+Dlaczego?
+
+    :::ruby
+    inside('lib/templates/erb/scaffold') do
+      get 'https://raw.github.com/wbzyl/rat/master/lib/templates/erb/scaffold/index.html.erb'
+    end
+
+(link do [index.html.erb](https://github.com/wbzyl/rat/blob/master/lib/templates/erb/scaffold/index.html.erb))
 
 
 ## Testowanie szablonu – przykładowy scaffold
 
+Te polecenia były przydatne tylko w trakcie pisania szablonu:
+
     :::ruby
     generate 'scaffold post title:string body:text published:boolean'
+    run 'rm app/assets/stylesheets/scaffolds.css.scss'
+    run 'rm app/assets/stylesheets/posts.css.scss'
     rake 'db:migrate'
-    route "root :to => 'post#index'"
+    route "root :to => 'posts#index'"
+
+Z ostatecznej wersji szablonu je usunąłem.
 
 
-## Layout helpers
+## Metody pomocnicze – layout helpers
+
+Moje ulubione metody skopiowane z kodu gemu R. Bates’a
+[Nifty Generators](https://github.com/ryanb/nifty-generators):
 
     :::ruby
     inside('app/helpers') do
@@ -149,74 +258,31 @@ Pozostałe gemy.
     end
 
 
-## Layout – jaki?
+## I to by było tyle
 
-
-Z Bootstrap? Pliki z repo z Githuba.
-
-
-
-## Git
-
-Na koniec...
+Na koniec najważniejsze rzeczy:
 
     :::ruby
     git :init
     git :add => "."
-    git :commit => "-a -m 'created initial application'"
+    git :commit => "-a -m 'bootstrapped application'"
 
-
-## Info
-
-Post install:
+oraz post install message:
 
     :::ruby
     say <<-eos
-      ============================================================================
+    ============================================================================
       Your new Rails application is ready to go.
-
       Don't forget to scroll up for important messages from installed generators.
     eos
 
 
-
-
-## Rusztowanie korzystające z frameworka Bootstrap
-
-
-Thor:
-
-    say("Complete!", :green)
-
-
-
-[2012.02.02] **TODO**
-
-Rusztowanie aplikacji wygenerujemy korzystając mojego szablonu aplikacji
-(*application template*) o nazwie „html5-bootstrap.rb”:
-
-    :::bash terminal
-    rails new ⟨app name⟩ -m https://raw.github.com/wbzyl/rails31-html5-templates/master/html5-bootstrap.rb --skip-bundle
-
-Szablon aplikacji korzysta z layoutu
-[Starter template](http://twitter.github.com/bootstrap/examples/starter-template.html)
-
-Szablon aplikacji korzysta z gemu
-[less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap),
-którego autorem jest Ken Collins.
-Ken opisał jak korzystać *less-rails-bootstrap* na swoim blogu
-w [LESS Is More - Using Twitter's Bootstrap In The Rails 3.1 Asset Pipeline](http://metaskills.net/2011/09/26/less-is-more-using-twitter-bootstrap-in-the-rails-3-1-asset-pipeline/).
-
-Użyteczne linki:
+## Użyteczne linki
 
 * [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/) –
   simple and flexible HTML, CSS, and Javascript for popular user
   interface components and interactions
-* [Customize Bootstrap variables](http://twitter.github.com/bootstrap/download.html#variables)
 * [Using LESS with Bootstrap](http://twitter.github.com/bootstrap/less.html)
-* [Bootstrap Generators](https://github.com/decioferreira/bootstrap-generators) –
-  provides Twitter Bootstrap generators for Rails 3;
-  [więcej informacji](http://decioferreira.github.com/bootstrap-generators/)
 * [Beautiful Buttons for Twitter Bootstrappers](http://charliepark.org/bootstrap_buttons/)
 
 Warto też przeczytać trzy posty Pata Shaughnessy:

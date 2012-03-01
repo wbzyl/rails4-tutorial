@@ -85,7 +85,7 @@ Podobne aplikacje:
 katalogu z wygenerowanym rusztowaniem:
 
     :::bash
-    rails new fortunka --skip-bundle
+    rails new fortunka --skip-test-unit --skip-bundle
     cd fortunka
 
 Dobrze jest od razu zmienić rozmiar fontu na
@@ -182,10 +182,10 @@ kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
 8\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
     :::ruby db/seeds.rb
-    Fortune.create :quotation => 'I hear and I forget. I see and I remember. I do and I understand.'
-    Fortune.create :quotation => 'Everything has its beauty but not everyone sees it.'
-    Fortune.create :quotation => 'It does not matter how slowly you go so long as you do not stop.'
-    Fortune.create :quotation => 'Study the past if you would define the future.'
+    Fortune.create! :quotation => 'I hear and I forget. I see and I remember. I do and I understand.'
+    Fortune.create! :quotation => 'Everything has its beauty but not everyone sees it.'
+    Fortune.create! :quotation => 'It does not matter how slowly you go so long as you do not stop.'
+    Fortune.create! :quotation => 'Study the past if you would define the future.'
 
 Następnie umieszczamy powyższe fortunki w bazie, wykonujac w terminalu
 polecenie:
