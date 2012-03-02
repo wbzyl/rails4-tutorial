@@ -302,6 +302,8 @@ kodu JavaScript dopisanego do *application.js*:
         .find('.value').addClass('span10');
     });
 
+(zobacz [Scaffolding](http://twitter.github.com/bootstrap/scaffolding.html), Default grid system)
+
 
 ## Użyteczne linki
 
