@@ -103,7 +103,7 @@ Wygenerowana aplikacja korzysta z layoutu o nazwie
       gsub_file "application.html.erb", /Bootstrap, from Twitter/, "#{app_name}"
     end
 
-Koniecznie przyjrzeć się
+**Koniecznie** przyjrzeć się
 [application.html.erb](https://github.com/wbzyl/rat/blob/master/templates/starter-template.html.erb).
 
 
