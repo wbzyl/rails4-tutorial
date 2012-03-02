@@ -19,10 +19,14 @@ Aby skorzystać z powyższego szablonu wystarczy podać ścieżkę (lub URL)
 do pliku z szablonem w poleceniu *rails*, na przykład:
 
     :::bash terminal
-    rails new ⟨app_name⟩ --template html5-twitter-bootstrap.rb --skip-bundle
+    rails new ⟨app_name⟩ \
+      --template html5-twitter-bootstrap.rb \
+      --skip-bundle \
+      --skip-test-unit
     rails new ⟨app_name⟩ \
       --template https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb \
-      --skip-bundle
+      --skip-bundle \
+      --skip-test-unit
 
 [bv]: http://twitter.github.com/bootstrap/download.html#variables
 [rta]: http://guides.rubyonrails.org/rails_application_templates.html
@@ -40,6 +44,10 @@ Przy okazji przechodzimy z notacji RDoc na Markdown:
 
     :::ruby
     remove_file 'README.rdoc'
+
+oraz pytamy użytkownika o nazwę aplikacji (problemy z polskimi diakrytykami?):
+
+    :::ruby
     name = ask("Gimme your application name: ", :magenta)
     create_file 'README.md' do
       "# #{name}\n"
@@ -68,8 +76,8 @@ prowadzi przez instalację tych gemów:
 Pozostały kod:
 
     :::ruby
-    gem 'less-rails'
-    gem 'less-rails-bootstrap'
+    gem 'less-rails', :group => :assets
+    gem 'less-rails-bootstrap', :group => :assets
 
     inside('app/assets/stylesheets') do
       remove_file 'application.css'
@@ -80,21 +88,24 @@ Pozostały kod:
         @import "twitter/bootstrap";
         @baseFontSize: 18px;
         @baseLineHeight: 24px;
+
         @navbarBackgroundHighlight: #{navbar_color};
         @navbarBackground: darken(#{navbar_color}, 20%);
+        @navbarText: @white;
+        @navbarLinkColor: darken(@white, 20%);
+
+        .navbar {
+           .brand {
+             color: @white;
+             font-size: 24px;
+           }
+        }
+
         body {
           padding-top: 60px;
         }
         footer {
           margin-top: 36px;
-        }
-        .navbar-inner {
-             #gradient > .vertical(@navbarBackgroundHighlight, @navbarBackground);
-        }
-        .navbar {
-           .brand {
-             font-size: 24px;
-           }
         }
         APPLICATION
       end
@@ -140,8 +151,6 @@ Linki do źródeł:
 * *_header.html.erb* – na razie nie użyty w layoucie
 * [_menu.html.erb](https://github.com/wbzyl/rat/blob/master/templates/common/_menu.html.erb)
 
-*TODO:* dostosować do wersji Bootstrap 2.0.
-
 
 ## Formularze
 
@@ -181,22 +190,42 @@ Moje ulubione gemy:
 
 ## Instalacja gemów
 
-To jest proste:
+Gemy instaluję lokalnie. Wybrałem jeden wspólny katalog
+dla trybu development:
 
     :::ruby
     #run 'bundle --path=$HOME/.gems install --binstubs --local'
     run 'bundle --path=$HOME/.gems install --binstubs'
 
+Możemy też gemy instalować w katalogu aplikacji:
+
+    :::ruby
+    run 'bundle --path=tmp install --binstubs'
+
+
 ## Post install
 
-Koniecznie musimy wykonać polecenie:
+Wykonujemy polecenie:
 
     :::ruby
     generate 'simple_form:install --bootstrap'
 
-Dlaczego?  Poneważ kopiowane są szablony. Skąd i jakie?
+które kopiuje trzy pliki do odpowiednich katalogów:
+initializer (*simple_form.rb*), locales (*simple_form.en.yml*),
+szablon dla scaffold (*_form.html.erb*). Przy okazji
+wypisywana jest następująca ściągawka:
 
-* [SimpleForm 2.0 + Bootstrap: for you with love](http://blog.plataformatec.com.br/2012/02/simpleform-2-0-bootstrap-for-you-with-love/)
+Inside your views, use the `simple_form_for` with one of the Bootstrap form
+classes, `.form-horizontal`, `.form-inline`, `.form-search` or
+`.form-vertical`, as the following:
+
+    :::ruby
+    simple_form_for(@user, :html => {:class => 'form-horizontal' }) do |form|
+
+Więcej informacji:
+
+* [Simple Form 2.0 + Bootstrap: for you with love](http://blog.plataformatec.com.br/2012/02/simpleform-2-0-bootstrap-for-you-with-love/)
+* [Simple Form](https://github.com/plataformatec/simple_form)
 
 
 ## Podmiana widoku – przechodzę na HTML5
