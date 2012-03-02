@@ -273,12 +273,34 @@ oraz post install message:
 
 ## Testowanie szablonu – przykładowy scaffold
 
-Po wygenerowaniu rusztowania aplikacji, możemy go przetestować:
+Po wygenerowaniu rusztowania aplikacji, przyjrzyjmy
+się jak się sprawdza framework Bootstrap w aplikacji Rails.
+
+W tym celu skorzystajmy z generatora scaffold:
 
     :::bash
     rails g scaffold post title:string body:text published:boolean \
       --skip-stylesheets --skip-test-framework
     rake db:migrate
+
+Następnie na konsoli dodajemy kilka postów:
+
+    :::ruby
+    Post.create! title: "ala", body: "mam kota, mam kota", published: true
+    Post.create! title: "ola", body: "mam psa", published: true
+
+Niestety domyślny wygląd widoków *index* i *show* pozostawia
+wiele do życzenia. Poprawimy widok za pomocą kilku linijek
+kodu JavaScript dopisanego do *application.js*:
+
+    :::js app/assets/javascripts/application.js
+    $(document).ready(function() {
+      $('article .attribute')
+        .addClass('row').css('margin-bottom', '.25em')
+        .find('.name').addClass('span2').css('text-align', 'right')
+        .end()
+        .find('.value').addClass('span10');
+    });
 
 
 ## Użyteczne linki
