@@ -89,7 +89,7 @@ Pozostały kod:
     inside('app/assets/javascripts') do
       gsub_file 'application.js', /\/\/= require_tree \./ do
         "//= require twitter/bootstrap\n\n" +
-        "$(document).ready(function(){\n  //...\n});\n"
+        "$(document).ready(function() { });"
       end
     end
 
@@ -103,7 +103,8 @@ Wygenerowana aplikacja korzysta z layoutu o nazwie
       gsub_file "application.html.erb", /Bootstrap, from Twitter/, "#{app_name}"
     end
 
-(link do [application.html.erb](https://github.com/wbzyl/rat/blob/master/templates/starter-template.html.erb))
+Koniecznie przyjrzeć się
+[application.html.erb](https://github.com/wbzyl/rat/blob/master/templates/starter-template.html.erb).
 
 
 ## Refaktoryzacja szablonów częściowych
@@ -205,7 +206,7 @@ Więcej informacji:
 
 ## Podmiana widoku – przechodzę na HTML5
 
-Dlaczego te szablony?
+Dlaczego te akurat te (a nie inne) szablony?
 
     :::ruby
     inside('lib/templates/erb/scaffold') do
