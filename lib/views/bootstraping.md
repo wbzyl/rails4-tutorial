@@ -230,14 +230,17 @@ Więcej informacji:
 
 ## Podmiana widoku – przechodzę na HTML5
 
-Dlaczego?
+Dlaczego te szablony?
 
     :::ruby
     inside('lib/templates/erb/scaffold') do
       get 'https://raw.github.com/wbzyl/rat/master/lib/templates/erb/scaffold/index.html.erb'
+      get 'https://raw.github.com/wbzyl/rat/master/lib/templates/erb/scaffold/show.html.erb'
+      get 'https://raw.github.com/wbzyl/rat/master/lib/templates/erb/scaffold/new.html.erb'
+      get 'https://raw.github.com/wbzyl/rat/master/lib/templates/erb/scaffold/edit.html.erb'
     end
 
-(link do [index.html.erb](https://github.com/wbzyl/rat/blob/master/lib/templates/erb/scaffold/index.html.erb))
+([link do szablonów](https://github.com/wbzyl/rat/blob/master/lib/templates/erb/scaffold/))
 
 
 ## Testowanie szablonu – przykładowy scaffold
@@ -256,7 +259,7 @@ Z ostatecznej wersji szablonu je usunąłem.
 
 ## Metody pomocnicze – layout helpers
 
-Moje ulubione metody skopiowane z kodu gemu R. Bates’a
+Na koniec kilka użytecznych metod skopiowanych z gemu R. Bates’a
 [Nifty Generators](https://github.com/ryanb/nifty-generators):
 
     :::ruby
