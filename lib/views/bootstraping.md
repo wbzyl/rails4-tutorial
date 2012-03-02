@@ -271,7 +271,7 @@ oraz post install message:
     eos
 
 
-## Testowanie szablonu – przykładowy scaffold
+## Bootstrap 2.0 meets Rails 3.2
 
 Po wygenerowaniu rusztowania aplikacji, przyjrzyjmy
 się jak się sprawdza framework Bootstrap w aplikacji Rails.
@@ -283,14 +283,14 @@ W tym celu skorzystajmy z generatora scaffold:
       --skip-stylesheets --skip-test-framework
     rake db:migrate
 
-Następnie na konsoli dodajemy kilka postów:
+Następnie na konsoli dodajmy kilka postów:
 
     :::ruby
     Post.create! title: "ala", body: "mam kota, mam kota", published: true
     Post.create! title: "ola", body: "mam psa", published: true
 
-Niestety domyślny wygląd widoków *index* i *show* pozostawia
-wiele do życzenia. Poprawimy widok za pomocą kilku linijek
+Niestety domyślny wygląd widoków *index* i *show* pozostawia
+wiele do życzenia. Poprawimy te widoki za pomocą kilku linijek
 kodu JavaScript dopisanego do *application.js*:
 
     :::js app/assets/javascripts/application.js
