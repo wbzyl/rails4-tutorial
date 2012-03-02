@@ -82,33 +82,8 @@ Pozostały kod:
     inside('app/assets/stylesheets') do
       remove_file 'application.css'
       navbar_color = ask("Gimme your navbar color: ", :magenta)
-
-      create_file 'application.css.less' do
-        <<-APPLICATION.gsub(/^\s{4}/, '')
-        @import "twitter/bootstrap";
-        @baseFontSize: 18px;
-        @baseLineHeight: 24px;
-
-        @navbarBackgroundHighlight: #{navbar_color};
-        @navbarBackground: darken(#{navbar_color}, 20%);
-        @navbarText: @white;
-        @navbarLinkColor: darken(@white, 20%);
-
-        .navbar {
-           .brand {
-             color: @white;
-             font-size: 24px;
-           }
-        }
-
-        body {
-          padding-top: 60px;
-        }
-        footer {
-          margin-top: 36px;
-        }
-        APPLICATION
-      end
+      get 'https://raw.github.com/wbzyl/rat/master/templates/starter-application.css.less', 'starter-application.css.less'
+      gsub_file 'application.js', /@grayDark/, "#{navbar_color}"
     end
 
     inside('app/assets/javascripts') do
@@ -243,20 +218,6 @@ Dlaczego te szablony?
 ([link do szablonów](https://github.com/wbzyl/rat/blob/master/lib/templates/erb/scaffold/))
 
 
-## Testowanie szablonu – przykładowy scaffold
-
-Te polecenia były przydatne tylko w trakcie pisania szablonu:
-
-    :::ruby
-    generate 'scaffold post title:string body:text published:boolean'
-    run 'rm app/assets/stylesheets/scaffolds.css.scss'
-    run 'rm app/assets/stylesheets/posts.css.scss'
-    rake 'db:migrate'
-    route "root :to => 'posts#index'"
-
-Z ostatecznej wersji szablonu je usunąłem.
-
-
 ## Metody pomocnicze – layout helpers
 
 Na koniec kilka użytecznych metod skopiowanych z gemu R. Bates’a
@@ -307,6 +268,16 @@ oraz post install message:
       Your new Rails application is ready to go.
       Don't forget to scroll up for important messages from installed generators.
     eos
+
+
+## Testowanie szablonu – przykładowy scaffold
+
+Po wygenerowaniu rusztowania aplikacji, możemy go przetestować:
+
+    :::bash
+    rails g scaffold post title:string body:text published:boolean \
+      --skip-stylesheets --skip-test-framework
+    rake db:migrate
 
 
 ## Użyteczne linki

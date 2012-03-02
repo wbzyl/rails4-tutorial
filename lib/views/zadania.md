@@ -127,16 +127,20 @@ O co może chodzić w aplikacji Trekking? Najprościej jest przekonać się
 samemu wchodząc na stronę
 [Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html).
 
-Mniej lub bardziej użyteczne linki:
+Użyteczne linki:
 
-* wtyczka jQuery [gMap](http://labs.mario.ec/jquery-gmap/) –
+* [Geocoder Asciicast](http://railscasts.com/episodes/273-geocoder?view=asciicast)
+* [Cartographer](https://github.com/joshuamiller/cartographer)
+* [Map Icons Collection](http://mapicons.nicolasmollet.com/)
+
+Wtyczka do jQuery:
+
+* [gMap](http://labs.mario.ec/jquery-gmap/) –
   gMap helps you embed Google Maps into your website.
   With only 2 KB in size it is very flexible and highly customizable
-* [map icons collection](http://mapicons.nicolasmollet.com/)
-* gem [Cartographer](https://github.com/joshuamiller/cartographer) (?)
 
 
-### O czym warto pamiętać
+### O czym należy pamiętać
 
 Użyteczne są następujące rozszerzenia do przeglądarki Firefox:
 
