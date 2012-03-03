@@ -1,4 +1,4 @@
-#### {% title "Mongoid + OmniAuth z autoryzacją przez GitHub" %}
+#### {% title "Mongoid + OmniAuth via GitHub" %}
 
 ☸ Mongo links:
 
@@ -110,11 +110,13 @@ Oto wygenerowany plik konfiguracyjny Mongoid:
 
     # set these environment variables on your prod server
     production:
-      host: <%= ENV['MONGOID_HOST'] %>
-      port: <%= ENV['MONGOID_PORT'] %>
-      username: <%= ENV['MONGOID_USERNAME'] %>
-      password: <%= ENV['MONGOID_PASSWORD'] %>
-      database: <%= ENV['MONGOID_DATABASE'] %>
+      host: localhost
+      database: dziennik_lekcyjny
+      # host: <%= ENV['MONGOID_HOST'] %>
+      # port: <%= ENV['MONGOID_PORT'] %>
+      # username: <%= ENV['MONGOID_USERNAME'] %>
+      # password: <%= ENV['MONGOID_PASSWORD'] %>
+      # database: <%= ENV['MONGOID_DATABASE'] %>
       # slaves:
       #   - host: slave1.local
       #     port: 27018
@@ -122,7 +124,8 @@ Oto wygenerowany plik konfiguracyjny Mongoid:
       #     port: 27019
 
 Taki plik konfiguracyjny wymaga, aby przed uruchomieniem aplikacji w trybie
-produkcyjnym były zdefiniowane w środowisku powyższe zmienne.
+produkcyjnym były zdefiniowane w środowisku powyższe zmienne
+(ale zmienne te są wykomentowane).
 Oznacza to, że przed uruchomieniem aplikacji powinniśmy wykonać:
 
     :::bash terminal
@@ -206,7 +209,7 @@ atrybutów nieobecność i uwagi:
 do bazy MongoDB:
 
     :::bash terminal
-    mongoimport --drop -d dziennik_lekcyjny_development -c students --headerline --type csv wd.csv
+    mongoimport --drop -d dziennik_lekcyjny -c students --headerline --type csv wd.csv
 
 Oto fragment pliku CSV z nagłówkiem:
 
@@ -224,27 +227,28 @@ Oto fragment pliku CSV z nagłówkiem:
 Eksport do pliku tekstowego:
 
     :::bash terminal
-    mongoexport -d dziennik_lekcyjny_development -c students -o dziennik-$(date +%Y-%m-%d).json
+    mongoexport -d dziennik_lekcyjny -c students -o dziennik-$(date +%Y-%m-%d).json
 
 Wybieramy format JSON. Teraz odtworzenie bazy z kopii zapasowej
 może wyglądać tak:
 
     :::bash terminal
-    mongoimport --drop -d dziennik_lekcyjny_development -c students dziennik-2011-11-08.json
+    mongoimport --drop -d dziennik_lekcyjny -c students dziennik-2011-11-08.json
 
 Możemy też wykonać zrzut bazy. Zrzut wykonujemy na **działającej** bazie:
 
     :::bash
-    mongodump -d dziennik_lekcyjny_development -o backup
+    mongodump -d dziennik_lekcyjny -o backup
 
 A tak odtwarzamy zawartość bazy z zrzutu:
 
     :::bash
-    mongorestore -d test --drop backup/dziennik_lekcyjny_development/
+    mongorestore -d test --drop backup/dziennik_lekcyjny/
 
 **Uwaga:** W powyższym przykładzie backup wszystkich kolekcji z bazy
-*dziennik_lekcyjny_development* importujemy do bazy *test*, a nie
-do *dziennik_lekcyjny_development*! Tak na wszelki wypadek.
+*dziennik_lekcyjny* importujemy do bazy *test*, a nie
+do *dziennik_lekcyjny*! Tak na wszelki wypadek, aby bezmyślne
+przeklikanie nie skończyło się katastrofą!
 
 6\. Pozostaje uruchomić serwer WWW:
 
