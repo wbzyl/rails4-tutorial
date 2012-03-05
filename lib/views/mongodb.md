@@ -227,7 +227,8 @@ Oto fragment pliku CSV z nagłówkiem:
 Eksport do pliku tekstowego:
 
     :::bash terminal
-    mongoexport -d dziennik_lekcyjny -c students -o dziennik-$(date +%Y-%m-%d).json
+    mongoexport -d dziennik_lekcyjny -c students -o students-$(date +%Y-%m-%d).json
+    mongoexport -d dziennik_lekcyjny -c users -o users-$(date +%Y-%m-%d).json
 
 Wybieramy format JSON. Teraz odtworzenie bazy z kopii zapasowej
 może wyglądać tak:
