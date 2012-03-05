@@ -233,7 +233,8 @@ Wybieramy format JSON. Teraz odtworzenie bazy z kopii zapasowej
 może wyglądać tak:
 
     :::bash terminal
-    mongoimport --drop -d dziennik_lekcyjny -c students dziennik-2011-11-08.json
+    mongoimport --drop -d dziennik_lekcyjny -c students students-2012-03-03.json
+    mongoimport --drop -d dziennik_lekcyjny -c users users-2012-03-03.json
 
 Możemy też wykonać zrzut bazy. Zrzut wykonujemy na **działającej** bazie:
 
