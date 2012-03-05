@@ -32,6 +32,10 @@
   ([{blog: mongolab}](http://blog.mongolab.com/))
 * [Node.js + MongoDB = Love: Guest Post from MongoLab](http://joyeur.com/2011/10/26/node-js-mongodb-love-guest-post-from-mongolab/?utm_source=NoSQL+Weekly+Newsletter&utm_campaign=4ed79d28a1-NoSQL_Weekly_Issue_49_November_3_2011&utm_medium=email)
 
+☸ Fonty z ikonkami:
+
+* [Fontomas](http://nodeca.github.com/fontomas/)
+
 ☺☕♥ ⟵ kody takich znaczków odszuka za nas [Shapecatcher](http://shapecatcher.com/)
 Benjamina Milde. My musimy je naszkicować.
 
