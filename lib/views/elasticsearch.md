@@ -1163,3 +1163,5 @@ Przy okazji możemy sprawdzić jak zaimplemetowany jest *mapping* w Tiver Twitt
 3\. Zainstalować wtyczkę [hello world](https://github.com/brusic/elasticsearch-hello-world-plugin/).
 
 4\. Napisać swoją wtyczkę do Elasticsearch.
+
+5\. [Filename search with ElasticSearch](http://stackoverflow.com/questions/9421358/filename-search-with-elasticsearch).
