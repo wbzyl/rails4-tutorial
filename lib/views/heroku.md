@@ -9,15 +9,21 @@
 
 [Heroku](http://heroku.com/) (pronounced her-OH-koo) is a cloud application platform for
 Ruby – a new way of building and deploying web apps.
-Swoje aplikacje Rails będziemy wdrażać na Heroku za pomocą programu *heroku*,
+Swoje aplikacje Rails będziemy wdrażać na Heroku za pomocą skryptu *heroku*,
 który musimy najpierw zainstalować:
 
+    :::bash
     gem install heroku
 
-Lektura:
+Jeśli jeszcze nie umieściliśmy swojego klucza publicznego na Heroku,
+to robimy to teraz, tak:
 
-* [Deploying to Heroku with Rails 3.1](http://railsapps.github.com/rails-heroku-tutorial.html).
-* [Sinatra + Heroku = Super Fast Deployment](http://rubysource.com/sinatra-heroku-super-fast-deployment/)
+    :::bash
+    heroku keys:add
+
+albo podając ścieżkę do klucza:
+
+    heroku keys:add ~/.ssh/id_rsa.pub
 
 Zanim umieścimy swoją aplikację na *heroku.com*, musimy mieć tam konto (tzw. „free plan”).
 Zakładamy je, przeglądamy [dokumentację](http://devcenter.heroku.com/) i dopiero
@@ -25,7 +31,18 @@ teraz generujemy aplikację Rails:
 
     rails new foo
 
-Aplikację *foo* na heroku wdrożymy w trzech krokach:
+W pliku *Gemfile* zamieniamy wiersz z *sqlite3* na:
+
+    :::ruby Gemfile
+    gem 'sqlite3', :group => :development
+    gem 'pg', :group => :production
+    gem 'thin'
+
+W katalogu głównym aplikacji tworzymy plik *Procfile* o zawartości:
+
+    web: bundle exec thin start -p $PORT -e $RACK_ENV/$RAILS_ENV
+
+Aplikację *foo* na heroku wdrażamy w czterech krokach.
 
 1\. Zakładamy repozytorium Git dla kodu aplikacji:
 
@@ -34,56 +51,45 @@ Aplikację *foo* na heroku wdrożymy w trzech krokach:
     git add .
     git commit -m "pierwsza wersja"
 
-Następnie wymyślamy unikalną nazwę dla naszej aplikacji, na przykład *foo-xxx*:
+2\. Tworzymy nową aplikację na Heroku, wybieramy wersję
+[Celadon Cedar Stack](http://devcenter.heroku.com/articles/cedar):
 
-    heroku create foo
+    :::bash
+    heroku create --stack cedar
+      Creating deep-sunrise-8005... done, stack is cedar
+      http://deep-sunrise-8005.herokuapp.com/ | git@heroku.com:deep-sunrise-8005.git
+      Git remote heroku added
+
+3\. Wdrażamy naszą aplikację na Heroku:
+
+    :::bash
+    git push heroku master
+
+4\. Pozostałe rzeczy, to utworzenie bazy danych, migrowanie:
+
+    :::bash
+    heroku rake db:create
+    heroku rake db:migrate
+
+Przy okazji możemy też zmienić wygenerowaną nazwę aplikacji
+z *deep-sunrise-8008* na jakąś inną:
+
+    :::bash
+    heroku rename colllor
 
 Odpowiedź Heroku powinna być taka:
 
     Creating foo.... done
-    http://foo.heroku.com/ | git@heroku.com:foo-xxx.git
+    http://colllor.herokuapp.com/  |  git@heroku.com:collor.git
     Git remote heroku added
 
 **Uwaga:** jeśli na Heroku istnieje już aplikacja o takiej
-nazwie, to musimy wymyśleć nową nazwę.
-
-2\. Dodajemy klucz publiczny do swojego konta na Heroku
-i wdrażamy aplikację *foo*:
-
-    heroku keys:add ~/.ssh/id_rsa.pub
-    git push heroku master
-
-Stosujemy się do sugestii Heroku:
-
-    bundle install --path=$HOME/.gems
-    git add .
-    git commit -m "dodano Gemfile.lock"
-    git push heroku master
-
-3\. Pozostałe rzeczy, to utworzenie bazy danych:
-
-    heroku rake db:create
-
-A te polecenia zostawiamy sobie na potem:
-
-    heroku addons:add something?
-    heroku rake db:migrate  # na razie chyba zbędne
-    heroku db:push          # to też
+nazwie, to będziemy musieli wymyśleć inną unikalną nazwę.
 
 
-**Uwaga:** Jeśli gem heroku nie jest zainstalowany, to dopisujemu
-go do pliku *Gemfile* i instalujemy lokalnie, na przykład tak:
+<!--
 
-    bundle install --path=$HOME/.gems
-
-Teraz zamiast polecenia:
-
-    heroku ...
-
-wykonujemy polecenie:
-
-    bundle exec heroku ...
-
+# TODO
 
 ## Kilka kont na heroku (newsletter, 01.2011)
 
@@ -212,3 +218,10 @@ W tym celu dopiszemy do pliku *Rakefile*:
         system("git", "push", "production", "production:master")
       end
     end
+
+-->
+
+## Lektura
+
+* [Deploying to Heroku with Rails 3.1](http://railsapps.github.com/rails-heroku-tutorial.html).
+* [Sinatra + Heroku = Super Fast Deployment](http://rubysource.com/sinatra-heroku-super-fast-deployment/)
