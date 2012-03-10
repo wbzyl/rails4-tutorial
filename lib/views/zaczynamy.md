@@ -100,26 +100,26 @@ Dobrze jest od razu zmienić rozmiar fontu na
 3\. Do pliku *Gemfile* dopisujemy gemy z których będziemy korzystać:
 
     :::ruby Gemfile
-    # Łatwiejsze w użyciu formularze
+    gem 'rails', '3.2.2'
+    gem 'sqlite3'
+    # gems used only for assets
+    group :assets do
+      gem 'sass-rails',   '~> 3.2.3'
+      gem 'coffee-rails', '~> 3.2.1'
+      # see https://github.com/sstephenson/execjs#readme for more supported runtimes
+      # gem 'therubyracer'
+      gem 'uglifier', '>= 1.0.3'
+    end
+    gem 'jquery-rails'
+
+    # łatwiejsze w użyciu formularze
     gem 'simple_form'
-    # albo
-    # gem 'formtastic'
-
-    # Alternatywne dla WEBricka serwery WWW
-    # gem 'thin'
-    # gem 'unicorn'
-    # gem 'rainbows'
-
-    # Dopisujemy brakujące gemy (niedopatrzenie autorów Rails 3.1.3)
-    gem 'sass'
-    gem 'coffee-script'
-
     group :development do
-      # Ładniejsze wypisywanie rekordów na konsoli
+      # ładniejsze wypisywanie rekordów na konsoli
       # (zob. konfiguracja irb w ~/.irbrc)
       gem 'wirble'
       gem 'hirb'
-      # Bezproblemowe zapełnianie bazy danymi testowymi
+      # bezproblemowe zapełnianie bazy danymi testowymi
       gem 'faker'
       gem 'populator'
     end
@@ -143,23 +143,14 @@ szybciej:
     bundle install --local --binstubs --path=$HOME/.gems
 
 Niektóre gemy, wymagają procedury *post-install*.
-Przykładowo, dla gemu *Formtastic* wykonujemy polecenie:
-
-    :::bash
-    bin/rails generate formtastic:install
-      create  config/initializers/formtastic.rb
-      create  lib/templates/erb/scaffold/_form.html.erb
-
-oraz powinniśmy dopisać arkusz CSS tego gemu do pliku *application.css*:
-
-    :::css app/assets/stylesheets/application.css
-    *= require formtastic
-    *= require_self
-    *= require_tree .
-
-a dla *Simple Form* – polecenie:
+Przykładowo, dla gemu *Simple Form* należy wykonać polecenie:
 
     bin/rails generate simple_form:install
+
+Jeśli zamierzamy skorzystać z frameworka
+[Bootstrap](http://twitter.github.com/bootstrap/), to wykonujemy:
+
+    bin/rails generate simple_form:install --bootstrap
 
 5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
@@ -201,12 +192,12 @@ i ponownie uruchomić powyższe polecenie.
     :::bash
      bin/rails server -p 3000
 
-Albo jeden z alternatywnych serwerów:
+albo jeden z alternatywnych serwerów (o ile wcześniej wpisaliśmy
+w *Gemfile* odpowiednie gemy):
 
     :::bash
      bin/thin -p 3000 start
      bin/unicorn -p 3000
-     bin/rainbows -p 3000       # nie polecam w trybie development
 
 Aby obejrzeć działającą aplikację pozostaje wejść na stronę:
 
@@ -228,7 +219,7 @@ i następnie go użyć:
     rails new fortunka -m ⟨url albo ścieżka do szablonu⟩
 
 Oczywiście możemy też skorzystać z jakiegoś gotowego szablonu.
-Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rails31-html5-templates):
+Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rat):
 
     :::bash
     rails new ⟨app_name⟩ -m https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb --skip-bundle
@@ -482,7 +473,7 @@ kontrolera.
 Zasoby REST mogą mieć różne reprezentacje, na przykład HTML, XML,
 JSON, CSV, PDF, itd.
 
-Wygenerowany kontroler obsługuje tylko dwie reprezentacje: HTML i JSON.
+Wygenerowany kontroler obsługuje tylko dwie reprezentacje: HTML i JSON.
 Ale kiedy będziemy potrzebować dodatkowej reprezentacji danych,
 to możemy zacząć od modyfikacji powyższego kodu.
 
@@ -615,14 +606,14 @@ Chociaż przydałoby się dodać do powyższego kodu coś w stylu:
     end
 
 
+## Krok 9 - uruchamiamy serwer WWW
+
 <blockquote>
  <p>
   {%= image_tag "/images/nifty-secretary.jpg", :alt => "[nifty secretary]" %}
  </p>
  <p class="author">źródło: <a href="http://e-girlfriday.com/blog/">Retro Graphics, WordPress Site</a></p>
 </blockquote>
-
-## Krok 9 - uruchamiamy serwer www
 
 Każdy serwer ma swoje mocne i słabe strony.
 
