@@ -10,6 +10,13 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
+[10.03.2012] W rozdziale [Filling in the layout](http://ruby.railstutorial.org/chapters/filling-in-the-layout?version=3.2#top),
+książki M. Hartl’a, *Ruby on Rails Tutorial* opisano jak
+użyć [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/) w swojej aplikacji.
+Przy okazji można pobrać
+[Font Awesome](http://fortawesome.github.com/Font-Awesome/) z ikonkami
+specjalnie zaprojektowanymi dla tego frameworka.
+
 [14.02.2012] [ror_ecommerce 1.0](http://www.ror-e.com/posts/26)
 
 [10.02.2012] [Spree 1.0.0 Released](http://spreecommerce.com/blog/2012/02/09/spree-1-0-0-released/).
