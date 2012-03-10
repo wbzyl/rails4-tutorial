@@ -230,4 +230,9 @@ postąpić tak. Tworzymy plik *layouts/about.html.erb* o zawartości:
     <% end -%>
     <%= render :file => 'layouts/application' %>
 
+a w layoucie aplikacji *application.html.erb* w pojemniku *head* dopisujemy:
+
+    :::rhtml
+    <%= yield(:head) %>
+
 i według tego schematu tworzymy plik *layouts/contact.html.erb*.
