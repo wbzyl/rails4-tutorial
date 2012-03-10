@@ -56,8 +56,8 @@ Aplikację *foo* na heroku wdrażamy w czterech krokach.
 
     :::bash
     heroku create --stack cedar
-      Creating deep-sunrise-8005... done, stack is cedar
-      http://deep-sunrise-8005.herokuapp.com/ | git@heroku.com:deep-sunrise-8005.git
+      Creating deep-sunrise-8008... done, stack is cedar
+      http://deep-sunrise-8008.herokuapp.com/ | git@heroku.com:deep-sunrise-8008.git
       Git remote heroku added
 
 3\. Wdrażamy naszą aplikację na Heroku:
