@@ -91,6 +91,11 @@ nazwie, to będziemy musieli wymyśleć inną unikalną nazwę.
 
 Jak?
 
+    :::bash
+    gem install tap
+    heroku db:push sqlite://db/development.sqlite3 --confirm APP-NAME-ON-HEROKU
+    heroku db:pull sqlite://db/production.sqlite3
+
 
 <!--
 
