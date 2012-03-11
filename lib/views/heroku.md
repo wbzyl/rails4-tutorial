@@ -68,8 +68,8 @@ Aplikację *foo* na heroku wdrażamy w czterech krokach.
 4\. Pozostałe rzeczy, to utworzenie bazy danych, migrowanie:
 
     :::bash
-    heroku rake db:create
-    heroku rake db:migrate
+    heroku run rake db:create
+    heroku run rake db:migrate
 
 Przy okazji możemy też zmienić wygenerowaną nazwę aplikacji
 z *deep-sunrise-8008* na jakąś inną:
@@ -85,6 +85,11 @@ Odpowiedź Heroku powinna być taka:
 
 **Uwaga:** jeśli na Heroku istnieje już aplikacja o takiej
 nazwie, to będziemy musieli wymyśleć inną unikalną nazwę.
+
+
+### SQLite -> PostgreSQL
+
+Jak?
 
 
 <!--
