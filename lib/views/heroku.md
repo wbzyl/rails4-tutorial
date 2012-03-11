@@ -96,6 +96,8 @@ Jak?
     heroku db:push sqlite://db/development.sqlite3 --confirm APP-NAME-ON-HEROKU
     heroku db:pull sqlite://db/production.sqlite3
 
+Do trzech razy sztuka??
+
 
 <!--
 

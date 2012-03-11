@@ -168,7 +168,7 @@ krótko mówiąc **migrujemy**:
 kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
 
     :::ruby config/routes.rb
-    root :to => fortunes#index'
+    root :to => 'fortunes#index'
 
 8\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
