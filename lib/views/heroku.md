@@ -89,7 +89,7 @@ nazwie, to będziemy musieli wymyśleć inną unikalną nazwę.
 
 ### SQLite -> PostgreSQL
 
-Jak?
+Jak? [Push and Pull Databases To and From Heroku](http://blog.heroku.com/archives/2009/3/18/push_and_pull_databases_to_and_from_heroku/):
 
     :::bash
     gem install tap
