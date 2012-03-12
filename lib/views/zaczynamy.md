@@ -120,6 +120,8 @@ Dobrze jest od razu zmienić rozmiar fontu na
       gem 'wirble'
       gem 'hirb'
       # bezproblemowe zapełnianie bazy danymi testowymi
+      # https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md
+      # gem 'factory_girl_rails', '~> 1.2'
       gem 'faker'
       gem 'populator'
     end
