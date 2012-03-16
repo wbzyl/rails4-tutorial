@@ -76,6 +76,8 @@ go.”
 
 # Fortunka krok po kroku
 
+{%= image_tag "/images/dilbert-agile-programming.png", :alt => "[Agile Programming]" %}
+
 Podobne aplikacje:
 
 * [Proverb Hunter](http://proverbhunter.com/)
