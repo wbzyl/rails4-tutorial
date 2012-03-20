@@ -57,12 +57,12 @@ Rozpakowujemy archiwum z ostatnią wersją
 [ElasticSearch](http://www.elasticsearch.org/download/) (ok. 16 MB):
 
     :::bash
-    unzip elasticsearch-0.18.7.zip
+    unzip elasticsearch-0.19.1.zip
 
 A tak uruchamiamy *elasticsearch*:
 
     :::bash
-    elasticsearch-0.18.7/bin/elasticsearch -f
+    elasticsearch-0.19.1/bin/elasticsearch -f
 
 I już! Domyślnie ElasticSearch nasłuchuje na porcie 9200:
 
@@ -79,7 +79,7 @@ Warto też od razu zainstalować i uruchomić interfejs webowy do
 ElasticSearch:
 
     :::bash
-    elasticsearch-0.18.7/bin/plugin -install Aconex/elasticsearch-head
+    elasticsearch-0.19.1/bin/plugin -install Aconex/elasticsearch-head
     xdg-open http://localhost:9200/_plugin/head/
 
 ### Krótka ściąga z Elasticsearch Head
