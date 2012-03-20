@@ -84,11 +84,11 @@ ElasticSearch:
 
 ### Krótka ściąga z Elasticsearch Head
 
-W zakładce *Structured Query* warto odhaczyć *Show query source*.
+W zakładce *Structured Query* warto wstawić „✔” przy *Show query source*.
 
 W zakładce *Any Request* zmieniamy **POST** na **GET**.
 
-Następnie dopisujemy do *Query* ścieżkę */_search*::
+Następnie dopisujemy do *Query* ścieżkę *_search*:
 
     http://localhost:9200/_search
 
@@ -97,10 +97,11 @@ W okienku *Validate JSON* wpisujemy, na przykład:
     :::json
     {"query":{"query_string":{"query":"mongo*"}}}
 
-W *Result Transformer, podmieniamy instrukcję z *return* na:
+W *Result Transformer*, podmieniamy instrukcję z *return*
+na przykład na:
 
     :::js
-    return root.hits.hits
+    return root.hits.hits;
 
 
 <blockquote>
