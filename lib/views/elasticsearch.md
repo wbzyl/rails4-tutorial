@@ -1068,7 +1068,7 @@ Przykładowa implementacja tego algorytmu w NodeJS (v0.6.12)
     var rest = require('restler');
 
     var iterate = function(data) {  // funkcja rekurencyjna
-      rest.post('http://localhost:9200/_search/scroll?scroll=10m', { data: data._scroll_id } )
+      rest.get('http://localhost:9200/_search/scroll?scroll=10m', { data: data._scroll_id } )
         .on('success', function(data, response) {
           if (data.hits.hits.length != 0) {
             data.hits.hits.forEach(function(tweet) {
