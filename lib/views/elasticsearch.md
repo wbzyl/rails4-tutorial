@@ -82,6 +82,26 @@ ElasticSearch:
     elasticsearch-0.18.7/bin/plugin -install Aconex/elasticsearch-head
     xdg-open http://localhost:9200/_plugin/head/
 
+### Krótka ściąga z Elasticsearch Head
+
+W zakładce *Structured Query* warto odhaczyć *Show query source*.
+
+W zakładce *Any Request* zmieniamy **POST** na **GET**.
+
+Następnie dopisujemy do *Query* ścieżkę */_search*::
+
+    http://localhost:9200/_search
+
+W okienku *Validate JSON* wpisujemy, na przykład:
+
+    :::json
+    {"query":{"query_string":{"query":"mongo*"}}}
+
+W *Result Transformer, podmieniamy instrukcję z *return* na:
+
+    :::js
+    return root.hits.hits
+
 
 <blockquote>
  <p>The usual purpose of a full-text search engine is to return
