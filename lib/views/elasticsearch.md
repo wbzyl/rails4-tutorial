@@ -263,6 +263,11 @@ z ElasticSearch *JSON query language*:
 
 Jaka jest różnica między wyszukiwaniem z **text** a **term**?
 
+Sprawdzamy ile jest dokumentów w indeksie *twitter*:
+
+    :::bash
+    curl 'http://localhost:9200/twitter/_count
+
 Wyciągamy wszystkie dokumenty z indeksu *twitter*:
 
     :::bash
@@ -339,15 +344,13 @@ Dodatkowo do odfiltrowania interesujących nas statusów
 skorzystamy z [stream API](https://dev.twitter.com/docs/streaming-api):
 
     :::ruby tracking
-    track=wow,rails,mongodb,couchdb,redis,elasticsearch,neo4j
+    track=rails,mongodb,couchdb,redis,elasticsearch,neo4j
 
 (Dlaczego filtrujemy? Co sekundę wysyłanych jest do Twittera ok. 1000
 nowych statusów. Większość z nich nie ma dla nas żadnego znaczenia.)
 
-Do słów kluczowych dopisaliśmy słowo **wow**, które pojawia się
-w wielu statusach; pozostałe słowa występują z rzadka.
-Po dodaniu **wow** nowe statusy będą się pojawiać co chwila.
-**Wow!**
+Więcej tweetów: jeśli dopiszemy słowo **wow** wpisywane w wielu
+statusach, zostaniemy zalani tweetami – **wow!**
 
 Najprościej będzie zacząć od pobrania statusów za pomocą programu *curl*:
 
@@ -604,6 +607,7 @@ wykonujemy kilka prostych testów:
 
     :::bash
     curl 'http://localhost:9200/nosql_tweets/_count'
+    curl 'http://localhost:9200/nosql_tweets/rails/_count'
     curl 'http://localhost:9200/nosql_tweets/_search?q=*&sort=created_at:desc&size=2&pretty=true'
     curl 'http://localhost:9200/nosql_tweets/_search?size=2&sort=created_at:desc&pretty=true'
     curl 'http://localhost:9200/nosql_tweets/_search?_all&sort=created_at:desc&pretty=true'
@@ -641,11 +645,9 @@ Przykłady:
       "sort" : { "created_at" : { "order" : "desc" } },
       "facets" : { "hashtags" : { "terms" :  { "field" : "hashtags" } } }
     }'
-    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?size=0&pretty=true" -d '
     {
-      "query" : { "match_all" : {} },
-      "sort" : { "created_at" : { "order" : "desc" } },
-      "facets" : { "statuses_per_day" : { "date_histogram" :  { "field" : "created_at", "interval": "day" } } }
+      "facets" : { "hashtags" : { "terms" :  { "field" : "hashtags" } } }
     }'
 
 A tak wygląda „fasetowy” JSON:
@@ -672,6 +674,55 @@ A tak wygląda „fasetowy” JSON:
          } ]
        }
      }
+
+
+[Search API – Facets](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html):
+The facet also returns the number of documents which have no value for
+the field (*missing*), the number of facet values not included in the
+returned facets (*other*), and the total number of tokens in the facet
+(*total*).
+
+A teraz inny facet:
+
+    :::bash
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
+    {
+      "query" : { "match_all" : {} },
+      "sort" : { "created_at" : { "order" : "desc" } },
+      "facets" : { "statuses_per_day" : { "date_histogram" :  { "field" : "created_at", "interval": "day" } } }
+    }'
+
+Tak wygląda *date_histogram* facet:
+
+    :::json
+    "facets" : {
+      "statuses_per_day" : {
+        "_type" : "date_histogram",
+        "entries" : [ {
+          "time" : 1332201600000,
+          "count" : 2834
+        }, {
+          "time" : 1332288000000,
+          "count" : 384
+        } ]
+      }
+    }
+
+Zamiana:
+
+    :::js
+    new Date(1332201600000);  // Tue, 20 Mar 2012 00:00:00 GMT
+    new Date(1332288000000);  // Wed, 21 Mar 2012 00:00:00 GMT
+
+albo tak:
+
+    :::js
+    date = new Date(1332288000000);
+    date.toGMTString();     // 'Wed, 21 Mar 2012 00:00:00 GMT'
+    date.toLocaleString();  // 'Wed Mar 21 2012 01:00:00 GMT+0100 (CET)'
+    date.getTime();         //  1332288000000
+
+
 
 ## Trochę linków
 
