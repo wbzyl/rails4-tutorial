@@ -722,6 +722,8 @@ albo tak:
     date.toLocaleString();  // 'Wed Mar 21 2012 01:00:00 GMT+0100 (CET)'
     date.getTime();         //  1332288000000
 
+(zob. też [Epoch & Unix Timestamp Conversion Tools](http://www.epochconverter.com/))
+
 
 
 ## Trochę linków
