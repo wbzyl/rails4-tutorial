@@ -624,6 +624,12 @@ simplest case, a terms facet can return facet counts for various facet
 values for a specific field. ElasticSearch supports more facet
 implementations, such as statistical or date histogram facets.”
 
+**Uwaga:** Pole wykorzystywane do obliczeń fasetowych musi być typu:
+
+* *numeric*
+* *date* lub *time*
+* *be analyzed as a single token*
+
 Przykłady:
 
     :::bash
@@ -682,6 +688,16 @@ the field (*missing*), the number of facet values not included in the
 returned facets (*other*), and the total number of tokens in the facet
 (*total*).
 
+Jeszcze jeden przykład:
+
+    :::bash
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
+       {
+         "query" : { "query_string" : {"query" : "couchdb"} },
+         "sort" : { "created_at" : { "order" : "desc" } },
+         "facets" : { "hashtags" : { "terms" :  { "field" : "hashtags", size: 3 }, "global": true } }
+       }'
+
 A teraz inny facet:
 
     :::bash
@@ -708,7 +724,7 @@ Tak wygląda *date_histogram* facet:
       }
     }
 
-Zamiana:
+Co to są za liczby przy *time*:
 
     :::js
     new Date(1332201600000);                  // Tue, 20 Mar 2012 00:00:00 GMT
