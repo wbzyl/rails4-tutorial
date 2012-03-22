@@ -4,7 +4,7 @@ Zapisujemy kilka dokumentów w ElasticSearch:
 
     :::bash
     curl -X DELETE 'localhost:9200/aphorisms'
-    curl -X POST   'localhost:9200/aphorisms/_bulk' --data-binary @test.bulk
+    curl -X POST   'localhost:9200/aphorisms/_bulk' --data-binary @aphorisms.bulk
     curl -X POST   'localhost:9200/_refresh'
 
 Dane (**uwaga:* każdy JSON wpisujemy w jednym wierszu):
@@ -64,6 +64,36 @@ Tylko jedno pole:
     curl "localhost:9200/aphorisms/_search?pretty=true" -d '
       { "fields": ["quote"],
         "query" : { "query_string" : {"query" : "tags:do*"} } }'
+
+
+## Wyszukiwanie tylko w subdocuments
+
+Przykładowe dokumenty:
+
+    :::bash
+    curl    -X DELETE 'localhost:9200/contacts'
+    curl -s -X POST   'localhost:9200/contacts/_bulk' --data-binary @contacts.bulk
+    curl    -X POST   'localhost:9200/_refresh'
+
+Dane:
+
+    :::json contacts.bulk
+    { "index": { "_type" : "private" } }
+    { "created_at": "1965-03-01", "name": { "last": "Grabczyk",  "first": "Agata" }  }
+    { "index": { "_type" : "private" } }
+    { "created_at": "1966-03-10", "name": { "last": "Korolczyk", "first": "Bartek" }  }
+    { "index": { "_type" : "private" } }
+    { "created_at": "1966-03-20", "name": { "last": "Maciejak",  "first": "Adam" }  }
+    { "index": { "_type" : "private" } }
+    { "created_at": "1965-03-01", "name": { "last": "Jaworska",  "first": "Basia" }  }
+
+Przykładowe zapytanie [Filed Query](http://www.elasticsearch.org/guide/reference/query-dsl/field-query.html):
+
+    :::bash
+    curl "localhost:9200/contacts/_search?pretty=true" -d '
+      { "query": {"field" : { "name.first" : {"query" : "A*"} } } }'
+
+Range Query?
 
 
 ## Fasety
