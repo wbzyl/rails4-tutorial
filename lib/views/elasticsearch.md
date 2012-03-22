@@ -711,19 +711,44 @@ Tak wygląda *date_histogram* facet:
 Zamiana:
 
     :::js
-    new Date(1332201600000);  // Tue, 20 Mar 2012 00:00:00 GMT
-    new Date(1332288000000);  // Wed, 21 Mar 2012 00:00:00 GMT
+    new Date(1332201600000);                  // Tue, 20 Mar 2012 00:00:00 GMT
+    new Date(1332288000000);                  // Wed, 21 Mar 2012 00:00:00 GMT
+    (new Date(1332288000000)).getFullYear();  // 2012
 
-albo tak:
+
+### Krótka ściąga z obiektu Date
+
+Inicjalizacja:
+
+    :::javascript
+    new Date();
+    new Date(milliseconds);
+    new Date(dateString);
+    new Date(year, month, day, hours, minutes, seconds, milliseconds);
+    // parsing
+    ms = Date.parse('2011-01-31T12:00:00.016');
+    new Date(ms); // Mon, 31 Jan 2011 12:00:00 GMT
+
+Metody:
 
     :::js
-    date = new Date(1332288000000);
-    date.toGMTString();     // 'Wed, 21 Mar 2012 00:00:00 GMT'
-    date.toLocaleString();  // 'Wed Mar 21 2012 01:00:00 GMT+0100 (CET)'
-    date.getTime();         //  1332288000000
+    d = new Date(1332288000000);
+    d.getTime();         // 1332288000000
+    d.getFullYear();     // 2011
+    d.getMonth();        //    0    (0-11)
+    d.getDate();         //   31    zwraca dzień miesiąca!
+    d.getHours();
+    d.getMinutes();
+    d.getSeconds();
+    d.getMilliseconds();
 
-(zob. też [Epoch & Unix Timestamp Conversion Tools](http://www.epochconverter.com/))
+Konwersja na napis:
 
+    d.toString();        // 'Mon Jan 31 2011 01:00:00 GMT+0100 (CET)'
+    d.toLocaleString();  // 'Wed Mar 21 2012 01:00:00 GMT+0100 (CET)'
+    d.toGMTString();     // 'Wed, 21 Mar 2012 00:00:00 GMT'
+
+Zobacz też [Epoch & Unix Timestamp Conversion Tools](http://www.epochconverter.com/).
 
 
 ## Trochę linków
