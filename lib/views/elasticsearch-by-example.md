@@ -75,7 +75,7 @@ Przykładowe dokumenty:
     curl -s -X POST   'localhost:9200/contacts/_bulk' --data-binary @contacts.bulk
     curl    -X POST   'localhost:9200/_refresh'
 
-Dane:
+Dane *contacts.bulk*:
 
     :::json contacts.bulk
     { "index": { "_type" : "private" } }
@@ -91,7 +91,10 @@ Przykładowe zapytanie [Filed Query](http://www.elasticsearch.org/guide/referenc
 
     :::bash
     curl "localhost:9200/contacts/_search?pretty=true" -d '
-      { "query": {"field" : { "name.first" : {"query" : "A*"} } } }'
+      { "query": { "field": { "name.first": { "query": "A*" } } } }'
+    curl "localhost:9200/contacts/_search?pretty=true" -d '
+      { "query": { "field": { "name.first": "A*" } } }'
+
 
 Range Query?
 
@@ -104,8 +107,77 @@ Terms facet:
     curl -X POST "http://localhost:9200/aphorisms/_search?pretty=true" -d '
       {
         "fields": [],
-        "query" : { "query_string" : {"query" : "*"} },
-        "facets" : {
-          "keywords" : { "terms" : {"field" : "tags", "size": 4} }
+        "query": { "query_string": { "query": "*" } },
+        "facets": {
+          "keywords": { "terms": { "field": "tags", "size": 4 } }
         }
       }'
+      ... wyniki wyszukiwania ...
+      }, {
+        "term" : "myślenie",
+        "count" : 2
+      }, {
+      ...
+
+Wyszukiwanie po fasecie *myślenie*:
+
+    :::bash
+    curl "localhost:9200/aphorisms/_search?pretty=true" -d '
+      {
+        "size": 4,
+        "sort": { "_score": {}  },
+        "query" : { "term": { "tags": "myślenie" } }
+      }'
+    ... wyniki wyszukiwania ...
+    {
+      "took" : 0,
+      ...
+      "hits" : {
+        "total" : 2,
+        "max_score" : 1.2380183,
+        "hits" : [ {
+          "_index" : "aphorisms",
+          "_type" : "steinhaus",
+          "_id" : "j0JWnItaRfuY4vJbVWHUWw",
+          "_score" : 1.2380183, "_source" : { "quote": "Ludzie...", "tags": ["ludzie", "myślenie"] }
+        }, {
+          "_index" : "aphorisms",
+          "_type" : "lec",
+          "_id" : "N_jMl9dtR4atAGxDWfL9iw",
+          "_score" : 0.9904146, "_source" : { "quote": "Podrzuć...", "tags": ["ludzie", "myślenie", "marzenia"] }
+        } ]
+      }
+
+
+# Skrypt NodeJS „elasticimport”
+
+Funkcjonalność podobna do programu *mongoimport*. Coś takiego:
+
+    mongoimport
+    connected to: 127.0.0.1
+    no collection specified!
+    Import CSV, TSV or JSON data into MongoDB.
+
+    options:
+      --help                  produce help message
+      -v [ --verbose ]        be more verbose (include multiple times for more
+                              verbosity e.g. -vvvvv)
+      --version               print the program's version and exit
+      -h [ --host ] arg       mongo host to connect to ( <set name>/s1,s2 for sets)
+      --port arg              server port. Can also use --host hostname:port
+      -u [ --username ] arg   username
+      -p [ --password ] arg   password
+      -d [ --db ] arg         database to use
+      -c [ --collection ] arg collection to use (some commands)
+      -f [ --fields ] arg     comma separated list of field names e.g. -f name,age
+      --fieldFile arg         file with fields names - 1 per line
+      --ignoreBlanks          if given, empty fields in csv and tsv will be ignored
+      --type arg              type of file to import.  default: json (json,csv,tsv)
+      --file arg              file to import from; if not specified stdin is used
+      --drop                  drop collection first
+      --headerline            CSV,TSV only - use first line as headers
+      --stopOnError           stop importing at first error rather than continuing
+      --jsonArray             load a json array, not one item per line.
+
+
+JTZ? Teraz to jest nawet aż za proste…
