@@ -1,4 +1,4 @@
-#### {% title "Makieta aplikacji, czyli layout" %}
+#### {% title "Layout, czyli makieta aplikacji" %}
 
 <blockquote>
  <p>
