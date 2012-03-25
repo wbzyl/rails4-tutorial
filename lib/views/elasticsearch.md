@@ -57,12 +57,12 @@ Rozpakowujemy archiwum z ostatnią wersją
 [ElasticSearch](http://www.elasticsearch.org/download/) (ok. 16 MB):
 
     :::bash
-    unzip elasticsearch-0.18.7.zip
+    unzip elasticsearch-0.19.1.zip
 
 A tak uruchamiamy *elasticsearch*:
 
     :::bash
-    elasticsearch-0.18.7/bin/elasticsearch -f
+    elasticsearch-0.19.1/bin/elasticsearch -f
 
 I już! Domyślnie ElasticSearch nasłuchuje na porcie 9200:
 
@@ -79,8 +79,29 @@ Warto też od razu zainstalować i uruchomić interfejs webowy do
 ElasticSearch:
 
     :::bash
-    elasticsearch-0.18.7/bin/plugin -install Aconex/elasticsearch-head
+    elasticsearch-0.19.1/bin/plugin -install Aconex/elasticsearch-head
     xdg-open http://localhost:9200/_plugin/head/
+
+### Krótka ściąga z Elasticsearch Head
+
+W zakładce *Structured Query* warto wstawić „✔” przy *Show query source*.
+
+W zakładce *Any Request* zmieniamy **POST** na **GET**.
+
+Następnie dopisujemy do *Query* ścieżkę *_search*:
+
+    http://localhost:9200/_search
+
+W okienku *Validate JSON* wpisujemy, na przykład:
+
+    :::json
+    {"query":{"query_string":{"query":"mongo*"}}}
+
+W *Result Transformer*, podmieniamy instrukcję z *return*
+na przykład na:
+
+    :::js
+    return root.hits.hits;
 
 
 <blockquote>
@@ -242,6 +263,11 @@ z ElasticSearch *JSON query language*:
 
 Jaka jest różnica między wyszukiwaniem z **text** a **term**?
 
+Sprawdzamy ile jest dokumentów w indeksie *twitter*:
+
+    :::bash
+    curl 'http://localhost:9200/twitter/_count
+
 Wyciągamy wszystkie dokumenty z indeksu *twitter*:
 
     :::bash
@@ -318,15 +344,13 @@ Dodatkowo do odfiltrowania interesujących nas statusów
 skorzystamy z [stream API](https://dev.twitter.com/docs/streaming-api):
 
     :::ruby tracking
-    track=wow,rails,mongodb,couchdb,redis,elasticsearch,neo4j
+    track=rails,mongodb,couchdb,redis,elasticsearch,neo4j
 
 (Dlaczego filtrujemy? Co sekundę wysyłanych jest do Twittera ok. 1000
 nowych statusów. Większość z nich nie ma dla nas żadnego znaczenia.)
 
-Do słów kluczowych dopisaliśmy słowo **wow**, które pojawia się
-w wielu statusach; pozostałe słowa występują z rzadka.
-Po dodaniu **wow** nowe statusy będą się pojawiać co chwila.
-**Wow!**
+Więcej tweetów: jeśli dopiszemy słowo **wow** wpisywane w wielu
+statusach, zostaniemy zalani tweetami – **wow!**
 
 Najprościej będzie zacząć od pobrania statusów za pomocą programu *curl*:
 
@@ -583,6 +607,7 @@ wykonujemy kilka prostych testów:
 
     :::bash
     curl 'http://localhost:9200/nosql_tweets/_count'
+    curl 'http://localhost:9200/nosql_tweets/rails/_count'
     curl 'http://localhost:9200/nosql_tweets/_search?q=*&sort=created_at:desc&size=2&pretty=true'
     curl 'http://localhost:9200/nosql_tweets/_search?size=2&sort=created_at:desc&pretty=true'
     curl 'http://localhost:9200/nosql_tweets/_search?_all&sort=created_at:desc&pretty=true'
@@ -598,6 +623,12 @@ korzystając z aplikacji webowej [Elasticsearch Head](https://github.com/Aconex/
 simplest case, a terms facet can return facet counts for various facet
 values for a specific field. ElasticSearch supports more facet
 implementations, such as statistical or date histogram facets.”
+
+**Uwaga:** Pole wykorzystywane do obliczeń fasetowych musi być typu:
+
+* *numeric*
+* *date* lub *time*
+* *be analyzed as a single token*
 
 Przykłady:
 
@@ -620,11 +651,9 @@ Przykłady:
       "sort" : { "created_at" : { "order" : "desc" } },
       "facets" : { "hashtags" : { "terms" :  { "field" : "hashtags" } } }
     }'
-    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?size=0&pretty=true" -d '
     {
-      "query" : { "match_all" : {} },
-      "sort" : { "created_at" : { "order" : "desc" } },
-      "facets" : { "statuses_per_day" : { "date_histogram" :  { "field" : "created_at", "interval": "day" } } }
+      "facets" : { "hashtags" : { "terms" :  { "field" : "hashtags" } } }
     }'
 
 A tak wygląda „fasetowy” JSON:
@@ -651,6 +680,92 @@ A tak wygląda „fasetowy” JSON:
          } ]
        }
      }
+
+
+[Search API – Facets](http://www.elasticsearch.org/guide/reference/api/search/facets/index.html):
+The facet also returns the number of documents which have no value for
+the field (*missing*), the number of facet values not included in the
+returned facets (*other*), and the total number of tokens in the facet
+(*total*).
+
+Jeszcze jeden przykład:
+
+    :::bash
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
+       {
+         "query" : { "query_string" : {"query" : "couchdb"} },
+         "sort" : { "created_at" : { "order" : "desc" } },
+         "facets" : { "hashtags" : { "terms" :  { "field" : "hashtags", size: 3 }, "global": true } }
+       }'
+
+A teraz inny facet:
+
+    :::bash
+    curl -X POST "http://localhost:9200/nosql_tweets/_search?pretty=true" -d '
+    {
+      "query" : { "match_all" : {} },
+      "sort" : { "created_at" : { "order" : "desc" } },
+      "facets" : { "statuses_per_day" : { "date_histogram" :  { "field" : "created_at", "interval": "day" } } }
+    }'
+
+Tak wygląda *date_histogram* facet:
+
+    :::json
+    "facets" : {
+      "statuses_per_day" : {
+        "_type" : "date_histogram",
+        "entries" : [ {
+          "time" : 1332201600000,
+          "count" : 2834
+        }, {
+          "time" : 1332288000000,
+          "count" : 384
+        } ]
+      }
+    }
+
+Co to są za liczby przy *time*:
+
+    :::js
+    new Date(1332201600000);                  // Tue, 20 Mar 2012 00:00:00 GMT
+    new Date(1332288000000);                  // Wed, 21 Mar 2012 00:00:00 GMT
+    (new Date(1332288000000)).getFullYear();  // 2012
+
+
+### Krótka ściąga z obiektu Date
+
+Inicjalizacja:
+
+    :::javascript
+    new Date();
+    new Date(milliseconds);
+    new Date(dateString);
+    new Date(year, month, day, hours, minutes, seconds, milliseconds);
+    // parsing
+    ms = Date.parse('2011-01-31T12:00:00.016');
+    new Date(ms); // Mon, 31 Jan 2011 12:00:00 GMT
+
+Metody:
+
+    :::js
+    d = new Date(1332288000000);
+    d.getTime();         // 1332288000000
+    d.getFullYear();     // 2011
+    d.getMonth();        //    0    (0-11)
+    d.getDate();         //   31    zwraca dzień miesiąca!
+    d.getHours();
+    d.getMinutes();
+    d.getSeconds();
+    d.getMilliseconds();
+
+Konwersja na napis:
+
+    d.toString();        // 'Mon Jan 31 2011 01:00:00 GMT+0100 (CET)'
+    d.toLocaleString();  // 'Wed Mar 21 2012 01:00:00 GMT+0100 (CET)'
+    d.toGMTString();     // 'Wed, 21 Mar 2012 00:00:00 GMT'
+
+Zobacz też [Epoch & Unix Timestamp Conversion Tools](http://www.epochconverter.com/).
+
 
 ## Trochę linków
 
@@ -960,22 +1075,58 @@ i modyfikujemy *application.css*:
 
 ## Fasety
 
-**TODO:** Dodać wyszukiwanie fasetowe pos hashtagach.
+**TODO:** Dodać wyszukiwanie fasetowe po hashtagach.
 
 
-# ElasticSearch dump ⇒ JSON
-
-**TODO:** Przerobić zapytania z *curl* poniżej na skrypt w Ruby.
+# JSON dump indeksu nosql_tweet
 
 Zobacz search API:
 
 * [scroll](http://www.elasticsearch.org/guide/reference/api/search/scroll.html)
 * [scan](http://www.elasticsearch.org/guide/reference/api/search/search-type.html)
 
-Przykład:
+Ściąga:
+
+* a search request can be scrolled by specifying the *scroll* parameter;
+  `scroll=4m` indicates for how long (*co to oznacza? 4 minuty czy 4 milisekundy*)
+  the nodes that participate in the search will maintain relevant resources
+  in order to continue and support it
+* the *scroll_id* should be used when scrolling
+  (along with the scroll parameter, to stop the scroll from expiring);
+  the *scroll_id* **changes for each scroll request**
+  and only the most recent one should be used
+* the “breaking” condition out of a scroll is when no hits has been returned;
+  the *hits.total* will be maintained between scroll requests
+
+Przykład pokazujący jak to działa:
 
     :::bash
-    curl -XGET 'localhost:9200/nosql_tweets/mongodb/_search?search_type=scan&scroll=10m&size=2&pretty=true' -d '
+    curl -X GET 'localhost:9200/nosql_tweets/_search?search_type=scan&scroll=10m&size=4&pretty=true'
+
+Opcjonalnie możemy dopisać kryteria wyszukiwania, wszystko:
+
+    :::json
+    {
+       "query" : {
+         "match_all" : {}
+       }
+    }
+
+albo:
+
+    :::json
+    {
+       "query": {
+          "query_string" : {
+             "query" : "some query string here"
+          }
+       }
+    }
+
+Wtedy zmieniamy wywołanie *curl* na:
+
+    :::bash
+    curl -XGET 'localhost:9200/nosql_tweets/_search?search_type=scan&scroll=10m&size=4&pretty=true' -d '
     {
        "query" : {
          "match_all" : {}
@@ -986,8 +1137,8 @@ Wynik wykonania tego polecenia, to przykładowo:
 
     :::json
     {
-      "_scroll_id" : "c2NhbjsxOzcwOnpqZS1ZaS1oVHhDcWY5Z2FfRjJSbUE7MTt0b3RhbF9oaXRzOjY2Ow==",
-      "took" : 0,
+      "_scroll_id" : "c2NhbjsxOzE6Q29xZ01qdkJTZHVRdTA1Ow=",
+      "took" : 10,
       "timed_out" : false,
       "_shards" : {
         "total" : 1,
@@ -995,34 +1146,24 @@ Wynik wykonania tego polecenia, to przykładowo:
         "failed" : 0
       },
       "hits" : {
-        "total" : 66,
+        "total" : 105,
         "max_score" : 0.0,
         "hits" : [ ]
       }
+    }
 
-Teraz wykonujemy wielokrotnie:
+Teraz wykonujemy tyle razy polecenie:
 
     :::bash
     curl -XGET 'localhost:9200/_search/scroll?scroll=10m&pretty=true' \
-      -d 'c2NhbjsxOzcwOnpqZS1ZaS1oVHhDcWY5Z2FfRjJSbUE7MTt0b3RhbF9oaXRzOjY2Ow=='
+      -d 'przeklikujemy ostatnią wersję _scroll_id'
 
-Ile razy? Łatwo to policzyć po wykonaniu polecenia:
-
-    curl -XGET 'localhost:9200/nosql_tweets/mongodb/_count'
-
-Wynik:
-
-    {
-      "count" : 66,
-      "_shards" : {"total" : 1, "successful" : 1, "failed" : 0 }
-    }
-
-Ostatnia paczka JSON–ów:
+aż otrzymamy pustą tablicę *hits.hits*:
 
     :::json
     {
-      "_scroll_id" : "c2NhbjswOzE7dG90YWxfaGl0czo2Njs=",
-      "took" : 0,
+      "_scroll_id" : "c2lZ1UTsxO3RvdGFsX2hpdHM6MTM5Ow=",
+      "took" : 128,
       "timed_out" : false,
       "_shards" : {
         "total" : 1,
@@ -1030,27 +1171,47 @@ Ostatnia paczka JSON–ów:
         "failed" : 0
       },
       "hits" : {
-        "total" : 66,
+        "total" : 2024,
         "max_score" : 0.0,
-        "hits" : [ {
-          "_index" : "nosql_tweets",
-          "_type" : "mongodb",
-          "_id" : "161142485450625024",
-          ...
-        }, {
-          "_index" : "nosql_tweets",
-          "_type" : "mongodb",
-          "_id" : "161143013618352128",
-          "_score" : 0.0,
-          "_source" : {
-                "created_at":"2012-01-22T18:47:42+01:00",
-                "hashtags":[],
-                "screen_name":"CakePHP_HBFeed",
-                "text":"MongoDB-DboSource update http://t.co/xxx",
-                "urls":["http://dlvr.it/16bxlv"],"user_mentions":[]}
-        } ]
-      }
-    }
+        "hits" : [ ]
+        ...
+
+Przykładowa implementacja tego algorytmu w NodeJS (v0.6.12)
++ moduł [Restler](https://github.com/danwrong/restler) (v2.0.0):
+
+    :::js dump-tweets.js
+    var rest = require('restler');
+
+    var iterate = function(data) {  // funkcja rekurencyjna
+      rest.get('http://localhost:9200/_search/scroll?scroll=10m', { data: data._scroll_id } )
+        .on('success', function(data, response) {
+          if (data.hits.hits.length != 0) {
+            data.hits.hits.forEach(function(tweet) {
+              console.log(JSON.stringify(tweet)); // wypisz JSONa w jednym wierszu
+            });
+            iterate(data);
+          };
+        });
+    };
+
+    rest.get('http://localhost:9200/nosql_tweets/_search?search_type=scan&scroll=10m&size=32')
+      .on('success', function(data, response) {
+        iterate(data);
+      });
+
+Skrypt ten uruchamiamy tak:
+
+    :::bash
+    node dump-tweets.js
+
+Oczywiście wcześniej musimy umieścić dane w indeksie *nosql_tweets*.
+JTZ? Opisałem to w [README tutaj](https://github.com/wbzyl/est).
+
+**Uwaga:** Korzystając z tego skryptu, możemy łatwo przenieść
+dane z Elasticsearch do MongoDB:
+
+    :::bash
+    node json_dump-nosql_tweets.js | mongoimport --upsert -d test -c tweets --type json
 
 
 # Rivers allows to index streams

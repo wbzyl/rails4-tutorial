@@ -4,26 +4,102 @@
 * Jak implementujemy „remote links”?
   - Co to jest „Unobtrusive JavaScript” (w skrócie *UJS*)?
   - Co to są „Progressive Enhancements” (stopniowe udoskonalenia)?
-* Przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links).
 
-Zaczynamy od przypomnienia przykładów:
+<!-- * Przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links). -->
+
+Do eksperymentów z *remote links* użyjemy aplikacji
+[Fortunka](http://sharp-ocean-6085.herokuapp.com/) wdrożonej
+na Heroku na poprzednim wykładzie:
 
     :::bash
-    curl -v -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/44
-    curl    -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/45
-    curl    -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/46
-    curl -v -X DELETE http://localhost:3000/fortunes/47
-    curl    -X DELETE http://localhost:3000/fortunes/48.json
-    curl    -X DELETE http://localhost:3000/fortunes/49
+    git clone git@heroku.com:sharp-ocean-6085.git
+    cd sharp-ocean-6085
+    rake db:create
+    rake db:migrate # aplikacja korzysta z bazy PostgreSQL; podmienić na SQLite?
+    rake db:seed
+
+Kod aplikacji jest też w moim publicznym repo na GitHubie –
+[sharp-ocean-6085](https://github.com/wbzyl/sharp-ocean-6085)).
+
+Eksperymenty z *remote links* będą ciekawsze jeśli
+użyjemy biblioteki [jQuery UI](http://jqueryui.com/).
+Wykorzystamy efekty [„explode”, „fade” i „highlight”](http://jqueryui.com/demos/effect/).
+
+Dlatego zaczniemy od instalacji jQuery UI.
+Ze strony [download](http://jqueryui.com/download) pobieramy paczkę
+z*theme* (skórką?) **Start** ze wszystkimi efektami (tak będzie wygodniej).
+
+Rozpakowujemy pobrane archiwum:
+
+    :::bash
+    unzip jquery-ui-1.8.18.custom.zip
+
+Po rozpakowaniu, kopiujemy pliki do odpowiednich
+katalogów w katalogu *vendor/assets*.
+
+    :::bash
+    cp  css/start  sharp-ocean-6085/vendor/assets/stylesheets/
+    cp  js/jquery-ui-1.8.18.custom.min.js  sharp-ocean-6085/vendor/assets/javascripts/
+
+Skopiowane pliki dopisujemy do pliku *application.js*
+
+    :::js app/assets/javascripts/application.js
+    //= require jquery
+    //= require jquery_ujs
+    //= require twitter/bootstrap
+    //= require jquery-ui-1.8.18.custom.min
+
+oraz do pliku *application.css.less*:
+
+    :::css app/assets/stylesheets/application.css.less
+    @import "twitter/bootstrap";
+    @import "fontawesome";
+    @import "digg_pagination";
+    @import "start/jquery-ui-1.8.18.custom.css";
+
+Sprawdzamy, czy plik te są wczytywane:
+
+    :::bash
+    curl localhost:3000/assets/jquery-ui-1.8.18.custom.min.js
+    curl localhost:3000/assets/start/jquery-ui-1.8.18.custom.css
+    http://localhost:3000/assets/start/images/ui-bg_inset-hard_100_fcfdfd_1x100.png
+
+Jeśli wszystko działa, to dla rozruszania wykonujemy kilka poleceń
+z programem *curl*:
+
+    :::bash
+    curl -v -X GET -H 'Accept: application/json' localhost:3000/fortunes/44
+    curl    -X GET -H 'Accept: application/json' localhost:3000/fortunes/45
+    curl -v -X DELETE localhost:3000/fortunes/2         # wpisujemy numery istniejących fortunek
+    curl    -X DELETE localhost:3000/fortunes/3         # jw (już wspomniane)
+    curl -v -X DELETE localhost:3000/fortunes/4.json    # jw
+    curl -v -X DELETE -H 'Accept: application/json' localhost:3000/fortunes/5
+
+Po wykonaniu których poleceń jest jest wypisywane na konsolę?
+
+    :::html
+    <html><body>You are being <a href="http://localhost:3000/fortunes">redirected</a>.</body></html>
+
+Dodajemy fortunkę do bazy:
+
+    :::bash
     curl -v -X POST -H 'Content-Type: application/json' \
-      --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes.json
+      --data '{"quotation":"I hear and I forget."}' localhost:3000/fortunes.json
     curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
-      --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes
+      --data '{"quotation":"I hear and I forget."}' localhost:3000/fortunes
+
+Dlaczego na konsoli jest cokolwiek wypisywane?
+
+    :::json
+    {"created_at":"2012-03-21","id":500,"quotation":"I hear and I forget.","source":null,"updated_at":"2012-03-21"}
+
+**Uwaga:** W trakcie eksperymentów, cały czas podglądamy co się dzieje
+na konsoli przegladarki!
 
 
 ## Zabawy z przyciskiem *Destroy*
 
-Zmieniony kod metody *destroy*, z której będziemy korzystać:
+Na początek zmienimy nieco kod metody *destroy*:
 
     :::ruby
     # DELETE /fortunes/1
@@ -40,12 +116,19 @@ Zmieniony kod metody *destroy*, z której będziemy korzystać:
       end
     end
 
+Po usunięciu fortunki, wykonywana jest
+jedna linijka kodu w bloku *respond*:
 
-### Usuwanie rekordu za pośrednictwem *format.html*
+* *format.html*
+* *format.json*
+* *format.js*
 
-Link z *index.html.erb*:
 
-    :::ruby
+### Usuwanie rekordu z *format.html*
+
+Wygenerowany przez scaffold link z *index.html.erb*:
+
+    :::rhtml
     <%= link_to 'Destroy', fortune,
        confirm: 'Are you sure?',
        method: :delete %>
@@ -53,21 +136,21 @@ Link z *index.html.erb*:
 
 Przykład wygenerowanego kodu HTML:
 
-    :::html
+    :::rhtml
     <a href="/fortunes/1"
        data-confirm="Are you sure?"
        data-method="delete"
        rel="nofollow">Destroy</a>
 
 Jak to działa? Co oznacza kod `rel="nofollow"`?
-Skąd się wzięła `1`?
+Skąd się wzięła liczba `1`?
 
 
-### Usuwanie rekordu za pośrednictwem *format.json*
+### Usuwanie rekordu z *format.json*
 
-Zmieniony link z *index.html.erb*:
+Zmienimay kod linku w  pliku *index.html.erb* na:
 
-    :::ruby
+    :::rhtml
     <%= link_to 'Destroy', fortune,
        confirm: 'Are you sure?',
        method: :delete,
@@ -76,7 +159,7 @@ Zmieniony link z *index.html.erb*:
 
 Wygenerowany kod HTML:
 
-    :::html
+    :::rhtml
     <a href="/fortunes/1"
        data-confirm="Are you sure?"
        data-method="delete"
@@ -104,42 +187,18 @@ Cały czas jesteśmy na stronie głównej, która się nie zmienia.
 Fortunka usunięta z tabeli jest nadal na stronie.
 Powinniśmy ją usunąć. Jak to zrobić?
 
-Skorzystamy z gotowych efektów *jQuery UI*. Ze strony
-[download](http://jqueryui.com/download) pobieramy paczkę
-z efektami „explode”, „fade” i „highlight”.
-Po rozpakowaniu, kopiujemy pliki do odpowiednich
-katalogów w *vendor/assets*. Skopiowane pliki
-dopisujemy do pliku *application.js*
-
-    :::js app/assets/javascripts/application.js
-    //= require jquery
-    //= require jquery_ujs
-    //= require jquery-ui-1.8.16.custom.min
-    //= require_tree .
-
-i pliku *application.css.scss*.
-
-    :::css app/assets/stylesheets/application.css.scss
-    /*
-     *= require formtastic
-     *= require bootstrap
-     *= require jquery-ui-1.8.16.custom
-     *= require_self
-     */
-    @import "formtastic-container-app.css.scss";
-    @import "bootstrap-container-app.css.scss";
 
 **Restartujemy aplikację** i ponownie wchodzimy na stronę główną.
 Wchodzimy na konsolę Firebuga, gdzie ręcznie uruchomimy
 efekt *explode* na pierwszej fortunce.
 
-Podglądamy atrybut *href* pierwszej fortunki.
+Podglądamy atrybut *href* pierwszej fortunki na stronie.
 Jeśli jest to, na przykład */fortunes/4*, to na konsoli wpisujemy:
 
     :::js
     r = $("a[href='/fortunes/4']")
     a = r.closest("article")
-    a.effect("explode")
+    a.effect("explode")  // ew. a.effect("explode", "slow")
 
 Wybrana fortunka powinna eksplodować i zniknąć ze strony.
 
@@ -155,6 +214,8 @@ do pliku *fortunes.js* (wcześniej usuwamy plik *fortunes.js.coffee*):
       //   alert('Complete. Record was deleted.')
       // });
     });
+
+*Uwaga:* dopisujemy plik *fortunes.js* do *application.js*.
 
 Oczywiście, w powyższym kodzie nie korzystamy z przesłanych danych.
 Ale gdybyśmy zapragnęli umieścić właśnie usuniętą fortunkę na marginesie,
@@ -174,7 +235,7 @@ Zamiast niego wstawiamy plik *fortunes.js.coffee* o zawartości:
         $(this).closest('article').effect('explode')
 
 
-### Usuwanie rekordu za pośrednictwem *format.js*
+### Usuwanie rekordu z *format.js*
 
 Zmieniony link z *index.html.erb*:
 
@@ -218,21 +279,16 @@ Zamieniamy kod na:
 
 ## Remote modal show/new/edit pages
 
-Cały przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links).
+<!-- Cały przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links).-->
 
-Skorzystamy z wtyczki Bootstrap o nazwie *Modal*.
-Pobieramy plik [bootstrap-modal.js](http://twitter.github.com/bootstrap/1.4.0/bootstrap-modal.js)
-i zapisujemy go katalogu *vendor/assets/javascripts* aplikacji.
-Następnie dopisujemy go do pliku *application.js*:
+Aby było efektownie, skorzystamy z wtyczki Bootstrap o nazwie *Modal*.
+Bibliotekę *modal.js* już zainstalowaliśmy.
+Możemy to sprawdzić przeklikujac do przegladarki uri poniżej:
 
-    :::js app/assets/javascripts/application.js
-    //= require jquery
-    //= require jquery_ujs
-    //= require jquery-ui-1.8.16.custom.min
-    //= require bootstrap-modal
-    //= require_tree .
+    http://localhost:3000/assets/twitter/bootstrap/modal.js
 
-Przykładowa strona z Bootstrap Modal Window:
+Co to są *modal windows*? Oto przykładowa strona
+z Bootstrap Modal Window:
 
     :::html
     <!doctype html>
@@ -267,7 +323,13 @@ z przyciskiem i funkcją obsługi zdarzenia *onclick* tego przycisku.
 
 ### Remote Show
 
-Szablon EJS:
+Skorzystamy z szablonów [EJS](https://github.com/sstephenson/ruby-ejs).
+Do *Gemfile* dopisujemy i instalujemy ten gem:
+
+    :::ruby Gemfile
+    gem 'ejs'
+
+Oto szablon EJS dla *show*:
 
     :::rhtml app/assets/javascripts/templates/show.jst.ejs
     <article id="<%= modal %>" class="modal hide fade in">
@@ -300,7 +362,7 @@ kodu HTML okna, który po dodaniu do strony, pokazujemy (**TODO**):
           url: href,
           dataType: "json"
         }).done(function(data) {
-          // TODO: należy usunąć; nie powinniśmy implementować cacheowania!
+          // TODO: należy usunąć; sami nie powinniśmy implementować cache!
           if ($('#' + id).length == 0) { // modal is not present
             // use EJS template
             $(".page-header").append(JST["templates/show"]({
@@ -316,7 +378,7 @@ kodu HTML okna, który po dodaniu do strony, pokazujemy (**TODO**):
       });
     });
 
-Na razie przycisk *Close* nie działa. Aby go uaktywnić,
+**TODO:** Na razie przycisk *Close* nie działa. Aby go uaktywnić,
 można dopisać do elementu klasę *close*. Niestety do tej klasy przypisany jest CSS
 psujący wygląd przycisku. Dlatego postąpimy tak:
 
@@ -341,6 +403,9 @@ I to już w zasadzie koniec zabaw z „remote links”.
 
 Na początek przerobimy formularz na „remote”, co oznacza że po kliknięciu przycisku
 submit będzie wysyłane żądanie AJAX do bazy.
+
+**TODO:** Przykłady są z **Formtastic**.
+Kod dla *Simple Form* jest nieco inny. Poprawić!
 
 Przeróbka jest trywialna. Wystarczy dopisać `remote: true` do *semantic_form_for*:
 

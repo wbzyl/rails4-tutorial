@@ -24,11 +24,13 @@ within user space, strongly encouraging **non-root usage**.”
 Podstawowe polecenia RVM:
 
     :::bash
-    rvm install ree    # alias na ostatnią wersję, np. ree-1.8.7-2011.03
-    rvm install 1.9.2  # alias na ostatnią wersję, np. ruby-1.9.2-p180
+    rvm install ree               # alias na ostatnią wersję, np. ree-1.8.7-2011.03
+    rvm install 1.9.3-p125
+    rvm --gems remove 1.9.3-p0
     rvm list
     rvm use ree
     rvm current
+    rvm --default use 1.9.3-p125
 
 Potrzebujemy więcej szczegółów:
 

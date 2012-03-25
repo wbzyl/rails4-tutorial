@@ -1,4 +1,4 @@
-#### {% title "Makieta aplikacji, czyli layout" %}
+#### {% title "Layout, czyli makieta aplikacji" %}
 
 <blockquote>
  <p>
@@ -195,7 +195,8 @@ Poniższy kod, po wpisaniu w *helpers/layout_helper.rb*, realizuje takie podejś
       content_tag :ul do
         data.map do |link, name|
           content_tag :li, link_to("#{name}", link),
-              :class => ("active" if controller.controller_name == link[1,link.length])
+              # :class => ("active" if controller.controller_name == link[1,link.length])
+              :class => ("active" if controller.controller_name == link[1..-1])
         end
       end
     end

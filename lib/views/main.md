@@ -53,10 +53,11 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Zapoznajemy się z Ruby", "/ruby19" %}
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
-1. {%= link_to "Makieta aplikacji, czyli layout", "/layouty" %}
+1. {%= link_to "Layout, czyli makieta aplikacji", "/layouty" %}
 1. {%= link_to "Bootstraping Rails application", "/bootstraping" %}
 1. {%= link_to "Remote links", "/remote-links" %}
 1. {%= link_to "Wyszukiwanie z ElasticSearch", "/elasticsearch" %}
+1. {%= link_to "ElasticSearch w przykładach", "/elasticsearch-by-example" %}
 1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
 1. {%= link_to "TDD, BDD…", "/testowanie" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
