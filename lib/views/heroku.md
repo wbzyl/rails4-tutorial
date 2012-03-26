@@ -92,7 +92,7 @@ nazwie, to będziemy musieli wymyśleć inną unikalną nazwę.
 Jak? [Push and Pull Databases To and From Heroku](http://blog.heroku.com/archives/2009/3/18/push_and_pull_databases_to_and_from_heroku/):
 
     :::bash
-    gem install tap
+    gem install taps
     heroku db:push sqlite://db/development.sqlite3 --confirm APP-NAME-ON-HEROKU
     heroku db:pull sqlite://db/production.sqlite3
 
