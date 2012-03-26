@@ -2,8 +2,10 @@
 
 * Co oznacza zwrot „remote links”?
 * Jak implementujemy „remote links”?
-  - Co to jest „Unobtrusive JavaScript” (w skrócie *UJS*)?
-  - Co to są „Progressive Enhancements” (stopniowe udoskonalenia)?
+* Co to jest „Unobtrusive JavaScript” (w skrócie *UJS*)?
+* Co to są „Progressive Enhancements” (stopniowe udoskonalenia)?
+
+
 
 <!-- * Przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links). -->
 
@@ -18,24 +20,23 @@ na Heroku na poprzednim wykładzie:
     rake db:migrate # aplikacja korzysta z bazy PostgreSQL; podmienić na SQLite?
     rake db:seed
 
-Kod aplikacji jest też w moim publicznym repo na GitHubie –
-[sharp-ocean-6085](https://github.com/wbzyl/sharp-ocean-6085)).
+Kod aplikacji jest też w moim publicznym repo na GitHubie, tutaj –
+[sharp-ocean-6085](https://github.com/wbzyl/sharp-ocean-6085).
 
 Eksperymenty z *remote links* będą ciekawsze jeśli
 użyjemy biblioteki [jQuery UI](http://jqueryui.com/).
 Wykorzystamy efekty [„explode”, „fade” i „highlight”](http://jqueryui.com/demos/effect/).
 
-Dlatego zaczniemy od instalacji jQuery UI.
+Po zaznajomieniu się z tymi efektami, zabieramy się do instalacji jQuery UI.
 Ze strony [download](http://jqueryui.com/download) pobieramy paczkę
 z*theme* (skórką?) **Start** ze wszystkimi efektami (tak będzie wygodniej).
 
-Rozpakowujemy pobrane archiwum:
+Pobrane archiwum rozpakowujemy:
 
     :::bash
     unzip jquery-ui-1.8.18.custom.zip
 
-Po rozpakowaniu, kopiujemy pliki do odpowiednich
-katalogów w katalogu *vendor/assets*.
+Następnie kopiujemy pliki do odpowiednich katalogów w *vendor/assets*.
 
     :::bash
     cp  css/start  sharp-ocean-6085/vendor/assets/stylesheets/
@@ -94,7 +95,7 @@ Dlaczego na konsoli jest cokolwiek wypisywane?
     {"created_at":"2012-03-21","id":500,"quotation":"I hear and I forget.","source":null,"updated_at":"2012-03-21"}
 
 **Uwaga:** W trakcie eksperymentów, cały czas podglądamy co się dzieje
-na konsoli przegladarki!
+na konsoli przeglądarki (zakładki *Sieć*, *XHR*).
 
 
 ## Zabawy z przyciskiem *Destroy*
