@@ -13,7 +13,9 @@ zautomatyzować za pomocą tzw. *Rails application templates*.
 Szablon aplikacji Rails, to skrypt w języku Ruby korzystający z metod
 [Rails template API][rta].
 
-Poniżej opiszę swój szablon aplikacji Rails, który nazwałem *html5-twitter-bootstrap.rb*.
+Poniżej opiszę swój szablon aplikacji Rails, który nazwałem *html5-twitter-bootstrap.rb*,
+ponieważ użyłem w nim komponentów [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/)
+i layoutu [Bootstrap starter template](http://twitter.github.com/bootstrap/examples/starter-template.html).
 
 Aby skorzystać z powyższego szablonu wystarczy podać ścieżkę (lub URL)
 do pliku z szablonem w poleceniu *rails*, na przykład:
@@ -301,6 +303,25 @@ kodu JavaScript dopisanego do *application.js*:
         .end()
         .find('.value').addClass('span10');
     });
+
+albo kodu Less dopisanego do *application.css.less*:
+
+    :::css
+    article {
+      &.index {
+        margin-bottom: 1em; }
+      .attribute {
+        .makeRow();
+        margin-bottom: .25em;
+       .name {
+          color: @blueDark;
+          .makeColumn(2);
+          text-align: right;
+          &:after {
+            content: ":"; } }
+        .value {
+          .makeColumn(10); } }
+    }
 
 (zobacz [Scaffolding](http://twitter.github.com/bootstrap/scaffolding.html), Default grid system)
 
