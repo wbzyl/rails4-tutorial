@@ -76,6 +76,11 @@ z programem *curl*:
     curl -v -X DELETE localhost:3000/fortunes/4.json    # jw
     curl -v -X DELETE -H 'Accept: application/json' localhost:3000/fortunes/5
 
+<!--
+   te polecenia (ten fragment) / których (który)
+   takiej pracy / o jakiej wcześniej rozmawiał (jakie zastępuje przymiotniki)
+-->
+
 Po wykonaniu których poleceń na konsolę jest wypisywane:
 
     :::html
