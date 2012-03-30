@@ -76,7 +76,7 @@ z programem *curl*:
     curl -v -X DELETE localhost:3000/fortunes/4.json    # jw
     curl -v -X DELETE -H 'Accept: application/json' localhost:3000/fortunes/5
 
-Po wykonaniu których poleceń jest jest wypisywane na konsolę?
+Po wykonaniu których poleceń na konsolę jest wypisywane:
 
     :::html
     <html><body>You are being <a href="http://localhost:3000/fortunes">redirected</a>.</body></html>
@@ -88,11 +88,6 @@ Dodajemy fortunkę do bazy:
       --data '{"quotation":"I hear and I forget."}' localhost:3000/fortunes.json
     curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
       --data '{"quotation":"I hear and I forget."}' localhost:3000/fortunes
-
-Dlaczego na konsoli jest cokolwiek wypisywane?
-
-    :::json
-    {"created_at":"2012-03-21","id":500,"quotation":"I hear and I forget.","source":null,"updated_at":"2012-03-21"}
 
 **Uwaga:** W trakcie eksperymentów, cały czas podglądamy co się dzieje
 na konsoli przeglądarki (zakładki *Sieć*, *XHR*).
@@ -112,7 +107,7 @@ Na początek zmienimy nieco kod metody *destroy*:
 
       respond_to do |format|
         format.html { redirect_to fortunes_url }
-        format.json { render json: @fortune }
+        format.json { head :no_content }         //=? { render json: @fortune }
         format.js   # destroy.js.erb
       end
     end
