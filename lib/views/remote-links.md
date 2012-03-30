@@ -217,25 +217,9 @@ Jeśli jest to, na przykład */fortunes/4*, to na konsoli wpisujemy:
 
 Wybrana fortunka powinna zniknąć ze strony.
 
-Ten sam efekt uzyskamy po wklejeniu poniższego kodu do pliku
-*application.js*:
-
-    :::js app/assets/javascripts/application.js
-    $(function() {
-      $('a[data-type=\"json\"]').bind('ajax:success', function(event, data, status, xhr) {
-        $(this).closest('article').effect('explode');
-      });
-    });
-
-<!--
-  * opóźnienia i interwały
-  * setTimeout  – wykonać kod **za** jakiś czas
-  * setInterval – wykonać kod **co** jakiś czas
--->
 
 <blockquote>
   <h2>Ściąga ze zdarzeń</h2>
-  {%= image_tag "/images/bubbles.jpg", :alt => "[Save the Bubbles!]" %}
 <ul>
  <li>obsługa zdarzeń:
   zdarzenie może obsłużyć dowolna funkcja JavaScript;
@@ -252,7 +236,26 @@ Ten sam efekt uzyskamy po wklejeniu poniższego kodu do pliku
   jak powiązać jakieś zdarzenie z funkcją?
   najwygodniej jest skorzystać z funkcji zdefiniowanych w jQuery
 </ul>
+  {%= image_tag "/images/bubbles.jpg", :alt => "[Save the Bubbles!]" %}
 </blockquote>
+
+Ten sam efekt uzyskamy po wklejeniu poniższego kodu do pliku
+*application.js*:
+
+    :::js app/assets/javascripts/application.js
+    $(function() {
+      $('a[data-type=\"json\"]').bind('ajax:success',
+         function(event, data, status, xhr) {
+           $(this).closest('article').effect('explode');
+         }
+      );
+    });
+
+<!--
+  * opóźnienia i interwały
+  * setTimeout  – wykonać kod **za** jakiś czas
+  * setInterval – wykonać kod **co** jakiś czas
+-->
 
 Powyżej korzystamy ze zdarzenia *ajax:success* zdefiniowanego
 w [jQuery Rails](https://github.com/rails/jquery-ujs)
@@ -260,7 +263,9 @@ w [jQuery Rails](https://github.com/rails/jquery-ujs)
 Na stronie wiki [Custom events fired during „data-remote” requests](https://github.com/rails/jquery-ujs/wiki/ajax)
 znajdziemy opis pozostałych zdarzeń.
 
-☕☕ Przechodzimy na *CoffeeScript* ☕☕ Usuwamy plik *fortunes.js*.
+### ☕☕ Przechodzimy na *CoffeeScript*
+
+☕☕ Usuwamy plik *fortunes.js*.
 Zamiast niego wstawiamy plik *fortunes.js.coffee* o zawartości:
 
     :::js app/assets/javascripts/fortunes.js.coffee
@@ -274,9 +279,9 @@ i nazwę tego pliku dopisujemy do *application.js*.
 
 ## Usuwanie rekordu z *format.js*
 
-Zmieniony link z *index.html.erb*:
+Zmieniony link z *index.html.erb* (z usuniętym atrybutem *data-confirm*):
 
-    :::ruby
+    :::rhtml
     <%= link_to 'Destroy', fortune,
        method: :delete,
        remote: true %>
@@ -289,76 +294,132 @@ Wygenerowany kod HTML:
        data-remote="true"
        rel="nofollow">Destroy</a>
 
-Jak to działa? Po kliknięciu przycisku „Destroy” nic się nie dzieje.
-Ale na konsoli Rails (i na konsoli Firebuga) pojawia się tak komunikat:
+Jak to działa? Po tych zmianach i odświeżeniu zawartości strony,
+kliknięcie przycisku „Destroy” nie daje widocznego efektu.
+Ale na konsoli JavaScript pojawia się komunikat:
 
-    Template is missing
-    Missing template fortunes/destroy, application/destroy with
-      {:handlers=>[:erb, :builder, :coffee],
-       :formats=>[:js, :html], :locale=>[:en, :en]}.
-    Searched in: * "...rails31-remote-links/app/views"
+    DELETE http://localhost:3000/fortunes/8 500 (Internal Server Error)
+
+a w logach aplikacji znajdujemy:
+
+    ActionView::MissingTemplate
+    (Missing template fortunes/destroy, application/destroy with
+       {:locale=>[:en], :formats=>[:js, :html], :handlers=>[:erb, :builder, :coffee]}.
+    Searched in: * ".../sharp-ocean-6085/app/views"):
+    app/controllers/fortunes_controller.rb:78:in `destroy'
 
 Oznacza to, że w katalogu *app/views* brakuje szablonu *fortunes/destroy.js.erb*.
-Tworzymy taki szablon. Na razie, aby sprawdzić czy tak jest naprawdę,
- wpisujemy tylko funkcję *alert*:
+Tworzymy taki szablon. Na razie, aby sprawdzić czy dobrze
+rozszyfrowaliśmy te komunikaty, wpisujemy w nim funkcję *alert*:
 
     :::js app/views/fortunes/destroy.js.erb
-    alert("AJAX: usunięto jakąś fortunkę")
+    alert("SUCCESS: usunięto fortunkę");
 
-Sprawdzamy, czy to działa. Klikamy przycisk „Destroy” i powinniśmy
-zobaczyć w okienku alert zobaczyć powyższy komunikat.
+Sprawdzamy, czy *alert* działa. Klikamy przycisk „Destroy”.
+Powinno się pojawić okienko alert.
 
-Zamieniamy kod na:
+Jeśli wszystko działa, wymieniamy kod na taki:
 
     :::js app/views/fortunes/destroy.js.erb
-    $('a[href="<%= fortune_path(@fortune) %>"]').closest('article').effect('explode');
+    $('a[href="<%= @fortune_path %>"]').closest('article').effect('explode');
+
+gdzie zmienną *@fortune_path* zdefiniowaliśmy w kontrolerze:
+
+    :::ruby
+    def destroy
+      @fortune = Fortune.find(params[:id])
+      @fortune_path = Rails.application.routes.url_helpers.fortune_path(@fortune)
+
+      @fortune.destroy
+      respond_to do |format|
+        format.html { redirect_to fortunes_url }
+        format.json { head :no_content }          #=? { render json: @fortune }
+        format.js   # destroy.js.erb
+      end
+    end
+
+Dlaczego na taki kod, a nie na inny?
+Dlaczego w pliku *destroy.js.erb* nie wpisujemy:
+
+    :::rhtml
+    <%= fortune_path(@fortune) %>
+
+tylko wyliczamy ścieżkę *fortune_path(@fortune)* w kontrolerze?
+
+Zobacz też dyskusję na *stack**overflow***,
+[Can Rails Routing Helpers (i.e. mymodel_path(model)) be Used in Models?](http://stackoverflow.com/questions/341143/can-rails-routing-helpers-i-e-mymodel-pathmodel-be-used-in-models).
 
 
 ## Remote modal show/new/edit pages
 
 <!-- Cały przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links).-->
 
-Aby było efektownie, skorzystamy z wtyczki Bootstrap o nazwie *Modal*.
-Bibliotekę *modal.js* już zainstalowaliśmy.
+Co to są *modals*? Opis i demo znajdziemy w dokumentacji
+[JavaScript plugins](http://twitter.github.com/bootstrap/javascript.html#modals).
+
+Spróbujemy użyć *modal windows* do uproszczenia interfejsu — Show+New+Edit.
+
+Bibliotekę *modal.js* powinna być już zainstalowana.
 Możemy to sprawdzić przeklikujac do przegladarki uri poniżej:
 
     http://localhost:3000/assets/twitter/bootstrap/modal.js
 
-Co to są *modal windows*? Oto przykładowa strona
-z Bootstrap Modal Window:
+Powinien się pojwić kod wtyczki.
+
+Zaczniemy od bliższego przyjrzenia się okienkom modalnym
+frameworka Bootstrap. Pobieramy archiwum zip ze strony
+[Bootstrap, from Twitter](http://twitter.github.com/bootstrap/).
+Rozpakowujemy archiwum. Do utworzonego katalogu *bootstrap*
+dodajemy plik *index.html* o poniższej zawartości:
 
     :::html
     <!doctype html>
     <html>
       <head>
         <meta charset=utf-8>
-        <link rel="stylesheet" href="bootstrap.css">
-        <script src="http://code.jquery.com/jquery.js"></script>
-        <script src="bootstrap-modal.js"></script>
+        <link rel="stylesheet" href="/css/bootstrap.css">
+        <script src="http://code.jquery.com/jquery.min.js"></script>
+        <script src="/js/bootstrap.js"></script>
         <title>Bootstrap Modal Windows</title>
       </head>
       <body>
-        <a class="btn danger"
-          data-controls-modal="my-modal"
-          data-backdrop="static" data-keyboard="true">Launch Modal</a>
-
-        <article id="my-modal" class="modal hide fade in">
+        <a data-toggle="modal" href="#myModal" class="btn btn-primary btn-large">Launch demo modal</a>
+        <article id="myModal" class="modal hide fade">
           <div class="modal-header">
-            <div class="close">×</div>
+            <a class="close" data-dismiss="modal" >&times;</a>
             <h3>Modal Heading</h3>
           </div>
           <div class="modal-body">
-            <p>One fine body…</p>
+            <p>One fine body…
+          </div>
+          <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal">Close</a>
+            <a href="#" class="btn btn-primary">Save changes</a>
           </div>
         </article>
       </body>
     </html>
 
-Przeanalizować [ten przykład](https://gist.github.com/1450706)
+Teraz uruchamiamy jakiś mini serwer stron statycznych,
+na przykład *serve* dla NodeJS:
+
+    :::bash konsola
+    npm install -g serve
+
+W katalogu *bootstrap* uruchamiamy na konsoli serwer:
+
+    :::bash konsola
+    serve
+
+Przeanalizować [ten przykład](https://gist.github.com/1450706w)
 z przyciskiem i funkcją obsługi zdarzenia *onclick* tego przycisku.
 
 
 ### Remote Show
+
+Coś prostszego?
+
+* [Show your objects baby!](http://blog.plataformatec.com.br/tag/show_for/)
 
 Skorzystamy z szablonów [EJS](https://github.com/sstephenson/ruby-ejs).
 Do *Gemfile* dopisujemy i instalujemy ten gem:
@@ -369,9 +430,9 @@ Do *Gemfile* dopisujemy i instalujemy ten gem:
 Oto szablon EJS dla *show*:
 
     :::rhtml app/assets/javascripts/templates/show.jst.ejs
-    <article id="<%= modal %>" class="modal hide fade in">
+    <article id="<%= modal %>" class="modal hide fade">
       <div class="modal-header">
-        <div class="close">×</div>
+        <a class="close" data-dismiss="modal" >&times;</a>
         <h3>Fortune #<%= id %></h3>
       </div>
       <div class="modal-body">
@@ -379,12 +440,18 @@ Oto szablon EJS dla *show*:
         <p class="source"><%= source %></p>
       </div>
       <div class="modal-footer">
-        <div class="btn default">Close</div>
+        <a href="#" class="btn" data-dismiss="modal">Close</a>  <!-- TODO: link_to -->
+        <a href="#" class="btn btn-primary">Save changes</a>    <!-- j.w. -->
       </div>
     </article>
+    <!-- TODO: wstawić pozostałe przyciski -->
+    <a data-toggle="modal" href="<%= modal %>" class="btn btn-primary btn-large">Show</a>
 
-W oknie modalnym przycisk *Back* nie ma sensu. Zamienimy go na
-przycisk *Close* i dodamy przycisk *Edit*.
+W oknie modalnym dla *Show* usunąłem przycisk *Back*.
+W tym kontekście nie ma on sensu. Dlaczego?
+
+
+**TODO** Niepotrzebne?
 
 Po kliknięciu przycisku *Show*, pobieramy z bazy za pomocą żądania AJAX
 JSON-a z danymi. Następnie skorzystamy szablonu EJS do wygenerowania
