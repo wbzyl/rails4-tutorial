@@ -10,6 +10,15 @@
   <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
 </blockquote>
 
+[31.03.2012] [2011 Free Software Awards announced ](http://www.fsf.org/news/2011-free-software-awards-announced):
+„This year, it was given to Yukihiro Matsumoto (aka Matz), the creator
+of the Ruby programming language. Matz has worked on GNU, Ruby, and
+other free software for over 20 years. He accepted the award in person
+and spoke at the conference on his early experiences with free
+software, especially the influence of GNU Emacs on Ruby.”
+
+[31.03.2102] [20 Best Sites Built with Ruby on Rails](http://www.developerdrive.com/2011/09/20-best-sites-built-with-ruby-on-rails/).
+
 [10.03.2012] W rozdziale [Filling in the layout](http://ruby.railstutorial.org/chapters/filling-in-the-layout?version=3.2#top),
 książki M. Hartl’a, *Ruby on Rails Tutorial* opisano jak
 użyć [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/) w swojej aplikacji.
