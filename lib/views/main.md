@@ -124,9 +124,11 @@ Na początek zaczynamy od przeczytania
 4. Dalej już według własnego uznania,
    wybieramy kolejny *Przewodnik* do przestudiowania.
 
-Know your options! [The Ruby Toolbox](http://ruby-toolbox.com/).
+## Użyteczne rzeczy
 
-[Is Your Code Ready For Rails 3.1?](http://www.railsplugins.org/).
+* [The Ruby Toolbox](http://ruby-toolbox.com/) – know your options!
+* [Responsive](http://mattkersley.com/responsive/) –
+  web design testing tool
 
 
 <blockquote>
