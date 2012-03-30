@@ -1,13 +1,8 @@
 # Zaczynamy !
 
 <blockquote>
-  {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
-  <p>
-    When you don’t create things, you become defined by your tastes
-    rather than ability. Your tastes only narrow and exclude people.
-    So create.
-  </p>
-  <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
+  {%= image_tag "/images/matz-stallman.jpg", :alt => "[FSF 2011 Awards]" %}
+  <p class="author">Yukihiro Matsumoto i Richard Stallman</p>
 </blockquote>
 
 [31.03.2012] [2011 Free Software Awards announced ](http://www.fsf.org/news/2011-free-software-awards-announced):
@@ -56,6 +51,16 @@ należy podać Gitowi swoje **prawdziwe i aktualne** dane:
 <a href="http://wbzyl.inf.ug.edu.pl/sp/git">Parę aliasów dla Gita i Bash’a</a>
 oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
+
+<blockquote>
+  {%= image_tag "/images/why.jpg", :alt => "[_Why]" %}
+  <p>
+    When you don’t create things, you become defined by your tastes
+    rather than ability. Your tastes only narrow and exclude people.
+    So create.
+  </p>
+  <p class="author"><a href="http://www.smashingmagazine.com/2010/05/15/why-a-tale-of-a-post-modern-genius/">— Why the Lucky Stiff</a></p>
+</blockquote>
 
 # Rozpiska wykładów
 
