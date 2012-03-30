@@ -115,14 +115,15 @@ Konfiguracja – RVM, konsola, dokumentacja online:
 
 # Dokumentacja
 
-Na początek zaczynamy od przeczytania
-[Rails Guides (Edge)](http://guides.rails.info/):
+Zaczynamy od [Rails Guides](http://guides.rails.info/):
 
 1. [Getting Started with Rails](http://guides.rubyonrails.org/getting_started.html).
 2. [Active Record Query Interface](http://guides.rubyonrails.org/active_record_querying.html).
 3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
-4. Dalej już według własnego uznania,
-   wybieramy kolejny *Przewodnik* do przestudiowania.
+4. Kolejny *Przewodnik* do przestudiowania wybieramy już według własnego uznania.
+5. Michael Hartl.
+   [Ruby on Rails Tutorial. Learn Rails by Example](http://www.railstutorial.org/book).
+
 
 ## Użyteczne rzeczy
 
@@ -153,12 +154,6 @@ Na początek zaczynamy od przeczytania
 * Ryan Bates. [Railscasts](http://railscasts.com/)
 * [Rails Performance Resources](http://railslab.newrelic.com/) —
   Expert advice on tuning and optimizing your Rails app
-
-
-## Podręczniki do Rails
-
-* Michael Hartl.
-  [Ruby on Rails Tutorial. Learn Rails by Example](http://www.railstutorial.org/book).
 
 
 ## Misz masz…
