@@ -66,6 +66,7 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
 1. {%= link_to "Zapoznajemy się z Ruby", "/ruby19" %}
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
+1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "Layout, czyli makieta aplikacji", "/layouty" %}
 1. {%= link_to "Bootstraping Rails application", "/bootstraping" %}
@@ -74,7 +75,6 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "ElasticSearch w przykładach", "/elasticsearch-by-example" %}
 1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
 1. {%= link_to "TDD, BDD…", "/testowanie" %}
-1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
 1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}
 1. {%= link_to "Wysyłanie poczty", "/mail" %}

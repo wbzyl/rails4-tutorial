@@ -562,6 +562,151 @@ Na razie to już koniec zabaw z „remote links”.
 
 To nie powinno być trudne.
 
+
+## Sortable List w Rails 3.2
+
+Nieco uproszczony przykład z [Sortable List in Ruby on Rails 3 – Unobtrusive jQuery](http://webtempest.com/sortable-list-in-ruby-on-rails-3-almost-unobtrusive-jquery/).
+
+**Uwaga:** skorzystamy z aplikacji *sharp-ocean-6085*:
+
+    :::bash
+    rails g scaffold Todo name:string
+    rails g migration add_position_to_todos position:integer
+    rake db:migrate
+
+dodajemy dane testowe:
+
+    :::ruby db/seed.rb
+    Todo.create([{:name => 'Blender'}, {:name => 'ABC Linux'}, {:name => 'CSS3, szybki start'}])
+
+i migrujemy:
+
+    :::bash
+    rake db:seed
+
+Poniżej będziemy korzystać z *sortable* z jQuery UI –
+demo [Sortable](http://jqueryui.com/demos/sortable/).
+
+Javascript do *index.html.erb*:
+
+    :::rhtml index.html.erb
+    <h1>Listing todos</h1>
+    <ul id="todos">
+    <% @todos.each do |todo| %>
+      <li id="todo_<%= todo.id %>"><span class="handle">[drag]</span><%= todo.name %></li>
+    <% end %>
+    </ul>
+    <br>
+    <%= link_to 'New Todo', new_todo_path %>
+
+    <% content_for :javascript do %>
+      <%= javascript_tag do %>
+        $('#todos').sortable({
+            axis: 'y',
+            dropOnEmpty: false,
+            handle: '.handle',
+            cursor: 'crosshair',
+            items: 'li',
+            opacity: 0.4,
+            scroll: true,
+            update: function() {
+                $.ajax({
+                    type: 'post',
+                    data: $('#todos').sortable('serialize'),
+                    dataType: 'script',
+                    complete: function(request){
+                        $('#todos').effect('highlight');
+                    },
+                    url: '/todos/sort'})
+            }
+        });
+      <% end %>
+    <% end %>
+
+Do pliku *app/views/layouts/application.html.erb* dopisujemy
+zaraz przed zamykającym znacznikem */body*:
+
+    :::rhtml
+    <%= yield :javascript %>
+
+Kontroler:
+
+    :::ruby
+    class TodosController < ApplicationController
+      def index
+        @todos = Todo.order('todos.position ASC')
+      end
+
+      def sort
+        @todos = Todo.scoped
+        @todos.each do |todo|
+          todo.position = params['todo'].index(todo.id.to_s)
+          todo.save
+        end
+        render :nothing => true
+      end
+
+Jeszcze poprawki w CSS:
+
+    :::css /app/assets/stylesheets/application.css
+    .handle:hover {
+      cursor: move;
+    }
+
+oraz w routingu:
+
+    :::ruby config/routes.rb
+    resources :todos do
+      post :sort, :on => :collection
+    end
+    root to: "todos#index"
+
+Jak to działa? Na konsoli wypisywane są parametry:
+
+    Parameters: {"todo"=>["3", "1", "2"]}
+
+gdzie
+
+    3, 1, 2
+
+to kolejność wyświetlanych na stronie elementów *li*.
+Oznacza to, że todo z:
+
+    id = 3 jest wyświetlane pierwsze (position = 0)
+    id = 1 jest wyświetlane drugie   (position = 1)
+    id = 2 jest wyświetlane trzecie  (position = 2)
+
+Dlatego, taki kod ustawi właściwą kolejność *position*
+wyświetlania:
+
+    :::ruby
+    todo[1].position = ["3", "1", "2"].index("1") = 2
+    todo[2].position = ["3", "1", "2"].index("2") = 3
+    todo[3].position = ["3", "1", "2"].index("3") = 1
+
+Proste? Nie? Podejrzeć na konsoli Javascript, w zakładce Sieć,
+nagłówki w wysyłanych żądaniach.
+
+Nowe rekordy nie mają ustawionego atrybutu *position*.
+Dlatego są wyświetlanie na końcu listy.
+Możemy to zmienić, na przykład w taki sposób:
+
+    :::ruby
+    class Todo < ActiveRecord::Base
+      before_create :add_to_list_bottom
+
+      private
+
+      def add_to_list_bottom
+        bottom_position_in_list = Todo.maximum(:position)
+        self.position = bottom_position_in_list.to_i + 1
+      end
+    end
+
+Teraz nowe elementy pojawią się u dołu wyświetlanej listy.
+Niestety, ten kod działa tylko z *ActiveRecord* (?, sprawdzić to).
+
+
 <!--
 
 Na początek przerobimy formularz na „remote”, co oznacza że po kliknięciu przycisku
