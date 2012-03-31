@@ -400,32 +400,72 @@ dodajemy plik *index.html* o poniższej zawartości:
       </body>
     </html>
 
-Teraz uruchamiamy jakiś mini serwer stron statycznych,
-na przykład *serve* dla NodeJS:
-
-    :::bash konsola
-    npm install -g serve
-
-W katalogu *bootstrap* uruchamiamy na konsoli serwer:
+W katalogu *bootstrap* uruchamiamy na konsoli jakiś serwer
+mini stron statycznych, na przykład *serve*:
 
     :::bash konsola
     serve
 
-Przeanalizować [ten przykład](https://gist.github.com/1450706w)
-z przyciskiem i funkcją obsługi zdarzenia *onclick* tego przycisku.
+*Serve* jest serwerem napisanym w NodeJS. Jeśli
+mamy zainstalowane pakiety *node* oraz *npm*
+(*Node Package Manager*), to instalujemy go tak:
+
+    :::bash konsola
+    npm install -g serve
+
+Oknem modalnym możemy też manipulować z konsoli JavaScript,
+na przykład tak:
+
+    :::js
+    $('#myModal').modal('show')
+    $('#myModal').modal('hide')
+    $('#myModal').modal('toggle')
+    $('#myModal').modal('toggle')
+
+Nieco bardziej skomplikowany przykład:
+
+    :::js
+    $(function() {
+      // wire up the buttons to dismiss the modal when shown
+      $("#myModal").bind("show", function() {
+        $("#myModal a.btn").click(function(e) {
+          // do something based on which button was clicked
+          // we just log the contents of the link element for demo purposes
+          console.log("button pressed: " + $(this).html());
+          // hide the dialog box
+          $("#myModal").modal('hide');
+        });
+      });
+
+      // remove the event listeners when the dialog is hidden
+      $("#myModal").bind("hide", function() {
+        // remove event listeners on the buttons
+        $("#myModal a.btn").unbind();
+      });
+
+      // finally, wire up the actual modal functionality and show the dialog
+      $("#myModal").modal({
+        "backdrop" : "static",
+        "keyboard" : true,
+        "show" : true // this parameter ensures the modal is shown immediately
+      });
+    });
 
 
-### Remote Show
+## Remote Show
 
 Coś prostszego?
 
 * [Show your objects baby!](http://blog.plataformatec.com.br/tag/show_for/)
 
-Skorzystamy z szablonów [EJS](https://github.com/sstephenson/ruby-ejs).
+Skorzystamy z szablonów [EJS](https://github.com/sstephenson/ruby-ejs)
+do wygenerowania zawartości okna modalnego.
+
 Do *Gemfile* dopisujemy i instalujemy ten gem:
 
     :::ruby Gemfile
-    gem 'ejs'
+    gem 'sprockets','~> 2.0'
+    gem 'ejs', '~> 1.0.0'
 
 Oto szablon EJS dla *show*:
 
@@ -440,70 +480,86 @@ Oto szablon EJS dla *show*:
         <p class="source"><%= source %></p>
       </div>
       <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">Close</a>  <!-- TODO: link_to -->
-        <a href="#" class="btn btn-primary">Save changes</a>    <!-- j.w. -->
+        <a href="#" class="btn" data-dismiss="modal">Close</a>
       </div>
     </article>
-    <!-- TODO: wstawić pozostałe przyciski -->
-    <a data-toggle="modal" href="<%= modal %>" class="btn btn-primary btn-large">Show</a>
+
+Ścieżke do szablonu dopisujemy do pliku *application.js*:
+
+    :::js app/assets/javascripts/application.js
+    //= require jquery
+    //= require jquery_ujs
+    //= require twitter/bootstrap
+    //= require jquery-ui-1.8.18.custom.min
+    //= require templates/show
 
 W oknie modalnym dla *Show* usunąłem przycisk *Back*.
 W tym kontekście nie ma on sensu. Dlaczego?
 
+Jeśli dodamy tylko *remote* do przycisku z *Show*, to kod nie
+będzie rozróżniał przycisków *Show* i *Destroy*.
+Dlatego dodamy do atrybutu *class*: **btn-show**:
 
-**TODO** Niepotrzebne?
+    :::rhtml app/views/fortunes/index.html.erb
+    <%= link_to 'Show', fortune,
+      method: :get,
+      remote: true,
+      data: { type: :json },
+      class: 'btn-show btn btn-mini' %>
+    <%= link_to 'Destroy', fortune,
+      method: :delete,
+      remote: true,
+      data: { type: :json },
+      class: 'btn-danger btn btn-mini' %>
 
-Po kliknięciu przycisku *Show*, pobieramy z bazy za pomocą żądania AJAX
-JSON-a z danymi. Następnie skorzystamy szablonu EJS do wygenerowania
-kodu HTML okna, który po dodaniu do strony, pokazujemy (**TODO**):
+**Uwaga:** wracamy do JSON-ów.
 
-    :::js
+Sprawdzamy jak działa takie remote. W tym celu wklejamy
+do *application.js* poniższy kod
+([CSS3: Attribute selectors](http://www.css3.info/preview/attribute-selectors/)):
+
+    :::js app/assets/javascripts/application.js
     $(function() {
-      $('.show').bind('click', function() { // show dodano w index.html.erb
-        var href = $(this).attr('href');
-        var id = href.slice(1).split('/').join('-');  // np. fortune-31
-        $.ajax({
-          url: href,
-          dataType: "json"
-        }).done(function(data) {
-          // TODO: należy usunąć; sami nie powinniśmy implementować cache!
-          if ($('#' + id).length == 0) { // modal is not present
-            // use EJS template
-            $(".page-header").append(JST["templates/show"]({
-              modal: id,
-              id: data.id,
-              quotation: data.quotation,
-              source: data.source }));
-          };
-          // pokaż okno modalne
-          $('#' + id).modal({backdrop: "static", keyboard: true, show: true});
-        });
-        return false;
+      $('a[class^=btn-show]').bind('ajax:success', function(event, data, status, xhr) {
+        console.log('show btn clicked');
+        console.log(data);
+      });
+      $('a[class^=btn-danger]').bind('ajax:success', function(event, data, status, xhr) {
+        console.log('destroy btn clicked');
       });
     });
 
-**TODO:** Na razie przycisk *Close* nie działa. Aby go uaktywnić,
-można dopisać do elementu klasę *close*. Niestety do tej klasy przypisany jest CSS
-psujący wygląd przycisku. Dlatego postąpimy tak:
+To działa!
 
+Reszta kodu:
 
-    :::js
-    if ($('#' + id).length == 0) { // modal is not present
-      // use EJS template
-      $(".page-header").append(JST["templates/show"]({
-        modal: id,
-        id: data.id,
-        quotation: data.quotation,
-        source: data.source }));
-        $(".page-header .default").bind('click', function() {
-          $('#' + id).modal('hide');
+    :::js app/assets/javascripts/application.js
+    $(function() {
+      $('a[class^=btn-show]').bind('ajax:success', function(event, data, status, xhr) {
+        $('body').append(JST["templates/show"]({
+          modal: 'fortune-modal',  // jakiś unikalny identyfikator
+          id: data.id,
+          quotation: data.quotation,
+          source: data.source }));
+        $('#fortune-modal').on('hidden', function() {
+          $('.modal').remove();  // usuń wszystkie modals z DOM
         });
-    };
+        $('#fortune-modal').modal({backdrop: "static", keyboard: true, show: true});
+      });
 
-I to już w zasadzie koniec zabaw z „remote links”.
+      $('a[class^=btn-danger]').bind('ajax:success', function(event, data, status, xhr) {
+        $(this).closest('article').effect('explode');
+      });
+    });
+
+Na razie to już koniec zabaw z „remote links”.
 
 
-## Remote Edit
+## TODO: Remote Edit
+
+To nie powinno być trudne.
+
+<!--
 
 Na początek przerobimy formularz na „remote”, co oznacza że po kliknięciu przycisku
 submit będzie wysyłane żądanie AJAX do bazy.
@@ -642,28 +698,9 @@ Pozostaje przygotować szablon EJS, do którego wstawimy pobrany formularz.
 Na koniec całość dodamy do okna modalnego – podobnie jak to zrobiliśmy
 w wypadku *show*.
 
+-->
 
-### Nieco CSS
-
-Poprawiamy nieco wygląd widoków:
-
-    :::css app/assets/stylesheets/bootstrap-container-app.css.scss
-    .modal {
-      padding: 1em;
-      h3 {
-        font-size: 20px; }
-      p {
-        font-size: 18px; }
-      .source {
-        padding-top: 0.5em;
-        font-style: italic; }
-      .close {
-        cursor: pointer;
-        padding: 1ex; }
-    }
-
-
-### Dokumentacja
+## Dokumentacja
 
 * [Sprockets](http://rubydoc.info/gems/sprockets/2.1.2/file/README.md) – *RubyDoc*
 * [Sprocekts](https://github.com/sstephenson/sprockets) – *Github*
