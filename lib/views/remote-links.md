@@ -554,6 +554,9 @@ Reszta kodu:
 
 Na razie to już koniec zabaw z „remote links”.
 
+<blockquote>
+  <p>A little inaccuracy saves a world of explanation.</p>
+</blockquote>
 
 ## TODO: Remote Edit
 
