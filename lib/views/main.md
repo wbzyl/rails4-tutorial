@@ -144,6 +144,7 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 * [The Ruby Toolbox](http://ruby-toolbox.com/) – know your options!
 * [Responsive](http://mattkersley.com/responsive/) –
   web design testing tool
+* [jsFiddle](http://jsfiddle.net/)– easy test you snippets before implementing
 
 
 <blockquote>
