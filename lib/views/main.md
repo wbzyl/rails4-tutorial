@@ -179,6 +179,7 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 * [PubSub Chat Using HTML5 Web Socket and em-websocket](http://railstech.com/2011/12/pubsub-chat-using-html5-web-socket-and-em-websocket/)
 * Evan Miller.
   [How Not To Sort By Average Rating](http://evanmiller.org/how-not-to-sort-by-average-rating.html)
+* [What is Ember.js?](http://emberjs.com/)
 
 
 <blockquote>
