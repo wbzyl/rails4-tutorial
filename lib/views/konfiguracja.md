@@ -26,6 +26,7 @@ Podstawowe polecenia RVM:
     :::bash
     rvm install ree               # alias na ostatnią wersję, np. ree-1.8.7-2011.03
     rvm install 1.9.3-p125
+    rvm --default use 1.9.3-p125
     rvm remove --gems 1.9.3-p125  # usuń też zainstalowane gemy
 
 Info:
@@ -33,7 +34,7 @@ Info:
     rvm list
     rvm use ree
     rvm current
-    rvm --default use 1.9.3-p125
+
 
 Potrzebujemy więcej szczegółów:
 
