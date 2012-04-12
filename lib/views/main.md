@@ -5,6 +5,10 @@
   <p class="author">Yukihiro Matsumoto i Richard Stallman</p>
 </blockquote>
 
+[01.04.2012] [Rails 3.2.3 has been released](http://news.ycombinator.com/item?id=3780963) –
+nowe wartości domyślne dla atrybutów, które są „accessible via mass assignment”.
+Zainstalować dodatek [Tamper Data](https://addons.mozilla.org/pl/firefox/addon/tamper-data/).
+
 [31.03.2012] [2011 Free Software Awards announced ](http://www.fsf.org/news/2011-free-software-awards-announced):
 „This year, it was given to Yukihiro Matsumoto (aka Matz), the creator
 of the Ruby programming language. Matz has worked on GNU, Ruby, and
