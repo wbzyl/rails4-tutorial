@@ -27,6 +27,19 @@ użyjemy biblioteki [jQuery UI](http://jqueryui.com/).
 Wykorzystamy efekty [„explode”, „fade” i „highlight”](http://jqueryui.com/demos/effect/).
 
 Po zaznajomieniu się z tymi efektami, zabieramy się do instalacji jQuery UI.
+
+
+### Instalacja na skróty
+
+Korzystamy z gemu:
+
+* [jquery-ui-rails](https://github.com/joliss/jquery-ui-rails)
+
+Na razie, dostępna jest tylko jedna szara skórka – *Smoothness*.
+
+
+### Instalacja ze źródeł
+
 Ze strony [download](http://jqueryui.com/download) pobieramy paczkę
 z*theme* (skórką?) **Start** ze wszystkimi efektami (tak będzie wygodniej).
 
