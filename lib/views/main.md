@@ -75,18 +75,15 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Layout, czyli makieta aplikacji", "/layouty" %}
 1. {%= link_to "Bootstraping Rails application", "/bootstraping" %}
 1. {%= link_to "Remote links", "/remote-links" %}
-1. {%= link_to "Wyszukiwanie z ElasticSearch", "/elasticsearch" %}
-1. {%= link_to "ElasticSearch w przykładach", "/elasticsearch-by-example" %}
-1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
-1. {%= link_to "TDD, BDD…", "/testowanie" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
+1. {%= link_to "i18n & l10n", "/i18n" %}
+1. {%= link_to "TDD, BDD…", "/testowanie" %}
+1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
 1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}
 1. {%= link_to "Wysyłanie poczty", "/mail" %}
 1. {%= link_to "Autentykacja z Devise", "/devise" %}
 1. {%= link_to "Autoryzacja z CanCan", "/cancan" %}
-1. {%= link_to "I18n", "/i18n" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
-1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
 
 <!--
 
@@ -102,6 +99,7 @@ TODO:
 1. {%= link_to "Caching", "/caching" %}
 1. {%= link_to "Walidacja", "/walidacja" %}
 1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
+1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
 -->
 
 <!--

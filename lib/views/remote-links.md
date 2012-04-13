@@ -851,7 +851,7 @@ w wypadku *show*.
 ## Dokumentacja
 
 * [Sprockets](http://rubydoc.info/gems/sprockets/2.1.2/file/README.md) – *RubyDoc*
-* [Sprocekts](https://github.com/sstephenson/sprockets) – *Github*
+* [Sprockets](https://github.com/sstephenson/sprockets) – *Github*
 * [CSS Cursors](http://www.w3schools.com/cssref/playit.asp?filename=playcss_cursor&preval=default)
 * [Humane JS](https://github.com/wavded/humane-js) –
   a simple, modern, browser notification system
