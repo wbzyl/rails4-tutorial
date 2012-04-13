@@ -51,7 +51,6 @@ należy podać Gitowi swoje **prawdziwe i aktualne** dane:
     git config --global user.name "Imię Nazwisko"
     git config --global user.email "twój aktualny email"
 
-
 <a href="http://wbzyl.inf.ug.edu.pl/sp/git">Parę aliasów dla Gita i Bash’a</a>
 oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
