@@ -180,13 +180,27 @@ Tak to stylizujemy:
       <%= will_paginate @fortunes, :container => false %>
     </div>
 
-Zrobione? Zrobione!
+Zrobione? Zrobione! Teraz pora na małe rebase.
+
+Poniższe polecenia wykonujemy będąc na gałęzi *pagination*
 
     :::bash
+    git log --graph --decorate --pretty=oneline --abbrev-commit --all
+
+    git rebase master pagination
+    #? git rebase -i master pagination
+
+    git log --graph --decorate --pretty=oneline --abbrev-commit --all
+
+    git checkout master
     git merge master
+
+    git log --graph --decorate --pretty=oneline --abbrev-commit --all
+
+    git branch -d pagination  # może zostawić?
     git rebase master
     git co master
-    git tag v0.0.1
+    git tag v0.0.1-pagination # ?
 
 
 ## TODO: I18n paginacji
