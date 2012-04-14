@@ -182,24 +182,22 @@ Tak to stylizujemy:
 
 Zrobione? Zrobione! Teraz pora na małe rebase.
 
-Poniższe polecenia wykonujemy będąc na gałęzi *pagination*
+Poniższe polecenia wykonujemy będąc na gałęzi *pagination*:
 
     :::bash
     git log --graph --decorate --pretty=oneline --abbrev-commit --all
-
-    git rebase master pagination
-    #? git rebase -i master pagination
+    git checkout pagination
+    git rebase master
+    #? git rebase -i master
 
     git log --graph --decorate --pretty=oneline --abbrev-commit --all
 
     git checkout master
     git merge master
+    git branch -d pagination  # może zostawić?
 
     git log --graph --decorate --pretty=oneline --abbrev-commit --all
 
-    git branch -d pagination  # może zostawić?
-    git rebase master
-    git co master
     git tag v0.0.1-pagination # ?
 
 
