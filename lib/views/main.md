@@ -143,6 +143,7 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 ## Użyteczne rzeczy
 
 * [The Ruby Toolbox](http://ruby-toolbox.com/) – know your options!
+* [GitHub Style Guides](https://github.com/styleguide/)
 * [Responsive](http://mattkersley.com/responsive/) –
   web design testing tool
 * [jsFiddle](http://jsfiddle.net/)– easy test you snippets before implementing
