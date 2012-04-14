@@ -118,8 +118,7 @@ Oto wygenerowany kod kontrolera z dopisanym *respond_to*:
       end
     end
 
-Dla porównania kod kontrolera wygenrowanego przez
-generator *scaffold*:
+Dla porównania kod kontrolera wygenerowanego przez generator *scaffold*:
 {%= link_to "fortunes_controller.rb", "/rails31/scaffold/fortunes_controller.rb" %}.
 
 Generujemy model *Fortune*, migrujemy i zapisujemy w bazie dane testowe:
