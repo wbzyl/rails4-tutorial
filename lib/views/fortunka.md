@@ -150,8 +150,8 @@ Aplikację po tych poprawkach klonujemy z repo:
     :::bash
     git clone git@github.com:wbzyl/fortunes-responders.git
 
-gdzie (przy okazji) zwiększyłem szerokość elementu *input*
-i *textarea* w forumularzu:
+gdzie (przy okazji) zwiększyłem w formularzu szerokość elementów
+*input* i *textarea*:
 
     :::css
     input, textarea {
