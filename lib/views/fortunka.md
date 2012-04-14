@@ -18,8 +18,8 @@ Co na tym zyskujemy opisano tutaj:
 * [Responders](https://github.com/plataformatec/responders)
 * [ActionController::Responder](http://github.com/rails/rails/blob/master/actionpack/lib/action_controller/metal/responder.rb)
 * [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/)
-  – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
-* **respond_with** & **respond_to**
+  – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
+* para: **respond_with** & **respond_to**
 
 Ale rusztowanie aplikacji wygenerujemy za pomocą szablonu aplikacji Rails:
 
