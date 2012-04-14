@@ -1,22 +1,5 @@
 #### {% title "Fortunka v1.0" %}
 
-Jednym ze sprawdzonych sposobów kontynuacji projektu jest
-rozpoczęcie go od nowa. Tym razem nie skorzystamy z generatora
-„scaffold”. Dlaczego?
-
-Ale rusztowanie aplikacji wygenerujemy korzystając z gotowego szablonu
-aplikacji Rails:
-
-    rails new fortunki -m https://raw.github.com/wbzyl/rails31-html5-boilerplates/master/html5-boilerplate.rb
-
-Formularze będziemy tworzyć korzystając z metod pomocniczych
-z gemu *simple_form*. Dlaczego? Najlepiej wyjaśnili to autorzy:
-„SimpleForm aims to be as flexible as possible while helping you with
-powerful components to create your forms. The basic goal of simple
-form is to not touch your way of defining the layout, letting you find
-the better design for your eyes.”
-
-
 <blockquote>
  <p>
   {%= image_tag "/images/new-project.jpg", :alt => "[nowy projekt]" %}
@@ -24,186 +7,194 @@ the better design for your eyes.”
  <p class="author"><a href="http://www.eyefetch.com/image.aspx?ID=901780">New project car</a></p>
 </blockquote>
 
-### Robótki ręczne…
+Jednym ze sprawdzonych sposobów kontynuacji projektu jest rozpoczęcie
+go od nowa.
 
-Zanim zaczniemy pisać fortunkę, przyjrzymy się bliżej
-rusztowaniom generowanym przez generatory:
+Tym razem nie użyjemy generatora „scaffold”. Skorzystamy z generatora
+*responders_controller* z gemu *responders*.
 
-* scaffold
-* responders
+Co na tym zyskujemy opisano tutaj:
 
-Do wygenerowanego pliku *Gemfile* dopisujemy kilka nowych gemów:
+* [Responders](https://github.com/plataformatec/responders)
+* [ActionController::Responder](http://github.com/rails/rails/blob/master/actionpack/lib/action_controller/metal/responder.rb)
+* [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/)
+  – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
+* **respond_with** & **respond_to**
+
+Ale rusztowanie aplikacji wygenerujemy za pomocą szablonu aplikacji Rails:
+
+    :::bash
+    rails new fortune-responders \
+      -m https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb \
+      --skip-bundle
+
+
+## Robótki ręczne…
+
+Zaczynamy od dopisania gemu *responder* do pliku *Gemfile*:
 
     :::ruby Gemfile
-    gem 'simple_form'
-
     gem 'responders'
-    gem 'kaminari'
-
-    group :development do
-      gem 'wirble'
-      gem 'hirb'
-      gem 'faker'
-      gem 'populator'
-    end
-
-Będziemy z nich korzystać budując Fortunkę v1.0.
+    # przy okazji dopiszemy też
+    gem 'thin'
+    gem 'will_paginate'
+    gem 'faker'
 
 Instalujemy gemy i wykonujemy procedurę *post-install*:
 
-    rails g simple_form:install
+    :::bash
+    bundle install
     rails generate responders:install
+        create  lib/application_responder.rb
+       prepend  app/controllers/application_controller.rb
+        insert  app/controllers/application_controller.rb
+        create  config/locales/responders.en.yml
 
+Generujemy *resource controller* dla Fortunki:
 
-## Scaffold v. Responders
+    :::bash
+    rails generate responders_controller
+      ...
+      Description:
+        Stubs out a scaffolded controller and its views. Different from rails
+        scaffold_controller, it uses respond_with instead of respond_to blocks.
+        Pass the model name, either CamelCased or under_scored. The controller
+        name is retrieved as a pluralized version of the model name.
+
+    rails generate responders_controller Fortune
+        create  app/controllers/fortunes_controller.rb
+        invoke  erb
+        create    app/views/fortunes
+        create    app/views/fortunes/index.html.erb
+        create    app/views/fortunes/edit.html.erb
+        create    app/views/fortunes/show.html.erb
+        create    app/views/fortunes/new.html.erb
+        create    app/views/fortunes/_form.html.erb
+      ...
 
 Dla przypomnienia, *resource controller* musi definiować
-następujące metody (razem siedem sztuk):
+następujące metody (razem siedem):
 
 * *index*, *show*
 * *new*, *create*
 * *edit*, *update*
 * *destroy*
 
+Oto wygenerowany kod kontrolera z dopisanym *respond_to*:
 
-<blockquote>
- <h2>TODO: Scaffold</h2>
- <p>Kontroller:
-   {%= link_to "fortunes_controller.rb", "/rails3/scaffold/controllers/fortunes_controller.rb" %}.
- </p>
- <p>Widoki:
-   {%= link_to "index", "/rails3/scaffold/fortunes/index.html.erb" %},
-   {%= link_to "edit", "/rails3/scaffold/fortunes/edit.html.erb" %},
-   {%= link_to "show", "/rails3/scaffold/fortunes/show.html.erb" %},
-   {%= link_to "new", "/rails3/scaffold/fortunes/new.html.erb" %},
-   {%= link_to "form", "/rails3/scaffold/fortunes/_form.html.erb" %}.
- </p>
- <p>CSS:
-   {%= link_to "scaffold.css", "/rails3/scaffold/scaffold.css" %}.
- </p>
-</blockquote>
+    :::ruby app/controllers/fortunes_controller.rb
+    class FortunesController < ApplicationController
+      respond_to :html, :json
 
-Zaczynamy przyjrzenia się generatorowi scaffold (bez testów i migracji):
+      def index
+        @fortunes = Fortune.all
+        respond_with(@fortunes)
+      end
+      def show
+        @fortune = Fortune.find(params[:id])
+        respond_with(@fortune)
+      end
+      def new
+        @fortune = Fortune.new
+        respond_with(@fortune)
+      end
+      def edit
+        @fortune = Fortune.find(params[:id])
+      end
+      def create
+        @fortune = Fortune.new(params[:fortune])
+        @fortune.save
+        respond_with(@fortune)
+      end
+      def update
+        @fortune = Fortune.find(params[:id])
+        @fortune.update_attributes(params[:fortune])
+        respond_with(@fortune)
+      end
+      def destroy
+        @fortune = Fortune.find(params[:id])
+        @fortune.destroy
+        respond_with(@fortune)
+      end
+    end
 
-    rails g scaffold fortune source:string quotation:text
-      invoke  active_record
-      create    app/models/fortune.rb
-       route  resources :fortunes
-      invoke  responders_controller
-      create    app/controllers/fortunes_controller.rb
-      invoke    erb
-      create      app/views/fortunes
-      create      app/views/fortunes/index.html.erb
-      create      app/views/fortunes/edit.html.erb
-      create      app/views/fortunes/show.html.erb
-      create      app/views/fortunes/new.html.erb
-      create      app/views/fortunes/_form.html.erb
-      invoke    helper
-      create      app/helpers/fortunes_helper.rb
-      invoke  stylesheets
-      create    public/stylesheets/scaffold.css
+Dla porównania kod kontrolera wygenrowanego przez
+generator *scaffold*:
+{%= link_to "fortunes_controller.rb", "/rails31/scaffold/fortunes_controller.rb" %}.
 
-<blockquote>
- <h2>TODO: Responders</h2>
- <p>Kontroller:
-   {%= link_to "fortunes_controller.rb", "/rails3/nifty-generators/controllers/fortunes_controller.rb" %}.
- </p>
- <p>
- <p>Widoki:
-   {%= link_to "index", "/rails3/nifty-generators/fortunes/index.html.erb" %},
-   {%= link_to "edit", "/rails3/nifty-generators/fortunes/edit.html.erb" %},
-   {%= link_to "show", "/rails3/nifty-generators/fortunes/show.html.erb" %},
-   {%= link_to "new", "/rails3/nifty-generators/fortunes/new.html.erb" %},
-   {%= link_to "form", "/rails3/nifty-generators/fortunes/_form.html.erb" %}.
- </p>
- <p>Nifty layout:
-   {%= link_to "layout_helper.rb", "/rails3/nifty-generators/layout_helper.rb" %},
-   {%= link_to "application.html.erb", "/rails3/nifty-generators/application.html.erb" %}.
- </p>
- <p>Metody pomocnicze:
-   {%= link_to "error_messages_helper.rb", "/rails3/nifty-generators/error_messages_helper.rb" %}.
- </p>
- <p>CSS:
-   {%= link_to "application.css", "/rails3/nifty-generators/application.css" %}.
- </p>
-</blockquote>
+Generujemy model *Fortune*, migrujemy i zapisujemy w bazie dane testowe:
 
-Więcej informacji o **respond_with** (oraz **respond_to**):
+    :::bash
+    rails generate model Fortune quotation:text source:string
+    rake db:migrate
+    rake db:seed
 
-* [Controllers in Rails 3](http://asciicasts.com/episodes/224-controllers-in-rails-3)
-* [ActionController::Responder](http://github.com/rails/rails/blob/master/actionpack/lib/action_controller/metal/responder.rb)
-* [One in Three: Inherited Resources, Has Scope and Responders](http://blog.plataformatec.com.br/tag/respond_with/)
-  – zawiera opis *FlashResponder* (korzysta z **I18N**) oraz *HttpCacheResponder*
-
-Zapisujemy w bazie trochę danych testowych,
 zmieniamy routing, tak aby uri
 
     http://localhost:3000
 
-przekierowywał na
+przekierowywał na:
 
     http://localhost:3000/fortunes
 
-**Na razie zezwalamy tylko na renderowanie *html**.
-Później to będziemy zmieniać.
 
-
-## Wchodzimy na stronę startową aplikacji (*index*)
+## Wchodzimy na stronę główną…
 
 …i od razu widzimy, że coś jest nie tak!
-Wszystkie cytaty na jednej stronie? Przydałaby się jakaś
-paginacja. W tym celu skorzystamy z gemu *kaminari*.
 
-Instalacja *kaminari* jest typowa. Dopisujemy gem do pliku *Gemfile*
-i wykonujemy polecenie *bundle*.
+Nie są wypisywane fortunki. Widzimy tylko przyciski.  Od razu to
+naprawimy – dopisujemy trochę kodu *boilerplate* do szablonów:
+*_form*, *index*, *show*.
 
-Następnie, przeglądamy tutorial i dokumentację gemu:
+Aplikację po tych poprawkach klonujemy z repo:
 
-* [Pagination with Kaminari](http://asciicasts.com/episodes/254-pagination-with-kaminari)
-* [Kaminari](https://github.com/amatsuda/kaminari)
+    :::bash
+    git clone git@github.com:wbzyl/fortunes-responders.git
 
-### Podstawowa instalacja
+gdzie (przy okazji) zwiększyłem szerokość elementu *input*
+i *textarea* w forumularzu:
 
-1\. W kontrolerze *FortunesController* w metodzie *index* zmieniamy
-wywołanie *Fortune.all* na:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    class FortunesController < ApplicationController
-      def index
-        @fortunes = Fortune.order(:source).page(params[:page]).per(8)
-        respond_with(@fortunes)
-      end
-
-2\. W widoku *index* tego kontrolera dopisujemy wywołanie metody
-pomocniczej *paginate*, np. u dołu strony:
-
-    :::rhtml app/views/fortunes/index.html.erb
-    <%= paginate @fortunes %>
-
-I już możemy sprawdzić jak działa paginacja. Paginacja jest
-renderowana w elemencie **nav**.  Poprawiamy nieco jego wygląd:
-
-    :::css public/stylesheets/applications.css
-    nav.pagination {
-      display: block;
-      margin: 2em 0;
-    }
-    nav.pagination a, nav.pagination .page.current {
-      padding: 4px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    nav.pagination .page.current {
-      color: red;
+    :::css
+    input, textarea {
+      width: 100%;
     }
 
-Musimy jeszcze pozbyć się wielokropków po prawej `…`.
-Zrobimy to za chwilę.
+
+# Dochodząc do v1.0
+
+Zaczynamy od najłatwiejszej rzeczy – paginacji:
+
+    :::bash
+    git checkout -b pagination v0.0.0
+
+* [will_paginate](https://github.com/mislav/will_paginate)
+* [samples of pagination styles for will_paginate](http://mislav.uniqpath.com/will_paginate/)
+* [digg-style, extra content](https://github.com/wbzyl/rat/blob/master/less/digg_pagination.less):
+
+Tak to stylizujemy:
+
+    :::rhtml
+    <div class="digg_pagination">
+      <div class="page_info">
+        <%= page_entries_info @fortunes %>
+      </div>
+      <%= will_paginate @fortunes, :container => false %>
+    </div>
+
+Zrobione? Zrobione!
+
+    :::bash
+    git merge master
+    git rebase master
+    git co master
+    git tag v0.0.1
 
 
-### I18n paginacji
+## TODO: I18n paginacji
 
-Zaczniemy od zmiany wyświetlanych tekstów.
+* [Translating will_paginate output (i18n)](https://github.com/mislav/will_paginate/wiki/I18n)
+
+**TODO:** Zaczniemy od zmiany wyświetlanych tekstów.
 
 W pliku *application.rb* odkomentowujemy i zmieniamy wiersz:
 
