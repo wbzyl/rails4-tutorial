@@ -31,7 +31,7 @@ Ale rusztowanie aplikacji wygenerujemy za pomocą szablonu aplikacji Rails:
 
 ## Robótki ręczne…
 
-Zaczynamy od dopisania gemu *responder* do pliku *Gemfile*:
+Zaczynamy od dopisania gemu *responders* do *Gemfile*:
 
     :::ruby Gemfile
     gem 'responders'
