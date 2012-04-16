@@ -175,6 +175,8 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 
 ## Misz masz…
 
+* [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks)
+* [TIOBE Programming Community Index](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html)
 * [Rails 3 Application Templates](https://github.com/RailsApps/rails3-application-templates)
 * [Examples of how to build PDFs in Rails with Prawn and Prawnto](http://prawn.heroku.com/)
 * [Exploring the stdlib: logger](http://rbjl.net/50-exploring-the-stdlib-logger)
