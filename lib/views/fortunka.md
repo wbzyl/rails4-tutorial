@@ -85,8 +85,6 @@ Oto kod wygenerowanego kontrolera (z ręcznie dopisanym wierszem *respond_to*):
 
     :::ruby app/controllers/fortunes_controller.rb
     class FortunesController < ApplicationController
-      respond_to :html, :json
-
       def index
         @fortunes = Fortune.all
         respond_with(@fortunes)
@@ -249,82 +247,53 @@ Poniższe polecenia wykonujemy będąc na gałęzi *pagination*
     git tag v0.0.1
 
 
-
-## Engines are back in Rails… 3.1
-
-Engine to miniaturowa aplikacja, gem albo wtyczka.
-Zazwyczaj za pomocą engine dodajemy dodatkową funkcjonalność
-do całej aplikacji Rails. Na przykład
-autentykację (Devise), paginację (Kaminari).
-
-Engines dla Rails wymyślił [James Adams](https://github.com/lazyatom/engines).
-Z engines był jeden problem. Nie było gwarancji, że nowa wersja Rails
-będzie będzie działać ze starymi engines. Wersja Rails 3.1 ma to zmienić.
-
-Nieco Railsowej archeologii:
-
-* [Guide: Things You Shouldn't Be Doing In Rails](http://glu.ttono.us/articles/2006/08/30/guide-things-you-shouldnt-be-doing-in-rails) –
- artykuł z 2005 roku
-* [Odpowiedź J. Adamsa](http://article.gmane.org/gmane.comp.lang.ruby.rails/29166)
-
-
-{%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
-(źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
-
-
-## Google Analytics
-
-Google Analytics zajmiemy się przy wdrażaniu aplikacji na Heroku.
-
-
 ## Walidacja
 
 Do czego jest nam potrzebna walidacja wyjaśniono w samouczku
 [Active Record Validations and Callbacks](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html).
 
-Baza powinna zawsze zawierać prawidłowe dane.
-Zanim zapiszemy coś w bazie powinniśmy sprawdzić
-czy dane które chcemy umieścić w bazie są poprawne.
-Gdzie to sprawdzenie najlepiej wykonać?
-W przeglądarce? W aplikacji Rails?
-Lepiej w kontrolerze, czy modelu? Dlaczego?
-Może lepiej walidację zostawić to serwerowi bazy?
+* Baza powinna zawsze zawierać prawidłowe dane.
+* Zanim zapiszemy coś w bazie powinniśmy sprawdzić
+  czy dane które chcemy umieścić w bazie są poprawne.
+* Gdzie to sprawdzenie najlepiej wykonać?
+  W przeglądarce? W aplikacji Rails?
+  Lepiej w kontrolerze, czy modelu? Dlaczego?
+  Może lepiej walidację zostawić to serwerowi bazy?
 
 Dopisujemy walidację do modelu *Fortune*:
 
     :::ruby app/models/fortune.rb
     class Fortune < ActiveRecord::Base
-      # atrybut: quotation
-      validates :quotation, :presence => true
-      # validates_presence_of :quotation
-      validates_length_of :quotation, :in => 2..128
-      # validates_length_of :quotation, :minimum => 2, :maximum => 128
-      validates_uniqueness_of :quotation, :case_sensitive => false
+      validates :quotation, presence: true
+      validates :quotation, length: { maximum: 256 }
+      validates :quotation, uniqueness: { case_sensitive: false }
 
-      # atrybut: source
-      validates :source, :in => 4..64, :allow_blank => true
+      validates :source, length: { in: 3..64 }, allow_blank: true
     end
 
-Sprawdzamy na konsoli Rails jak to działa:
+Sprawdzamy na konsoli Rails jak działa walidacja:
 
+    :::ruby
     f = Fortune.new
     f.valid?
-     => false
-    f.errors
-     => {:quotation=>["can't be blank"]}
+      => false
+    f.errors.messages
+      => {:quotation=>["can't be blank"]}
     f.errors[:quotation].any?
-     => true
+      => true
     f.save
-     => false
-    f.source = "X"
+      => false
+    f.source = "a"
     f.valid?
-    f.errors
+    f.errors.messages
     f.source = ""
     f.valid?
     f.errors
 
 Pozostałe rzeczy: *validates_with*, *validates_each*, walidacja warunkowa,
-walidacja dla powiązanego modelu *validates_associated*.
+walidacja dla powiązanego modelu *validates_associated*, opcja `:on` –
+kiedy walidować (`:create`, `:update`, `:save` itd.), walidacja warunkowa
+
 
 **Ważne:** Powinniśmy sprawdzić jak działa walidacja w przeglądarce.
 Sama konsola to za mało!
@@ -341,111 +310,34 @@ Dodatkowa lektura:
 
 Jak pisać formularze w aplikacjach Rails opisano w samouczku
 [Rails Form helpers](http://edgeguides.rubyonrails.org/form_helpers.html).
-Po lekturze tego samouczka jedna sprawa jest jasna: formularze nie
-są „easy”.
+Po lekturze tego samouczka jedna sprawa jest jasna: „forms aren’t easy”.
 Za to autorzy [simple_form](https://github.com/plataformatec/simple_form)
 obiecują, że z ich gemem „forms are easy!”.
 
-Sprawdźmy to!
-
-    rails generate simple_form:install
-      create  config/initializers/simple_form.rb
-      create  config/locales/simple_form.en.yml
-      create  lib/templates/erb/scaffold/_form.html.erb
-
-Dostępne opcje konfigurujemy w pliku *simple_form.rb*, dla przykładu
-możemy zmienić generowane znaczniki HTML:
+Dostępne opcje znajdziemy pliku *simple_form.rb*. Dla przykładu
+zmienimy walidację HTML5 na *false*:
 
     :::ruby config/initializers/simple_form.rb
-    # Default tag used on errors.
-    # config.error_tag = :span
-    # You can wrap all inputs in a pre-defined tag.
-    # config.wrapper_tag = :div
-    # When false, do not use translations for labels, hints or placeholders.
-    # config.translate = true
+    # Tell browsers whether to use default HTML5 validations (novalidate option).
+    # Default is enabled.
+    config.browser_validations = false
 
-Ustawiamy walidację HTML5 na *false*:
-
-    :::ruby config/initializers/simple_form.rb
-    # Tell browsers whether to use default HTML5 validations.
-    config.disable_browser_validations = false
-
-    # Determines whether HTML5 types (:email, :url, :search, :tel) and attributes
-    # (e.g. required) are used or not. True by default.
-    # Having this on in non-HTML5 compliant sites can cause odd behavior in HTML5-aware browsers such as Chrome.
-    # config.use_html5 = true
-    config.use_html5 = false
-
-Dlaczego? jest wyjaśnione powyżej oraz w *README*:
-„In many cases it can break existing UI’s.”
-
-Łatwo będzie można wymienić wypisywane komunikaty.
-Wszystkie są pobierane z pliku *simple_form.en.yml*.
-Wystarczy je zmienić.
-
-    :::yaml
-    en:
-      simple_form:
-        "yes": 'Yes'
-        "no": 'No'
-        required:
-          text: 'required'
-          mark: '*'
-          # You can uncomment the line below if you need to overwrite the whole required html.
-          # When using html, text and mark won't be used.
-          # html: '<abbr title="required">*</abbr>'
-        error_notification:
-          default_message: "Some errors were found, please take a look:"
-        # Labels and hints examples
-        # labels:
-        #   password: 'Password'
-        #   user:
-        #     new:
-        #       email: 'E-mail para efetuar o sign in.'
-        #     edit:
-        #       email: 'E-mail.'
-        # hints:
-        #   username: 'User name to sign in.'
-        #   password: 'No special characters, please.'
-        labels:
-          fortune:
-            source: 'source'
-            quotation: 'said'
-        hints:
-          fortune:
-            source: '(optional)'
-            quotation: '(maximum 128 characters)'
-        placeholders:
-          fortune:
-            source: 'source or blank'
-            quotation: 'no special chars, please'
-
-Po przejrzeniu pliku *README*, formularz dla fortunki wpisujemy tak:
+W wygenerowanym formularzu dopisujemy *:rows => 6*. Domyślna wartość, ok. 40,
+to zdecydowanie za dużo.
 
     :::rhtml
-    <%= simple_form_for @fortune do |f| %>
-      <%= f.input :source, :input_html => {:size => 40}, :required => false %>
-      <%= f.input :quotation, :input_html => {:rows => 4, :cols => 40} %>
-      <%= f.button :submit %>
+    <%= simple_form_for(@fortune) do |f| %>
+      <%= f.error_notification %>
+      <div class="form-inputs">
+        <%= f.input :quotation, :input_html => { :rows => 6 } %>
+        <%= f.input :source %>
+      </div>
+      <div class="form-actions">
+        <%= f.button :submit %>
+      </div>
     <% end %>
 
-Kod ten generuje taki HTML (usunąłem znacznik *div* z elementami *hidden*):
-    :::html
-    <form accept-charset="UTF-8" action="/fortunes" class="simple_form fortune" id="new_fortune" method="post">
-      <div class="input string optional">
-        <label class="string optional" for="fortune_source"> source</label>
-        <input class="string optional" id="fortune_source" maxlength="255" name="fortune[source]" placeholder="source or blank" size="40" type="text" />
-        <span class="hint">(optional)</span>
-      </div>
-      <div class="input text required">
-        <label class="text required" for="fortune_quotation"><abbr title="required">*</abbr> said</label>
-        <textarea class="text required" cols="40" id="fortune_quotation" name="fortune[quotation]" placeholder="no special chars, please" required="required" rows="4">
-        </textarea>
-        <span class="hint">(maximum 128 characters)</span>
-      </div>
-      <input class="button" id="fortune_submit" name="commit" type="submit" value="Create Fortune" />
-    </form>
-
+<!--  niepotrzebne z Bootsrap
 Zaczynamy od ustawienia takiego samego fontu dla elementów *input[type=text]* oraz *textarea*:
 
     :::css public/stylesheets/applications.css
@@ -455,18 +347,7 @@ Zaczynamy od ustawienia takiego samego fontu dla elementów *input[type=text]* o
 
 Inaczej, elementy te przy takiej samej liczbie kolumn, bądą miały różną szerokość.
 (Albo można ustawić *width* dla elementów *input* oraz *textarea*.)
-
-Włączamy pływanie:
-
-    :::css public/stylesheets/applications.css
-    div.input, input, textarea, label {
-      float: left;
-    }
-    div.input {
-      width: 100%;
-    }
-
-I już! Zostaje tylko wyrównanie w pionie oraz dodanie marginesów.
+-->
 
 
 <blockquote>
@@ -495,15 +376,9 @@ gdzie dowiadujemy się, że mamy do dyspozycji trzy prekonfigurowane respondery:
 
 Co więcej, możemy pisać swoje responders oraz używać ich w zestawach.
 Czego nie będziemy robić. Ale za to zainstalujemy powyższe responders
-i skonfigurujemy Fortunkę tak aby z nich korzystała:
+i skonfigurujemy Fortunkę tak aby z nich korzystała.
 
-    rails generate responders:install
-      create  lib/application_responder.rb
-     prepend  app/controllers/application_controller.rb
-      insert  app/controllers/application_controller.rb
-      create  config/locales/responders.en.yml
-
-Generator ten tworzy plik locales:
+Generator *responders:install* utworzył plik locales:
 
     :::yaml config/locales/responders.en.yml
     en:
@@ -516,18 +391,24 @@ Generator ten tworzy plik locales:
           destroy:
             notice: '%{resource_name} was successfully destroyed.'
             alert: '%{resource_name} could not be destroyed.'
+        en:
 
 modyfikuje plik *application_controller.rb*:
 
     :::ruby app/controllers/application_controller.rb
     require "application_responder"
+
     class ApplicationController < ActionController::Base
       self.responder = ApplicationResponder
-      respond_to :html, :js
-      protect_from_forgery
-    end
+      respond_to :html
+      ...
 
-tworzy plik *application_responder.rb*
+gdzie dopisujemy format `:json`:
+
+    :::ruby
+    respond_to :json, except: [:create, :update, :destroy]
+
+Tworzy plik *application_responder.rb*:
 
     :::ruby lib/application_responder.rb
     class ApplicationResponder < ActionController::Responder
@@ -539,235 +420,305 @@ tworzy plik *application_responder.rb*
       # include Responders::CollectionResponder
     end
 
-Jak widać, generator zostawił nam do konfiguracji tylko locales.
-
-Zaglądamy do pliku z kontrolerem:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def create
-      @fortune = Fortune.new(params[:fortune])
-      flash[:notice] = 'Fortune was successfully created.' if @fortune.save
-      respond_with(@fortune)
-    end
-    def update
-      @fortune = Fortune.find(params[:id])
-      flash[:notice] = 'Fortune was successfully updated.' if @fortune.update_attributes(params[:fortune])
-      respond_with(@fortune)
-    end
-
-Jak widać możemy usunąć zbędne już wiadomości flash:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def create
-      @fortune = Fortune.new(params[:fortune])
-      @fortune.save
-      respond_with(@fortune)
-    end
-    def update
-      @fortune = Fortune.find(params[:id])
-      @fortune.update_attributes(params[:fortune])
-      respond_with(@fortune)
-    end
-
-Dopiero teraz możemy powiedzieć, że naprawdę **osuszyliśmy**
-kod kontrolera.
-
-Dodajemy nowe, krótsze, komunikaty dla Fortunki:
-
-    :::yaml config/locales/responders.en.yml
-    flash:
-      fortunes:
-        create:
-          notice: '%{resource_name} was added.'
-        update:
-          notice: '%{resource_name} was changed.'
-        destroy:
-          notice: '%{resource_name} was removed.'
-
-Dopisujemy do pliku z layoutem aplikacji element *div*
-na wiadomości flash:
-
-    :::rhtml
-    <% flash.each do |name, msg| %>
-      <%= content_tag :div, msg, :id => "#{name}" %>
-    <% end %>
-
-(Pamiętamy, aby usunąć wiadomość flash z widoku *show.html.erb*.)
-Dopiero teraz sprawdzamy jak to działa!
-No tak, nie wygląda to ładnie! Na razie, trochę
-takiego CSS:
-
-    :::css
-    #notice, #alert {
-      padding: 5px 8px;
-      margin: 10px 0;
-    }
-    #notice {
-      background-color: #CFC;
-      border: solid 1px #6C6;
-    }
-    #alert {
-      background-color: #FCC;
-      border: solid 1px #C66;
-    }
-
-Teraz flash powinien wyglądać tak jak to było w Rails 2.
+gdzie odkomentowujemy linijkę z *CollectionResponder*. Co to da?
 
 
-## Łączymy luźne końce – widoki new, edit, index
+## Grand refactoring
 
-Cały czas widoki nie są prawidłowe, na przykład
-przycisk *submit* nachodzi na linki.
-Trzeba będzie to kiedyś poprawić.
-
-Na razie poprawimy tytuły. W taki oto sposób:
-
-    :::rhtml app/views/fortunes/new.html.erb
-    <%= title "New fortune" %>
-    <%= render :partial => 'form' %>
-    <p class="clear"><%= link_to 'Back', fortunes_path %></p>
-
-Powyżej korzystamy z metody pomocniczej *title* z *nifty:layout*.
-
-W kodzie stosujemy się zawsze do zasady DRY, co oznacza „Don’t Repeat Yourself”.
-Refaktoryzacja, to też sposób na „osuszanie” kodu.
-Pomaga zachować separację części systemu, daje czystą strukturę.
-
-### Refaktoryzacja *index.html.erb*
-
-Przejdziemy z tabelki na inne znaczniki oraz skorzystamy
-z *implicit loop*. Zaczynamy od kodu:
+W widoku *index* skorzystamy z *implicit loop*. Wycinamy pętlę
 
     :::rhtml app/views/fortunes/index.html.erb
-    <table>
-      <tr>
-        <th>Source</th><th>Quotation</th><th></th><th></th><th></th>
-      </tr>
-      <% @fortunes.each do |fortune| %>
-       <tr>
-        <td><%= fortune.source %></td><td><%= fortune.quotation %></td>
-        <td><%= link_to 'Show', fortune %></td>
-        <td><%= link_to 'Edit', edit_fortune_path(fortune) %></td>
-        <td><%= link_to 'Destroy', fortune, :confirm => t('helpers.data.sure'), :method => :delete %></td>
-      </tr>
-    <% end %>
-    </table>
-
-Po refaktoryzacji, zamiast tabelki wpisujemy:
-
-    :::rhtml app/views/fortunes/index.html.erb
-    <div id="fortunes">
-      <%= render :partial => 'fortune', :collection => @fortunes %>
+    <article class="index">
+      <div class="attribute">
+        <span class="name"><%= t "simple_form.labels.fortune.quotation" %></span>
+        <span class="value"><%= fortune.quotation %></span>
+      </div>
+      <div class="attribute">
+        <span class="name"><%= t "simple_form.labels.fortune.source" %></span>
+        <span class="value"><%= fortune.source %></span>
+      </div>
+    <div class="form-actions">
+      <%= link_to 'Show', fortune, class: 'btn btn-mini'%>
+      <%= link_to 'Edit', edit_fortune_path(fortune), class: 'btn btn-mini'%>
+      <%= link_to 'Destroy', fortune, confirm: 'Are you sure?', method: :delete, class: 'btn btn-mini btn-danger'%>
     </div>
-    <p><%= link_to "New Fortune", new_fortune_path %></p>
+    </article>
+
+Wycięty kodu wklejamy do nowego pliku *_fortune.html.erb* (liczba pojedyncza!)
+
+Podmieniamy zawartość pliku *index.html.erb* na:
+
+    :::rhtml app/views/fortunes/index.html.erb
+    ... tytuł i digg pagination bez zmian ...
+
+    <%= render partial: 'fortune', collection: @fortunes %>
+
+    <div class="form-actions">
+      <%= link_to 'New Fortune', new_fortune_path, class: 'btn btn-primary'%>
+    </div>
 
 Szablon częściowy *_fortune.html.erb* renderowany jest wielokrotnie,
 w pętli po zmiennej *fortune* (konwencja *@fortunes* → *fortune*):
 
-    :::rhtml app/views/fortunes/_fortune.html.erb
-    <p>
-     <b><%= fortune.quotation %></b><br><%= fortune.source %>
-    </p>
-    <p class="links">
-     <%= link_to "Show", fortune_path(fortune) %> |
-     <%= link_to "Edit", edit_fortune_path(fortune) %> |
-     <%= link_to "Delete", fortune_path(fortune), :confirm => "Are you sure?", :method => :delete %>
-    </p>
 
-Po co wkładamy fortunki do pojemnika *div*? Przyda się to przy stylizacji.
+## RSS: atom
 
-Aha, przy okazji zmienimmy napisy na przyciskach *submit*
-oraz zlokalizujemy napis „Are you sure?”:
+Dopisujemy do kontrolera:
 
-    :::yaml config/locales/en.yml
-    helpers:
-      submit:
-        create: "Create %{model}"
-        update: "Change %{model}"
-      data:
-        sure: "What are you going to do! Are you sure?"
+    :::ruby
+    respond_to :html, :atom
 
-Musimy jeszcze użyć *i18n.translate* w widoku:
-
-    :::rhtml app/views/fortunes/index.html.erb
-    <td><%= link_to 'Destroy', fortune, :confirm => t('helpers.data.sure'), :method => :delete %></td>
-
-
-## Atom
-
-Dopisujemy do kontrolera (z formatu :js skorzystamy go później):
-
-    respond_to :html, :atom, :js
-
-Widok:
+i dodajemy nowy widok:
 
     :::ruby app/views/fortunes/index.atom.builder
     atom_feed do |feed|
-      feed.title "Moje Fortunki"
+      feed.title "My Fortunes"
       feed.updated @fortunes.first.updated_at
       @fortunes.each do |fortune|
         feed.entry(fortune) do |entry|
-          entry.content fortune.quotation, :type => "html"
+          entry.content fortune.quotation, type: "html"
         end
       end
     end
 
-W layout dopisujemy w znaczniku *head*:
+W pliku z layoutem dopisujemy w znaczniku *head*:
 
     :::rhtml app/views/layouts/application.html.erb
     <%= auto_discovery_link_tag(:atom, fortunes_path(:atom)) %>
 
+Aby sprawdzić jak to działa, wchodzimy na stronę:
 
-# Dodajemy wyszukiwanie do Fortunek
+    http://localhost:3000/fortunes.atom
 
-Na stronie z listą fortunek dodamy formularz, który będzie filtrował dane po polu *quotation*:
+
+# Wyszukiwanie w fortunkach
+
+Na stronie z listą fortunek dodamy formularz, który będzie filtrował
+dane po polu *quotation*:
 
     :::rhtml app/views/fortunes/index.html.erb
-    <%= form_tag fortunes_path, :method => :get, :id => "fortunes_search" do %>
-      <p>
-        <%= text_field_tag :search, params[:search] %>
-        <%= submit_tag "Search", :name => nil %>
-      </p>
+    <%= form_tag fortunes_path, method: :get, id: "fortunes_search", class: "form-inline" do %>
+      <%= text_field_tag :query, params[:query] %>
+      <%= submit_tag "Search", name: nil, class: "btn" %>
     <% end %>
+
+Poprawiamy wygląd:
+
+    :::css
+    #fortunes_search {
+      margin-top: 1em;
+      margin-bottom: 2em;
+    }
+    #search {
+      width: 30%;
+    }
 
 Aby odfiltrować zbędne rekordy, musimy w *FortunesController*
 w metodzie *index* przekazać tekst, który wpisano w formularzu
-(użyjemy metody *search*, refaktoryzacja):
+(użyjemy metody *search*, mała refaktoryzacja):
 
     :::ruby app/controllers/fortunes_controller.rb
     def index
-      @fortunes = Fortune.search(params[:search]).order(:source).page(params[:page]).per(4)
+      @fortunes = Fortune.search(params[:search]).page(params[:page]).per_page(4).order('created_at DESC')
       respond_with(@fortunes)
     end
 
 kod metody wpisujemy w klasie *Fortune*:
 
     :::ruby app/models/fortune.rb
-    def self.search(search)
-      if search
+    # SQLite
+    def self.search(query)
+      if query.present?
         where('quotation LIKE ?', "%#{search}%")
       else
         scoped
       end
     end
 
-Metoda *search* jest wykonywana zawsze po wejściu na stronę *index*,
-nawet jak nic nie wyszukujemy. (Prześledzić jak ona wtedy działa?
-Co to jest *scoped*?)
+    # tylko PostgreSQL? i – ignore case
+    def self.search(query)
+      if query.present?
+        where("quotation ilike :q or source ilike :q", q: "%#{query}%")
+      else
+        scoped
+      end
+    end
 
-Dodatkowa lektura:
+Metoda *search* jest wykonywana zawsze po wejściu na stronę *index*,
+nawet jak nic nie wyszukujemy. Prześledzić wtedy działa *search*?
+Co oznacza *scoped*?
+
+Nowe idee w wyszukiwaniu:
+
+* Florian R. Hanke.
+  [Picky](https://github.com/floere/picky) –
+  easy to use and fast Ruby semantic search engine.
+  Przykłady:
+  - [twixtel](http://www.twixtel.ch/),
+  - [gemsearch](http://gemsearch.heroku.com/)
+
+
+## Full text search with PostgreSQL
+
+Instalujemy gemy *pg*, *texticle, *pg_search*:
+
+    :::ruby
+    gem 'pg'
+    gem 'texticle', require: 'texticle/rails'
+    gem 'pg_search'
+
+Zmieniamy bazę w *database.yml*:
+
+    :::yaml
+    development:
+      adapter: postgresql
+      encoding: unicode
+      database: fortune_responders_development
+      pool: 5
+      username: wbzyl
+      password:
+
+    test:
+      adapter: postgresql
+      encoding: unicode
+      database: fortune_responders_development
+      pool: 5
+      username: wbzyl
+      password:
+
+
+### Sqlite → PostgreSQL
+
+* David Dollar.
+  [Valkyrie](https://github.com/ddollar/valkyrie) – transfer data between databases
+
+Instalujemy gemy *valkyrie*, i *taps*:
+
+    :::bash
+    bundle install
+    gem install valkyrie taps pg
+
+Przerzucamy bazę development z SQLite do PostgreSQL:
+
+    :::bash
+    rake db:create:all
+    rake db:migrate
+    # nie działa… problemy z authentication
+    valkyrie sqlite://db/development.sqlite3 postgres://wbzyl@localhost/fortune_responders_development
+    # też nie działa
+    taps server sqlite://db/development.sqlite3 wbzyl secret
+    taps pull postgres://wbzyl@localhost/fortune_responders_development http://wbzyl:secret@localhost:5000
+
+Powód:
+
+    Failed to connect to database:
+      Sequel::DatabaseConnectionError -> PG::Error: FATAL:  Ident authentication failed for user "wbzyl"
+
+Póki co, wrzucę dane via *db:seed*:
+
+    :::bash
+    rake db:seed
+
+
+## Full text search with PostgreSQL
+
+Korzystamy z operatora @@. Model:
+
+    :::ruby
+    def self.search(query)
+      if query.present?
+        where("quotation @@ :q or source @@ :q", q: query)
+      else
+        scoped
+      end
+    end
+
+Dodatkowe wyjaśnienia na konsoli DB:
+
+    :::sql
+    select 'ninja turtles @@ 'turtles';
+    select to_tsvector('ninja turtles') @@ plainto_tsquery('turtles');
+    select to_tsvector('english', 'ninja turtles') @@ plainto_tsquery('english', 'turtles'); -- stemming
+    select to_tsvector('simple', 'ninja turtles') @@ plainto_tsquery('simple', 'turtles');   -- without
+    select to_tsvector('simple', 'ninja turtles') @@ to_tsquery('simple', 'turtles');        -- one word
+    select to_tsvector('simple', 'ninja turtles') @@ to_tsquery('simple', 'turtles & turtles');   -- and
+    select to_tsvector('simple', 'ninja turtles') @@ to_tsquery('simple', 'turtles | turtles');   -- or
+    select to_tsvector('simple', 'ninja turtles') @@ to_tsquery('simple', 'turtles & !turtles');  -- not
+
+**Rank**:
+
+    :::sql
+    select ts_rank(to_tsvector('ninja turtles'), to_tsquery('turtles'));
+
+Poprawki w modelu:
+
+    :::ruby
+    def self.search(query)
+      if query.present?
+        rank = <<-RANK
+          ts_rank(to_tsvector(quotation), plainto_tsquery(#{sanitize(query)})) +
+          ts_rank(to_tsvector(source), plainto_tsquery(#{sanitize(query)}))
+        RANK
+        where("quotation @@ :q or source @@ :q", q: query).order("#{rank} desc")
+      else
+        scoped
+      end
+    end
+
+
+## Texticle
 
 * Aaron Patterson.
   [Texticle](https://github.com/tenderlove/texticle) –
   full text search capabilities from PostgreSQL
-* Florian R. Hanke.
-  [Picky](https://github.com/floere/picky) –
-  easy to use and fast Ruby semantic search engine.
-  Przykłady: [twixtel](http://www.twixtel.ch/),
-  [picky simple example](http://picky-simple-example.heroku.com/)
+
+Ta sama funkcjonalność co wyżej (z rank?).
+
+Zmiany w modelu:
+
+    :::ruby
+    def self.text_search(query)  # zamiana na text_search -- konflikt z Texticle, poprawić w kontrolerze
+      if query.present?
+        search(query)
+      else
+        scoped
+      end
+    end
 
 
-## Ajaxujemy filtrowanie
+## PG_search
+
+* [pg_search](https://github.com/Casecommons/pg_search)
+
+Z *README*: wyszukiwanie w jednym modelu – *pg_search_scope*
+lub w kilku modelach – *multisearch*.
+
+Dopisujemy w modelu (nie używa słownika 'english', nie działa stemming):
+
+    :::ruby
+    include PgSearch
+    pg_search_scope :search, against: [:quotation, :source]  # defines `search` method
+
+    def self.text_search(query)
+      if query.present?
+        search(query)
+      else
+        scoped
+      end
+    end
+
+Dodajemy stemming:
+
+    :::ruby
+    pg_search_scope :search, against: [:quotation, :source],
+      using: {tsearch: {dictionary: "english"}}
+
+**TODO:** Łatwe wyszukiwanie w powiązanych modelach.
+
+
+
+
+## TODO: Ajaxujemy filtrowanie
 
 Trzeba wykonać kilka nieoczywistych rzeczy. Wszystkie szczegóły opisano
 w [Search, Sort, Paginate with AJAX](http://asciicasts.com/episodes/240).
@@ -1360,3 +1311,31 @@ Jak to wyłączyć?
   (zob. też Trevor Turk,
   [A Gentle Introduction to CarrierWave](http://www.engineyard.com/blog/2011/a-gentle-introduction-to-carrierwave/)).
 * [Multiple files upload with carrierwave and nested_form](http://lucapette.com/rails/multiple-files-upload-with-carrierwave-and-nested_form/)
+
+
+## Engines are back in Rails… 3.1
+
+Engine to miniaturowa aplikacja, gem albo wtyczka.
+Zazwyczaj za pomocą engine dodajemy dodatkową funkcjonalność
+do całej aplikacji Rails. Na przykład
+autentykację (Devise), paginację (Kaminari, alternatywa dla Will Paginate).
+
+Engines dla Rails wymyślił [James Adams](https://github.com/lazyatom/engines).
+Z engines był jeden problem. Nie było gwarancji, że nowa wersja Rails
+będzie będzie działać ze starymi engines. Wersja Rails 3.1 ma to zmienić.
+
+Nieco Railsowej archeologii:
+
+* [Guide: Things You Shouldn't Be Doing In Rails](http://glu.ttono.us/articles/2006/08/30/guide-things-you-shouldnt-be-doing-in-rails) –
+ artykuł z 2005 roku
+* [Odpowiedź J. Adamsa](http://article.gmane.org/gmane.comp.lang.ruby.rails/29166)
+
+
+{%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
+(źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
+
+
+## Google Analytics
+
+Google Analytics zajmiemy się przy wdrażaniu aplikacji na Heroku.
+
