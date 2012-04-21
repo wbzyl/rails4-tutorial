@@ -34,11 +34,13 @@ Ale rusztowanie aplikacji wygenerujemy za pomocą szablonu aplikacji Rails:
 Zaczynamy od dopisania gemu *responders* do *Gemfile*:
 
     :::ruby Gemfile
-    gem 'responders'
-    # przy okazji dopiszemy też
+    gem 'sqlite3'
+
     gem 'thin'
+
+    gem 'responders'
     gem 'will_paginate'
-    gem 'faker'
+    gem 'faker', :group => :development
 
 Instalujemy gemy i wykonujemy procedurę *post-install*:
 
@@ -50,7 +52,7 @@ Instalujemy gemy i wykonujemy procedurę *post-install*:
         insert  app/controllers/application_controller.rb
         create  config/locales/responders.en.yml
 
-Generujemy *resource controller* dla Fortunki:
+Generujemy **resource controller** dla Fortunki:
 
     :::bash
     rails generate responders_controller
@@ -72,15 +74,14 @@ Generujemy *resource controller* dla Fortunki:
         create    app/views/fortunes/_form.html.erb
       ...
 
-Dla przypomnienia, *resource controller* musi definiować
-następujące metody (razem siedem):
+*resource controller* definiuje siedem metod:
 
 * *index*, *show*
 * *new*, *create*
 * *edit*, *update*
 * *destroy*
 
-Oto wygenerowany kod kontrolera z dopisanym *respond_to*:
+Oto kod wygenerowanego kontrolera (z ręcznie dopisanym wierszem *respond_to*):
 
     :::ruby app/controllers/fortunes_controller.rb
     class FortunesController < ApplicationController
@@ -168,11 +169,15 @@ Zaczynamy od najłatwiejszej rzeczy – paginacji:
 
 * [will_paginate](https://github.com/mislav/will_paginate)
 * [samples of pagination styles for will_paginate](http://mislav.uniqpath.com/will_paginate/)
-* [digg-style, extra content](https://github.com/wbzyl/rat/blob/master/less/digg_pagination.less):
 
-Tak to stylizujemy:
+Podmieniamy w kodzie metody *index* kontrolera *FortunesController*:
 
-    :::rhtml
+    :::ruby
+    @fortunes = Fortune.page(params[:page]).per_page(4).order('created_at DESC')
+
+Dopisujemy do widoku *index*:
+
+    :::rhtml app/views/fortunes/index.html.erb
     <div class="digg_pagination">
       <div class="page_info">
         <%= page_entries_info @fortunes %>
@@ -180,76 +185,69 @@ Tak to stylizujemy:
       <%= will_paginate @fortunes, :container => false %>
     </div>
 
-Zrobione? Zrobione! Teraz pora na małe rebase.
+Stylizacja. Korzystamy z gotowego kodu:
 
-Poniższe polecenia wykonujemy będąc na gałęzi *pagination*:
+* [digg-style, extra content](https://github.com/wbzyl/rat/blob/master/less/digg_pagination.less)
 
-    :::bash
-    git log --graph --decorate --pretty=oneline --abbrev-commit --all
-    git checkout pagination
-    git rebase master
-    #? git rebase -i master
+Pobieramy plik i zapisujemy go w katalogu: *app/assets/stylesheets*.
+Dopisujemy go do manifestu *application.css.less*:
 
-    git log --graph --decorate --pretty=oneline --abbrev-commit --all
+    :::css
+    @import "twitter/bootstrap";
+    @import "digg_pagination";
 
-    git checkout master
-    git merge master
-    git branch -d pagination  # może zostawić?
+Zrobione? Zrobione!
 
-    git log --graph --decorate --pretty=oneline --abbrev-commit --all
-
-    git tag v0.0.1-pagination # ?
-
-
-## TODO: I18n paginacji
+Zabieramy się za i18n:
 
 * [Translating will_paginate output (i18n)](https://github.com/mislav/will_paginate/wiki/I18n)
 
-**TODO:** Zaczniemy od zmiany wyświetlanych tekstów.
+Dopisujemy do pliku *en.yml*:
 
-W pliku *application.rb* odkomentowujemy i zmieniamy wiersz:
-
-    :::ruby config/application.rb
-    config.i18n.default_locale = :en
-
-a w pliku *en.yml* dopisujemy:
-
-    :::yaml config/locales/en.yml
+    :::yaml
     en:
-      views:
-        pagination:
-          previous: "&#x21d0; Previous"
-          next: "Next &#x21d2;"
-          truncate: ""
+      will_paginate:
+        previous_label: "«"
+        next_label: "»"
+        page_gap: "…"
+        page_entries_info:
+          single_page:
+            zero:  "No %{model} found"
+            one:   "Displaying 1 %{model}"
+            other: "Displaying all %{count} %{model}"
+          single_page_html:
+            zero:  "No %{model} found"
+            one:   "Displaying <b>1</b> %{model}"
+            other: "Displaying <b>all&nbsp;%{count}</b> %{model}"
+          multi_page: "Displaying %{model} %{from} - %{to} of %{count} in total"
+          multi_page_html: "Displaying %{model} <b>%{from} – %{to}</b> of <b>%{count}</b> in total"
 
-(*U+21d0* to `⇐`, a *U+21d2* – `⇒`.)
+(Zamieniam previous, next i page na «, » i …, odpowiednio.)
 
-Domyślnie *truncate* jest tłumaczone na wielokropek `…`.  Kasujemy go.
+Gotowa paginacja? Gotowa! Czyli teraz pora na małe rebase.
+Poniższe polecenia wykonujemy będąc na gałęzi *pagination*
+(powinniśmy na niej być):
 
-Wkrótce zajmiemy się i18n Fortunki. Ale już teraz dodamy
-tłumaczenia *previous*, *next* i *truncate*.
-W nowym pliku *pl.yml* wklejamy:
+    :::bash
+    git status
+    git add .
+    git commit -m "gotowa paginacja z will_paginate"
 
-    :::yaml config/locales/pl.yml
-    pl:
-      views:
-        pagination:
-          previous: "&#x21d0;"
-          next: "&#x21d2;"
-          truncate: ""
+    gitk --all
 
-*Uwaga:* Ponieważ nie każdy font zawiera strzałki `⇐` i `⇒`,
-bezpieczniej byłoby użyć cudzysłowów `«` i `»`.
+    git rebase -i master
 
-**Uwaga:** Kaminari jest zaprogramowane jako tzw. *Rails Engine*.
-Engine zawiera widoki, które możemy sami modyfikować, zmieniając
-wygląd paginacji. Albo generując paginację na wzór Google:
+    gitk --all
 
-    rails g kaminari:views google
+    git checkout master
+    git merge pagination
 
-Ale Google to Google, dlatego:
+    gitk --all
 
-    rails destroy kaminari:views google
+    git branch -d pagination  # może zostawić?
+
+    git tag v0.0.1
+
 
 
 ## Engines are back in Rails… 3.1
