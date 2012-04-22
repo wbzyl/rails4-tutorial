@@ -42,6 +42,9 @@ Zaczynamy od dopisania gemu *responders* do *Gemfile*:
     gem 'will_paginate'
     gem 'faker', :group => :development
 
+    # mute assets pipeline log messages
+    gem 'quiet_assets', :group => :development
+
 Instalujemy gemy i wykonujemy procedurę *post-install*:
 
     :::bash
@@ -160,13 +163,20 @@ gdzie (przy okazji) zwiększyłem w formularzu szerokość elementów
 
 # Dochodząc do v1.0
 
-Zaczynamy od najłatwiejszej rzeczy – paginacji:
-
-    :::bash
-    git checkout -b pagination v0.0.0
+Zaczynamy od najłatwiejszej rzeczy – paginacji.
+Ze strony [Ruby Toolbox](https://www.ruby-toolbox.com/search?utf8=%E2%9C%93&q=pagination)
+widzimy, że tak naprawdę mamy tylko jedną opcję:
 
 * [will_paginate](https://github.com/mislav/will_paginate)
 * [samples of pagination styles for will_paginate](http://mislav.uniqpath.com/will_paginate/)
+
+Zmiany w kodzie będziemy wprowadzać na osobnej gałęzi:
+
+    :::bash
+    git checkout -b pagination
+
+Po zaimplementowaniu paginacji, wykonamy rebase na gałąź master
+i usuniemy niepotrzbną już gałąź paginate.
 
 Podmieniamy w kodzie metody *index* kontrolera *FortunesController*:
 
@@ -230,20 +240,13 @@ Poniższe polecenia wykonujemy będąc na gałęzi *pagination*
     git status
     git add .
     git commit -m "gotowa paginacja z will_paginate"
-
     gitk --all
-
     git rebase -i master
-
     gitk --all
-
     git checkout master
     git merge pagination
-
     gitk --all
-
-    git branch -d pagination  # może zostawić?
-
+    git branch -d pagination
     git tag v0.0.1
 
 
@@ -421,6 +424,13 @@ Tworzy plik *application_responder.rb*:
     end
 
 gdzie odkomentowujemy linijkę z *CollectionResponder*. Co to da?
+
+**koniec wykładu 22.04.2012**
+
+    :::bash
+    git commit -m "...responders..."
+    ... rebase ...
+    git tag v0.0.2
 
 
 ## Grand refactoring
