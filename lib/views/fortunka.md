@@ -176,7 +176,7 @@ Zmiany w kodzie będziemy wprowadzać na osobnej gałęzi:
     git checkout -b pagination
 
 Po zaimplementowaniu paginacji, wykonamy rebase na gałąź master
-i usuniemy niepotrzbną już gałąź paginate.
+i usuniemy niepotrzebną już gałąź paginate.
 
 Podmieniamy w kodzie metody *index* kontrolera *FortunesController*:
 
