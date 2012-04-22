@@ -1306,6 +1306,8 @@ Jak to wyłączyć?
 
 # TODO
 
+* Widok strony indeks na wzór layoutu *Masonry* –
+  [Isotope](http://isotope.metafizzy.co/)
 * Obrazki w fortunkach: skorzystać z gemu
   [CarrierWave](https://github.com/jnicklas/carrierwave/)
   (zob. też Trevor Turk,
