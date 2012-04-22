@@ -568,6 +568,10 @@ Nowe idee w wyszukiwaniu:
   - [gemsearch](http://gemsearch.heroku.com/)
 
 
+<blockquote>
+<p><a hred="http://sigma.inf.ug.edu.pl/~jdarecki/fedora15.html">Instalacja MySQl, PostgreSQL... w Fedorze 15</p></p>
+</blockquote>
+
 ## Full text search with PostgreSQL
 
 Instalujemy gemy *pg*, *texticle, *pg_search*:
