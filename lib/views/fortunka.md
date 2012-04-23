@@ -430,7 +430,7 @@ gdzie odkomentowujemy linijkę z *CollectionResponder*. Co to da?
     :::bash
     git commit -m "...responders..."
     ... rebase ...
-    git tag v0.0.2
+    git tag v0.0.1
 
 
 ## Grand refactoring
@@ -737,12 +737,12 @@ Dopisujemy w modelu (nie używa słownika 'english', nie działa stemming):
     include PgSearch
 
     # definiujemy metodę `search`
-    pg_search_scope :search, against: [:quotation, :source],
+    pg_search_scope :fortunes_search, against: [:quotation, :source],
         using: {tsearch: {dictionary: "english"}}
 
     def self.text_search(query)
       if query.present?
-        search(query)    # metoda zdefiniowana powyżej
+        fortunes_search(query)    # metoda zdefiniowana powyżej
       else
         scoped
       end
@@ -779,49 +779,44 @@ Zrobione! Wchodzimy na konsolę, gdzie zadajemy kilka zapytań:
 
 **TODO:** Wyszukiwanie w powiązanych modelach.
 
+    ... rebase ...
+    git tag v0.0.2
 
 
-## TODO: Ajaxujemy filtrowanie
+### Ajaxujemy wyszukiwanie
 
-Trzeba wykonać kilka nieoczywistych rzeczy. Wszystkie szczegóły opisano
-w [Search, Sort, Paginate with AJAX](http://asciicasts.com/episodes/240).
-Niestety, niektóre rzeczy tam opisane są zbędne albo już nieaktualne
-(bo, na przykład, dotyczą *will_paginate*). Ale jest za to opisane
-jak dodać **sortowanie**.
+Jest następujacy problem:
+[Added option :ajax for remote page links](https://github.com/mislav/will_paginate/pull/133).
+Oznacza to, że nie można zajaksować *pagination links*.
+Można to obejść za pomocą jednej linijki kodu JavaScript:
 
-Wyszukane fortunki umieścimy w elemencie *div* z id *fortunes*,
-a paginator w elemencie *div* z id *paginator*
-(po co? zob. kod szablonu poniżej).
-Podstawowa rzecz: „To make the paging work with AJAX we need
-**to modify the pagination links** so that they make an AJAX
-request when clicked instead of linking to another page.”:
+    :::js app/assets/javascripts/application.js
+    $('.digg_pagination a').data('remote', true)
+
+Dalej postępujemy tak jak w rozdziale „Remote links”.
+
+Za to łatwo zajaksować paginację zaimplementowaną z użyciem
+gemu [Kaminari](https://github.com/amatsuda/kaminari):
 
     :::rhtml app/views/fortunes/index.html.erb
     <div id="paginator">
       <%= paginate @fortunes, :remote => true %>
     </div>
 
-Żądanie AJAX korzystają z szablonu **index.js.erb**:
-
-    :::jquery_javascript app/views/fortunes/index.js.erb
-    // render _fortune.html.erb partial
-    $("#fortunes").html("<%= escape_javascript(render(@fortunes)) %>");
-    // modify pagination links
-    $('#paginator').html('<%= escape_javascript(paginate(@fortunes, :remote => true).to_s) %>');
-
-Sam „search” formularz też należy zajaxować:
-
-    :::rhtml app/views/fortunes/index.html.erb
-    <%= form_tag fortunes_path, :remote => true, :method => :get, :id => "fortunes_search" do %>
-
 
 # Tagowanie
 
 Tagowanie dodamy, korzystając z gemu
 [acts-as-taggable-on](http://github.com/mbleigh/acts-as-taggable-on).
-Po instalacji gemu, zgodnie z tym o co napisano w *README* wykonujemy
-polecenia:
+Po dopisaniu do pliku *Gemfile* tego gemu:
 
+    :::ruby Gemfile
+    gem 'acts-as-taggable-on', '~> 2.2.2'
+
+instalujemy go i dalej postępujemy zgodnie z instrukcją z *README*:
+
+    :::bash
+    bundle install
     rails generate acts_as_taggable_on:migration
     rake db:migrate
 
@@ -835,13 +830,13 @@ Warto przyjrzeć się wygenerowanej migracji:
         end
         create_table :taggings do |t|
           t.references :tag
-
           # You should make sure that the column created is
           # long enough to store the required class names.
           t.references :taggable, :polymorphic => true
           t.references :tagger, :polymorphic => true
-
-          t.string :context
+          # limit is created to prevent mysql error o index lenght for myisam table type.
+          # http://bit.ly/vgW2Ql
+          t.string :context, :limit => 128
           t.datetime :created_at
         end
         add_index :taggings, :tag_id
@@ -878,7 +873,20 @@ Innymi słowy mamy następujące powiązania między modelami:
 * *Tagging* belongs to *Fortune*
 * *Fortune* has many *Taggings*
 
-Na konsoli wygląda to tak:
+
+## Zmiany w kodzie modelu
+
+Dopisujemy do modelu:
+
+    :::ruby app/models/fortune.rb
+    class Fortune < ActiveRecord::Base
+      acts_as_taggable_on :tags
+      ActsAsTaggableOn::TagList.delimiter = " "
+
+Przy okazji, zmieniliśmy domyślny znak do oddzielania tagów z przecinka
+na spację.
+
+Teraz można się przyjrzeć polimorfizowi na konsoli:
 
     :::ruby
     f = Fortune.find 1
@@ -888,6 +896,16 @@ Na konsoli wygląda to tak:
     f.tags
     f.taggings
 
+W widoku częściowym *_form.html.erb* dopisujemy:
+
+    :::rhtml app/views/fortunes/_form.html.erb
+    <%= f.input :tag_list, :input_html => {:size => 40} %>
+
+w widoku częściowym *_fortune.html.erb* (część widoku *index.html.erb*),
+oraz w widoku *show.html.erb* (2 razy):
+
+    :::rhtml app/views/fortunes/_fortune.html.erb
+    <p><i>Tags:</i> <%= @fortune.tag_list %></p>
 
 ### Dodajemy losowe tagi do fortunek
 
@@ -908,36 +926,10 @@ Poprawiamy *seeds.rb*:
       f.save
     end
 
-Teraz, kasujemy bazę i wrzucamy jeszcze raz cytaty, ale tym razem
-z tagami:
+Teraz, kasujemy bazę i wrzucamy jeszcze raz cytaty, ale tym razem z tagami:
 
     rake db:drop
-    rake db:migrate
-    rake db:seed
-
-
-## Zmiany w kodzie modelu
-
-Dopisujemy do modelu:
-
-    :::ruby app/models/fortune.rb
-    class Fortune < ActiveRecord::Base
-      acts_as_taggable_on :tags
-      ActsAsTaggableOn::TagList.delimiter = " "
-
-Przy okazji, zmieniliśmy domyślny znak do oddzielania tagów z przecinka
-na spację.
-
-W widoku częściowym *_form.html.erb* dopisujemy:
-
-    :::rhtml app/views/fortunes/_form.html.erb
-    <%= f.input :tag_list, :input_html => {:size => 40} %>
-
-w widoku częściowym *_fortune.html.erb* (część widoku *index.html.erb*),
-oraz w widoku *show.html.erb* (2 razy):
-
-    :::rhtml app/views/fortunes/_fortune.html.erb
-    <p><i>Tags:</i> <%= @fortune.tag_list %></p>
+    rake db:setup
 
 
 ## Chmurka tagów
@@ -1011,19 +1003,25 @@ elementem *div\#tag_cloud*, ustawiamy jego szerokość, powiedzmy na
 trochę wolnego miejsca:
 
     :::css public/stylesheets/application.css
-    quotation {
-      position: relative;
-    }
-    #tag_cloud {
+    #tag-cloud {
       background-color: #E1F5C4; /* jasnozielony */
+      margin-top: 1em;
+      margin-bottom: 1em;
       padding: 1em;
-      width: 250px;
-      position: absolute;
-      right: 1em;
-      top: 1em;
+      width: 100%;
     }
 
 I już możemy obejrzeć rezultaty naszej pracy!
+
+Powinniśmy jeszcze dopisać do widoku częściowego *_fortune.html.erb*
+kod wypisujący tagi:
+
+    :::rhtml app/views/fortunes/_fortune.html.erb
+    <div class="attribute">
+      <span class="name"><%= t "simple_form.labels.fortune.source" %></span>
+      <span class="value tags"><%= fortune.tag_list.join(", ") %>
+      </span>
+    </div>
 
 
 ## Dodajemy własną akcję do REST
@@ -1033,7 +1031,12 @@ po kliknięciu na nazwę wyświetliły się fortunki otagowane
 tą nazwą.
 
 Zaczniemy od zmian w routingu. Usuwamy
-wiersz z `resources :fortunes`. Zamiast niego wklejamy:
+wiersz:
+
+    :::ruby config/routes.rb
+    resources :fortunes
+
+Zamiast niego wklejamy:
 
     :::ruby config/routes.rb
     resources :fortunes do
@@ -1042,8 +1045,9 @@ wiersz z `resources :fortunes`. Zamiast niego wklejamy:
       end
     end
 
-Sprawdzamy routing:
+Sprawdzamy co się zmieniło w routingu:
 
+    :::bash
     rake routes
 
 i widzimy, że mamy **jeden** dodatkowy uri:
@@ -1052,7 +1056,7 @@ i widzimy, że mamy **jeden** dodatkowy uri:
 
 Na koniec, zamieniamy link w chmurce tagów na:
 
-    :::ruby
+    :::rhtml
     <%= link_to tag.name, tags_fortunes_path(:name=>tag.name), :class => css_class %>
 
 Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
@@ -1062,22 +1066,30 @@ Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
       @tags = Fortune.tag_counts
     end
 
-    def index
-      @fortunes = Fortune.search(params[:search]).order(:source).page(params[:page]).per(4)
-      respond_with(@fortunes)
-    end
-
     # respond_with nic nie wie o tags
     def tags
-      @fortunes = Fortune.tagged_with(params[:name]).order(:source).page(params[:page]).per(4)
+      @fortunes = Fortune.tagged_with(params[:name])
+        .page(params[:page]).per_page(4)
       respond_with(@fortunes) do |format|
-        format.html { render :action => 'index' }
-        format.js   { render :action => 'index' }
+        format.html { render action: 'index' }
       end
     end
 
-Gotowe! Przyjrzeć się jak to działa.
+    def index
+      @fortunes = Fortune.text_search(params[:query])
+        .page(params[:page]).per_page(4)
+      respond_with(@fortunes)
+    end
 
+Zrobione!
+
+    :::bash
+    ... interactive rebase ...
+    git tag v0.0.3
+
+
+
+# TODO: Komentarze do fortunek
 
 <blockquote>
  <p>
@@ -1094,8 +1106,6 @@ Gotowe! Przyjrzeć się jak to działa.
   mind, it severely hinders communication among minds.</p>
  <p class="author">— Frederick P. Brooks, Jr.</p>
 </blockquote>
-
-# Fortunki z komentarzami
 
 W widoku *show.html.erb* fortunki powinna być możliwość dopisywania
 własnych komentarzy, dodawania obrazków kojarzących się nam
