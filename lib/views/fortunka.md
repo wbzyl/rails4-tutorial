@@ -748,12 +748,12 @@ Dopisujemy w modelu (nie używa słownika 'english', nie działa stemming):
       end
     end
 
-Wyniki posortowane malejąco – *ranking search results*.
+Wyniki posortowane malejąco względem „ranking search results”.
 
 
 ### Multisearch
 
-… to wyszukiwanie w wileu modelach:
+…to wyszukiwanie w wielu modelach:
 
     :::bash
     rake pg_search:migration:multisearch
