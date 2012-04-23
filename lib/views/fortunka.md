@@ -529,7 +529,9 @@ w metodzie *index* przekazać tekst, który wpisano w formularzu
 
     :::ruby app/controllers/fortunes_controller.rb
     def index
-      @fortunes = Fortune.order('created_at DESC').text_search(params[:search]).page(params[:page]).per_page(4)
+      @fortunes = Fortune.order('created_at DESC')
+        .text_search(params[:query])
+        .page(params[:page]).per_page(4)
       respond_with(@fortunes)
     end
 
@@ -539,7 +541,7 @@ kod metody wpisujemy w klasie *Fortune*:
     def self.text_search(query)
       if query.present?
         # SQLite i PostgreSQL
-        where('quotation LIKE ?', "%#{search}%")
+        where('quotation like ?', "%#{search}%")
         # tylko PostgreSQL; i – ignore case
         # where("quotation ilike :q or source ilike :q", q: "%#{query}%")
       else
@@ -635,9 +637,23 @@ i ponownie wykonujemy polecenie *valkyrie*.
 
 ## Full text search with PostgreSQL
 
-Korzystamy z operatora @@. Model:
+Zaczynamy od wyszukiwania za pomocą operatora *LIKE* (lub *iLIKE*):
 
-    :::ruby
+    :::ruby app/models/fortune.rb
+    def self.text_search(query)
+      if query.present?
+        # SQLite i PostgreSQL
+        where('quotation like :q or source like :q', q: "%#{query}%")
+        # tylko PostgreSQL; i – ignore case
+        # where("quotation ilike :q or source ilike :q", q: "%#{query}%")
+      else
+        scoped
+      end
+    end
+
+Możemy też użyć operatora @@ (tylko PostgreSQL):
+
+    :::ruby app/models/fortune.rb
     def self.text_search(query)
       if query.present?
         where("quotation @@ :q or source @@ :q", q: query)
@@ -646,33 +662,43 @@ Korzystamy z operatora @@. Model:
       end
     end
 
-Dodatkowe wyjaśnienia na konsoli DB:
+Zapytanie z operatorrem @@ wyszukuje wszystkie rekordy zawierające
+wszystkie wpisane słowa, na przykład:
+
+    late bird
+
+### Zaawansowane wyszukiwanie
+
+Zaczynamy od wpisania i wykonania kilku przykładów na konsoli DB:
 
     :::sql
-    select 'ninja turtles @@ 'turtles';
-    select to_tsvector('ninja turtles') @@ plainto_tsquery('turtles');
-    select to_tsvector('english', 'ninja turtles') @@ plainto_tsquery('english', 'turtles'); -- stemming
-    select to_tsvector('simple', 'ninja turtles') @@ plainto_tsquery('simple', 'turtles');   -- without
-    select to_tsvector('simple', 'ninja turtles') @@ to_tsquery('simple', 'turtles');        -- one word
-    select to_tsvector('simple', 'ninja turtles') @@ to_tsquery('simple', 'turtles & turtles');   -- and
-    select to_tsvector('simple', 'ninja turtles') @@ to_tsquery('simple', 'turtles | turtles');   -- or
-    select to_tsvector('simple', 'ninja turtles') @@ to_tsquery('simple', 'turtles & !turtles');  -- not
-
-**Rank**:
-
-    :::sql
-    select ts_rank(to_tsvector('ninja turtles'), to_tsquery('turtles'));
+    select 'ala has a cat' @@ 'cats';
+    select to_tsvector('ala has a cat') @@ plainto_tsquery('cats');
+    -- stemming
+    select to_tsvector('english', 'ala has a cat') @@ plainto_tsquery('english', 'cats');
+    -- without stemming
+    select to_tsvector('simple', 'ala has a cat') @@ plainto_tsquery('simple', 'cats');
+    -- one word
+    select to_tsvector('simple', 'ala has a cat') @@ to_tsquery('simple', 'cat');
+    -- and
+    select to_tsvector('simple', 'ala has a cat') @@ to_tsquery('simple', 'cat & dog');
+    -- or
+    select to_tsvector('simple', 'ala has a cat') @@ to_tsquery('simple', 'cat | dog');
+    -- not
+    select to_tsvector('simple', 'ala has a cat') @@ to_tsquery('simple', 'cat & !dog');
 
 Poprawki w modelu:
 
-    :::ruby
-    def self.search(query)
+    :::ruby app/models/fortune.rb
+    def self.text_search(query)
       if query.present?
-        rank = <<-RANK
-          ts_rank(to_tsvector(quotation), plainto_tsquery(#{sanitize(query)})) +
-          ts_rank(to_tsvector(source), plainto_tsquery(#{sanitize(query)}))
-        RANK
-        where("quotation @@ :q or source @@ :q", q: query).order("#{rank} desc")
+        # where("quotation @@ :q or source @@ :q", q: query)
+        orquery = <<-ORQUERY
+          to_tsvector('english', quotation) @@ plainto_tsquery('english', #{sanitize(query)})
+            or
+          to_tsvector('english', source) @@ plainto_tsquery('english', #{sanitize(query)})
+        ORQUERY
+        where(orquery)
       else
         scoped
       end
@@ -685,14 +711,13 @@ Poprawki w modelu:
   [Texticle](https://github.com/tenderlove/texticle) –
   full text search capabilities from PostgreSQL
 
-Ta sama funkcjonalność co wyżej (z rank?).
+Ta sama funkcjonalność co wyżej (z rank?), ale kod metody
+*text_search* dużo prostszy:
 
-Zmiany w modelu:
-
-    :::ruby
-    def self.text_search(query)  # zamiana na text_search -- konflikt z Texticle, poprawić w kontrolerze
+    :::ruby app/models/fortune.rb
+    def self.text_search(query)
       if query.present?
-        search(query)
+        search(query)    # metoda zdefiniowana w Texticle
       else
         scoped
       end
@@ -710,24 +735,49 @@ Dopisujemy w modelu (nie używa słownika 'english', nie działa stemming):
 
     :::ruby
     include PgSearch
-    pg_search_scope :search, against: [:quotation, :source]  # defines `search` method
+
+    # definiujemy metodę `search`
+    pg_search_scope :search, against: [:quotation, :source],
+        using: {tsearch: {dictionary: "english"}}
 
     def self.text_search(query)
       if query.present?
-        search(query)
+        search(query)    # metoda zdefiniowana powyżej
       else
         scoped
       end
     end
 
-Dodajemy stemming:
+Wyniki posortowane malejąco – *ranking search results*.
+
+
+### Multisearch
+
+… to wyszukiwanie w wileu modelach:
+
+    :::bash
+    rake pg_search:migration:multisearch
+    rake db:setup
+
+do każdego modelu dodajemy dwie linijki kodu, na przykład
+w modelu *Fortune* dopisujemy:
 
     :::ruby
-    pg_search_scope :search, against: [:quotation, :source],
-      using: {tsearch: {dictionary: "english"}}
+    include PgSearch
+    multisearchable :against => [:quotation, :source]
 
-**TODO:** Łatwe wyszukiwanie w powiązanych modelach.
+Następnie wykonujemy zadanie *rake*:
 
+    :::bash
+    rake pg_search:multisearch:rebuild MODEL=Fortune
+
+Zrobione! Wchodzimy na konsolę, gdzie zadajemy kilka zapytań:
+
+    :::ruby
+    PgSearch.multisearch('bird bush')
+    PgSearch.multisearch('bird bush').each { |doc| puts doc.content }
+
+**TODO:** Wyszukiwanie w powiązanych modelach.
 
 
 
