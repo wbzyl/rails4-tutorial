@@ -795,7 +795,7 @@ Można to obejść za pomocą jednej linijki kodu JavaScript:
 
 Dalej postępujemy tak jak w rozdziale „Remote links”.
 
-Za to łatwo zajaksować paginację zaimplementowaną z użyciem
+Za to łatwo jest zajaksować paginację zaimplementowaną z użyciem
 gemu [Kaminari](https://github.com/amatsuda/kaminari):
 
     :::rhtml app/views/fortunes/index.html.erb
