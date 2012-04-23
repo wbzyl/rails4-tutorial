@@ -567,14 +567,14 @@ Co oznacza *scoped*?
 
 ## Full text search with PostgreSQL
 
-Instalujemy gemy *pg*, *texticle, *pg_search*:
+Do wyszukiwania wypróbujemy gemy *texticle* i *pg_search*:
 
     :::ruby
     gem 'pg'
     gem 'texticle', require: 'texticle/rails'
     gem 'pg_search'
 
-Zmieniamy bazę w *database.yml*:
+Zmieniamy konfigurację bazy w pliku *database.yml*:
 
     :::yaml
     development:
@@ -634,8 +634,6 @@ i ponownie wykonujemy polecenie *valkyrie*.
 
 
 ## Full text search with PostgreSQL
-
-Zaczynamy od
 
 Korzystamy z operatora @@. Model:
 
