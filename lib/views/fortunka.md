@@ -42,7 +42,7 @@ Zaczynamy od dopisania gemu *responders* do *Gemfile*:
     gem 'will_paginate'
     gem 'faker', :group => :development
 
-    # mute assets pipeline log messages
+    # silence assets pipeline log messages
     gem 'quiet_assets', :group => :development
 
 Instalujemy gemy i wykonujemy procedurę *post-install*:
@@ -181,7 +181,7 @@ i usuniemy niepotrzebną już gałąź paginate.
 Podmieniamy w kodzie metody *index* kontrolera *FortunesController*:
 
     :::ruby
-    @fortunes = Fortune.page(params[:page]).per_page(4).order('created_at DESC')
+    @fortunes = Fortune.order('created_at DESC').page(params[:page]).per_page(4)
 
 Dopisujemy do widoku *index*:
 
@@ -512,7 +512,7 @@ dane po polu *quotation*:
       <%= submit_tag "Search", name: nil, class: "btn" %>
     <% end %>
 
-Poprawiamy wygląd:
+Poprawiamy wygląd formularza:
 
     :::css
     #fortunes_search {
@@ -529,36 +529,29 @@ w metodzie *index* przekazać tekst, który wpisano w formularzu
 
     :::ruby app/controllers/fortunes_controller.rb
     def index
-      @fortunes = Fortune.search(params[:search]).page(params[:page]).per_page(4).order('created_at DESC')
+      @fortunes = Fortune.order('created_at DESC').text_search(params[:search]).page(params[:page]).per_page(4)
       respond_with(@fortunes)
     end
 
 kod metody wpisujemy w klasie *Fortune*:
 
     :::ruby app/models/fortune.rb
-    # SQLite
-    def self.search(query)
+    def self.text_search(query)
       if query.present?
+        # SQLite i PostgreSQL
         where('quotation LIKE ?', "%#{search}%")
+        # tylko PostgreSQL; i – ignore case
+        # where("quotation ilike :q or source ilike :q", q: "%#{query}%")
       else
         scoped
       end
     end
 
-    # tylko PostgreSQL? i – ignore case
-    def self.search(query)
-      if query.present?
-        where("quotation ilike :q or source ilike :q", q: "%#{query}%")
-      else
-        scoped
-      end
-    end
-
-Metoda *search* jest wykonywana zawsze po wejściu na stronę *index*,
-nawet jak nic nie wyszukujemy. Prześledzić wtedy działa *search*?
+Metoda *text_search* jest wykonywana zawsze po wejściu na stronę *index*,
+nawet jak nic nie wyszukujemy. Prześledzić działanie *search*? Jak?
 Co oznacza *scoped*?
 
-Nowe idee w wyszukiwaniu:
+### Nowe idee w wyszukiwaniu
 
 * Florian R. Hanke.
   [Picky](https://github.com/floere/picky) –
@@ -595,51 +588,59 @@ Zmieniamy bazę w *database.yml*:
     test:
       adapter: postgresql
       encoding: unicode
-      database: fortune_responders_development
+      database: fortune_responders_test
       pool: 5
       username: wbzyl
       password:
 
-
-### Sqlite → PostgreSQL
-
-* David Dollar.
-  [Valkyrie](https://github.com/ddollar/valkyrie) – transfer data between databases
-
-Instalujemy gemy *valkyrie*, i *taps*:
-
-    :::bash
-    bundle install
-    gem install valkyrie taps pg
-
-Przerzucamy bazę development z SQLite do PostgreSQL:
+Pozostaje utworzyć bazy i wykonać migracje:
 
     :::bash
     rake db:create:all
     rake db:migrate
-    # nie działa… problemy z authentication
-    valkyrie sqlite://db/development.sqlite3 postgres://wbzyl@localhost/fortune_responders_development
-    # też nie działa
-    taps server sqlite://db/development.sqlite3 wbzyl secret
-    taps pull postgres://wbzyl@localhost/fortune_responders_development http://wbzyl:secret@localhost:5000
 
-Powód:
 
-    Failed to connect to database:
-      Sequel::DatabaseConnectionError -> PG::Error: FATAL:  Ident authentication failed for user "wbzyl"
+### Transfer bazy: Sqlite → PostgreSQL
 
-Póki co, wrzucę dane via *db:seed*:
+* David Dollar.
+  [Valkyrie](https://github.com/ddollar/valkyrie) – transfer data between databases
+* Ricardo Chimal.
+  [Taps](https://github.com/ricardochimal/taps) – simple database import/export app
+
+Dodajemy gemy *valkyrie* i *taps* do grupy *development* i wykonujemy:
 
     :::bash
-    rake db:seed
+    bundle install --binstubs
+
+Przerzucamy bazę development z SQLite do PostgreSQL:
+
+    :::bash
+    # nie zadziałało… problemy z authentication
+    bin/valkyrie sqlite://db/development.sqlite3 \
+      postgres://wbzyl@localhost/fortune_responders_development
+    # też nie działało
+    # bin/taps server sqlite://db/development.sqlite3 wbzyl secret
+    # bin/taps pull postgres://wbzyl@localhost/fortune_responders_development \
+    #   http://wbzyl:secret@localhost:5000
+
+Zmieniamy konfigurację
+([psql: FATAL…](http://www.cyberciti.biz/faq/psql-fatal-ident-authentication-failed-for-user/)):
+
+    :::text /var/lib/pgsql/data/pg_hba.conf
+    local	all	all	trust
+    host	all	127.0.0.1/32	trust
+
+i ponownie wykonujemy polecenie *valkyrie*.
 
 
 ## Full text search with PostgreSQL
 
+Zaczynamy od
+
 Korzystamy z operatora @@. Model:
 
     :::ruby
-    def self.search(query)
+    def self.text_search(query)
       if query.present?
         where("quotation @@ :q or source @@ :q", q: query)
       else
