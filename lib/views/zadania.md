@@ -114,6 +114,9 @@ Skorzystać z jakiejś gotowej wtyczki lub gemu
 przedstawił R. Bates w screencaście
 [Simple OmniAuth](http://railscasts.com/episodes/241-simple-omniauth).
 4. Komentarze.
+5. Skorzystać z bazy PostgreSQL i jednego z rozszerzeń.
+Tutaj [PostgreSQL most useful extensions](http://blog.railsware.com/2012/04/23/postgresql-most-useful-extensions/)
+jest krótka lista.
 
 Warto już teraz uprościć kod formularzy. Jak?
 Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
