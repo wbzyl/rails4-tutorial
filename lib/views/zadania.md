@@ -116,7 +116,8 @@ przedstawił R. Bates w screencaście
 4. Komentarze.
 5. Skorzystać z bazy PostgreSQL i jednego z rozszerzeń.
 Tutaj [PostgreSQL most useful extensions](http://blog.railsware.com/2012/04/23/postgresql-most-useful-extensions/)
-jest krótka lista.
+jest krótka lista, tutaj
+[Hstore](http://railscasts.com/episodes/345-hstore) przykład.
 
 Warto już teraz uprościć kod formularzy. Jak?
 Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
