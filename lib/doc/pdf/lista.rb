@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+# 2011:  tail -n +2 | sort > nosql.csv
+
+# mongoexport --db test --collection students -f last_name,first_name  --query '{class_name:"nosql"}' --csv | sort > nosql.csv
+
 # require "open-uri"
 
 require "prawn"
@@ -11,9 +15,6 @@ require "pp"
 Prawn::Document.generate("lista.pdf") do
   font "#{Prawn::BASEDIR}/data/fonts/DejaVuSans.ttf"
   font_size 10
-
-  # mongoexport --db test --collection asi2011 \
-  #   -f last_name,first_name --csv | tail -n +2 | sort > students-$(date +%Y-%m-%d).csv
 
   if ARGV.length == 0
     puts "Usage: ruby lista.rb NAME.CSV"
