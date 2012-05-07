@@ -28,6 +28,11 @@ Ale rusztowanie aplikacji wygenerujemy za pomocą szablonu aplikacji Rails:
       -m https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb \
       --skip-bundle
 
+*Fortunka v1.0* gotowa do sklonowania jest na Githubie:
+
+    :::bash
+    git clone git://github.com/wbzyl/fortunes-responders.git
+
 
 ## Robótki ręczne…
 
@@ -54,6 +59,19 @@ Instalujemy gemy i wykonujemy procedurę *post-install*:
        prepend  app/controllers/application_controller.rb
         insert  app/controllers/application_controller.rb
         create  config/locales/responders.en.yml
+
+Jak widać powyżej, generator *responders:install* utworzył plik
+*application_responder.rb* i dopisał kilka rzeczy do pliku
+*application_controller.rb*:
+
+    :::ruby app/controllers/application_controller.rb
+    require "application_responder"
+    class ApplicationController < ActionController::Base
+      self.responder = ApplicationResponder
+      respond_to :html
+
+      protect_from_forgery
+    end
 
 Generujemy **resource controller** dla Fortunki:
 
@@ -84,7 +102,7 @@ Generujemy **resource controller** dla Fortunki:
 * *edit*, *update*
 * *destroy*
 
-Oto kod wygenerowanego kontrolera (z ręcznie dopisanym wierszem *respond_to*):
+Oto kod wygenerowanego kontrolera:
 
     :::ruby app/controllers/fortunes_controller.rb
     class FortunesController < ApplicationController
@@ -311,7 +329,7 @@ Dodatkowa lektura:
 
 ## Formularze z *simple_form*
 
-Jak pisać formularze w aplikacjach Rails opisano w samouczku
+Jak tworzyć formularze w aplikacjach Rails opisano w samouczku
 [Rails Form helpers](http://edgeguides.rubyonrails.org/form_helpers.html).
 Po lekturze tego samouczka jedna sprawa jest jasna: „forms aren’t easy”.
 Za to autorzy [simple_form](https://github.com/plataformatec/simple_form)
@@ -325,14 +343,14 @@ zmienimy walidację HTML5 na *false*:
     # Default is enabled.
     config.browser_validations = false
 
-W wygenerowanym formularzu dopisujemy *:rows => 6*. Domyślna wartość, ok. 40,
+W wygenerowanym formularzu dopisujemy *:rows => 4*. Domyślna wartość, ok. 40,
 to zdecydowanie za dużo.
 
     :::rhtml
     <%= simple_form_for(@fortune) do |f| %>
       <%= f.error_notification %>
       <div class="form-inputs">
-        <%= f.input :quotation, :input_html => { :rows => 6 } %>
+        <%= f.input :quotation, :input_html => { :rows => 4 } %>
         <%= f.input :source %>
       </div>
       <div class="form-actions">
@@ -377,11 +395,27 @@ gdzie dowiadujemy się, że mamy do dyspozycji trzy prekonfigurowane respondery:
 * *HttpCacheResponder* (dodaje do żądania nagłówek Last-Modified)
 * *CollectionResponder* (po uaktualnieniu lub zapisaniu rekordu w bazie jesteśmu przekierowywani na index)
 
-Co więcej, możemy pisać swoje responders oraz używać ich w zestawach.
-Czego nie będziemy robić. Ale za to zainstalujemy powyższe responders
-i skonfigurujemy Fortunkę tak aby z nich korzystała.
+Co więcej, możemy pisać swoje respondery, ale tego nie będziemy robić.
+Wczytujemy do edytora wygenerowany plik *application_responder.rb*:
 
-Generator *responders:install* utworzył plik locales:
+    :::ruby lib/application_responder.rb
+    class ApplicationResponder < ActionController::Responder
+      include Responders::FlashResponder
+      include Responders::HttpCacheResponder
+
+      # Uncomment this responder if you want your resources to redirect to the collection
+      # path (index action) instead of the resource path for POST/PUT/DELETE requests.
+      include Responders::CollectionResponder
+    end
+
+i odkomentowujemy linijkę z *CollectionResponder*. Co to da?
+
+Modyfikujemy plik *application_controller.rb* dopisując linijkę:
+
+    :::ruby app/controllers/application_controller.rb
+    respond_to :json, except: [:create, :update, :destroy]
+
+Generator *responders:install* utworzył plik locales z komunikatami flash:
 
     :::yaml config/locales/responders.en.yml
     en:
@@ -394,48 +428,22 @@ Generator *responders:install* utworzył plik locales:
           destroy:
             notice: '%{resource_name} was successfully destroyed.'
             alert: '%{resource_name} could not be destroyed.'
-        en:
 
-modyfikuje plik *application_controller.rb*:
+Jak to przetłumaczyć na język polski?
 
-    :::ruby app/controllers/application_controller.rb
-    require "application_responder"
 
-    class ApplicationController < ActionController::Base
-      self.responder = ApplicationResponder
-      respond_to :html
-      ...
-
-gdzie dopisujemy format `:json`:
-
-    :::ruby
-    respond_to :json, except: [:create, :update, :destroy]
-
-Tworzy plik *application_responder.rb*:
-
-    :::ruby lib/application_responder.rb
-    class ApplicationResponder < ActionController::Responder
-      include Responders::FlashResponder
-      include Responders::HttpCacheResponder
-
-      # Uncomment this responder if you want your resources to redirect to the collection
-      # path (index action) instead of the resource path for POST/PUT/DELETE requests.
-      # include Responders::CollectionResponder
-    end
-
-gdzie odkomentowujemy linijkę z *CollectionResponder*. Co to da?
-
-**koniec wykładu 22.04.2012**
+**Koniec wykładu 22.04.2012**
 
     :::bash
     git commit -m "...responders..."
     ... rebase ...
-    git tag v0.0.1
+    git tag v0.0.2
 
 
 ## Grand refactoring
 
-W widoku *index* skorzystamy z *implicit loop*. Wycinamy pętlę
+W widoku *index* skorzystamy z ***implicit loop***.  Wycinamy kod
+z pętlą po *@fortunes* z pliku *index.html.erb*, a ciało pętli:
 
     :::rhtml app/views/fortunes/index.html.erb
     <article class="index">
@@ -454,7 +462,7 @@ W widoku *index* skorzystamy z *implicit loop*. Wycinamy pętlę
     </div>
     </article>
 
-Wycięty kodu wklejamy do nowego pliku *_fortune.html.erb* (liczba pojedyncza!)
+wklejamy do nowego pliku *_fortune.html.erb* (liczba pojedyncza!)
 
 Podmieniamy zawartość pliku *index.html.erb* na:
 
@@ -569,14 +577,24 @@ Co oznacza *scoped*?
 
 ## Full text search with PostgreSQL
 
-Do wyszukiwania wypróbujemy gemy *texticle* i *pg_search*:
+Do **wyszukiwania pełno tekstowego** (tłum. ?) użyjemy gemów
 
-    :::ruby
+* [texticle](https://github.com/tenderlove/texticle) i
+* [pg_search](https://github.com/Casecommons/pg_search)
+
+Dopisujemy gem *pg* oraz powyżej wspomniane gemy do pliku *Gemfile*:
+
+    :::ruby Gemfile
     gem 'pg'
-    gem 'texticle', require: 'texticle/rails'
+    gem 'texticle', '~> 2.0', require: 'texticle/rails'
     gem 'pg_search'
 
-Zmieniamy konfigurację bazy w pliku *database.yml*:
+i instalujemy je:
+
+    :::bash
+    bundle install
+
+Musimy też zmienić konfigurację bazy w pliku *database.yml*:
 
     :::yaml
     development:
@@ -595,7 +613,7 @@ Zmieniamy konfigurację bazy w pliku *database.yml*:
       username: wbzyl
       password:
 
-Pozostaje utworzyć bazy i wykonać migracje:
+Pozostało utworzyć bazy i wykonać jeszcze raz migracje:
 
     :::bash
     rake db:create:all
@@ -609,18 +627,22 @@ Pozostaje utworzyć bazy i wykonać migracje:
 * Ricardo Chimal.
   [Taps](https://github.com/ricardochimal/taps) – simple database import/export app
 
-Dodajemy gemy *valkyrie* i *taps* do grupy *development* i wykonujemy:
+Dodajemy gemy *valkyrie* i *taps* do grupy development i instalujemy je:
 
     :::bash
-    bundle install --binstubs
+    gem install --binstubs
 
-Przerzucamy bazę development z SQLite do PostgreSQL:
+Teraz możemy przenieść bazę z SQLite do PostgreSQL za pomocą *valkyrie*:
 
     :::bash
     # nie zadziałało… problemy z authentication
     bin/valkyrie sqlite://db/development.sqlite3 \
       postgres://wbzyl@localhost/fortune_responders_development
-    # też nie działało
+
+albo *taps*:
+
+    :::bash
+    # też nie zadziałało
     # bin/taps server sqlite://db/development.sqlite3 wbzyl secret
     # bin/taps pull postgres://wbzyl@localhost/fortune_responders_development \
     #   http://wbzyl:secret@localhost:5000
@@ -728,8 +750,11 @@ Ta sama funkcjonalność co wyżej (z rank?), ale kod metody
 
 * [pg_search](https://github.com/Casecommons/pg_search)
 
-Z *README*: wyszukiwanie w jednym modelu – *pg_search_scope*
-lub w kilku modelach – *multisearch*.
+Ten gem implementuje wyszukiwanie pełnotekstowe w jednym modelu (*pg_search_scope*)
+albo — w kilku modelach (*multisearch*).
+
+
+### pg_search_scope
 
 Dopisujemy w modelu (nie używa słownika 'english', nie działa stemming):
 
@@ -751,7 +776,7 @@ Dopisujemy w modelu (nie używa słownika 'english', nie działa stemming):
 Wyniki posortowane malejąco względem „ranking search results”.
 
 
-### Multisearch
+### multisearch
 
 …to wyszukiwanie w wielu modelach:
 
@@ -780,7 +805,7 @@ Zrobione! Wchodzimy na konsolę, gdzie zadajemy kilka zapytań:
 **TODO:** Wyszukiwanie w powiązanych modelach.
 
     ... rebase ...
-    git tag v0.0.2
+    git tag v0.0.3
 
 
 ### Ajaxujemy wyszukiwanie
@@ -795,8 +820,8 @@ Można to obejść za pomocą jednej linijki kodu JavaScript:
 
 Dalej postępujemy tak jak w rozdziale „Remote links”.
 
-Za to łatwo jest zajaksować paginację zaimplementowaną z użyciem
-gemu [Kaminari](https://github.com/amatsuda/kaminari):
+Takie obejście nie jest konieczne jeśli do paginacji użyliśmy
+gemu [Kaminari](https://github.com/amatsuda/kaminari). Wystarczy dopisać w widoku:
 
     :::rhtml app/views/fortunes/index.html.erb
     <div id="paginator">
@@ -808,7 +833,7 @@ gemu [Kaminari](https://github.com/amatsuda/kaminari):
 
 Tagowanie dodamy, korzystając z gemu
 [acts-as-taggable-on](http://github.com/mbleigh/acts-as-taggable-on).
-Po dopisaniu do pliku *Gemfile* tego gemu:
+Po dopisaniu gemu do pliku *Gemfile*:
 
     :::ruby Gemfile
     gem 'acts-as-taggable-on', '~> 2.2.2'
@@ -862,13 +887,13 @@ do więcej niż jednego modelu:
     :::ruby
     t.references :taggable, :polymorphic => true
 
-co tłumaczy się na:
+co rozwija się do takiego kodu:
 
     :::ruby
     t.integer :taggable_id
     t.string  :taggable_type
 
-Innymi słowy mamy następujące powiązania między modelami:
+który możemy tak zinterpretować:
 
 * *Tagging* belongs to *Fortune*
 * *Fortune* has many *Taggings*
@@ -883,10 +908,10 @@ Dopisujemy do modelu:
       acts_as_taggable_on :tags
       ActsAsTaggableOn::TagList.delimiter = " "
 
-Przy okazji, zmieniliśmy domyślny znak do oddzielania tagów z przecinka
-na spację.
+Przy okazji, zmieniamy z przecinka na spację domyślny znak
+oddzielający tagi.
 
-Teraz można się przyjrzeć polimorfizowi na konsoli:
+Po tych zmianach przyjrzymy się bliżej polimorfizowi na konsoli:
 
     :::ruby
     f = Fortune.find 1
@@ -901,11 +926,12 @@ W widoku częściowym *_form.html.erb* dopisujemy:
     :::rhtml app/views/fortunes/_form.html.erb
     <%= f.input :tag_list, :input_html => {:size => 40} %>
 
-w widoku częściowym *_fortune.html.erb* (część widoku *index.html.erb*),
-oraz w widoku *show.html.erb* (2 razy):
+A w widoku częściowym *_fortune.html.erb* oraz w widoku *show.html.erb* (2 razy)
+dopisujemy:
 
     :::rhtml app/views/fortunes/_fortune.html.erb
     <p><i>Tags:</i> <%= @fortune.tag_list %></p>
+
 
 ### Dodajemy losowe tagi do fortunek
 
@@ -934,11 +960,13 @@ Teraz, kasujemy bazę i wrzucamy jeszcze raz cytaty, ale tym razem z tagami:
 
 ## Chmurka tagów
 
-Aby utworzyć chmurkę tagów, niestety nie tak ładną jak ta poniżej:
+Aby wyrenderować chmurkę tagów – niestety nie tak ładną jak ta:
 
 {%= image_tag "/images/wordly.png", :alt => "[chmurka tagów]" %}
 
-dopisujemy do widoku *index*:
+postępujemy tak jak to opisano
+w [README](https://github.com/mbleigh/acts-as-taggable-on/blob/master/README.rdoc)
+w sekcji „Tag cloud calculations”:
 
     :::rhtml app/views/fortunes/index.html.erb
     <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
@@ -949,18 +977,19 @@ Aby ten kod zadziałał musimy zdefiniować zmienną *@tags*, wczytać kod
 metody pomocniczej *tag_cloud*, wystylizować chmurkę tagów oraz
 podmienić *LINK_DO_CZEGO?* na coś sensownego.
 
-Zaczniemy od zmiennej *@tags*:
+Zaczniemy od zdefiniowania zmiennej *@tags*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def index
-      @fortunes = Fortune.search(params[:search]).order(:source).page(params[:page]).per(4)
+      @fortunes = ... bez zmian ...
       @tags = Fortune.tag_counts
       respond_with(@fortunes)
     end
 
-Teraz spróbujemy przyjrzeć się bliżej, debugging, zmiennej *tag*:
+Teraz spróbujemy przyjrzeć się bliżej zmiennej *tag*. W tym celu skorzystamy
+z metody pomocniczej *debug* (na razie zamiast *LINK_DO_CZEGO?* wpiszemy *fortunes_path*:
 
-    :::rhtml
+    :::rhtml app/views/fortunes/index.html.erb
     <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
       <%= link_to tag.name, fortunes_path, :class => css_class %>
       <%= debug(tag.class) %>
@@ -981,15 +1010,7 @@ na przykład:
       name: sometimes
       count: 151
 
-a wygenrowany link, to:
-
-    :::html
-    <a href="/fortunes" class="css3">sometimes</a>
-
-Nie jest to to o co nam chodzi.
-Później zamienimy ten link na link do tagów.
-
-Tagi powinny mieć wielkość zależną od częstości występowania:
+Tagi powinny mieć wielkość zależną od częstości ich występowania:
 
     :::css public/stylesheets/application.css
     .css1 { font-size: 1.0em; }
@@ -1054,15 +1075,15 @@ i widzimy, że mamy **jeden** dodatkowy uri:
 
     tags_fortunes GET /fortunes/tags(.:format) {:action=>"tags", :controller=>"fortunes"}
 
-Na koniec, zamieniamy link w chmurce tagów na:
+Na koniec, zamieniamy link *fortunes_path* w chmurce tagów na:
 
     :::rhtml
-    <%= link_to tag.name, tags_fortunes_path(:name=>tag.name), :class => css_class %>
+    <%= link_to tag.name, tags_fortunes_path(name: tag.name), class: css_class %>
 
 Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
 
     :::ruby app/controllers/fortunes_controller.rb
-    before_filter :only => [:index, :tags] do
+    before_filter only: [:index, :tags] do
       @tags = Fortune.tag_counts
     end
 
@@ -1089,7 +1110,7 @@ Zrobione!
 
 
 
-# TODO: Komentarze do fortunek
+# Komentarze do fortunek
 
 <blockquote>
  <p>
@@ -1108,25 +1129,25 @@ Zrobione!
 </blockquote>
 
 W widoku *show.html.erb* fortunki powinna być możliwość dopisywania
-własnych komentarzy, dodawania obrazków kojarzących się nam
-z fortunką. Na początek zabierzemy się za komentarze.
+własnych komentarzy.
 
 Przygotujemy sobie też stronę ze wszystkimi komentarzami.
-Przyda się adminowi przy usuwaniu, edycji komentarzy.
+Przyda się adminowi przy usuwaniu i edycji komentarzy.
 
-Będziemy pracować na nowej gałęzi:
+Jak zwykle nowy kod będziemy wpisywać na nowej gałęzi:
 
     git checkout -b comments
 
-Dopiero po sprawdzeniu, że wszystkie zmiany są OK,
-wykonamy rebase na master.
+Dopiero po sprawdzeniu, że kod jet OK, przeniesiemy go na gałąź master.
 
 Zaczynamy od wygenerowania rusztowania dla zasobu *Comment*:
 
     rails g resource Comment fortune:references \
-        author:string quotation:string
+        body:string author:string
+    rake db:migrate
 
-Zagnieżdżamy zasoby i sprawdzamy jak wygląda teraz routing:
+Ponieważ do fortunka może mieć wiele komentarzy, zagnieżdżamy
+zasoby w tej kolejności:
 
     :::ruby
     resources :fortunes do
@@ -1134,35 +1155,37 @@ Zagnieżdżamy zasoby i sprawdzamy jak wygląda teraz routing:
       collection do
         get :tags
       end
-    end
+    en
 
-Po tej zmianie polecenie
+i sprawdzamy jak wygląda routing po tej zmianie:
 
+    :::bash
     rake routes
 
 wypisuje nowy routing:
 
-                         GET    /fortunes/:fortune_id/comments          {:action=>"index",   :controller=>"comments"}
-        fortune_comments POST   /fortunes/:fortune_id/comments          {:action=>"create",  :controller=>"comments"}
-     new_fortune_comment GET    /fortunes/:fortune_id/comments/new      {:action=>"new",     :controller=>"comments"}
-                         GET    /fortunes/:fortune_id/comments/:id      {:action=>"show",    :controller=>"comments"}
-                         PUT    /fortunes/:fortune_id/comments/:id      {:action=>"update",  :controller=>"comments"}
-         fortune_comment DELETE /fortunes/:fortune_id/comments/:id      {:action=>"destroy", :controller=>"comments"}
-    edit_fortune_comment GET    /fortunes/:fortune_id/comments/:id/edit {:action=>"edit",    :controller=>"comments"}
+
+        fortune_comments GET    /fortunes/:fortune_id/comments(.:format)          comments#index
+                         POST   /fortunes/:fortune_id/comments(.:format)          comments#create
+     new_fortune_comment GET    /fortunes/:fortune_id/comments/new(.:format)      comments#new
+    edit_fortune_comment GET    /fortunes/:fortune_id/comments/:id/edit(.:format) comments#edit
+         fortune_comment GET    /fortunes/:fortune_id/comments/:id(.:format)      comments#show
+                         PUT    /fortunes/:fortune_id/comments/:id(.:format)      comments#update
+                         DELETE /fortunes/:fortune_id/comments/:id(.:format)      comments#destroy
 
 
-oraz stary routing, który też obowiązuje:
+oraz stary routing:
 
-    tags_fortunes GET    /fortunes/tags     {:action=>"tags",    :controller=>"fortunes"}
-                  GET    /fortunes          {:action=>"index",   :controller=>"fortunes"}
-         fortunes POST   /fortunes          {:action=>"create",  :controller=>"fortunes"}
-      new_fortune GET    /fortunes/new      {:action=>"new",     :controller=>"fortunes"}
-                  GET    /fortunes/:id      {:action=>"show",    :controller=>"fortunes"}
-                  PUT    /fortunes/:id      {:action=>"update",  :controller=>"fortunes"}
-          fortune DELETE /fortunes/:id      {:action=>"destroy", :controller=>"fortunes"}
-     edit_fortune GET    /fortunes/:id/edit {:action=>"edit",    :controller=>"fortunes"}
+    tags_fortunes GET    /fortunes/tags(.:format)     fortunes#tags
+         fortunes GET    /fortunes(.:format)          fortunes#index
+                  POST   /fortunes(.:format)          fortunes#create
+      new_fortune GET    /fortunes/new(.:format)      fortunes#new
+     edit_fortune GET    /fortunes/:id/edit(.:format) fortunes#edit
+          fortune GET    /fortunes/:id(.:format)      fortunes#show
+                  PUT    /fortunes/:id(.:format)      fortunes#update
+                  DELETE /fortunes/:id(.:format)      fortunes#destroy
+             root        /                            fortunes#index
 
-             root        /                  {:controller=>"fortunes", :action=>"index"}
 
 Przechodzimy do modelu *Comment*, gdzie znajdujemy dopisane
 przez generator powiązanie:
@@ -1170,29 +1193,35 @@ przez generator powiązanie:
     :::ruby app/models/comment.rb
     class Comment < ActiveRecord::Base
       belongs_to :fortune
+      attr_accessible :author, :body
     end
 
 Przechodzimy do modelu *Fortune*, gdzie sami dopisujemy drugą stronę powiązania:
 
     :::ruby app/models/fortune.rb
     class Fortune < ActiveRecord::Base
-      has_many :comments, :dependent => :destroy
+      has_many :comments, dependent: :destroy
       ...
 
 Nie zapominamy o migracji:
 
     rake db:migrate
 
-Teraz wykonanie na konsoli:
+Wchodzimy na konsolę Rails (*sandbox*):
+
+    :::bash
+    rails console --sandbox
+
+Na konsoli wykonujemy:
 
     :::ruby
     Fortune.first.comments  #=> []
 
-pokazuje, że komentarze pierwszej fortunki tworzą pustą tablicę.
+czyli komentarze pierwszej fortunki tworzą pustą tablicę.
 Aby dodać komentarz możemy postąpić tak:
 
     :::ruby
-    Fortune.first.comments << Comment.new(:author=>"Ja", :quotation=>"Fajne!")
+    Fortune.first.comments << Comment.new(author: "Ja", body: "Fajne!")
     Comment.all
 
 
@@ -1202,36 +1231,41 @@ Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*:
 
     :::rhtml app/views/fortunes/show.html.erb
     <% if @fortune.comments.any? %>
-      <h2>Comments</h2>
+    <h2>Comments</h2>
       <% @fortune.comments.each do |comment| %>
-       <p>Autor:<br><%= comment.author %></p>
-       <div class="comment">
-         <b>Quotation:</b> <%= comment.quotation %>
-       </div>
-       <p>
-         <%= link_to "Delete", [@fortune, comment], :confirm => t('helpers.data.sure'), :method => :delete %>
-       </p>
+      <div class="attribute">
+        <span class="name"><%= t "simple_form.labels.comment.body" %></span>
+        <span class="value"><%= comment.body %></span>
+      </div>
+      <div class="attribute">
+        <span class="name"><%= t "simple_form.labels.comment.author" %></span>
+        <span class="value"><%= comment.author %></span>
+      </div>
+
+      <div class="form-actions">
+        <%= link_to 'Destroy', [@fortune, comment], method: :delete, class: 'btn-mini btn-danger'%>
+      </div>
       <% end %>
     <% end %>
 
 **Jakie nowe rzeczy pojawiły się powyższym kodzie?**
 
 
-### Gdzie będziemy dodawać nowe komentarze?
+### TODO 7.05: Gdzie będziemy dodawać nowe komentarze?
 
-Najwygodniej byłoby dodać też formularz do widoku *show*:
+Chyba najwygodniej będzie dodawać komentarze też widoku *show*:
 
     :::rhtml app/views/fortunes/show.html.erb
     <h2>Add new comment</h2>
     <%= simple_form_for [@fortune, @fortune.comments.build] do |f| %>
-      <%= f.input :author, :input_html => {:size => 40} %>
-      <%= f.input :quotation, :input_html => {:rows => 4, :cols => 40} %>
+      <%= f.input :author %>
+      <%= f.input :body %>
       <%= f.button :submit %>
     <% end %>
 
 **Nowe rzeczy w kodzie?**
 Dlaczego kod ten jest taki pokrętny: **@fortune.comments.build** ?
-Czy samo *Comment.new* nie wystarczyłoby?
+Czy samo *Comment.new* nie wystarcza?
 
 
 ## Kontroler dla komentarzy
@@ -1247,13 +1281,13 @@ W pustym kontrolerze utworzonym przez generator **uważnie** wpisujemy:
       def create
         @comment = @fortune.comments.build(params[:comment])
         @comment.save
-        respond_with(@fortune, @comment, :location => @fortune)
+        respond_with(@fortune, @comment, location: @fortune)
       end
 
       def destroy
         @comment = @fortune.comments.find(params[:id])
         @comment.destroy
-        respond_with(@fortune, @comment, :location => @fortune)
+        respond_with(@fortune, @comment, location: @fortune)
       end
     end
 
@@ -1262,9 +1296,9 @@ przeładowanie strony z fortunką po zapisaniu w bazie
 nowej fortunki lub jej usunięciu.
 
 To jeszcze nie wszystko! Musimy napisać metody *edit* oraz *update*.
-Należy pomyślić też o widoku do edycji komentarzy!
+Należy zaprojektować też widok do edycji komentarzy!
 
-Ale teraz zabierzemy się za refaktoryzację kodu.
+Ale jeszcze nie teraz. Teraz zabierzemy się za refaktoryzację kodu.
 
 
 ## Refaktoryzacja widoku „show”
@@ -1274,8 +1308,8 @@ Tworzymy z usuniętego kodu szablon częściowy *comments/_form.html.erb*:
 
     :::rhtml app/views/comments/_form.html.erb
     <%= simple_form_for [@fortune, @comment] do |f| %>
-      <%= f.input :author, :input_html => {:size => 40} %>
-      <%= f.input :quotation, :input_html => {:rows => 4, :cols => 40} %>
+      <%= f.input :author %>
+      <%= f.input :body %>
       <%= f.button :submit %>
     <% end %>
 
@@ -1295,11 +1329,11 @@ pętli tworzymy drugi szablon częściowy *comments/_comment.html.erb*:
 
     :::rhtml app/views/comments/_comment.html.erb
     <p><i>Autor:</i> <%= comment.author %></p>
-    <div class="comment"><i>Quotation:</i>
+    <div class="comment"><i>Body:</i>
       <%= comment.body %>
     </div>
     <p>
-      <%= link_to "Delete", [@fortune, comment], :confirm => t('helpers.data.sure'), :method => :delete %>
+      <%= link_to "Delete", [@fortune, comment], method: :delete %>
     </p>
 
 Na koniec poprawiamy kod widoku *show*, wstawiając nowe szablony częściowe:
@@ -1307,11 +1341,11 @@ Na koniec poprawiamy kod widoku *show*, wstawiając nowe szablony częściowe:
     :::rhtml app/views/fortunes/show.html.erb
     <% if @fortune.comments.any? %>
       <h2>Comments</h2>
-      <%= render :partial => 'comments/comment', :collection => @fortune.comments %>
+      <%= render partial: 'comments/comment', collection: @fortune.comments %>
     <% end %>
 
     <h2>Add new comment</h2>
-    <%= render :partial => 'comments/form' %>
+    <%= render partial: 'comments/form' %>
 
 
 ## Reszta obiecanego kodu
@@ -1326,7 +1360,7 @@ Na koniec poprawiamy kod widoku *show*, wstawiając nowe szablony częściowe:
     def update
       @comment = @fortune.comments.find(params[:id])
       @comment.update_attributes(params[:comment])
-      respond_with(@fortune, @comment, :location => @fortune)
+      respond_with(@fortune, @comment, location: @fortune)
     end
 
 oraz brakujący link do edycji fortunki:
@@ -1351,15 +1385,15 @@ Będziemy wymagać aby każde pole było niepuste:
     :::ruby app/models/comment.rb
     class Comment < ActiveRecord::Base
       belongs_to :fortune
-      validates :author, :presence => true
-      validates :body, :presence => true
+      validates :author, presence: true
+      validates :body, presence: true
     end
 
 Musimy też utworzyć widok *comments/new.html.erb*:
 
     :::rhtml app/views/comments/new.html.erb
     <% title "New comment" %>
-    <%= render :partial => 'form' %>
+    <%= render partial: 'form' %>
     <p class="links clear"><%= link_to 'Back', @comment.fortune %></p>
 
 Będziemy go potrzebować jak użytkownik kilknie przycisk
@@ -1397,7 +1431,8 @@ autentykację (Devise), paginację (Kaminari, alternatywa dla Will Paginate).
 
 Engines dla Rails wymyślił [James Adams](https://github.com/lazyatom/engines).
 Z engines był jeden problem. Nie było gwarancji, że nowa wersja Rails
-będzie będzie działać ze starymi engines. Wersja Rails 3.1 ma to zmienić.
+będzie będzie działać z engines napisanymi dla wcześniejszych wersji Rails.
+Wersja Rails 3.1 to zmienia.
 
 Nieco Railsowej archeologii:
 
