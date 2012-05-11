@@ -64,6 +64,12 @@ Jak widać powyżej, generator *responders:install* utworzył plik
 *application_responder.rb* i dopisał kilka rzeczy do pliku
 *application_controller.rb*:
 
+<blockquote>
+<p><a href="http://blog.bigbinary.com/2012/05/10/csrf-and-rails.html">CSRF and Rails</a></p>
+<p><a href="http://blog.bigbinary.com/2012/05/10/xss-and-rails.html">XSS and Rails</a></p>
+<p class="author">— Neeraj Singh<p>
+</blockquote>
+
     :::ruby app/controllers/application_controller.rb
     require "application_responder"
     class ApplicationController < ActionController::Base
