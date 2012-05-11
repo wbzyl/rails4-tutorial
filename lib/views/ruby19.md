@@ -47,6 +47,8 @@ Różne:
 
 * [Leveraging Ruby's Standard Library: Appendix B - Ruby Best Practices](http://oreilly.com/ruby/excerpts/ruby-best-practices/ruby-standard-library.html)
 * [Learn Ruby](http://rubykoans.com/) – with the edgecase Ruby koans
+* Shawn Lindsey.
+  [My Giant List of Self Test Questions](http://shawnlindsey.com/blog/ruby-test-questions-the-great-big-ruby-test)
 
 
 ## Hasze
