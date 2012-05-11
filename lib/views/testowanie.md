@@ -10,11 +10,11 @@ W książce *Rails 3 in Action* autorów Yehuda Katz i Ryan A. Bigg
 opisano aplikację „Ticketee” *in an Agile-like fashion*.
 
 Kod przedstawiony w książce można pobrać z repozytorium
-[The Rails 3 in Action project, on Rails 3.1](https://github.com/rails3book/ticketee):
+[The Rails 3 in Action project, on Rails 3.1](https://github.com/rails3book/ticketee-v2):
 
     :::bash
-    git clone git://github.com/rails3book/ticketee.git
-    cd ticketee
+    git clone git://github.com/rails3book/ticketee-v2.git
+    cd ticketee-v2
 
 Kod z rozdziału 3, *Developing a Real Rails Application*,
 znajdziemy na gałęzi *remotes/origin/chapter_3*:
