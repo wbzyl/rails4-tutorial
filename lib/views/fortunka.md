@@ -64,6 +64,12 @@ Jak widać powyżej, generator *responders:install* utworzył plik
 *application_responder.rb* i dopisał kilka rzeczy do pliku
 *application_controller.rb*:
 
+<blockquote>
+<p><a href="http://blog.bigbinary.com/2012/05/10/csrf-and-rails.html">CSRF and Rails</a></p>
+<p><a href="http://blog.bigbinary.com/2012/05/10/xss-and-rails.html">XSS and Rails</a></p>
+<p class="author">— Neeraj Singh<p>
+</blockquote>
+
     :::ruby app/controllers/application_controller.rb
     require "application_responder"
     class ApplicationController < ActionController::Base
@@ -1225,9 +1231,11 @@ Aby dodać komentarz możemy postąpić tak:
     Comment.all
 
 
-### Gdzie będziemy wyświetlać komentarze?
+### Gdzie będziemy wypisywać komentarze?
 
-Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*:
+Nie ma większego sensu wypisywanie wszystkich komentarzy. Dlatego,
+będziemy wypisywać tylko komentarze dla konkretnej fortunki.
+Wypiszemy je w widoku *fortunes/show*:
 
     :::rhtml app/views/fortunes/show.html.erb
     <% if @fortune.comments.any? %>
@@ -1248,74 +1256,40 @@ Komentarze dla konkretnej fortunki wypiszemy w jej widoku *show*:
       <% end %>
     <% end %>
 
-**Jakie nowe rzeczy pojawiły się powyższym kodzie?**
+W taki sposób:
+
+    :::ruby
+    link_to 'Destroy', [@fortune, comment]
+
+tworzymy link do zagnieżdżonego zasobu *comments*:
+
+    DELETE /fortunes/:fortune_id/comments/:id    comments#destroy
 
 
-### TODO 7.05: Gdzie będziemy dodawać nowe komentarze?
+### Gdzie będziemy dodawać nowe komentarze?
 
 Chyba najwygodniej będzie dodawać komentarze też widoku *show*:
 
     :::rhtml app/views/fortunes/show.html.erb
     <h2>Add new comment</h2>
-    <%= simple_form_for [@fortune, @fortune.comments.build] do |f| %>
+    <%= simple_form_for [@fortune, @comment], :html => { :class => 'form-horizontal' } do |f| %>
+    <% if f.error_notification %>
+    <div class="alert alert-error fade in">
+      <a class="close" data-dismiss="alert" href="#">&times;</a>
+      <%= f.error_notification %>
+    </div>
+    <% end %>
+    <div class="form-inputs">
       <%= f.input :author %>
       <%= f.input :body %>
+    </div>
+    <div class="form-actions">
       <%= f.button :submit %>
+    </div>
     <% end %>
 
-**Nowe rzeczy w kodzie?**
-Dlaczego kod ten jest taki pokrętny: **@fortune.comments.build** ?
-Czy samo *Comment.new* nie wystarcza?
-
-
-## Kontroler dla komentarzy
-
-W pustym kontrolerze utworzonym przez generator **uważnie** wpisujemy:
-
-    :::ruby app/controllers/comments_controller.rb
-    class CommentsController < ApplicationController
-      before_filter do
-        @fortune = Fortune.find(params[:fortune_id])
-      end
-
-      def create
-        @comment = @fortune.comments.build(params[:comment])
-        @comment.save
-        respond_with(@fortune, @comment, location: @fortune)
-      end
-
-      def destroy
-        @comment = @fortune.comments.find(params[:id])
-        @comment.destroy
-        respond_with(@fortune, @comment, location: @fortune)
-      end
-    end
-
-W powyższym kodzie wymuszamy za pomocą konstrukcji z *location*,
-przeładowanie strony z fortunką po zapisaniu w bazie
-nowej fortunki lub jej usunięciu.
-
-To jeszcze nie wszystko! Musimy napisać metody *edit* oraz *update*.
-Należy zaprojektować też widok do edycji komentarzy!
-
-Ale jeszcze nie teraz. Teraz zabierzemy się za refaktoryzację kodu.
-
-
-## Refaktoryzacja widoku „show”
-
-Usuwamy kod formularza pod znacznikiem *h2\#Add new comments* powyżej.
-Tworzymy z usuniętego kodu szablon częściowy *comments/_form.html.erb*:
-
-    :::rhtml app/views/comments/_form.html.erb
-    <%= simple_form_for [@fortune, @comment] do |f| %>
-      <%= f.input :author %>
-      <%= f.input :body %>
-      <%= f.button :submit %>
-    <% end %>
-
-**Uwaga:** W usuniętym kodzie należy fragment *@fortune.comments.build*
-zamienić na *@comment*, a zmienną *@comment* – zdefiniować
-w metodzie *show* kontrolera *FortunesController*:
+Musimy jeszcze dopisać w kontrolerze *FortunesController*
+definicję *comment* do kodu metody *destroy*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def show
@@ -1324,63 +1298,135 @@ w metodzie *show* kontrolera *FortunesController*:
       respond_with(@fortune)
     end
 
-Następnie usuwamy pętlę pod *h2\#Comments* powyżej. Z ciała tej
-pętli tworzymy drugi szablon częściowy *comments/_comment.html.erb*:
+
+## Kontroler dla komentarzy
+
+W utworzonym przez generator pustym kontrolerze *CommentsController*
+wklepujemy poniższy kod:
+
+    :::ruby app/controllers/comments_controller.rb
+    class CommentsController < ApplicationController
+      before_filter do
+        @fortune = Fortune.find(params[:fortune_id])
+      end
+
+      # POST /fortunes/:fortune_id/comments
+      def create
+        @comment = @fortune.comments.build(params[:comment])
+        @comment.save
+        respond_with(@fortune, @comment, location: @fortune)
+      end
+
+      # DELETE /fortunes/:fortune_id/comments/:id
+      def destroy
+        @comment = @fortune.comments.find(params[:id])
+        @comment.destroy
+        respond_with(@fortune, @comment, location: @fortune)
+      end
+    end
+
+W powyższym kodzie wymuszamy za pomocą konstrukcji z *location*,
+przeładowanie strony. Po zapisaniu w bazie nowej fortunki lub po jej
+usunięciu będziemy przekierowywanie do widoku *show* dla fortunki
+a nie do widoku *show* (którego nie ma) dla komentarzy!
+
+To jeszcze nie wszystko. Musimy napisać metody *edit* oraz *update*.
+Być może powinniśmy napisać też widok do edycji komentarzy!
+
+Ale to zrobimy później. Teraz zabierzemy się za refaktoryzację kodu.
+
+
+## Refaktoryzacja widoku „show”
+
+Usuwamy kod formularza wpisany pod znacznikiem *Add new comment*.
+Z usuniętego kodu tworzymy szablon częściowy *comments/_form.html.erb*:
+
+    :::rhtml app/views/comments/_form.html.erb
+    <%= simple_form_for [@fortune, @comment], :html => { :class => 'form-horizontal' } do |f| %>
+    <% if f.error_notification %>
+    <div class="alert alert-error fade in">
+      <a class="close" data-dismiss="alert" href="#">&times;</a>
+      <%= f.error_notification %>
+    </div>
+    <% end %>
+    <div class="form-inputs">
+      <%= f.input :author %>
+      <%= f.input :body %>
+    </div>
+    <div class="form-actions">
+      <%= f.button :submit %>
+    </div>
+    <% end %>
+
+W widoku, zamiast usuniętego kodu wpisujemy:
+
+    :::rhtml app/views/fortunes/show.html.erb
+    <h2>Add new comment</h2>
+    <%= render partial: 'comments/form' %>
+
+Następnie usuwamy z widoku pętlę pod *Comments*. Z ciała pętli tworzymy
+drugi szablon częściowy *comments/_comment.html.erb*:
 
     :::rhtml app/views/comments/_comment.html.erb
-    <p><i>Autor:</i> <%= comment.author %></p>
-    <div class="comment"><i>Body:</i>
-      <%= comment.body %>
+    <div class="attribute">
+      <span class="name"><%= t "simple_form.labels.comment.body" %></span>
+      <span class="value"><%= comment.body %></span>
     </div>
-    <p>
-      <%= link_to "Delete", [@fortune, comment], method: :delete %>
-    </p>
+    <div class="attribute">
+      <span class="name"><%= t "simple_form.labels.comment.author" %></span>
+      <span class="value"><%= comment.author %></span>
+    </div>
 
-Na koniec poprawiamy kod widoku *show*, wstawiając nowe szablony częściowe:
+    <div class="form-actions">
+      <%= link_to 'Destroy', [@fortune, comment], method: :delete, class: 'btn-mini btn-danger'%>
+    </div>
+    <% end %>
+
+W widoku, zamiast usuniętego kodu wpisujemy:
 
     :::rhtml app/views/fortunes/show.html.erb
     <% if @fortune.comments.any? %>
-      <h2>Comments</h2>
-      <%= render partial: 'comments/comment', collection: @fortune.comments %>
+    <h2>Comments</h2>
+    <%= render partial: 'comments/comment', collection: @fortune.comments %>
     <% end %>
 
-    <h2>Add new comment</h2>
-    <%= render partial: 'comments/form' %>
 
 
 ## Reszta obiecanego kodu
 
-…czyli metody *edit* oraz *update*:
+…czyli kod metod *edit* i *update*:
 
     :::ruby app/controllers/comments_controller.rb
+    # GET /fortunes/:fortune_id/comments/:id/edit
     def edit
       @comment = @fortune.comments.find(params[:id])
     end
 
+    # PUT /fortunes/:fortune_id/comments/:id
     def update
       @comment = @fortune.comments.find(params[:id])
       @comment.update_attributes(params[:comment])
       respond_with(@fortune, @comment, location: @fortune)
     end
 
-oraz brakujący link do edycji fortunki:
+oraz brakujący link do edycji fortunki w widoku *comments/_comment*:
 
     :::rhtml app/views/comments/_comment.html.erb
-    <%= link_to 'Edit', edit_fortune_comment_path(@fortune, comment) %>
+    <%= link_to 'Edit', edit_fortune_comment_path(@fortune, comment), class: 'btn-mini' %>
 
 no i szablon widoku – *comments/edit.html.erb*:
 
     :::rhtml app/views/comments/edit.html.erb
     <% title "Editing comment" %>
     <%= render :partial => 'form' %>
-    <p class="links clear">
-      <%= link_to 'Show Fortune', @comment.fortune %>
-    </p>
+    <div class="form-actions">
+      <%= link_to 'Show Fortune', @comment.fortune, class: 'btn' %>
+    </div>
 
 
 ## Walidacja komentarzy
 
-Będziemy wymagać aby każde pole było niepuste:
+Będziemy wymagać, aby każde pole było niepuste:
 
     :::ruby app/models/comment.rb
     class Comment < ActiveRecord::Base
@@ -1394,40 +1440,18 @@ Musimy też utworzyć widok *comments/new.html.erb*:
     :::rhtml app/views/comments/new.html.erb
     <% title "New comment" %>
     <%= render partial: 'form' %>
-    <p class="links clear"><%= link_to 'Back', @comment.fortune %></p>
+    <div class="form-actions">
+      <%= link_to 'Back to Fortune', @comment.fortune, class: 'btn' %>
+    </div>
 
 Będziemy go potrzebować jak użytkownik kilknie przycisk
 „Create Comment” przy jednym z pól pustym.
 
-**BUG:** W Chromie ten kod nie działa. Zamiast Railsów
-poprawność danych sprawdza Chrome –
-uaktywnia sprawdzanie zawartości pól formularza.
 
-Pojawia się też komunikat po angielsku:
+# Engines are back in Rails… 3.1
 
-    Please fill out this field.
-
-Często nie w tym polu co trzeba. Gdzie się tłumaczy te komunikaty?
-Jak to wyłączyć?
-
-
-# TODO
-
-* Widok strony indeks na wzór layoutu *Masonry* –
-  [Isotope](http://isotope.metafizzy.co/)
-* Obrazki w fortunkach: skorzystać z gemu
-  [CarrierWave](https://github.com/jnicklas/carrierwave/)
-  (zob. też Trevor Turk,
-  [A Gentle Introduction to CarrierWave](http://www.engineyard.com/blog/2011/a-gentle-introduction-to-carrierwave/)).
-* [Multiple files upload with carrierwave and nested_form](http://lucapette.com/rails/multiple-files-upload-with-carrierwave-and-nested_form/)
-
-
-## Engines are back in Rails… 3.1
-
-Engine to miniaturowa aplikacja, gem albo wtyczka.
-Zazwyczaj za pomocą engine dodajemy dodatkową funkcjonalność
-do całej aplikacji Rails. Na przykład
-autentykację (Devise), paginację (Kaminari, alternatywa dla Will Paginate).
+Engines to aplikacje Rails, zazwyczajowo zaprogramowana jako gem albo wtyczka.
+Na przykład gem *Devise* implementuje autentykację, a – *Kaminari* paginację.
 
 Engines dla Rails wymyślił [James Adams](https://github.com/lazyatom/engines).
 Z engines był jeden problem. Nie było gwarancji, że nowa wersja Rails
@@ -1440,12 +1464,20 @@ Nieco Railsowej archeologii:
  artykuł z 2005 roku
 * [Odpowiedź J. Adamsa](http://article.gmane.org/gmane.comp.lang.ruby.rails/29166)
 
+Korzystając z engine *Devise* dodać autentykację do Fortunki.
 
 {%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
-(źródło M. Pilgrim. <a href="http://diveintohtml5.org/">Dive into HTML5</a>)
+(źródło M. Pilgrim. <a href="http://diveintohtml5.info">Dive into HTML5</a>)
 
+Atrakcyjność Fortunki możemy zwiększyć implementując coś rzeczy
+wypisanych poniżej:
 
-## Google Analytics
-
-Google Analytics zajmiemy się przy wdrażaniu aplikacji na Heroku.
+* Widok strony indeks na wzór layoutu *Masonry* –
+  [Isotope](http://isotope.metafizzy.co/)
+* Obrazki w fortunkach: skorzystać z jednego z gemów
+  - [CarrierWave](https://github.com/jnicklas/carrierwave/)
+    (zob. też Trevor Turk,
+    [A Gentle Introduction to CarrierWave](http://www.engineyard.com/blog/2011/a-gentle-introduction-to-carrierwave/)).
+  - [Paperclip](https://github.com/thoughtbot/paperclip)
+* [Multiple files upload with carrierwave and nested_form](http://lucapette.com/rails/multiple-files-upload-with-carrierwave-and-nested_form/)
 
