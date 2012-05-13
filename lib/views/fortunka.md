@@ -527,7 +527,7 @@ Poprawiamy wygląd formularza:
       margin-top: 1em;
       margin-bottom: 2em;
     }
-    #search {
+    #query {
       width: 30%;
     }
 
@@ -548,9 +548,9 @@ kod metody wpisujemy w klasie *Fortune*:
     :::ruby app/models/fortune.rb
     def self.text_search(query)
       if query.present?
-        # SQLite i PostgreSQL
-        where('quotation like ?', "%#{search}%")
-        # tylko PostgreSQL; i – ignore case
+        # SQLite
+        where('quotation like ?', "%#{query}%")
+        # PostgreSQL; i – ignore case
         # where("quotation ilike :q or source ilike :q", q: "%#{query}%")
       else
         scoped
@@ -630,7 +630,7 @@ Pozostało utworzyć bazy i wykonać jeszcze raz migracje:
 Dodajemy gemy *valkyrie* i *taps* do grupy development i instalujemy je:
 
     :::bash
-    gem install --binstubs
+    bundle install --binstubs
 
 Teraz możemy przenieść bazę z SQLite do PostgreSQL za pomocą *valkyrie*:
 
@@ -761,7 +761,7 @@ Dopisujemy w modelu (nie używa słownika 'english', nie działa stemming):
     :::ruby
     include PgSearch
 
-    # definiujemy metodę `search`
+    # definiujemy metodę `fortunes_search`
     pg_search_scope :fortunes_search, against: [:quotation, :source],
         using: {tsearch: {dictionary: "english"}}
 
