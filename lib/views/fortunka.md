@@ -438,14 +438,6 @@ Generator *responders:install* utworzył plik locales z komunikatami flash:
 Jak to przetłumaczyć na język polski?
 
 
-**Koniec wykładu 22.04.2012**
-
-    :::bash
-    git commit -m "...responders..."
-    ... rebase ...
-    git tag v0.0.2
-
-
 ## Grand refactoring
 
 W widoku *index* skorzystamy z ***implicit loop***.  Wycinamy kod
@@ -477,9 +469,7 @@ Podmieniamy zawartość pliku *index.html.erb* na:
 
     <%= render partial: 'fortune', collection: @fortunes %>
 
-    <div class="form-actions">
-      <%= link_to 'New Fortune', new_fortune_path, class: 'btn btn-primary'%>
-    </div>
+    ... div.form-actions ... bez zmian
 
 Szablon częściowy *_fortune.html.erb* renderowany jest wielokrotnie,
 w pętli po zmiennej *fortune* (konwencja *@fortunes* → *fortune*):
@@ -513,6 +503,7 @@ W pliku z layoutem dopisujemy w znaczniku *head*:
 Aby sprawdzić jak to działa, wchodzimy na stronę:
 
     http://localhost:3000/fortunes.atom
+
 
 
 # Wyszukiwanie w fortunkach
@@ -583,9 +574,9 @@ Co oznacza *scoped*?
 
 ## Full text search with PostgreSQL
 
-Do **wyszukiwania pełno tekstowego** (tłum. ?) użyjemy gemów
+Do **wyszukiwania pełnotekstowego** (tłum. ?) użyjemy gemów
 
-* [texticle](https://github.com/tenderlove/texticle) i
+* [texticle](https://github.com/tenderlove/texticle)
 * [pg_search](https://github.com/Casecommons/pg_search)
 
 Dopisujemy gem *pg* oraz powyżej wspomniane gemy do pliku *Gemfile*:
@@ -694,6 +685,18 @@ Zapytanie z operatorrem @@ wyszukuje wszystkie rekordy zawierające
 wszystkie wpisane słowa, na przykład:
 
     late bird
+
+<blockquote>
+<h3>PostgreSQL & Polish</h3>
+<ul>
+<li><a href="http://www.depesz.com/2008/04/22/polish-tsearch-in-83-polski-tsearch-w-postgresie-83/">Polski
+  tsearch w Postgresie 8.3</a>
+<li><a href="http://marcinraczkowski.wordpress.com/2009/07/01/tsearch-w-rails-i-postgres-8-3/">TSearch
+  w Rails i Postgresie 8.3</a>
+<li><a href="http://www.depesz.com/2010/10/17/why-im-not-fan-of-tsearch-2/">Why
+  I’m not fan of TSearch?</a>
+</ul>
+</blockquote>
 
 ### Zaawansowane wyszukiwanie
 
@@ -808,8 +811,11 @@ Zrobione! Wchodzimy na konsolę, gdzie zadajemy kilka zapytań:
     PgSearch.multisearch('bird bush')
     PgSearch.multisearch('bird bush').each { |doc| puts doc.content }
 
-**TODO:** Wyszukiwanie w powiązanych modelach.
 
+**Koniec wykładu 13.05.2012**
+
+    :::bash
+    git commit -m "... Wyszukiwanie z PostgreSQL ..."
     ... rebase ...
     git tag v0.0.3
 
@@ -966,6 +972,9 @@ Teraz, kasujemy bazę i wrzucamy jeszcze raz cytaty, ale tym razem z tagami:
 
 ## Chmurka tagów
 
+Jak samemu wygenerować chmurkę tagów opisał
+Jason Davies, [Word Cloud Generator](http://www.jasondavies.com/wordcloud/).
+
 Aby wyrenderować chmurkę tagów – niestety nie tak ładną jak ta:
 
 {%= image_tag "/images/wordly.png", :alt => "[chmurka tagów]" %}
@@ -1051,14 +1060,17 @@ kod wypisujący tagi:
     </div>
 
 
+<blockquote>
+ {%= image_tag "/images/word-cloud.png", :alt => "[word cloud: REST on wikipedia]" %}
+</blockquote>
+
 ## Dodajemy własną akcję do REST
 
 Mając chmurkę z tagami, wypadałoby olinkować tagi tak, aby
 po kliknięciu na nazwę wyświetliły się fortunki otagowane
 tą nazwą.
 
-Zaczniemy od zmian w routingu. Usuwamy
-wiersz:
+Zaczniemy od zmian w routingu. Usuwamy wiersz:
 
     :::ruby config/routes.rb
     resources :fortunes
@@ -1112,11 +1124,8 @@ Zrobione!
 
     :::bash
     ... interactive rebase ...
-    git tag v0.0.3
+    git tag v0.0.4
 
-
-
-# Komentarze do fortunek
 
 <blockquote>
  <p>
@@ -1133,6 +1142,10 @@ Zrobione!
   mind, it severely hinders communication among minds.</p>
  <p class="author">— Frederick P. Brooks, Jr.</p>
 </blockquote>
+
+# Komentarze do fortunek
+
+**TODO (PG_search):** Dodać wyszukiwanie we wszystkich modelach: Fortune, Comment…
 
 W widoku *show.html.erb* fortunki powinna być możliwość dopisywania
 własnych komentarzy.
