@@ -147,6 +147,7 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 * [Responsive](http://mattkersley.com/responsive/) –
   web design testing tool
 * [jsFiddle](http://jsfiddle.net/)– easy test you snippets before implementing
+* [Three quick Rails console tips](http://37signals.com/svn/posts/3176-three-quick-rails-console-tips)
 
 
 <blockquote>
