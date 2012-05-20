@@ -2,7 +2,7 @@
 
 # 2011:  tail -n +2 | sort > nosql.csv
 
-# mongoexport --db test --collection students -f last_name,first_name  --query '{class_name:"nosql"}' --csv | sort > nosql.csv
+# mongoexport --db test --collection students -f last_name,first_name  --query '{class_name:"nosql"}' --csv | tail -n +2 | sort > nosql.csv
 
 # require "open-uri"
 
