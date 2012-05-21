@@ -14,6 +14,23 @@ Warto przeczytać:
 * Simone Carletti,
   [Understanding Ruby and Rails: Delegate](http://www.simonecarletti.com/blog/2009/12/inside-ruby-on-rails-delegate/)
 
+Czasami na konsoli sprawdzamy inne rzeczy, na przykład routing:
+
+    :::ruby
+    Rails.application.routes.url_helpers.fortunes_path
+    Rails.application.routes.url_helpers.fortunes_url(:host => "localhost:3000")
+
+albo tak:
+
+    :::ruby
+    include Rails.application.routes.url_helpers
+    fortune_path
+    fortunes_url(:host => "localhost:3000")
+
+Więcej na temat sztuczek konsolowych:
+
+* [Three quick Rails console tips](http://37signals.com/svn/posts/3176-three-quick-rails-console-tips)
+
 Zaczniemy od sprawdzenia jakie mamy zainstalowane w systemie
 Rubies i zestawy gemów:
 
