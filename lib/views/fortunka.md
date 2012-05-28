@@ -50,6 +50,9 @@ Zaczynamy od dopisania gemu *responders* do *Gemfile*:
     # silence assets pipeline log messages
     gem 'quiet_assets', :group => :development
 
+    # quickly see your routes under /rails/routes
+    gem 'sextant', :group => :development
+
 Instalujemy gemy i wykonujemy procedurę *post-install*:
 
     :::bash
