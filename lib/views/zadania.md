@@ -139,6 +139,8 @@ Użyteczne linki:
 
 Wtyczka do jQuery:
 
+* [gmaps.js](http://hpneo.github.com/gmaps/) –
+  Google Maps API with less pain and more fun
 * [gMap](http://labs.mario.ec/jquery-gmap/) –
   gMap helps you embed Google Maps into your website.
   With only 2 KB in size it is very flexible and highly customizable
