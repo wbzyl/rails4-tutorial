@@ -107,14 +107,18 @@ Wystylizować linki do kolejnych „stron”.
 Jak to się robi opisał Vitaly Friedman,
 [Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) i Mislav Marohnić,
 [Samples of pagination styling for will_paginate](http://mislav.uniqpath.com/will_paginate/).
-2. „AJAX rating” dla komentarzy.
+2. Na stronie głównej użyć jednej z wtyczek jQuery:
+   - [DataTables](http://datatables.net/), zob. [RailsCast \#340](http://railscasts.com/episodes/340-datatables)
+   - [Masonry](http://masonry.desandro.com/) – dynamic layout plugin for jQuery
+   - [Isotope](http://isotope.metafizzy.co/) – jQuery plugin for magical layouts
+3. „AJAX rating” dla komentarzy.
 Skorzystać z jakiejś gotowej wtyczki lub gemu
 (wcześniej sprawdzić czy wybrana biblioteka działa z jQuery 1.6+ Rails 3.1+).
-3. Autentykację. Zrobić to tak jak, to
+4. Autentykację. Zrobić to tak jak, to
 przedstawił R. Bates w screencaście
 [Simple OmniAuth](http://railscasts.com/episodes/241-simple-omniauth).
-4. Komentarze.
-5. Skorzystać z bazy PostgreSQL i jednego z rozszerzeń.
+5. Dodać komentarze.
+6. Skorzystać z bazy PostgreSQL i jednego z rozszerzeń.
 Tutaj [PostgreSQL most useful extensions](http://blog.railsware.com/2012/04/23/postgresql-most-useful-extensions/)
 jest krótka lista, tutaj
 [Hstore](http://railscasts.com/episodes/345-hstore) przykład.
@@ -123,6 +127,13 @@ Warto już teraz uprościć kod formularzy. Jak?
 Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
 Następnie zamienić wygenerowane formularze na formularze korzystajęce
 z metod [tego gemu](http://github.com/plataformatec/simple_form).
+Skorzystać z jednego z gemów:
+
+* [Chosen](http://harvesthq.github.com/chosen/) – plugin that makes long,
+  unwieldy select boxes much more user-friendly
+* [jQuery Tokeninput](http://loopj.com/jquery-tokeninput/) – allows
+  your users to select multiple items from a predefined list, using
+  autocompletion as they type to find each item
 
 
 ### Trekking

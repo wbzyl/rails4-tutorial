@@ -148,6 +148,8 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
   web design testing tool
 * [jsFiddle](http://jsfiddle.net/)– easy test you snippets before implementing
 * [Three quick Rails console tips](http://37signals.com/svn/posts/3176-three-quick-rails-console-tips)
+* [HTML5 Snippet](http://html5snippet.net/) – HTML / CSS / JavaScript playground & snippet
+  sharing platform for web developers & designers
 
 
 <blockquote>
