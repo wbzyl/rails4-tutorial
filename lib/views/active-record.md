@@ -23,9 +23,22 @@ Czasami na konsoli sprawdzamy inne rzeczy, na przykład routing:
 albo tak:
 
     :::ruby
+    app.fortunes_path
+    app.get app.fortune_path(4)
+    app.response.body
+    app.response.headers["content-type"]
+
+albo tak:
+
+    :::ruby
     include Rails.application.routes.url_helpers
     fortune_path
     fortunes_url(:host => "localhost:3000")
+
+Metody pomocnicze:
+
+    :::ruby
+    helper.number_to_currency(9.99)
 
 Więcej na temat sztuczek konsolowych:
 
