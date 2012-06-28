@@ -1,5 +1,16 @@
 #### {% title "ActiveRecord na konsoli" %}
 
+<blockquote>
+  {%= image_tag "/images/orm.jpg", :alt => "[Orm]" %}
+  <p>
+    The object/relational mapping problem is <i>hard</i>. […] If you have
+    an application problem that maps well to a NoSQL data model – such
+    as aggregates or graphs – then you can avoid the nastiness of
+    mapping completely.
+  </p>
+  <p class="author">– Martin Fowler, <a hhref="http://martinfowler.com/bliki/OrmHate.html">OrmHate</a></p>
+</blockquote>
+
 Lista przykładów:
 
 1. Why Associations?
