@@ -8,7 +8,7 @@
     as aggregates or graphs – then you can avoid the nastiness of
     mapping completely.
   </p>
-  <p class="author">– Martin Fowler, <a hhref="http://martinfowler.com/bliki/OrmHate.html">OrmHate</a></p>
+  <p class="author">— Martin Fowler, <a hhref="http://martinfowler.com/bliki/OrmHate.html">OrmHate</a></p>
 </blockquote>
 
 Lista przykładów:
