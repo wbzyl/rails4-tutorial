@@ -171,45 +171,44 @@ Podstawowe gemy instalujemy, korzystając ze skryptu *rvmsudo*:
 Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
 
     :::ruby ~/.irbrc
+    require 'irb/completion'
+    require 'irb/ext/save-history'
+
+    IRB.conf[:SAVE_HISTORY] = 1000
+    IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
     IRB.conf[:PROMPT_MODE] = :SIMPLE
 
-    require 'rubygems'
-    require 'wirble'
-    require 'hirb'
+    # remove the SQL logging
+    # ActiveRecord::Base.logger.level = 1 if defined? ActiveRecord::Base
 
-    Wirble.init
-    Wirble.colorize
-    Hirb.enable
-
-    if ENV.include?('RAILS_ENV') && !Object.const_defined?('RAILS_DEFAULT_LOGGER')
-      require 'logger'
-      RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
+    # an easy way to display the YAML representation of objects
+    def y(obj)
+      puts obj.to_yaml
     end
 
-Znak zachęty można zdefiniować samemu.
-Oto przykład (*TODO*: sprawdzić czy to działa):
+    # break out of the Bundler jail
+    # from https://github.com/ConradIrwin/pry-debundle/blob/master/lib/pry-debundle.rb
+    if defined? Bundler
+      Gem.post_reset_hooks.reject! { |hook| hook.source_location.first =~ %r{/bundler/} }
+      Gem::Specification.reset
+      load 'rubygems/custom_require.rb'
+    end
 
-    :::ruby
-    IRB.conf[:PROMPT][:CUSTOM] = {
-      :PROMPT_I => ">> ",
-      :PROMPT_N => ">> ",
-      :PROMPT_S => nil,
-      :PROMPT_C => ">> ",
-      :RETURN => "%s\n"
-    }
-    IRB.conf[:PROMPT_MODE] = :CUSTOM
+    if defined? Rails
+      begin
+        require 'hirb'
+        Hirb.enable
+      rescue LoadError
+      end
+    end
 
 oraz gemów:
 
     :::ruby ~/.gemrc
     ---
-    gem: --no-rdoc --no-ri
+    gem: --no-rdoc
     :verbose: true
     :benchmark: false
-
-**Uwaga:** Niestety, teraz oba gemy – *wirble* i *hirb*
-trzeba będzie dopisywać do każdego pliku *Gemfile* aplikacji Rails.
-Jest to uciążliwe. Ale jak to obejść?
 
 
 ## Dokumentacja online
@@ -242,6 +241,20 @@ Sprawdzamy jak to działa:
     ri validates
     ri ActiveModel::Validations::ClassMethods#validates
     ri find
+
+## Misc
+
+Znak zachęty można zdefiniować samemu. Oto przykład:
+
+    :::ruby
+    IRB.conf[:PROMPT][:CUSTOM] = {
+      :PROMPT_I => ">> ",
+      :PROMPT_N => ">> ",
+      :PROMPT_S => nil,
+      :PROMPT_C => ">> ",
+      :RETURN => "%s\n"
+    }
+    IRB.conf[:PROMPT_MODE] = :CUSTOM
 
 
 # Roadmap for Learning Rails
