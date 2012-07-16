@@ -29,11 +29,21 @@ na przykładzie przedstawionym przez R. Batesa
 w [Authentication from Scratch ](http://asciicasts.com/episodes/250-authentication-from-scratch).
 
 
-## Rejestracja, czyli *Signing in*
+<blockquote>
+  <p><b>Terminologia:</b>
+   Login, czy Log in. Logout, czy Log out;
+   a może Log off. Inne opcje: Sign in, Sign out</p>
+   <p class="author"><a href="http://stackoverflow.com/questions/406016/ui-terminology-logon-vs-login">[dyskusja
+   na Stack Overflow]</a></p>
+</blockquote>
+
+## Rejestracja
 
 Model:
 
-    rails g model user email:string password_hash:string password_salt:string
+    :::bash
+    rails g model user \
+      email:string password_hash:string password_salt:string
     rake db:migrate
 
 Kontroler:
