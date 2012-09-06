@@ -1,0 +1,7 @@
+source "http://rubygems.org"
+
+gem "yajl-ruby", "~>1.1"
+gem "tweetstream", "~>2.1"
+
+gem "mongo", "~>1.7"
+gem "bson_ext", "~>1.7"
