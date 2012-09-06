@@ -1,19 +1,15 @@
+# collects tweets and saves them to a mongodb database: nosql/statuses
+
 require "bundler/setup"
 
-# Collects user tweets and saves them to a mongodb
-
 require 'yaml'
-
-require 'yajl/json_gem'
+# require 'yajl/json_gem'
 require 'tweetstream'
-
 require 'mongo'
 
 
 Bundler.require
 
-# We use the TweetStream gem to access Twitter's Streaming API.
-# https://github.com/intridea/tweetstream
 
 TweetStream.configure do |config|
   # settings = YAML.load_file File.dirname(__FILE__) + '/twitter.yml'
@@ -34,16 +30,16 @@ end
 #  puts "#{status.text}"
 #end
 
+# TODO:
 # TweetStream::Daemon.new('tracker').track('wow') do |status|
 #   # do something in the background
 # end
 
-# TODO:
+# TODO: MapReduce
 #   http://gregmoreno.wordpress.com/2012/09/05/mining-twitter-data-with-ruby-mongodb-and-map-reduce/
 
-
 db = Mongo::Connection.new['nosql']
-coll = db['test']
+coll = db['statuses']
 
 stream = TweetStream::Client.new
 
@@ -60,14 +56,14 @@ end
 # coll.remove
 
 stream.track('rails', 'mongodb', 'elasticsearch', 'meteorjs', 'backbone.js', 'd3.js') do |status|
-
-  # puts "#{status.id.class}" # Fixnum
-  puts "#{status.id.to_s}"
-
-  puts "#{status.text}"
   # puts status.methods
   # puts status.to_hash
+  puts "#{status.text}"
 
+  # puts "#{status.id.class}" # Fixnum
+  # puts "#{status.id.to_s}"
+
+  # puts "#{status.created_at.class}"
   # puts "#{status.created_at}"
 
   # puts "="*72
@@ -96,13 +92,16 @@ stream.track('rails', 'mongodb', 'elasticsearch', 'meteorjs', 'backbone.js', 'd3
   hashtags = status.hashtags.to_a.map { |o| o["text"] }
   user_mentions = status.user_mentions.to_a.map { |o| o["screen_name"] }
 
-  # puts urls
-  # puts hashtags
-  # puts user_mentions
+  doc = {
+    _id: status.id.to_s,
+    created_at: status.created_at,
+    text: status.text,
+    screen_name: status.user.screen_name,
+    urls: urls,
+    hashtags: hashtags,
+    user_mentions: user_mentions
+  }
+  # puts doc
 
-  doc = Hash.new _id: status.id.to_s, text: status.text
-
-  puts doc
-
-  # coll.insert status
+  coll.insert doc
 end
