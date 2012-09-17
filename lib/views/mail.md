@@ -312,6 +312,11 @@ every email sent after the email has been sent.”:
 Jakiś lepszy przykład zastosowania dla obserwatora wysłanej poczty?
 
 
+## Contact Form
+
+* [Contact form in Rails 3](http://railshelpers.wordpress.com/2012/09/16/contact-form-in-rails-3/)
+
+
 ## Kilka linków
 
 * [ActionMailer::Base](http://apidock.com/rails/ActionMailer/Base)
