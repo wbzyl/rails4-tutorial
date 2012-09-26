@@ -25,7 +25,7 @@ Wszystkie projekty przygotowywane na zajęciach należy trzymać na swoim
 koncie na *github.com*.
 Oczywiście, wcześniej należy założyć tam sobie konto.
 
-Aplikacje tworzymy w **Rails** w wersji co najmniej **3.2.1**.
+Aplikacje tworzymy w **Rails** w wersji co najmniej **3.2.8**.
 
 Przed utworzeniem pierwszego repozytorium
 należy podać Gitowi swoje **prawdziwe i aktualne** dane:
@@ -199,25 +199,3 @@ Korzystamy z nierelacyjnych baz danych:
 * Ryan Bates.
   [Mongoid](http://railscasts.com/episodes/238-mongoid),
   [MongoDB and MongoMapper](http://railscasts.com/episodes/194-mongodb-and-mongomapper)
-
-
-## Rails 3 stuff only
-
-* [Rails Dispatch](http://www.railsdispatch.com/) – Rails
-  news delivered fresh
-  ([linki do wszystkich postów](http://www.railsdispatch.com/posts))
-* [Rails Engines](http://edgeapi.rubyonrails.org/classes/Rails/Engine.html) –
-  [How to build a rails 3 engine and set up test with rspec](http://olympiad.posterous.com/how-to-building-a-rails-3-engine-and-set-up-t),
-  [Rails 3 Plugins - Part 2 - Writing an Engine](http://www.themodestrubyist.com/2010/03/05/rails-3-plugins---part-2---writing-an-engine/),
-  [Create your own Rails3 engine (part 1)](http://ror-e.com/info/videos/5)
-* [Rails 3: Fully Loaded](http://intridea.com/2011/5/13/rails3-gems) – lista najlepszych gemów dla Rails 3
-* [Rails 3.0 and 3.1 Example Apps and Tutorials](http://railsapps.github.com/)
-
-Najświeższe posty:
-
-* [Blog w 20 minut](http://www.railsdispatch.com/posts/rails-3-makes-life-better)
-  (wideo [Build a Blog Update](http://vimeo.com/10732081))
-* [How Rails 3 Enables More Choices](http://www.railsdispatch.com/posts/how-rails-3-enables-more-choices-part-1) (part 1)
-
-
-[railsplugins]: http://www.railsplugins.org/ "Is Your Plugin Ready For Rails 3?"
