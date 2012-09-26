@@ -8,16 +8,16 @@
 <p class="author">— Rick Osborne</p>
 </blockquote>
 
-Projekty indywidualne:
+Projekt indywidualny:
 
-* Prosta aplikacja Rails (Fortunka, Trekking, …)
-* Prosta aplikacja korzystająca z nierelacyjnej bazy danych (MongoDB, Redis, CouchDB, …)
+* prosta aplikacja Rails (przykłady – Fortunka, Trekking)
+* prosta aplikacja korzystająca z nierelacyjnej bazy danych (przykładowo MongoDB lub Redis)
 
-Projekty zespołowe:
+Projekt zespołowy:
 
-* Wybór tematu projektu, podział na grupy, założenie repozytoriów: 11.03.2012
-* Rozliczenie projektu zespołowego: 13.05.2012
-* Prezentacje gotowych projektów: 20.05.2012
+* Wybór tematu projektu, podział na grupy, założenie repozytoriów: ??.??.2012
+* Rozliczenie projektu zespołowego: ??.??.2012
+* Prezentacje gotowych projektów: ??.01.2013
 
 
 <blockquote>
@@ -33,7 +33,8 @@ Projekty zespołowe:
 
 ## Zapoznajemy się z językiem Ruby
 
-1\. **Sprawdzamy instalację języka Ruby na Sigmie.**
+1\. Sprawdzamy instalację języka Ruby na Sigmie i instalujemy
+system Ruby na swoim komputerze.
 
 Wykonujemy polecenie:
 
@@ -44,10 +45,8 @@ Wynik wykonania tego polecenia powinien być taki:
 
     rvm rubies
 
-       ree-1.8.7-2011.03 [ i686 ]
-       ruby-1.9.2-p180 [ i686 ]
-       ruby-1.9.2-p290 [ i686 ]
-    =* ruby-1.9.3-p0 [ i686 ]
+       ruby-1.9.3-p125 [ i686 ]
+    =* ruby-1.9.3-p194 [ i686 ]
 
     # => - current
     # =* - current && default
@@ -69,8 +68,12 @@ Rezultat wykonania tych poleceń:
     => 4
     => [2, 3, 4, 5]
 
+Wychodzimy z konsoli:
+
+    exit
+
 Jeśli wszystko działa, to można spróbować instalacji
-[RVM](http://beginrescueend.com/) na swoim laptopie.
+[RVM](http://beginrescueend.com/) na swoim komputerze.
 Następnie należy doinstalować pozostałe wymagane pakiety.
 Jakie? Odpowiedź uzyskamy wykonując polecenie:
 
@@ -86,8 +89,6 @@ z której będziemy korzystać na zajęciach:
 Pozostałe szczegóły instalacji opisano {%= link_to "tutaj", "/konfiguracja" %}.
 
 2\. Rozwiązujemy wszystkie zadania na [Ruby Monk](http://rubymonk.com/).
-
-3\. Na koniec przerabiamy kurs [Rails for Zombies](http://railsforzombies.org/).
 
 
 ## Prosta aplikacja Rails
