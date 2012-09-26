@@ -1,13 +1,12 @@
 # 2.10.2012 – zaczynamy !
 
 <blockquote>
-  {%= image_tag "/images/matz-stallman.jpg", :alt => "[FSF 2011 Awards]" %}
-  <p class="author">Yukihiro Matsumoto i Richard Stallman</p>
+  {%= image_tag "/images/rails-for-zombies.jpg", :alt => "[Rails for Zombies]" %}
+  <p><a href="http://www.codeschool.com/courses/rails-for-zombies-redux">Models taste like chicken…</a></p>
 </blockquote>
 
-[2.10.2012] [ror_ecommerce 1.0](http://www.ror-e.com/posts/26)
-
-[2.10.2012] [Spree 1.0.0 Released](http://spreecommerce.com/blog/2012/02/09/spree-1-0-0-released/).
+[2.10.2012] [Spree](http://spreecommerce.com/) – the world’s most flexible e-commerce platform,
+[ror_ecommerce](http://www.ror-e.com/) – a complete ecommerce platform.
 
 
 ## Praktyczne rzeczy…
