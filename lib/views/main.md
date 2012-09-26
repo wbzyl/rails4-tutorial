@@ -5,9 +5,11 @@
   <p><a href="http://www.codeschool.com/courses/rails-for-zombies-redux">Models taste like chicken…</a></p>
 </blockquote>
 
-[2.10.2012] [Spree](http://spreecommerce.com/) – the world’s most flexible e-commerce platform,
+[1.10.2012] [Rails Rumble 2012](http://blog.railsrumble.com/)
+
+[1.10.2012] [Spree](http://spreecommerce.com/) – the world’s most flexible e-commerce platform,
 [ror_ecommerce](http://www.ror-e.com/) – a complete ecommerce platform,
-[who is already on rails?](http://rubyonrails.org/).
+[who is already on rails?](http://rubyonrails.org/applications).
 
 
 ## Praktyczne rzeczy…
