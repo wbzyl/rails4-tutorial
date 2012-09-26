@@ -6,7 +6,8 @@
 </blockquote>
 
 [2.10.2012] [Spree](http://spreecommerce.com/) – the world’s most flexible e-commerce platform,
-[ror_ecommerce](http://www.ror-e.com/) – a complete ecommerce platform.
+[ror_ecommerce](http://www.ror-e.com/) – a complete ecommerce platform,
+[who is already on rails?](http://rubyonrails.org/).
 
 
 ## Praktyczne rzeczy…
