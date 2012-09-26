@@ -89,11 +89,10 @@ TODO:
 1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
 -->
 
-Konfiguracja – RVM, konsola, dokumentacja online:
+Instalacja RVM, konfiguracja konsoli Rails:
 
 * {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}
-* {%= link_to "Szablony aplikacji Rails", "/rails-templates" %}
-  (gotowe szablony – [railswizard.org](http://railswizard.org/))
+
 
 ## Laboratoria
 
