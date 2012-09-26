@@ -89,9 +89,9 @@ TODO:
 1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
 -->
 
-Instalacja RVM, konfiguracja konsoli Rails:
+Instalacja RVM, konfiguracja konsoli Rails… czyli
 
-* {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}
+* {%= link_to "konfiguracja środowiska dla Rails", "/konfiguracja" %}
 
 
 ## Laboratoria
