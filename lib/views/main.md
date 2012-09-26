@@ -1,43 +1,23 @@
-# Zaczynamy !
+# 2.10.2012 – zaczynamy !
 
 <blockquote>
   {%= image_tag "/images/matz-stallman.jpg", :alt => "[FSF 2011 Awards]" %}
   <p class="author">Yukihiro Matsumoto i Richard Stallman</p>
 </blockquote>
 
-[01.04.2012] [Rails 3.2.3 has been released](http://news.ycombinator.com/item?id=3780963) –
-nowe wartości domyślne dla atrybutów, które są „accessible via mass assignment”.
-Zainstalować dodatek [Tamper Data](https://addons.mozilla.org/pl/firefox/addon/tamper-data/).
+[2.10.2012] [ror_ecommerce 1.0](http://www.ror-e.com/posts/26)
 
-[31.03.2012] [2011 Free Software Awards announced ](http://www.fsf.org/news/2011-free-software-awards-announced):
-„This year, it was given to Yukihiro Matsumoto (aka Matz), the creator
-of the Ruby programming language. Matz has worked on GNU, Ruby, and
-other free software for over 20 years. He accepted the award in person
-and spoke at the conference on his early experiences with free
-software, especially the influence of GNU Emacs on Ruby.”
-
-[31.03.2102] [20 Best Sites Built with Ruby on Rails](http://www.developerdrive.com/2011/09/20-best-sites-built-with-ruby-on-rails/).
-
-[10.03.2012] W rozdziale [Filling in the layout](http://ruby.railstutorial.org/chapters/filling-in-the-layout?version=3.2#top),
-książki M. Hartl’a, *Ruby on Rails Tutorial* opisano jak
-użyć [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/) w swojej aplikacji.
-Przy okazji można pobrać
-[Font Awesome](http://fortawesome.github.com/Font-Awesome/) z ikonkami
-specjalnie zaprojektowanymi dla tego frameworka.
-
-[14.02.2012] [ror_ecommerce 1.0](http://www.ror-e.com/posts/26)
-
-[10.02.2012] [Spree 1.0.0 Released](http://spreecommerce.com/blog/2012/02/09/spree-1-0-0-released/).
+[2.10.2012] [Spree 1.0.0 Released](http://spreecommerce.com/blog/2012/02/09/spree-1-0-0-released/).
 
 
 ## Praktyczne rzeczy…
 
-Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/);
-albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw);
-albo coś prostszego [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
+Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/).
+Albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw).
+Albo coś prostszego [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 
 Nigdy nie korzystałeś z frameworka MVC, wejdź na
-[Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies).
+[Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
 
 Wszystkie projekty przygotowywane na zajęciach należy trzymać na swoim
 koncie na *github.com*.
