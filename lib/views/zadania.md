@@ -23,7 +23,7 @@
 
 Każdą aplikację należy uruchomić w trybie produkcyjnym
 na Sigmie, Heroku lub innym serwerze.
-Aplikacja powinna być dostępna **7 \* 24h**.
+Aplikacja powinna być dostępna **24/7**.
 
 <blockquote>
 {%= image_tag "/images/ralph-waldo-emerson.jpg", :alt => "[Ralph Waldo Emerson]" %}
