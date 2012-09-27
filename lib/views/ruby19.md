@@ -7,13 +7,13 @@
   hall•strom</a>]</p>
 </blockquote>
 
-Na sigmie zainstalowany jest ruby-1.9.2-p290.
+Na Sigmie jest zainstalowany ruby-1.9.3-p194.
 
 Podręczniki do języka Ruby:
 
+* [Why's (Poignant) Guide to Ruby](http://www.rubyinside.com/media/poignant-guide.pdf)
 * [RubyMonk](http://rubymonk.com/) –
   an interactive platform that helps you master Ruby
-* [Why's (Poignant) Guide to Ruby](http://www.rubyinside.com/media/poignant-guide.pdf)
 * [Mr. Neighborly's Humble Little
   Ruby Book](http://www.humblelittlerubybook.com/book/html/index.html)
   \([pdf](http://www.humblelittlerubybook.com/book/hlrb.pdf)\)
@@ -33,7 +33,7 @@ Screencasty:
 
 * [A set of 17 must-watch videos on Ruby](http://www.tekniqal.com/)
 
-Strony, gdzie od czasu do czasu warto zajrzeć:
+Miejsca gdzie warto zajrzeć od czasu do czasu:
 
 * [RVM](http://rvm.beginrescueend.com/) – Ruby Version Manager
 * [Ruby Programming Language](http://rubylang.info/) –
@@ -71,14 +71,6 @@ Różne:
     str.to_a
     4.to_a # warning: default 'to_a' will be obsolete
 
-## Symbole
-
-    :::ruby
-    Object.new.methods.sort # 1.9 lista symboli, 1.8 – napisów
-    Object.new.methods.grep(/methods/)
-    words= %w{ witaj świecie }
-    words.map { |w| w.upcase }
-    words.map(&:upcase)  # 1.9
 
 ## Enumerators 1.8
 
@@ -129,6 +121,46 @@ Różne:
     nums.sort.drop(2)  # 1.9
     nums.sort.take_while {|n| n < 3}  # 1.9
 
+## Napisy
+
+    :::ruby
+    str = "ala ma kota"
+    str[2]   # 97, ruby 1.8
+    str[2,1] # "a"
+    str[2]   # "a", ruby 1.9
+    ?a       # 97, ruby 1.8
+    ?a       # "a", ruby 1.9
+    ?a.ord   # 97
+
+W 1.9 napisy nie są Enumerable, tj. `str.each` nie działa.
+Za to mamy:
+
+    :::ruby
+    str.each_char   str.chars
+    str.each_char.class
+    str.each_byte   str.bytes
+    mstr = "hello\nworld"
+    mstr.each_line {|l| puts l.upcase}
+    str.chars.to_a  # ["a", "l", "a", ...]
+
+Napisy a symbole: `:symbol`, `"napis"`, `'napis'`:
+
+    :::ruby
+    words= %w{ witaj świecie }
+    words.map { |w| w.upcase }
+    words.map(&:upcase)         # 1.9
+
+### Napisy i kodowanie
+
+    :::ruby
+    str = "witaj świecie"
+    str.encoding
+
+Zadawanie kodowania w pliku via *magic comments*:
+
+    :::ruby
+    # -*- encoding: utf-8 -*-
+
 
 ## Metody, Procs, …
 
@@ -158,41 +190,7 @@ Jawny argument (*&b*) Proc pobierający blok:
     sequence(3, 2, 2) {|x| puts x} #=> 2 4 6
     sequence(3, 2, 2)              #=>
 
-
-## Napisy
-
-    :::ruby
-    str = "ala ma kota"
-    str[2]   # 97, ruby 1.8
-    str[2,1] # "a"
-    str[2]   # "a", ruby 1.9
-    ?a       # 97, ruby 1.8
-    ?a       # "a", ruby 1.9
-    ?a.ord   # 97
-
-W 1.9 napisy nie są Enumerable, tj. `str.each` nie działa.
-Za to mamy:
-
-    :::ruby
-    str.each_char   str.chars
-    str.each_char.class
-    str.each_byte   str.bytes
-    mstr = "hello\nworld"
-    mstr.each_line {|l| puts l.upcase}
-    str.chars.to_a  # ["a", "l", "a", ...]
-
-
-## Kodowanie
-
-    :::ruby
-    str = "witaj świecie"
-    str.encoding
-
-Zadawanie kodowania w pliku via *magic comments*:
-
-    :::ruby
-    # -*- encoding: utf-8 -*-
-
+<!--
 
 ## Ruby misz masz
 
@@ -202,10 +200,11 @@ Zadawanie kodowania w pliku via *magic comments*:
     str.instance_eval { split }
     str.instance_exec(/a/) {|re| split(re) }  # 1.9
 
+-->
 
-# Nieco programowania w Ruby
+# Nieco programowania
 
-Klasyczne progtamy z książki Dennisa Ritchie i Briana Kernighana
+Klasyczne programy z książki Dennisa Ritchie i Briana Kernighana
 „Język ANSI C”.
 
 Program *c2f.rb*:
@@ -284,7 +283,7 @@ Two in one: c2f and f2c:
     end
 
 
-## Clases and Modules
+## Classes and Modules
 
     :::ruby
     class Animal
