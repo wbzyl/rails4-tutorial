@@ -5,35 +5,31 @@
   <p><a href="http://www.codeschool.com/courses/rails-for-zombies-redux">Models taste like chicken…</a></p>
 </blockquote>
 
-[1.10.2012] [Rails Rumble 2012](http://blog.railsrumble.com/)
-
-[1.10.2012] [Spree](http://spreecommerce.com/) – the world’s most flexible e-commerce platform,
-[ror_ecommerce](http://www.ror-e.com/) – a complete ecommerce platform,
-[who is already on rails?](http://rubyonrails.org/applications).
+* [Rails Rumble 2012](http://blog.railsrumble.com/)
+* [Who is already on Rails?](http://rubyonrails.org/applications).
 
 
 ## Praktyczne rzeczy…
 
 Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/).
-Albo na [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw).
-Albo coś prostszego [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
+Albo poczytaj [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw).
+Albo — coś prostszego [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 
-Nigdy nie korzystałeś z frameworka MVC, wejdź na
+Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
 
-Wszystkie projekty przygotowywane na zajęciach należy trzymać na swoim
-koncie na *github.com*.
-Oczywiście, wcześniej należy założyć tam sobie konto.
+Aplikacje WWW będziemy pisać w **Rails** wersji **3.2.8**.
 
-Aplikacje tworzymy w **Rails** w wersji co najmniej **3.2.8**.
+Wszystkie projekty przygotowywane na zajęciach powinny być
+udostępnione na *github.com*.
 
-Przed utworzeniem pierwszego repozytorium
-należy podać Gitowi swoje **prawdziwe i aktualne** dane:
+*Uwaga:* Przed utworzeniem pierwszego repozytorium Git
+należy podać Gitowi swoje dane. W tym celu wpisujemy na konsoli:
 
     git config --global user.name "Imię Nazwisko"
     git config --global user.email "twój aktualny email"
 
-<a href="http://wbzyl.inf.ug.edu.pl/sp/git">Parę aliasów dla Gita i Bash’a</a>
+<a href="http://wbzyl.inf.ug.edu.pl/sp/git">Kilka aliasów dla Gita i Bash’a</a>
 oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
 
@@ -89,9 +85,9 @@ TODO:
 1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
 -->
 
-Instalacja RVM, konfiguracja konsoli Rails… czyli
-
-* {%= link_to "konfiguracja środowiska dla Rails", "/konfiguracja" %}
+Instalacja *RVM* (*Ruby Version Manager*), konfiguracja konsoli Rails
+jest opisana tutaj:
+{%= link_to "Konfiguracja środowiska dla Rails 3", "/konfiguracja" %}
 
 
 ## Laboratoria
