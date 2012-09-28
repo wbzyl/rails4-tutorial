@@ -444,7 +444,8 @@ inny program, na przykład *curl*:
 Linki do dokumentacji:
 
 * [respond_to](http://api.rubyonrails.org/classes/ActionController/MimeResponds.html#method-i-respond_to)
-* [respond_with](http://api.rubyonrails.org/classes/ActionController/MimeResponds.html#method-i-respond_with)
+* [respond_with](http://api.rubyonrails.org/classes/ActionController/MimeResponds.html#method-i-respond_with),
+  [ActionController::Responder](http://api.rubyonrails.org/classes/ActionController/Responder.html)
 
 
 ### Migracje
