@@ -74,6 +74,90 @@ Można także tworzyć nowe widoki dla modelu bez potrzeby modyfikowania
 go.”
 
 
+## Jak działa MVC w Rails
+
+Dwie przykładow aplikacje: **MyGists**,  **MyStaticPages**.
+
+### MyCode
+
+Generujemy rusztowanie aplikacji i instalujemy gemy z których
+korzysta wygenerowana aplikacja:
+
+    :::bash
+    rails new my_gists --skip-bundle
+    cd my_gists
+    bundle install --local
+    # bundle install --path=$HOME/.gems  # lub na przykład tak
+
+Korzystamy z generatora kodu o nazwie *scaffold*:
+
+    rails generate scaffold code lang code:text desc
+    rake db:migrate
+    rails server --port 16001
+
+Routing:
+
+    :::bash
+    rake routes
+
+Dokumentacja:
+
+* [Rails API](http://api.rubyonrails.org/): link_to (*ActionView::Helpers::UrlHelper*)
+
+Co to są *assets*?
+
+Szablony częściowe: *_form.html.erb*.
+
+
+### MyStaticPages
+
+    ::bash
+    rails new my_static_pages --skip-bundle
+    cd my_static_pages
+    bundle install --local
+
+Korzystamy z generatora kodu *controller*:
+
+    :::bash
+    rails generate controller Pages welcome about
+
+      create  app/controllers/pages_controller.rb
+       route  get "pages/about"
+       route  get "pages/welcome"
+      invoke  erb
+      create    app/views/pages
+      create    app/views/pages/welcome.html.erb
+      create    app/views/pages/about.html.erb
+
+Routing:
+
+    :::bash
+    rake routes
+
+      pages_welcome GET /pages/welcome(.:format) pages#welcome
+        pages_about GET /pages/about(.:format)   pages#about
+
+Dokumentacja:
+
+* routing: *get*, *match*
+* layout kontrolera, layout aplikacji
+* metody pomocnicze: *content_for*
+* własne metody pomocnicze: {%= link_to "title", "/" %}
+
+Jak korzystamy:
+
+    :::rhtml
+    <head>
+      <title>Ruby on Rails Tutorial Sample App | <%= yield(:title) %></title>
+    </head>
+
+Prosta implementacja – korzystamy z metody *provide*:
+
+    :::rhtml
+    <% provide(:title, 'About Us') %>
+    <!doctype html>
+
+
 # Fortunka krok po kroku
 
 {%= image_tag "/images/dilbert-agile-programming.png", :alt => "[Agile Programming]" %}
