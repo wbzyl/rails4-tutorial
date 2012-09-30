@@ -420,6 +420,10 @@ Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby
       end
     end
 
+**Uwaga:** Jeśli gem *hirb* jest zainstalowany w systemie, to powinniśmy
+go wykomentować z pliku *Gemfile*.
+
+
 ## Krok 4 – instalujemy gemy
 
 Opcji `--path` używamy tylko raz. Następnym razem uruchamiamy program
