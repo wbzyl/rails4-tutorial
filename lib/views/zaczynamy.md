@@ -74,14 +74,15 @@ Można także tworzyć nowe widoki dla modelu bez potrzeby modyfikowania
 go.”
 
 
-## Jak działa MVC w Rails
+## Jak działa MVC w Rails?
 
-Dwie przykładow aplikacje: **MyGists**,  **MyStaticPages**.
+Na przykładzie aplikacji **MyGists** i **MyStaticPages**.
 
-### MyCode
+
+### MyGists
 
 Generujemy rusztowanie aplikacji i instalujemy gemy z których
-korzysta wygenerowana aplikacja:
+będzie ona korzystać:
 
     :::bash
     rails new my_gists --skip-bundle
@@ -89,37 +90,36 @@ korzysta wygenerowana aplikacja:
     bundle install --local
     # bundle install --path=$HOME/.gems  # lub na przykład tak
 
-Korzystamy z generatora kodu o nazwie *scaffold*:
+Następnie skorzystamy z generatora kodu o nazwie *scaffold*:
 
+    :::bash
     rails generate scaffold code lang code:text desc
     rake db:migrate
     rails server --port 16001
 
-Routing:
+Na koniec sprawdzimy routing aplikacji wykonując na konsoli polecenie:
 
     :::bash
     rake routes
 
-Dokumentacja:
-
-* [Rails API](http://api.rubyonrails.org/): link_to (*ActionView::Helpers::UrlHelper*)
-
-Co to są *assets*?
-
-Szablony częściowe: *_form.html.erb*.
+Lektura dokumentacji [link_to](http://api.rubyonrails.org/).
+Co to są *assets*? a *partial templates* (szablony częściowe), na
+przykład *_form.html.erb*.
 
 
 ### MyStaticPages
 
-    ::bash
+Jak wyżej, generujemy rusztowanie aplikacji i instalujemy gemy:
+
+    :::bash
     rails new my_static_pages --skip-bundle
     cd my_static_pages
     bundle install --local
 
-Korzystamy z generatora kodu *controller*:
+Korzystamy z generatora kodu o nazwie *controller*:
 
     :::bash
-    rails generate controller Pages welcome about
+    rails generate controller pages welcome about
 
       create  app/controllers/pages_controller.rb
        route  get "pages/about"
@@ -137,25 +137,78 @@ Routing:
       pages_welcome GET /pages/welcome(.:format) pages#welcome
         pages_about GET /pages/about(.:format)   pages#about
 
-Dokumentacja:
+co oznacza, że te strony są dostępne z adresów
+*/pages/welcome* i */pages/about*.
+
+Lektura Rails API oraz Rails Guides:
 
 * routing: *get*, *match*
-* layout kontrolera, layout aplikacji
 * metody pomocnicze: *content_for*
-* własne metody pomocnicze: {%= link_to "title", "/" %}
+* layout kontrolera, layout aplikacji
 
-Jak korzystamy:
+Zrób to sam (kod jest poniżej):
+
+* własne metody pomocnicze: *title*
+* sensowniejszy routing: */pages/about* → */about*, */pages/welcome* → */welcome*
+
+Korzystamy z metody *provide*. Na każdej stronie wpisujemy
+jej tytuł w taki sposób:
 
     :::rhtml
-    <head>
-      <title>Ruby on Rails Tutorial Sample App | <%= yield(:title) %></title>
-    </head>
+    <% provide :title, 'About Us' %>
 
-Prosta implementacja – korzystamy z metody *provide*:
+W layoucie aplikacji podmieniamy kod znacznika *title* na:
 
     :::rhtml
-    <% provide(:title, 'About Us') %>
-    <!doctype html>
+    <title>Moje strony | <%= content_for :title %></title>
+
+I już możemy sprawdzić jak to działa.
+
+A oto inna, bardziej solidna implementacja:
+
+    :::ruby application_helper.rb
+    def title(content)
+      content_for(:title, content)
+    end
+
+    def page_title
+      delimiter = "| "
+      if content_for?(:title)
+        "#{delimiter}#{content_for(:title)}"
+      end
+    end
+
+Przy tej implementacji, w layoucie aplikacji podmieniamy kod znacznika *title* na:
+
+    :::rhtml
+    <title>Moje strony <%= page_title %></title>
+
+Teraz na stronach, które *mają tytuł* wpisujemy:
+
+    :::rhtml
+    <% title 'About Us' %>
+
+*Pytanie:* Na czym polega „solidność tej implementacji”?
+
+W pliku *config/routes.rb* wygenerowany kod:
+
+    :::ruby config/routes.rb
+    get "pages/welcome"
+    get "pages/about"
+
+wymieniamy na:
+
+    :::ruby config/routes.rb
+    match "welcome", to: "pages#welcome"
+    match "about", to: "pages#about"
+
+Przy zmienionym routingu wykonanie polecenia `rake routes` daje:
+
+    welcome  /welcome(.:format) pages#welcome
+      about  /about(.:format)   pages#about
+
+co oznacza, że te strony są dostępne z krótszych, niż poprzednio,
+adresów */welcome* i */about*.
 
 
 # Fortunka krok po kroku
@@ -174,9 +227,11 @@ katalogu z wygenerowanym rusztowaniem:
     rails new fortunka --skip-test-unit --skip-bundle
     cd fortunka
 
+<!--
 Dobrze jest od razu zmienić rozmiar fontu na
 [co najmniej 16 pikseli](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
 „anything less is a costly mistake”.
+-->
 
 2\. Usuwamy domyślną stronę aplikacji:
 
@@ -186,31 +241,38 @@ Dobrze jest od razu zmienić rozmiar fontu na
 3\. Do pliku *Gemfile* dopisujemy gemy z których będziemy korzystać:
 
     :::ruby Gemfile
-    gem 'rails', '3.2.2'
+    gem 'rails', '3.2.8'
+
     gem 'sqlite3'
-    # gems used only for assets
+    # gem 'pg'
     group :assets do
       gem 'sass-rails',   '~> 3.2.3'
       gem 'coffee-rails', '~> 3.2.1'
       # see https://github.com/sstephenson/execjs#readme for more supported runtimes
       # gem 'therubyracer'
+
       gem 'uglifier', '>= 1.0.3'
     end
     gem 'jquery-rails'
 
     # łatwiejsze w użyciu formularze
     gem 'simple_form'
+
     group :development do
       # ładniejsze wypisywanie rekordów na konsoli
       # (zob. konfiguracja irb w ~/.irbrc)
-      gem 'wirble'
       gem 'hirb'
       # bezproblemowe zapełnianie bazy danymi testowymi
       # https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md
       # gem 'factory_girl_rails', '~> 1.2'
       gem 'faker'
       gem 'populator'
+      # wyłącza logowanie *assets pipeline*
+      gem 'quiet_assets'
     end
+
+    # alternatywa dla serwera Webrick
+    # gem thin
 
 4\. Instalujemy gemy lokalnie:
 
@@ -228,7 +290,7 @@ mamy zainstalowane w systemie, to poniższe polecenie wykona się dużo
 szybciej:
 
     :::bash
-    bundle install --local --binstubs --path=$HOME/.gems
+    bundle install --local --binstubs
 
 Niektóre gemy, wymagają procedury *post-install*.
 Przykładowo, dla gemu *Simple Form* należy wykonać polecenie:
@@ -239,6 +301,9 @@ Jeśli zamierzamy skorzystać z frameworka
 [Bootstrap](http://twitter.github.com/bootstrap/), to wykonujemy:
 
     bin/rails generate simple_form:install --bootstrap
+
+Dlatego zwaracamy uwagę na komunikaty wypisywane w trakcie instalacji
+gemów lub czytamy pliki *README* z dokumentacją.
 
 5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
@@ -272,7 +337,7 @@ polecenie:
     bin/rake db:seed  # Load the seed data from db/seeds.rb
 
 Powyższy kod „smells” (dlaczego?) i należy go poprawić. Na przykład
-tak {%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
+tak jak to zrobiono tutaj {%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
 
 Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 *db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
@@ -297,7 +362,7 @@ Aby obejrzeć działającą aplikację pozostaje wejść na stronę:
 
 # Fortunka – szczegóły
 
-Poniżej przedstawiamy bardziej szczegółowy opis niektórych kroków.
+Poniżej jest bardziej szczegółowy opis niektórych kroków.
 
 
 ## Krok 1 – rusztowanie aplikacji
@@ -320,24 +385,40 @@ Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rat):
 
 Dlaczego dopisaliśmy takie a nie inne gemy?
 
-Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby i konsoli
-Rails:
+Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby
+(i równocześnie konsoli Rails):
 
     :::ruby ~/.irbrc
+    require 'irb/completion'
+    require 'irb/ext/save-history'
+
+    IRB.conf[:SAVE_HISTORY] = 1000
+    IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
+
     IRB.conf[:PROMPT_MODE] = :SIMPLE
 
-    require 'wirble'
-    require 'hirb'
+    # remove the SQL logging
+    # ActiveRecord::Base.logger.level = 1 if defined? ActiveRecord::Base
 
-    Wirble.init
-    Wirble.colorize
-    Hirb.enable
-
-    if ENV.include?('RAILS_ENV') && !Object.const_defined?('RAILS_DEFAULT_LOGGER')
-      require 'logger'
-      RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
+    def y(obj)
+      puts obj.to_yaml
     end
 
+    # break out of the Bundler jail
+    # from https://github.com/ConradIrwin/pry-debundle/blob/master/lib/pry-debundle.rb
+    if defined? Bundler
+      Gem.post_reset_hooks.reject! { |hook| hook.source_location.first =~ %r{/bundler/} }
+      Gem::Specification.reset
+      load 'rubygems/custom_require.rb'
+    end
+
+    if defined? Rails
+      begin
+        require 'hirb'
+        Hirb.enable
+      rescue LoadError
+      end
+    end
 
 ## Krok 4 – instalujemy gemy
 
