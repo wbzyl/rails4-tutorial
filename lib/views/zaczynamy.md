@@ -187,6 +187,9 @@ polecenie:
 
     bin/rake db:seed  # Load the seed data from db/seeds.rb
 
+Powyższy kod „smells” (dlaczego?) i należy go poprawić. Na przykład
+tak {%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
+
 Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 *db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
 i ponownie uruchomić powyższe polecenie.
