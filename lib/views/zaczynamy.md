@@ -404,11 +404,14 @@ i wykonujemy te polecenia:
     :::bash
     bundle
     rails generate bootstrap:install
-    rails generate bootstrap:layout fluid
+    # rails generate bootstrap:layout fluid
     # rails generate bootstrap:partial [navbar, navbar-devise, carousel]
 
     rails generate simple_form:install
     rails generate bootstrap:themed fortunes
+
+Przykładowy {%= link_to "layout aplikacji", "/bootstrap/application.html.erb" %}
+korzystający z TB.
 
 Na koniec, kilka zmian domyślnych ustawień parametrów TB:
 
@@ -458,6 +461,7 @@ Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rat):
 ## Krok 3 - dodajemy nowe gemy
 
 Dlaczego dopisaliśmy takie a nie inne gemy?
+Odpowiedzi można szukać na [The Ruby Toolbox](https://www.ruby-toolbox.com/).
 
 Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby
 (i równocześnie konsoli Rails):
