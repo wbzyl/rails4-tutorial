@@ -241,38 +241,49 @@ Dobrze jest od razu zmienić rozmiar fontu na
 3\. Do pliku *Gemfile* dopisujemy gemy z których będziemy korzystać:
 
     :::ruby Gemfile
+    # -*- coding: utf-8 -*-
+    source 'https://rubygems.org'
+
     gem 'rails', '3.2.8'
 
-    gem 'sqlite3'
-    # gem 'pg'
+    gem 'sqlite3', :groups => [:test, :development]
+    group :production do
+      gem 'pg'
+    end
+
     group :assets do
-      gem 'sass-rails',   '~> 3.2.3'
+      # gem 'sass-rails',   '~> 3.2.3'
       gem 'coffee-rails', '~> 3.2.1'
       # see https://github.com/sstephenson/execjs#readme for more supported runtimes
       # gem 'therubyracer'
-
       gem 'uglifier', '>= 1.0.3'
+
+      # zobacz https://github.com/seyhunak/twitter-bootstrap-rails
+      # gem 'twitter-bootstrap-rails'
     end
     gem 'jquery-rails'
 
+    gem 'json'
+
     # łatwiejsze w użyciu formularze
+    # zobacz https://github.com/plataformatec/simple_form
     gem 'simple_form'
 
     group :development do
       # ładniejsze wypisywanie rekordów na konsoli
       # (zob. konfiguracja irb w ~/.irbrc)
-      gem 'hirb'
+      # gem 'hirb'
       # bezproblemowe zapełnianie bazy danymi testowymi
       # https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md
       # gem 'factory_girl_rails', '~> 1.2'
-      gem 'faker'
-      gem 'populator'
+      # gem 'faker'
+      # gem 'populator'
       # wyłącza logowanie *assets pipeline*
       gem 'quiet_assets'
     end
 
     # alternatywa dla serwera Webrick
-    # gem thin
+    gem 'thin'
 
 4\. Instalujemy gemy lokalnie:
 
@@ -295,15 +306,18 @@ szybciej:
 Niektóre gemy, wymagają procedury *post-install*.
 Przykładowo, dla gemu *Simple Form* należy wykonać polecenie:
 
+    :::bash
     bin/rails generate simple_form:install
 
 Jeśli zamierzamy skorzystać z frameworka
 [Bootstrap](http://twitter.github.com/bootstrap/), to wykonujemy:
 
+    :::bash
     bin/rails generate simple_form:install --bootstrap
 
 Dlatego zwaracamy uwagę na komunikaty wypisywane w trakcie instalacji
-gemów lub czytamy pliki *README* z dokumentacją.
+gemów i czytamy pliki *README* z dokumentacją w repozytoriach
+z kodem źrodłowym gemu.
 
 5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
@@ -316,6 +330,13 @@ krótko mówiąc **migrujemy**:
     :::bash
     bin/rake db:create  # Create the database from config/database.yml for the current Rails.env
     bin/rake db:migrate # Migrate the database (options: VERSION=x, VERBOSE=false)
+
+Aby wykonać polecenie w trybie produkcyjnym poprzedzamy je napisem *RAILS_ENV=production*,
+przykładowo:
+
+    :::bash
+    RAILS_ENV=production bin/rake db:migrate
+    RAILS_ENV=production bin/rake db:seed
 
 7\. Ustawiamy stronę startową aplikacji, dopisując, przed
 kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
@@ -334,6 +355,7 @@ kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
 Następnie umieszczamy powyższe fortunki w bazie, wykonujac w terminalu
 polecenie:
 
+    :::bash
     bin/rake db:seed  # Load the seed data from db/seeds.rb
 
 Powyższy kod „smells” (dlaczego?) i należy go poprawić. Na przykład
@@ -359,6 +381,50 @@ Aby obejrzeć działającą aplikację pozostaje wejść na stronę:
 
      http://localhost:3000
 
+10\. Na razie layout i wygląd aplikacji pozostawia wiele do życzenia.
+Nie jest dobrym pomysłem, dodawanie własnego kodu
+JavaScript i CSS, który to zmieni na tym etapie.
+Dlatego skorzystamy z popularnego frameworka
+[Twitter Bootstrap](http://twitter.github.com/bootstrap/).
+
+Jak dodać *TB* do aplikacji Rails i jak z niego korzystać opisano tutaj:
+
+* [Twitter Bootstrap for Rails 3.1 Asset Pipeline](https://github.com/seyhunak/twitter-bootstrap-rails)
+* [Twitter Bootstrap Basics](http://railscasts.com/episodes/328-twitter-bootstrap-basics?view=asciicast) –
+  screencast
+* [Customize Bootstrap](http://twitter.github.com/bootstrap/customize.html)
+
+*TB* napisano w Less:
+
+* [{less}](http://lesscss.org/) – the dynamic stylesheet language
+
+Dodajemy gem *twitter-bootstrap-rails* do pliku *Gemfile*
+i wykonujemy te polecenia:
+
+    :::bash
+    bundle
+    rails generate bootstrap:install
+    rails generate bootstrap:layout fluid
+    # rails generate bootstrap:partial [navbar, navbar-devise, carousel]
+
+    rails generate simple_form:install
+    rails generate bootstrap:themed fortunes
+
+Na koniec, kilka zmian domyślnych ustawień parametrów TB:
+
+    :::css app/assets/stylesheets/bootstrap_and_overrides.css.less
+    @baseFontSize: 18px;
+    @baseLineHeight: 24px;
+
+    @navbarBackground: #555;
+    @navbarBackgroundHighlight: #888;
+    @navbarText: #eee;
+    @navbarLinkColor: #eee;
+
+    .navbar .brand {
+      color: #FAFFB8;
+    }
+
 
 # Fortunka – szczegóły
 
@@ -374,12 +440,13 @@ i następnie go użyć:
     :::bash
     rails new fortunka -m ⟨url albo ścieżka do szablonu⟩
 
+<!--
 Oczywiście możemy też skorzystać z jakiegoś gotowego szablonu.
 Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rat):
 
     :::bash
     rails new ⟨app_name⟩ -m https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb --skip-bundle
-
+-->
 
 ## Krok 3 - dodajemy nowe gemy
 
@@ -474,6 +541,7 @@ W aplikacjach Rails operacje CRUD wykonujemy korzystając z REST API:
 
 Polecenie:
 
+    :::bash
     rake routes
 
 wypisuje szczegóły REST API aplikacji.
@@ -492,6 +560,7 @@ wypisuje szczegóły REST API aplikacji.
 Rusztowanie dla zasobu (ang. *resource*) *fortune* zostało wygenerowane
 za pomocą polecenia:
 
+    :::bash
     rails generate scaffold fortune quotation:text source:string
 
 Stosujemy się do konwencji nazywania frameworka Rails.
@@ -716,6 +785,9 @@ byłoby męczące. Możemy tego uniknąć wstawiając do katalogu:
 swój szablon {%= link_to "controler.rb", "/rails31/scaffold/controller.erb" %}
 ({%= link_to "źródło", "/doc/rails31/scaffold/controller.rb" %}).
 
+Ale zamiast edytować kod kontrolera, powinniśmy skorzystać
+z metod *respond_with* i *respond_to*.
+
 
 ## Krok 8 - zapisujemy jakieś dane w bazie
 
@@ -723,6 +795,7 @@ Przećwiczymy proste zastosowania gemóww *Faker*
 i *Populator* (o ile już działa z Rails 3.1)
 korzystając z wygenrowanego kodu:
 
+    :::bash
     rails g scaffold friend last_name:string first_name:string phone:string motto:text
     rake db:migrate
 
@@ -744,6 +817,7 @@ Zaczynamy od „monkey patching” kodu gemu *Faker*:
 
 Sprawdzamy jak to działa na konsoli:
 
+    :::bash
     bundle exec irb
 
 gdzie wpisujemy:
@@ -770,6 +844,7 @@ możemy wpisać:
 
 Teraz wykonujemy:
 
+    :::bash
     rake db:seed
 
 zapełniając tabelę *friends* danymi testowymi.
