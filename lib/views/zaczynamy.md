@@ -425,6 +425,13 @@ Na koniec, kilka zmian domyślnych ustawień parametrów TB:
       color: #FAFFB8;
     }
 
+Przykładowe poprawki szablonu formularza:
+
+    :::rhtml _form.html.erb
+    <%= f.input :quotation, :input_html => { :rows => "4", :class => "span6" } %>
+    <%= f.input :source, :input_html => { :class => "span6" } %>
+
+
 
 # Fortunka – szczegóły
 
