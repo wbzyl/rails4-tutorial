@@ -133,17 +133,17 @@ Różne:
     ?a.ord   # 97
 
 W 1.9 napisy nie są Enumerable, tj. `str.each` nie działa.
-Za to mamy:
+Za to mamy *String.each_char* i *String.chars*:
 
     :::ruby
-    str.each_char   str.chars
     str.each_char.class
-    str.each_byte   str.bytes
     mstr = "hello\nworld"
     mstr.each_line {|l| puts l.upcase}
     str.chars.to_a  # ["a", "l", "a", ...]
 
-"napisy" a :symbole:
+(To samo, ale na bajtach: *String.each_byte*, *String.bytes*.)
+
+"Napisy" a :symbole:
 
     :::ruby
     words= %w{ witaj świecie }
