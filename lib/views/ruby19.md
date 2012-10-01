@@ -68,9 +68,8 @@ Różne:
     a = [1,2,3,4,5,6]
     a.object_id
     a.to_a.object_id
-    str = "hello\nworld"
-    str.to_a
-    4.to_a # warning: default 'to_a' will be obsolete
+    a.to_s
+    a.methods
 
 
 ## Enumerators 1.8
@@ -144,7 +143,7 @@ Za to mamy:
     mstr.each_line {|l| puts l.upcase}
     str.chars.to_a  # ["a", "l", "a", ...]
 
-Napisy a symbole: `:symbol`, `"napis"`, `'napis'`:
+"napisy" a :symbole:
 
     :::ruby
     words= %w{ witaj świecie }
