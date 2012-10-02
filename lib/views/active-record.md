@@ -25,15 +25,10 @@ Warto przeczytać:
 * Simone Carletti,
   [Understanding Ruby and Rails: Delegate](http://www.simonecarletti.com/blog/2009/12/inside-ruby-on-rails-delegate/)
 
-Czasami na konsoli sprawdzamy inne rzeczy, na przykład routing:
+Na konsoli Rails najczęściej wykonujemy operacje CRUD na modelach.
+Ale można sprawdzić też kilka innych rzeczy, na przykład routing:
 
-    :::ruby
-    Rails.application.routes.url_helpers.fortunes_path
-    Rails.application.routes.url_helpers.fortunes_url(:host => "localhost:3000")
-
-albo tak:
-
-    :::ruby
+    :::ruby konsola
     app.fortunes_path
     app.get app.fortune_path(4)
     app.response.body
@@ -43,8 +38,14 @@ albo tak:
 
     :::ruby
     include Rails.application.routes.url_helpers
-    fortune_path
+    fortune_path(2)
     fortunes_url(:host => "localhost:3000")
+
+albo tak:
+
+    :::ruby konsola
+    Rails.application.routes.url_helpers.fortunes_path
+    Rails.application.routes.url_helpers.fortunes_url(:host => "localhost:3000")
 
 Metody pomocnicze:
 
@@ -58,21 +59,23 @@ Więcej na temat sztuczek konsolowych:
 Zaczniemy od sprawdzenia jakie mamy zainstalowane w systemie
 Rubies i zestawy gemów:
 
+    :::bash
     rvm list
     rvm list gemsets
 
 Następnie, na potrzeby przykładów z tego wykładu, utworzymy zestaw
 gemów o nazwie *active_record*:
 
-    rvm use --create ruby-1.9.3-p125@active_record
-    gem install bundler rails
+    :::bash
+    rvm use --create ruby-1.9.3-p194@active_record
+    gem update
+    gem install rails
     rvm info
     rvm current
 
 Co daje takie podejście?
 
-
-### Dokumentacja:
+Dokumentacja:
 
 * [ActiveRecord::Associations::ClassMethods](http://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html)
 * [ActiveRecord::Base](http://api.rubyonrails.org/classes/ActiveRecord/Base.html)
@@ -86,8 +89,9 @@ Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.rubyo
 
 Generujemy przykładową aplikację:
 
-    rvm use ruby-1.9.2-p290@ar
-    rails new why_associations --skip-bundle
+    :::bash
+    rvm use ruby-1.9.3-p194@active_record
+    rails new why_associations --skip-bundle --skip-test-unit
     cd why_associations
     bundle install --path=.bundle/gems
 
@@ -111,11 +115,13 @@ jeszcze jeden atrybut (*foreign key*) do zamówień:
 
 Generujemy *boilerplate code*:
 
+    :::bash
     rails generate model Customer name:string
     rails generate model Order order_date:datetime order_number:string customer:references
 
 Migrujemy i przechodzimy na konsolę:
 
+    :::rails
     rake db:migrate
     rails console
 
@@ -125,14 +131,14 @@ gdzie dodajemy klienta i dwa jego zamówienia:
     Customer.create :name => 'wlodek'
     @customer = Customer.first  # jakiś klient
     Order.create :order_date => Time.now, :order_number => '20111003/1', :customer_id => @customer.id
-    Order.create :order_date => Time.now, :order_number => '20111003/2', :customer_id => @customer.id
+    Order.create order_date: Time.now, order_number: '20111003/2', customer_id: @customer.id
     Order.all
 
 A tak usuwamy z bazy klienta i wszystkie jego zamówienia:
 
     :::ruby
     @customer = Customer.first
-    @orders = Order.where :customer_id => @customer.id
+    @orders = Order.where customer_id: @customer.id
     @orders.each { |order| order.destroy }
     @customer.destroy
 
@@ -145,6 +151,7 @@ Po dopisaniu kod ustalającego powiązania między tymi modelami:
     class Customer < ActiveRecord::Base
       has_many :orders, :dependent => :destroy
     end
+
     class Order < ActiveRecord::Base
       belongs_to :customer
     end
@@ -152,10 +159,10 @@ Po dopisaniu kod ustalającego powiązania między tymi modelami:
 tworzenie nowych zamówień dla danego klienta jest łatwiejsze:
 
     :::ruby
-    Customer.create(:name => 'rysiek')
-    @customer = Customer.where(:name=> 'rysiek').first
-    @order = @customer.orders.create :order_date => Time.now, :order_number => '20111003/3'
-    @order = @customer.orders.create :order_date => Time.now, :order_number => '20111003/4'
+    Customer.create(name: 'rysiek')
+    @customer = Customer.where(name: 'rysiek').first
+    @order = @customer.orders.create order_date: Time.now, order_number: '20111003/3'
+    @order = @customer.orders.create order_date: Time.now, order_number: '20111003/4'
 
 Usunięcie kilenta wraz z wszystkimi jego zamówieniami jest też proste:
 
@@ -189,23 +196,28 @@ Między zasobem a rodzajem zasobu mamy powiązanie wiele do jednego.
 Tak jak poprzednio skorzystamy z generatora do wygenerowania
 **boilerplate code**:
 
-    rails g model AssetType name:string
-    rails g model Asset name:string description:text asset_type:references
-    rails g model Tag name:string
+    :::bash
+    rails g model AssetType name
+    rails g model Asset name description:text asset_type:references
+    rails g model Tag name
 
 Dla powiązania wiele do wielu między *Asset* i *Tag*, zgodnie
 z konwencją Rails, powinniśmy dodać tabelę o nazwie *assets_tags*
 (nazwy tabel w kolejności alfabetycznej):
 
+    :::bash
+    # rails g model AssetsTags asset:references:index tag:references:index
+    #   ale indeksy są tworzone automatycznie dla atrybutów *references*
+    #   dlatego wystarczy
     rails g model AssetsTags asset:references tag:references
 
-W migracji dopisujemy *:id => false* (dlaczego? konwencja Rails)
+W migracji dopisujemy *id: false* (dlaczego? konwencja Rails)
 i usuwamy zbędne *timestamps* (też wymagane przez Rails?):
 
     :::ruby
     class CreateAssetsTags < ActiveRecord::Migration
       def change
-        create_table :assets_tags, :id => false do |t|
+        create_table :assets_tags, id: false do |t|
           t.references :asset
           t.references :tag
         end
@@ -220,7 +232,8 @@ Dopiero teraz migrujemy i usuwamy niepotrzebny model
     rm app/models/assets_tags.rb
     rake db:migrate
 
-Na koniec, dodajemy powiązania do modeli:
+Na koniec, dodajemy powiązania do tych modeli:
+
     :::ruby
     class Asset < ActiveRecord::Base
       has_and_belongs_to_many :tags
@@ -232,6 +245,7 @@ Na koniec, dodajemy powiązania do modeli:
     end
 
     class AssetType < ActiveRecord::Base
+      attr_accessible :description, :name, :asset_type_id #<- dopisujemy
       has_many :assets
     end
 
@@ -239,22 +253,22 @@ Skorzystamy z zadania *rake* o nazwie *db:seed*
 do umieszczenia danych w tabelach:
 
     :::ruby db/seeds.rb
-    AssetType.create :name => 'Photo'
-    AssetType.create :name => 'Painting'
-    AssetType.create :name => 'Print'
-    AssetType.create :name => 'Drawing'
-    AssetType.create :name => 'Movie'
-    AssetType.create :name => 'CD'
+    AssetType.create name: 'Photo'
+    AssetType.create name: 'Painting'
+    AssetType.create name: 'Print'
+    AssetType.create name: 'Drawing'
+    AssetType.create name: 'Movie'
+    AssetType.create name: 'CD'
 
-    Asset.create :name => 'Cypress', :description => 'A photo of a tree.', :asset_type_id => 1
-    Asset.create :name => 'Blunder', :description => 'An action file.', :asset_type_id => 5
-    Asset.create :name => 'Snap', :description => 'A recording of a fire.', :asset_type_id => 6
+    Asset.create name: 'Cypress', description: 'A photo of a tree.',     asset_type_id: 1
+    Asset.create name: 'Blunder', description: 'An action file.',        asset_type_id: 5
+    Asset.create name: 'Snap',    description: 'A recording of a fire.', asset_type_id: 6
 
-    Tag.create :name => 'hot'
-    Tag.create :name => 'red'
-    Tag.create :name => 'boring'
-    Tag.create :name => 'tree'
-    Tag.create :name => 'organic'
+    Tag.create name: 'hot'
+    Tag.create name: 'red'
+    Tag.create name: 'boring'
+    Tag.create name: 'tree'
+    Tag.create name: 'organic'
 
 Ale wcześniej usuniemy bazę:
 
@@ -305,19 +319,21 @@ Dodać do modeli następujące powiązania:
 
     :::ruby
     class Author < ActiveRecord::Base
-      has_many :articles, :through => :bibinfos
+      has_many :articles, through: :bibinfos
       has_many :bibinfos
     end
     class Article < ActiveRecord::Base
-      has_many :authors, :through => :bibinfos
+      has_many :authors, through: :bibinfos
       has_many :bibinfos
     end
+
+    # *model* pośredniczący dla relacji wiele-do-wielu
     class Bibinfo < ActiveRecord::Base
       belongs_to :author
       belongs_to :article
     end
 
-Przejść na konsolę. Zapisać w tabelkach następujące pozycje:
+Przejść na konsolę. Zapisać w tabelkach następujące artykuły (książki):
 
 * David Flanagan, Yukihiro Matsumoto. The Ruby Programming Language, 2008.
 * Dave Thomas, Chad Fowler, Andy Hunt. Programming Ruby 1.9, 2009.
