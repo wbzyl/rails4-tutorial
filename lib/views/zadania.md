@@ -50,8 +50,11 @@ Wynik wykonania tego polecenia powinien być taki:
 
     rvm rubies
 
-       ruby-1.9.3-p125 [ i686 ]
-    =* ruby-1.9.3-p194 [ i686 ]
+       ruby-1.9.2-p320 [ x86_64 ]
+       ruby-1.9.2-p320-n32 [ i386 ]
+       ruby-1.9.3-head [ x86_64 ]
+       ruby-1.9.3-head-i32 [ i686 ]
+    =* ruby-1.9.3-p194 [ x86_64 ]
 
     # => - current
     # =* - current && default
