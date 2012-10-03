@@ -245,7 +245,7 @@ Na koniec, dodajemy powiązania do tych modeli:
     end
 
     class AssetType < ActiveRecord::Base
-      attr_accessible :description, :name, :asset_type_id #<- dopisujemy
+      attr_accessible :description, :name, :asset_type_id #<= dopisujemy
       has_many :assets
     end
 
@@ -369,36 +369,43 @@ Typowy przykład. Trzy modele:
 * *Company* (firma)
 * *PhoneNumber* (numer telefonu)
 
-Osoba ma wiele numerów telefonów. Firma też ma wiele telefonów.
-Niestety, numer telefonu może należeć do Osoby albo do Firmy.
-Takie jest ograniczenie relacji *belongs_to* (należy do).
+Osoba może mieć kilka numerów telefonów. Firma też.
 
-Możemy to ograniczenie obejść powielając model:
+Niestety w Railsach, nie możemy w kodzie modelu *PhoneNumber* wpisać
+**kilkukrotnie** *belongs_to*
+
+    :::ruby
+    class PhoneNumber < ActiveRecord::Base
+      belongs_to :person
+      belongs_to :company
+
+Ale możemy to ograniczenie obejść powielając model:
 
 * *PersonPhoneNumber*
 * *CompanyPhoneNumber*
 
-Takie rozwiązanie prowadzi do powielania kodu. Dlatego
-w Rails mamy inne rozwiązanie – *polymorphic associations*.
+Takie rozwiązanie prowadzi do powielania kodu,
+co jest kardynalnym błędem. Do takich sytuacji
+w Rails stworzono tzw. *polymorphic associations*.
 
 Zaczynamy od wygenerowania trzech modeli:
 
     rails g model Person name:string
     rails g model Company name:string
-    rails g model PhoneNumber tel:string callable:references
+    rails g model PhoneNumber number:string callable:references
 
 Dopisujemy zależności do modeli:
 
     :::ruby
     class Person < ActiveRecord::Base
-      has_many :phone_numbers, :as => :callable, :dependent => :destroy
+      has_many :phone_numbers, as: :callable, dependent: :destroy
     end
     class Company < ActiveRecord::Base
-      has_many :phone_numbers, :as => :callable, :dependent => :destroy
+      has_many :phone_numbers, as: :callable, dependent: :destroy
     end
 
     class PhoneNumber < ActiveRecord::Base
-      belongs_to :callable, :polymorphic => true
+      belongs_to :callable, polymorphic: true  #<= dopisujemy polymorphic…
     end
 
 Poprawiamy migrację wygenerowaną dla *phone_numbers*:
@@ -407,14 +414,14 @@ Poprawiamy migrację wygenerowaną dla *phone_numbers*:
     class CreatePhoneNumbers < ActiveRecord::Migration
       def change
         create_table :phone_numbers do |t|
-          t.string :tel
-          t.references :callable, :polymorphic => true
+          t.string :number
+          t.references :callable, polymorphic: true
           t.timestamps
         end
       end
     end
 
-*Uwaga:* wiersz kodu z *:polymorphic => true* powyżej, to to samo co:
+*Uwaga:* wiersz kodu z *polymorphic: true* powyżej zastępuje:
 
     :::ruby
     t.integer :callable_id
@@ -431,24 +438,24 @@ Teraz już możemy przećwiczyć polimorfizm na konsoli Rails:
 gdzie wykonujemy następujący kod:
 
     :::ruby
-    p = Person.create :name => 'wlodek'
-    c = Company.create :name => 'ii'
-    p.phone_numbers << PhoneNumber.create(:tel => '1234')
-    c.phone_numbers << PhoneNumber.create(:tel => '5678')
+    p = Person.create :name => 'Wlodek'
+    c = Company.create :name => 'Instytut Informatyki'
+    p.phone_numbers << PhoneNumber.create(number: '58-000-0000')
+    c.phone_numbers << PhoneNumber.create(number: '58-001-0001')
     PhoneNumber.all
-      +----+------+-------------+---------------
-      | id | tel  | callable_id | callable_type
-      +----+------+-------------+---------------
-      | 1  | 1234 | 1           | Person
-      +----+------+-------------+---------------
-      | 2  | 5678 | 1           | Company
-      +----+------+-------------+---------------
+      +----+---------+-------------+---------------
+      | id | number  | callable_id | callable_type
+      +----+---------+-------------+---------------
+      | 1  | 58-..   | 1           | Person
+      +----+---------+-------------+---------------
+      | 2  | 58-..   | 1           | Company
+      +----+---------+-------------+---------------
     p.phone_numbers
-      +----+------+-------------+---------------
-      | id | tel  | callable_id | callable_type
-      +----+------+-------------+---------------
-      | 1  | 1234 | 1           | Person
-      +----+------+-------------+---------------
+      +----+---------+-------------+---------------
+      | id | number  | callable_id | callable_type
+      +----+---------+-------------+---------------
+      | 1  | 58-..   | 1           | Person
+      +----+---------+-------------+---------------
 
 Jak działa *p.phone_numbers*?
 
