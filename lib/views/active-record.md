@@ -433,7 +433,7 @@ Migrujemy:
 
 Teraz już możemy przećwiczyć polimorfizm na konsoli Rails:
 
-    rails c
+    rails console
 
 gdzie wykonujemy następujący kod:
 
