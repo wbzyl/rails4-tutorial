@@ -272,7 +272,7 @@ Dobrze jest od razu zmienić rozmiar fontu na
     group :development do
       # ładniejsze wypisywanie rekordów na konsoli
       # (zob. konfiguracja irb w ~/.irbrc)
-      # gem 'hirb'
+      gem 'hirb'
       # bezproblemowe zapełnianie bazy danymi testowymi
       # https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md
       # gem 'factory_girl_rails', '~> 1.2'
@@ -497,9 +497,6 @@ Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby
       rescue LoadError
       end
     end
-
-**Uwaga:** Jeśli gem *hirb* jest zainstalowany w systemie, to powinniśmy
-go wykomentować z pliku *Gemfile*.
 
 
 ## Krok 4 – instalujemy gemy

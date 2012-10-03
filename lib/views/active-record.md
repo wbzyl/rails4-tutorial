@@ -319,26 +319,36 @@ Dodać do modeli następujące powiązania:
 
     :::ruby
     class Author < ActiveRecord::Base
+      has_many :bibinfos
       has_many :articles, through: :bibinfos
-      has_many :bibinfos
-    end
-    class Article < ActiveRecord::Base
-      has_many :authors, through: :bibinfos
-      has_many :bibinfos
     end
 
-    # *model* pośredniczący dla relacji wiele-do-wielu
+    # relacja wiele-do-wielu via Bibinfo model
     class Bibinfo < ActiveRecord::Base
       belongs_to :author
       belongs_to :article
     end
 
+    class Article < ActiveRecord::Base
+      has_many :bibinfos
+      has_many :authors, through: :bibinfos
+    end
+
 Przejść na konsolę. Zapisać w tabelkach następujące artykuły (książki):
 
-* David Flanagan, Yukihiro Matsumoto. The Ruby Programming Language, 2008.
-* Dave Thomas, Chad Fowler, Andy Hunt. Programming Ruby 1.9, 2009.
-* Sam Ruby, Dave Thomas, David Heinemeier Hansson. Agile Web Development with Rails, 2011
-* David Flanagan. jQuery Pocket Reference, 2010.
+* David Flanagan, Yukihiro Matsumoto. **The Ruby Programming Language**
+  (ISBN-13: 978-0-59651-617-8, Publication Date: February 1, 2008, Edition: First Edition, Publisher: O'Reilly)
+* Dave Thomas, Chad Fowler, Andy Hunt. **Programming Ruby 1.9**
+  (Publication Date: April 15, 2009, ISBN: 978-1-93435-608-1, Edition: 3rd Edition)
+* Sam Ruby, Dave Thomas, David Heinemeier Hansson. **Agile Web Development with Rails**
+  (Published: 2011-03-31, ISBN: 978-1-93435-654-8, Pages: 448, Edition: 4th Edition)
+* David Flanagan. **jQuery Pocket Reference**
+  (Publication Date: December 2010, Pages: 160, Print ISBN: 978-1-4493-9722-7, Ebook ISBN: 978-1-4493-9732-6)
+
+*Wskazówki:*
+(i) [The has_many :through Association](http://guides.rubyonrails.org/association_basics.html#the-has_many-through-association),
+(ii) {%= link_to "jak wygenerować modele?", "/database_seed/gen-models-why_associations.sh" %},
+(iii) {%= link_to "seeds.rb", "/database_seed/seeds-why_associations.rb" %} (rozwiązanie).
 
 Wypróbować na konsoli poniższe powiązania:
 
