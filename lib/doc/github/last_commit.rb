@@ -37,3 +37,17 @@ end
 # http://www.ruby-doc.org/stdlib-1.9.3/libdoc/date/rdoc/Date.html
 # DateTime.iso8601(date).to_time < Time.now - 7*24*60*60
 # DateTime.iso8601(date).to_date < Date.today.prev_day(7)
+
+# Misc
+#
+# compare = github.repos.commits.compare('wbzyl', 'rails4-tutorial', "fcc512a2d6d48b3e346b63a14c9c5f3f9356b48e", "master")
+# compare.keys ["total_commits", "permalink_url", "html_url","diff_url", "patch_url", "files", "commits", "url", ...]
+#
+# compare
+
+# files = github.repos.commits.compare('wbzyl', 'rails4-tutorial', "fcc512a2d6d48b3e346b63a14c9c5f3f9356b48e", "master").files
+# files[0].keys  #=> ["filename", "status", "raw_url", "additions", "sha", "patch", "deletions", "blob_url", "changes"]
+#
+# files[0].filename
+# files[0].patch
+# files[0].blob_url
