@@ -472,21 +472,30 @@ Co w nich jest ciekawego?
 
 ## Efektywne pobieranie danych – Eager Loading
 
-Prosty przykład jest opisany w sekcji
+„Eager loading is the mechanism for loading the associated records of
+the objects returned by *Model.find* using as few queries as possible.”
+
+Powyższy cytat zaczyna sekcję
 [Eager Loading Associations](http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations)
 przewodnika „Active Record Query Interface”.
 
-Nieco bardziej skomplikowany przykład:
-fotografowie, galerie i zdjęcia.
-Fotograf ma wiele galerii, w galerii jest wiele zdjęć.
+W przewodniku przedstawiono prosty, składający się z dwóch modeli
+*Client* i *Address*, przykład, a poniżej — nieco bardziej złożony
+przykład składający się z trzech modeli: *Fotograf*, *Galeria*
+i *Zdjęcie*.
 
-Korzystamy z generatora:
+Zależności między modelami są takie:
 
-    rails g model Photographer name:string
-    rails g model Gallery photographer:references name:string
-    rails g model Photo gallery:references name:string file_path:string
+* *Fotograf* ma wiele *Galerii*
+* *Galeria* ma wiele *Zdjęć*
 
-Dopisujemy brakujące powiązania w modelach:
+Dow wygenerowania kodu skorzystamy z generatora *model*:
+
+    rails g model Photographer name
+    rails g model Gallery photographer:references name
+    rails g model Photo gallery:references name file_path
+
+Do wygenerowanego kodu dopisujemy powiązania:
 
     :::ruby
     class Photographer < ActiveRecord::Base
@@ -494,37 +503,42 @@ Dopisujemy brakujące powiązania w modelach:
     end
 
     class Gallery < ActiveRecord::Base
+      attr_accessible :name, :photographer_id
+
       has_many :photos
       belongs_to :photographer
     end
 
     class Photo < ActiveRecord::Base
+      attr_accessible :file_path, :name, :gallery_id
+
       belongs_to :gallery
     end
 
-Teraz migrujemy:
+Na koniec, migrujemy:
 
+    :::bash
     rake db:migrate
 
 Dopisujemy kod do pliku *db/seeds.rb* (albo wykonujemy go bezpośrednio
 na konsoli Rails):
 
     :::ruby db/seeds.rb
-    Photographer.create :name => 'Jan Saudek'
-    Photographer.create :name => 'Stefan Rohner'
+    Photographer.create name: 'Jan Saudek'
+    Photographer.create name: 'Stefan Rohner'
 
-    Gallery.create :name => 'Nordic Light', :photographer_id => 1
-    Gallery.create :name => 'Daily Life', :photographer_id => 2
-    Gallery.create :name => 'India', :photographer_id => 2
+    Gallery.create name: 'Nordic Light', photographer_id: 1
+    Gallery.create name: 'Daily Life', photographer_id: 2
+    Gallery.create name: 'India', photographer_id: 2
 
-    Photo.create :name => 'Shadows', :file_path => 'photos/img_1154.jpg', :gallery_id => 1
-    Photo.create :name => 'Ice Formation', :file_path => 'photos/img_6836.jpg', :gallery_id => 1
-    Photo.create :name => 'Unknown', :file_path => 'photos/img_8419.jpg', :gallery_id => 2
-    Photo.create :name => 'Uptown', :file_path => 'photos/img_1243.jpg', :gallery_id => 2
-    Photo.create :name => 'India Sunset', :file_path => 'photos/img_2349.jpg', :gallery_id => 2
-    Photo.create :name => 'Summer', :file_path => 'photos/img_7744.jpg', :gallery_id => 3
-    Photo.create :name => 'Two cats', :file_path => 'photos/img_1440.jpg', :gallery_id => 3
-    Photo.create :name => 'Dogs', :file_path => 'photos/img_1184.jpg', :gallery_id => 3
+    Photo.create name: 'Shadows', file_path: 'photos/img_1154.jpg', gallery_id: 1
+    Photo.create name: 'Ice Formation', file_path: 'photos/img_6836.jpg', gallery_id: 1
+    Photo.create name: 'Unknown', file_path: 'photos/img_8419.jpg', gallery_id: 2
+    Photo.create name: 'Uptown', file_path: 'photos/img_1243.jpg', gallery_id: 2
+    Photo.create name: 'India Sunset', file_path: 'photos/img_2349.jpg', gallery_id: 2
+    Photo.create name: 'Summer', file_path: 'photos/img_7744.jpg', gallery_id: 3
+    Photo.create name: 'Two cats', file_path: 'photos/img_1440.jpg', gallery_id: 3
+    Photo.create name: 'Dogs', file_path: 'photos/img_1184.jpg', gallery_id: 3
 
 Na konsoli wykonujemy:
 
@@ -534,16 +548,22 @@ Na konsoli wykonujemy:
 Wykonanie tego polecenia skutkuje trzykrotnym odpytaniem bazy:
 
     Gallery Load (0.2ms)  SELECT "galleries".* FROM "galleries"
-    Photographer Load (0.1ms)  SELECT "photographers".* FROM "photographers" WHERE "photographers"."id" IN (1, 2)
-    Photo Load (0.2ms)  SELECT "photos".* FROM "photos" WHERE "photos"."gallery_id" IN (1, 2, 3)
+    Photographer Load (0.1ms)  SELECT "photographers".* FROM "photographers"
+      WHERE "photographers"."id" IN (1, 2)
+    Photo Load (0.2ms)  SELECT "photos".* FROM "photos"
+      WHERE "photos"."gallery_id" IN (1, 2, 3)
 
 Teraz polecenia:
 
     :::ruby
+    galleries.each do |gallery|
+      puts gallery.photographer.name, gallery.photos[0].name
+    end
+
     galleries[0].photographer
     galleries[0].photos
 
-nie odpytują bazy – dane zostały wcześniej wczytane (*eager loading*).
+nie odpytują bazy, ponieważ dane zostały wcześniej wczytane (*eager loading*).
 
 
 ## Rodzime typy baz danych
@@ -555,21 +575,29 @@ w [dokumentacji metody *column*](http://api.rubyonrails.org/classes/ActiveRecor
 PostgreSQL:
 
     :::ruby activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+    ADAPTER_NAME = 'PostgreSQL'
+
     NATIVE_DATABASE_TYPES = {
-      :primary_key => "serial primary key",
-      :string      => { :name => "character varying", :limit => 255 },
-      :text        => { :name => "text" },
-      :integer     => { :name => "integer" },
-      :float       => { :name => "float" },
-      :decimal     => { :name => "decimal" },
-      :datetime    => { :name => "timestamp" },
-      :timestamp   => { :name => "timestamp" },
-      :time        => { :name => "time" },
-      :date        => { :name => "date" },
-      :binary      => { :name => "bytea" },
-      :boolean     => { :name => "boolean" },
-      :xml         => { :name => "xml" },
-      :tsvector    => { :name => "tsvector" }
+      primary_key: "serial primary key",
+      string:      { name: "character varying", limit: 255 },
+      text:        { name: "text" },
+      integer:     { name: "integer" },
+      float:       { name: "float" },
+      decimal:     { name: "decimal" },
+      datetime:    { name: "timestamp" },
+      timestamp:   { name: "timestamp" },
+      time:        { name: "time" },
+      date:        { name: "date" },
+      binary:      { name: "bytea" },
+      boolean:     { name: "boolean" },
+      xml:         { name: "xml" },
+      tsvector:    { name: "tsvector" },
+      hstore:      { name: "hstore" },
+      inet:        { name: "inet" },
+      cidr:        { name: "cidr" },
+      macaddr:     { name: "macaddr" },
+      uuid:        { name: "uuid" },
+      json:        { name: "json" }
     }
 
 SQLite:
@@ -592,17 +620,17 @@ SQLite:
       }
     end
 
+
 ## Race Conditions
 
-Czyli tzw. sytuacje wyścigu.
-Poniżej przykład race condition w Rails.
+czyli tzw. *sytuacje wyścigu*.
 
-Tworzymy dwa modele: magazyn (*Inventory*) i koszyk (*Cart*):
+Przykład: tworzymy dwa modele: magazyn (*Inventory*) i koszyk (*Cart*):
 
-    rails g model Inventory name:string on_hand:integer
-    rails g model Cart name:string quantity:integer
+    rails g model Inventory name on_hand:integer
+    rails g model Cart name quantity:integer
 
-Oto wygenerowane migracje:
+Oto wygenerowane migracje i nieco poprawione migracje:
 
     :::ruby
     class CreateInventories < ActiveRecord::Migration
@@ -641,14 +669,14 @@ na koniec migrujemy:
 Przechodzimy na konsolę Ruby:
 
     :::ruby
-    Inventory.create :name => 'Laptop Eee PC 1000', :on_hand => 10
+    Inventory.create name: 'Laptop Eee PC 1000', on_hand: 10
 
-Przykład pokazujący sytuację race condition.
+Przykład pokazujący *race condition*
 Dwóch klientów jednocześnie kupuje po 8 laptopów Eee PC 1000:
 
     :::ruby
-    c1 = Cart.create :name => 'Laptop Eee PC 1000', :quantity => 8
-    c2 = Cart.create :name => 'Laptop Eee PC 1000', :quantity => 8
+    c1 = Cart.create name: 'Laptop Eee PC 1000', quantity: 8
+    c2 = Cart.create name: 'Laptop Eee PC 1000', quantity: 8
 
 Oczywiście, po tym jak pierwszy kilent dodał 8 laptopów do swojego
 koszyka, zabraknie 6 laptopów dla drugiego klienta.
@@ -660,7 +688,7 @@ Możemy to zaprogramować korzystając z transakcji i wyjątków:
     :::ruby
     laptop = 'Laptop Eee PC 1000'
     quantity = 8
-    c1 = Cart.create :name => laptop, :quantity => quantity
+    c1 = Cart.create name: laptop, quantity: quantity
     begin
       Cart.transaction do
         item = Inventory.find_by_name laptop
@@ -668,7 +696,7 @@ Możemy to zaprogramować korzystając z transakcji i wyjątków:
         item.save!
       end
     rescue
-      flash[:error] = "Sorry, laptopy właśnie się skończyły!"
+      flash[:error] = "Sorka, laptopy właśnie się skończyły!"
     end
 
 Podobnie postępujemy z drugim klientem. Oczywiście, powyższy
