@@ -24,13 +24,20 @@ repos = [
 ]
 
 repos.each do |repo|
+  user_name = repo[:login]
+  repo_name = repo[:name]
+
+  # get the last commit
+  last_commit = github.repos.commits.list(user_name, repo_name, page: 1, per_page: 1)[0]
+  uid = last_commit.author.id
+
   # get the last commit info
-  author = github.repos.commits.list(repo[:login], repo[:name], page: 1, per_page: 1)[0].commit.author
+  author = last_commit.commit.author
   # puts author.keys
   date = DateTime.iso8601(author.date).to_date
   # 7 dni == tydzień
   procrastinate = date < Date.today.prev_day(8) ? red(date) : date
-  puts "#{procrastinate} by #{yellow author.email} (#{author.name})"
+  puts "#{procrastinate}  #{yellow(user_name + '/' + repo_name)} (#{author.name}, #{author.email}, uid: #{cyan(uid)})"
 end
 
 # http://www.ruby-doc.org/stdlib-1.9.3/libdoc/date/rdoc/DateTime.html#method-c-iso8601
