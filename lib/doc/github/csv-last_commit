@@ -1,0 +1,69 @@
+#! /usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+# gem install github_api ansi
+
+require 'github_api' # http://rubydoc.info/gems/github_api/frames
+require 'ansi/code'  # http://rubydoc.info/gems/ansi/frames
+
+include ANSI::Code
+
+require 'time'
+require 'csv'
+
+# ----
+
+if ARGV.length < 1
+  puts "Usage: #{$PROGRAM_NAME} lista.rb NAME.CSV pon12|wto10|wto12"
+  exit
+else
+  csv_file = ARGV[0]
+  group = ARGV[1]
+end
+
+# puts "0: #{ARGV[0]} 1: \t#{ARGV[1]} \tlength: #{ARGV.length}"
+
+# CSV format:
+#
+#   Włodek,Bzyl,wbzyl,rails4-tutorial,wto12
+#
+data = open(csv_file).readlines
+csv_data = CSV.parse(data.join)     # [ ["Włodek", "Bzyl", ...], [ ...], ...]
+
+# ----
+
+github = Github.new
+
+csv_data.each do |repo|
+
+  user_name = repo[2]
+  repo_name = repo[3]
+  lab = repo[4]
+
+  # get the last commit
+  last_commit = github.repos.commits.list(user_name, repo_name, page: 1, per_page: 1)[0]
+  uid = last_commit.author.id
+
+  author = last_commit.commit.author
+  # puts author.keys
+  date = DateTime.iso8601(author.date).to_date
+  # 7 dni == tydzień
+  procrastinate = date < Date.today.prev_day(8) ? red(date) : green(date)
+
+  line = "#{procrastinate} #{yellow(user_name + '/' + repo_name)}\t#{author.name}, #{author.email}, "
+  if group == lab
+    line += magenta(group)
+  else
+    line += cyan(uid)
+  end
+  # log message
+  message = last_commit.commit.message
+  line += "\n\t#{message}"
+
+  if group && group == lab
+    puts line
+  elsif !group
+    puts line
+  end
+
+end
