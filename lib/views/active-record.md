@@ -623,14 +623,15 @@ SQLite:
 
 ## Race Conditions
 
-czyli tzw. *sytuacje wyścigu*.
+czyli tzw. **sytuacje wyścigu**.
 
-Przykład: tworzymy dwa modele: magazyn (*Inventory*) i koszyk (*Cart*):
+Przykład: tworzymy dwa modele: *Inventory* (magazyn) i *Cart* (koszyk):
 
+    :::bash
     rails g model Inventory name on_hand:integer
     rails g model Cart name quantity:integer
 
-Oto wygenerowane migracje i nieco poprawione migracje:
+Oto wygenerowane i nieco poprawione migracje:
 
     :::ruby
     class CreateInventories < ActiveRecord::Migration
@@ -646,7 +647,7 @@ Oto wygenerowane migracje i nieco poprawione migracje:
       def change
         create_table :carts do |t|
           t.string :name
-          t.integer :quantity, :default => 0  # dodane ręcznie
+          t.integer :quantity, default: 0  # dodane ręcznie
         end
       end
     end
@@ -664,6 +665,7 @@ Do modelu *Inventory* dodajemy walidację:
 
 na koniec migrujemy:
 
+    :::bash
     rake db:migrate
 
 Przechodzimy na konsolę Ruby:
