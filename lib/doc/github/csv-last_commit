@@ -50,7 +50,10 @@ csv_data.each do |repo|
   # 7 dni == tydzień
   procrastinate = date < Date.today.prev_day(8) ? red(date) : green(date)
 
-  line = "#{procrastinate} #{yellow(user_name + '/' + repo_name)}\t#{author.name}, #{author.email}, "
+  author_name = author.name              # name z githuba
+  author_name = "#{repo[0]} #{repo[1]}"  # nazwisko, imię z pliku CSV
+
+  line = "#{procrastinate} #{yellow(user_name + '/' + repo_name)}\t\t#{author_name} (#{author.email}) "
   if group == lab
     line += magenta(group)
   else
