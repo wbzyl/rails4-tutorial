@@ -535,7 +535,7 @@ Poniższy kod wpisujemy i uruchamiamy w powłoce Ruby `irb`:
     require './ar'
 
     Post.all
-    Comments.all
+    Comment.all
 
     // SELECT * FROM posts WHERE (posts.id = 1)
     p1 = Post.find 1
