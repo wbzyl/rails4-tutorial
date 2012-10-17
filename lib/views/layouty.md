@@ -164,6 +164,31 @@ Albo wykonujemy ping:
 # Różne rzeczy…
 
 **Aktywne zakładki.**
+Piszemy metodę pomocniczą, przykładowo:
+
+    :::ruby
+    def link_to_page(where, path)
+      content_tag(:li,
+          link_to_unless_current(where, path),
+          class: current_page?(path) ? "active" : nil)
+    end
+
+Dodajemy nieco CSS:
+
+    :::css
+    li.active {
+      font-weight: bold;
+      color: red;
+    }
+
+i już! gotowe do użycia:
+
+    :::rhtml
+    <%= link_to_page("Aktualności", root_path) %>
+    <%= link_to_page("Podstawowe informacje", informacje_path) %>
+
+<!--
+
 Dla przykładu, przyjmijmy, że na każdej stronie naszej aplikacji
 wyświetlamy trzy zakładki *Homepage*, *About us* oraz *Contact*,
 a kod elementu HTML z zakładkami, gdy jesteśmy na stronie *Homepage*
@@ -207,6 +232,8 @@ Na koniec kilka linków na ten temat:
 
 * [Selected Tab Navigation](http://railsforum.com/viewtopic.php?id=30174)
 * [TabsOnRails: Creating and managing Tabs with Ruby on Rails](http://code.simonecarletti.com/projects/tabsonrails/wiki)
+
+-->
 
 **Zagnieżdzone layouty z content_for.**
 Załóżmy, że aplikacja składa się z trzech kontrolerów:

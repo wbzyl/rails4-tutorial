@@ -398,20 +398,29 @@ Jak dodać *TB* do aplikacji Rails i jak z niego korzystać opisano tutaj:
 
 * [{less}](http://lesscss.org/) – the dynamic stylesheet language
 
-Dodajemy gem *twitter-bootstrap-rails* do pliku *Gemfile*
-i wykonujemy te polecenia:
+Dopisujemy gem *twitter-bootstrap-rails* do pliku *Gemfile*
+w grupie *assets*. Następnie wykonujemy polecenia:
 
     :::bash
     bundle
     rails generate bootstrap:install
-    # rails generate bootstrap:layout fluid
-    # rails generate bootstrap:partial [navbar, navbar-devise, carousel]
-
-    rails generate simple_form:install
+    rails generate bootstrap:layout fixed
+    rails generate simple_form:install --bootstrap
     rails generate bootstrap:themed fortunes
 
 Przykładowy {%= link_to "layout aplikacji", "/bootstrap/application.html.erb" %}
 korzystający z TB.
+
+Warto skorzystać z generatora *bootstrap:partial* (navbar, navbar-devise, carousel),
+na przykład:
+
+    :::bash
+    rails generate bootstrap:partial navbar
+
+Wygenerowany szablon dodajemy do layoutu aplikacji:
+
+    :::rhtml app/views/layouts/application.html.erb
+    <%= render partial: 'shared/navbar' %>
 
 Na koniec, kilka zmian domyślnych ustawień parametrów TB:
 
@@ -695,6 +704,58 @@ Linki do dokumentacji:
 * [respond_to](http://api.rubyonrails.org/classes/ActionController/MimeResponds.html#method-i-respond_to)
 * [respond_with](http://api.rubyonrails.org/classes/ActionController/MimeResponds.html#method-i-respond_with),
   [ActionController::Responder](http://api.rubyonrails.org/classes/ActionController/Responder.html)
+
+
+### Przykład respond_to CSV
+
+Dopisujemy do pliku *application.rb*:
+
+    :::ruby config/application.rb
+    require File.expand_path('../boot', __FILE__)
+
+    require 'csv'        #<= NEW!
+    require 'rails/all'
+
+do kodu kontrolera w metodzie *index* w bloku *respond_to*:
+
+    :::ruby
+    respond_to do |format|
+      ...
+      # format.csv { render text: @fortunes.to_csv }
+      # format.csv { render text: @lists.to_csv, content_type: "plain/text" } # nie działa; bug?
+      format.csv { send_data @fortunes.to_csv }
+    end
+
+do kodu modela:
+
+    :::ruby
+    def self.to_csv
+      CSV.generate do |csv|
+        csv << column_names
+        all.each do |fortune|
+          csv << fortune.attributes.values_at(*column_names)
+        end
+      end
+    end
+
+albo sami podajemy nazwy kolumn, na przykład:
+
+    :::ruby
+    def self.to_csv
+      CSV.generate do |csv|
+        csv << ["last_name", "first_name"]
+        all.each do |list|
+          csv << list.attributes.values_at("last_name", "first_name")
+        end
+      end
+    end
+
+Sprawdzamy jak to działa:
+
+    :::bash
+    curl http://localhost:3000/lists.csv
+
+Zobacz też [eksport do arkusza kalkulacyjnego](http://railscasts.com/episodes/362-exporting-csv-and-excel).
 
 
 ### Migracje
