@@ -755,7 +755,12 @@ Sprawdzamy jak to działa:
     :::bash
     curl http://localhost:3000/lists.csv
 
-Zobacz też [eksport do arkusza kalkulacyjnego](http://railscasts.com/episodes/362-exporting-csv-and-excel).
+Zobacz też:
+
+* gem [axlsx](https://github.com/randym/axlsx) –
+  xlsx generation with charts, images, automated column width,
+  customizable styles and full schema validation
+* [eksport do arkusza kalkulacyjnego](http://railscasts.com/episodes/362-exporting-csv-and-excel).
 
 
 ### CSV via template handlers
@@ -821,6 +826,11 @@ Można też zdefiniować własną klasę i użyć jej zamiast
     end
     # index.html.markdown
     ActionView::Template.register_template_handler(:markdown, MarkdownTemplateHandler)
+
+Zobacz też José Valim,
+[Multipart templates with Markerb](http://blog.plataformatec.com.br/2011/06/multipart-templates-with-markerb/),
+gem [markerb](https://github.com/plataformatec/markerb) –
+multipart templates made easy with Markdown + ERb.
 
 
 ### Migracje
