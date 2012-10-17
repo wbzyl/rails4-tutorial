@@ -21,78 +21,14 @@ is an ultra–lean set of HTML5, CSS, and jQuery (javascript) files,
 layouts, and elements designed to give you a headstart and save you
 10’s of hours on your next web project.
 
-Layout „HTML KickStart” przystosowujemy do Rails analogicznie jak to jest
-zrobione poniżej dla layoutu „HTML Boilerplate”.
+Layout „HTML KickStart” przystosowujemy do Rails analogicznie jak to
+opisano w rozdziale 5
+[Filling in the layout](http://ruby.railstutorial.org/chapters/filling-in-the-layout#top)
+„Ruby on Rails Tutorial” Michaela Hartla.
 
+Różne rzeczy na ten temat:
 
-## Przykładowy layout aplikacji Rails
-
-Poniższy layout to [HTML5 Boilerplate](http://html5boilerplate.com/)
-po małym liftingu (pl, utf-8, domyślny tytuł):
-
-    :::rhtml app/views/layouts/application.html.erb
-    <!doctype html>
-    <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-    <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="pl"> <![endif]-->
-    <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="pl"> <![endif]-->
-    <!--[if IE 8]>    <html class="no-js lt-ie9" lang="pl"> <![endif]-->
-    <!-- Consider adding a manifest.appcache: h5bp.com/d/Offline -->
-    <!--[if gt IE 8]><!--> <html class="no-js" lang="pl"> <!--<![endif]-->
-    <head>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
-      <title><%= content_for?(:title) ? yield(:title) : "Fortunka" %></title>
-
-      <meta name="description" content="">
-      <meta name="author" content="">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-
-      <%= stylesheet_link_tag "application" %>
-      <%= javascript_include_tag "application" %>
-      <%= csrf_meta_tags %>
-    </head>
-
-    <body>
-      <header>
-         <%= content_tag :h1, "Fortunka" %>
-      </header>
-      <div role="main">
-        <%= content_tag :h1, yield(:title) if show_title? %>
-        <%= yield %>
-      </div>
-      <footer>
-      </footer>
-    </body>
-    </html>
-
-Powyżej użyliśmy metody *show_title?*.
-Tę metodę oraz kilka innych dopisujemy do pliku *layout_helper.rb*.
-
-    :::ruby app/helpers/layout_helper.rb
-    module LayoutHelper
-      def title(page_title, show_title = true)
-        content_for(:title) { page_title.to_s }
-        @show_title = show_title
-      end
-      def show_title?
-        @show_title
-      end
-
-      def stylesheet(*args)
-        content_for(:head) { stylesheet_link_tag(*args) }
-      end
-      def javascript(*args)
-        content_for(:head) { javascript_include_tag(*args) }
-      end
-    end
-
-Powyższe metody zostały skopiowane z generatora *nifty:layout*.
-
-Na ostatek jeszcze przyjrzymy się HTML5:
-
-* [Coding A HTML 5 Layout From Scratch](http://www.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/)
-* [Coding a CSS3 & HTML5 One-Page Website Template](http://tutorialzine.com/2010/02/html5-css3-website-template/)
+* [The Rails 3 asset pipeline in (about) 5 minutes](http://2beards.net/2011/11/the-rails-3-asset-pipeline-in-about-5-minutes/)
 
 
 # Co to są sitemaps?
