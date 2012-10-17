@@ -5,6 +5,8 @@
   <p><a href="http://www.codeschool.com/courses/rails-for-zombies-redux">Models taste like chicken…</a></p>
 </blockquote>
 
+* [Rails Rumble 2012 voting is Go](http://railsrumble.com/entries/all) –
+  300+ new ruby webapps to check out!
 * [Rails Rumble 2012](http://blog.railsrumble.com/)
 * [Who is already on Rails?](http://rubyonrails.org/applications).
 
