@@ -758,6 +758,71 @@ Sprawdzamy jak to działa:
 Zobacz też [eksport do arkusza kalkulacyjnego](http://railscasts.com/episodes/362-exporting-csv-and-excel).
 
 
+### CSV via template handlers
+
+Użyjemy **ruby template handler**. Inicjalizer:
+
+    :::ruby config/initializers/ruby_template_handler.rb
+    ActionView::Template.register_template_handler(:ruby, :source.to_proc)
+
+Tworzymy plik *index.csv.rb* o zawartości, na razie takiej:
+
+    :::ruby app/views/lists/index.csv.ruby
+    "hello CSV world"
+
+W kodzie kontrolera w metodzie *index* wymieniamy blok *respond_to* na:
+
+    :::ruby
+    respond_to do |format|
+      format.html # index.html.erb
+      format.csv  # index.csv.ruby
+      format.json { render json: @lists }
+    end
+
+Teraz możemy sprawdzić jak to działa, na przykład jakoś tak:
+
+    :::bash
+    curl localhost:3000/lists.csv
+
+Jeśli to zadziała, to podmieniamy zawartość *index.csv.ruby* na:
+
+    :::ruby
+    response.headers["Content-Disposition"] = 'attachment; filename="lists.csv"'
+
+    CSV.generate do |csv|
+      csv << ["nazwisko", "imię", "repo", "link"]
+      @lists.each do |list|
+        csv << [
+                list.last_name,
+                list.first_name,
+                list.repo,
+                list_url(list) # korzystamy z metody pomocniczej
+               ]
+      end
+    end
+
+Oczywiście w powyższym kodzie wpisujemy dane modelu z naszej aplikacji.
+Powyżej użyłem danych dla fikcyjnego modelu *List*.
+
+Można też zdefiniować własną klasę i użyć jej zamiast
+*:source.to_proc* powyżej, na przykład ([RailsCasts \#379](http://railscasts.com/episodes/379-template-handlers)):
+
+    :::ruby
+    class MarkdownTemplateHandler
+      def self.call(template)
+        erb = ActionView::Template.registered_template_handler(:erb)
+        source = erb.call(template)
+        <<-SOURCE
+        renderer = Redcarpet::Render::HTML.new
+        options = { fenced_code_blocks: true }
+        Redcarpet::Markdown.new(renderer, options).render(begin;#{source};end)
+        SOURCE
+      end
+    end
+    # index.html.markdown
+    ActionView::Template.register_template_handler(:markdown, MarkdownTemplateHandler)
+
+
 ### Migracje
 
 Aby utworzyć bazę danych o nazwie podanej w pliku
