@@ -765,7 +765,7 @@ Zobacz też:
 
 ### CSV via template handlers
 
-Użyjemy **ruby template handler**. Inicjalizer:
+Użyjemy **ruby template handler**. Inicjalizacja:
 
     :::ruby config/initializers/ruby_template_handler.rb
     ActionView::Template.register_template_handler(:ruby, :source.to_proc)
