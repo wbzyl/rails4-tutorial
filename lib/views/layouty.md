@@ -22,9 +22,9 @@ layouts, and elements designed to give you a headstart and save you
 10’s of hours on your next web project.
 
 Layout „HTML KickStart” przystosowujemy do Rails analogicznie jak to
-opisano w rozdziale 5
+zrobiono dla layoutu Twitter Bootstrap w rozdziale 5
 [Filling in the layout](http://ruby.railstutorial.org/chapters/filling-in-the-layout#top)
-„Ruby on Rails Tutorial” Michaela Hartla.
+„Ruby on Rails Tutorial” M. Hartla.
 
 Różne rzeczy na ten temat:
 
