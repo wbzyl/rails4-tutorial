@@ -150,14 +150,14 @@ Skorzystać z jednego z gemów:
    your users to select multiple items from a predefined list, using
    autocompletion as they type to find each item
 
-*Uwagi:* (i) do Datatable:
+*Uwaga* do *README* gemu DataTables:
 
 W pliku *application.js* inicjalizujemy DataTable dopiero po
 po zdarzeniu *DocumentReady*:
 
     :::js
     jQuery(function() {
-      $('.datatable').dataTable({
+      $('#lists').dataTable({
         "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
         "sPaginationType": "bootstrap"
       });
