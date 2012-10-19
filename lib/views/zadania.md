@@ -150,6 +150,28 @@ Skorzystać z jednego z gemów:
    your users to select multiple items from a predefined list, using
    autocompletion as they type to find each item
 
+*Uwagi:* (i) do Datatable:
+
+W pliku *application.js* inicjalizujemy DataTable dopiero po
+po zdarzeniu *DocumentReady*:
+
+    :::js
+    jQuery(function() {
+      $('.datatable').dataTable({
+        "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap"
+      });
+    });
+
+i elementowi *table* dodajemy *id*:
+
+    :::rhtml index.html.erb
+    <table id="lists" class="table table-striped datatable">
+
+Resztę rzeczy robimy tak jak to opisano w pliku
+[README](https://github.com/rweng/jquery-datatables-rails)
+do *jquery-datatables-rails*.
+
 
 ### Trekking
 
