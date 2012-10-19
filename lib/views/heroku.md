@@ -7,6 +7,16 @@
  <p class="author">źródło: <a href="http://robots.thoughtbot.com/post/159805997/heroku-wearing-suspenders">Heroku handles headache</a></p>
 </blockquote>
 
+**Migracja działających i wdrożonych przed 2012 roku aplikacji:**
+„The Cedar stack is the default runtime stack on Heroku and is the
+successor to Aspen and Bamboo. It includes support for multiple
+languages, flexible process types, HTTP 1.1, and substantially less
+code injection. While there is no automation available to migrate to
+Cedar from a previous stack this article outlines the steps and
+consideration required when performing a manual migration.”
+
+* [Migrating to the Celadon Cedar Stack](https://devcenter.heroku.com/articles/cedar-migration)
+
 [Heroku](http://heroku.com/) (pronounced her-OH-koo) is a cloud application platform for
 Ruby – a new way of building and deploying web apps.
 Swoje aplikacje Rails będziemy wdrażać na Heroku za pomocą skryptu *heroku*,
