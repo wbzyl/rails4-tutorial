@@ -16,6 +16,8 @@ Cedar from a previous stack this article outlines the steps and
 consideration required when performing a manual migration.”
 
 * [Migrating to the Celadon Cedar Stack](https://devcenter.heroku.com/articles/cedar-migration)
+* [Tales from upgrading to Ruby 1.9.2 – character encoding](http://www.samanage.com/blog/2011/09/tales-from-upgrading-to-ruby-1-9-2-character-encoding/)
+
 
 [Heroku](http://heroku.com/) (pronounced her-OH-koo) is a cloud application platform for
 Ruby – a new way of building and deploying web apps.
