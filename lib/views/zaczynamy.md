@@ -332,6 +332,9 @@ Na koniec kopiujemy wygenerowany szablon *fixed.html.erb*:
     :::bash
     cp fixed.html.erb application.html.erb
 
+*Uwaga:* Jeśli nie mamy favikonek, to usuwamy linki do nich z kodu
+szablonu layoutu aplikacji *application.html.erb*.
+
 Można też skorzystać z generatora *bootstrap:partial*
 (navbar, navbar-devise, carousel):
 
