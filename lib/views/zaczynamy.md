@@ -238,105 +238,139 @@ Dobrze jest od razu zmienić rozmiar fontu na
     :::bash
     rm public/index.html
 
-3\. Do pliku *Gemfile* dopisujemy gemy z których będziemy korzystać:
+3\. Wygenerowany plik *Gemfile*:
 
     :::ruby Gemfile
-    # -*- coding: utf-8 -*-
     source 'https://rubygems.org'
 
     gem 'rails', '3.2.8'
-
-    gem 'sqlite3', :groups => [:test, :development]
-    group :production do
-      gem 'pg'
-    end
+    gem 'sqlite3'
 
     group :assets do
-      # gem 'sass-rails',   '~> 3.2.3'
+      gem 'sass-rails',   '~> 3.2.3'
       gem 'coffee-rails', '~> 3.2.1'
-      # see https://github.com/sstephenson/execjs#readme for more supported runtimes
-      # gem 'therubyracer'
       gem 'uglifier', '>= 1.0.3'
-
-      # zobacz https://github.com/seyhunak/twitter-bootstrap-rails
-      # gem 'twitter-bootstrap-rails'
     end
     gem 'jquery-rails'
 
-    gem 'json'
+wymieniamy na:
 
-    # łatwiejsze w użyciu formularze
-    # zobacz https://github.com/plataformatec/simple_form
-    gem 'simple_form'
+    :::ruby Gemfile
+    source 'https://rubygems.org'
 
-    group :development do
-      # ładniejsze wypisywanie rekordów na konsoli
-      # (zob. konfiguracja irb w ~/.irbrc)
-      gem 'hirb'
-      # bezproblemowe zapełnianie bazy danymi testowymi
-      # https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md
-      # gem 'factory_girl_rails', '~> 1.2'
-      # gem 'faker'
-      # gem 'populator'
-      # wyłącza logowanie *assets pipeline*
-      gem 'quiet_assets'
+    gem 'rails', '~> 3.2.8'
+
+    gem 'json', '~> 1.7.5'
+    gem 'simple_form', '~> 2.0.4'
+
+    gem 'sqlite3', '~> 1.3.6',  :groups => [:test, :development]
+    gem 'pg', '~> 0.14.1',      :groups => :production
+
+    # Using Capybara with RSpec:
+    #   http://rubydoc.info/github/jnicklas/capybara#Using_Capybara_with_RSpec
+    gem 'capybara', '~> 1.1.2', :groups => :test
+
+    group :assets do
+      gem 'coffee-rails', '~> 3.2.1'
+      gem 'uglifier', '>= 1.0.3'
+      gem 'twitter-bootstrap-rails', '~> 2.1.4'
+    end
+    gem 'jquery-rails', '~> 2.1.3'
+
+    group :development, :test do
+      gem 'hirb', '~> 0.7.0'
+      gem 'quiet_assets', '~> 1.0.1'  # wylacza logowanie *assets pipeline*
+      gem 'rspec-rails', '~> 2.11.0'
     end
 
     # alternatywa dla serwera Webrick
     gem 'thin'
 
-4\. Instalujemy gemy lokalnie:
+
+Póżniej dopiszemy do grupy *development te gemy:
+
+    :::ruby
+    # Bezproblemowe zapełnianie bazy danymi testowymi:
+    #   https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md
+    gem 'factory_girl_rails'
+    gem 'faker'
+    gem 'populator'
+
+4\. Instalujemy gemy korzystając z już zainstalowanych gemów na Sigmie
 
     :::bash
-    bundle install --binstubs --path=$HOME/.gems
+    bundle install --local --without production
 
-O ile mamy uprawnienia do zapisu w odpowiednich katalogach,
-to możemy zainstalować gemy globalnie (niezalecane, dlaczego?):
+(Sprawdzić wersję *rvm* Musi być co najmniej 1.16.)
 
-    :::bash
-    bundle install --binstubs
-
-*Uwaga:* Jeśli gemy wpisane do *Gemfile* (oraz gemy od nich zależne)
-mamy zainstalowane w systemie, to poniższe polecenie wykona się dużo
-szybciej:
+Można też zainstalować sobie gemy w~swoim katalogu domowym:
 
     :::bash
-    bundle install --local --binstubs
+    bundle install --path=$HOME/.gems --without production
 
-Niektóre gemy, wymagają procedury *post-install*.
-Przykładowo, dla gemu *Simple Form* należy wykonać polecenie:
-
-    :::bash
-    bin/rails generate simple_form:install
-
-Jeśli zamierzamy skorzystać z frameworka
-[Bootstrap](http://twitter.github.com/bootstrap/), to wykonujemy:
+Niektóre gemy, wymagają procedury *post-install*. U nas wymagają
+tej procedury *Rspec Rails*, *Twitter Bootstrap for Rails* i *Simple Form*:
 
     :::bash
-    bin/rails generate simple_form:install --bootstrap
+    rails generate rspec:install
+    rails generate bootstrap:install
+    rails generate bootstrap:layout fixed
+    rails generate simple_form:install --bootstrap
 
-Dlatego zwaracamy uwagę na komunikaty wypisywane w trakcie instalacji
-gemów i czytamy pliki *README* z dokumentacją w repozytoriach
-z kodem źrodłowym gemu.
+Kończymy procedurę dopisując *bootstrap_and_overrides* do pliku
+*application.css*:
+
+    :::css app/assets/stylesheets
+     *= require bootstrap_and_overrides
+     *= require_self
+     *= require_tree .
+
+Na koniec kopiujemy wygenerowany szablon *fixed.html.erb*:
+
+    :::bash
+    cp fixed.html.erb application.html.erb
+
+Można też skorzystać z generatora *bootstrap:partial*
+(navbar, navbar-devise, carousel):
+
+    :::bash
+    rails generate bootstrap:partial navbar
+
+Teraz wygenerowany szablon częściowy dopisujemy
+w elemencie *body* layoutu aplikacji:
+
+    :::rhtml app/views/layouts/application.html.erb
+    <%= render partial: 'shared/navbar' %>
+
+Z powyższego wynika, że powinniśmy zwracać uwagę na komunikaty
+wypisywane w trakcie instalacji gemów oraz należy czytać pliki *README*
+z dokumentacją w repozytoriach z kodem źrodłowym gemu.
 
 5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
     :::bash
-    bin/rails g scaffold fortune quotation:text source:string
+    rails generate scaffold fortune quotation:text source:string
 
 6\. Tworzymy bazę i w nowej bazie umieszczamy tabelkę *fortunes* –
 krótko mówiąc **migrujemy**:
 
     :::bash
-    bin/rake db:create  # Create the database from config/database.yml for the current Rails.env
-    bin/rake db:migrate # Migrate the database (options: VERSION=x, VERBOSE=false)
+    rake db:create
+    rake db:migrate
+    rails generate bootstrap:themed fortunes # nadpisujemy wszystkie szablony
 
-Aby wykonać polecenie w trybie produkcyjnym poprzedzamy je napisem *RAILS_ENV=production*,
-przykładowo:
+*Pytanie:* Czy można było pominąć polecenie:
+
+    rails generate simple_form:install --bootstrap
+
+Sprawdzić to!
+
+*Uwaga:* Aby wykonać jakieś polecenie *rake* w trybie produkcyjnym
+*poprzedzamy je napisem RAILS_ENV=production*, przykładowo:
 
     :::bash
-    RAILS_ENV=production bin/rake db:migrate
-    RAILS_ENV=production bin/rake db:seed
+    RAILS_ENV=production rake db:migrate
+    RAILS_ENV=production rake db:seed
 
 7\. Ustawiamy stronę startową aplikacji, dopisując, przed
 kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
@@ -347,16 +381,16 @@ kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
 8\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
     :::ruby db/seeds.rb
-    Fortune.create! :quotation => 'I hear and I forget. I see and I remember. I do and I understand.'
-    Fortune.create! :quotation => 'Everything has its beauty but not everyone sees it.'
-    Fortune.create! :quotation => 'It does not matter how slowly you go so long as you do not stop.'
-    Fortune.create! :quotation => 'Study the past if you would define the future.'
+    Fortune.create! quotation: 'I hear and I forget. I see and I remember. I do and I understand.'
+    Fortune.create! quotation: 'Everything has its beauty but not everyone sees it.'
+    Fortune.create! quotation: 'It does not matter how slowly you go so long as you do not stop.'
+    Fortune.create! quotation: 'Study the past if you would define the future.'
 
 Następnie umieszczamy powyższe fortunki w bazie, wykonujac w terminalu
 polecenie:
 
     :::bash
-    bin/rake db:seed  # Load the seed data from db/seeds.rb
+    rake db:seed  # Load the seed data from db/seeds.rb
 
 Powyższy kod „smells” (dlaczego?) i należy go poprawić. Na przykład
 tak jak to zrobiono tutaj {%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
@@ -368,59 +402,28 @@ i ponownie uruchomić powyższe polecenie.
 9\. Teraz możemy już uruchomić domyślny serwer Rails:
 
     :::bash
-     bin/rails server -p 3000
-
-albo jeden z alternatywnych serwerów (o ile wcześniej wpisaliśmy
-w *Gemfile* odpowiednie gemy):
-
-    :::bash
-     bin/thin -p 3000 start
-     bin/unicorn -p 3000
+    rails server -p 3000
 
 Aby obejrzeć działającą aplikację pozostaje wejść na stronę:
 
      http://localhost:3000
 
-10\. Na razie layout i wygląd aplikacji pozostawia wiele do życzenia.
-Nie jest dobrym pomysłem, dodawanie własnego kodu
-JavaScript i CSS, który to zmieni na tym etapie.
-Dlatego skorzystamy z popularnego frameworka
-[Twitter Bootstrap](http://twitter.github.com/bootstrap/).
+10\. Aby poprawić nieco layout i wygląd aplikacji skorzystaliśmy
+z popularnego frameworka [Twitter Bootstrap](http://twitter.github.com/bootstrap/).
 
-Jak dodać *TB* do aplikacji Rails i jak z niego korzystać opisano tutaj:
+Jak z niego korzystać opisano tutaj:
 
 * [Twitter Bootstrap for Rails 3.1 Asset Pipeline](https://github.com/seyhunak/twitter-bootstrap-rails)
 * [Twitter Bootstrap Basics](http://railscasts.com/episodes/328-twitter-bootstrap-basics?view=asciicast) –
   screencast
 * [Customize Bootstrap](http://twitter.github.com/bootstrap/customize.html)
 
-*TB* napisano w Less:
+Sam framework jest napisany w Less:
 
 * [{less}](http://lesscss.org/) – the dynamic stylesheet language
 
-Dopisujemy gem *twitter-bootstrap-rails* do pliku *Gemfile*
-w grupie *assets*. Następnie wykonujemy polecenia:
-
-    :::bash
-    bundle
-    rails generate bootstrap:install
-    rails generate bootstrap:layout fixed
-    rails generate simple_form:install --bootstrap
-    rails generate bootstrap:themed fortunes
-
 Przykładowy {%= link_to "layout aplikacji", "/bootstrap/application.html.erb" %}
-korzystający z TB.
-
-Warto skorzystać z generatora *bootstrap:partial* (navbar, navbar-devise, carousel),
-na przykład:
-
-    :::bash
-    rails generate bootstrap:partial navbar
-
-Wygenerowany szablon dodajemy do layoutu aplikacji:
-
-    :::rhtml app/views/layouts/application.html.erb
-    <%= render partial: 'shared/navbar' %>
+korzystający z Twitter Bootstrap.
 
 Na koniec, kilka zmian domyślnych ustawień parametrów TB:
 
@@ -434,7 +437,7 @@ Na koniec, kilka zmian domyślnych ustawień parametrów TB:
     @navbarLinkColor: #eee;
 
     .navbar .brand {
-      color: #FAFFB8;
+      color: #00A;
     }
 
 Przykładowe poprawki szablonu formularza:
@@ -442,7 +445,6 @@ Przykładowe poprawki szablonu formularza:
     :::rhtml _form.html.erb
     <%= f.input :quotation, :input_html => { :rows => "4", :class => "span6" } %>
     <%= f.input :source, :input_html => { :class => "span6" } %>
-
 
 
 # Fortunka – szczegóły
@@ -831,6 +833,8 @@ Zobacz też José Valim,
 [Multipart templates with Markerb](http://blog.plataformatec.com.br/2011/06/multipart-templates-with-markerb/),
 gem [markerb](https://github.com/plataformatec/markerb) –
 multipart templates made easy with Markdown + ERb.
+
+Zobacz też {%= link_to "PDF Renderer", "/pdf-renderer" %}.
 
 
 ### Migracje
