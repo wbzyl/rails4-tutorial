@@ -765,14 +765,16 @@ Zobacz też:
 * [eksport do arkusza kalkulacyjnego](http://railscasts.com/episodes/362-exporting-csv-and-excel).
 
 
-### CSV via template handlers
+### CSV via Ruby Template Handler
 
-Użyjemy **ruby template handler**. Inicjalizacja:
+Handler **Ruby Template** napiszemy sami.
+
+Inicjalizacja:
 
     :::ruby config/initializers/ruby_template_handler.rb
     ActionView::Template.register_template_handler(:ruby, :source.to_proc)
 
-Tworzymy plik *index.csv.rb* o zawartości, na razie takiej:
+Tworzymy plik *index.csv.ruby* o zawartości, na razie takiej:
 
     :::ruby app/views/lists/index.csv.ruby
     "hello CSV world"
@@ -786,12 +788,12 @@ W kodzie kontrolera w metodzie *index* wymieniamy blok *respond_to* na:
       format.json { render json: @lists }
     end
 
-Teraz możemy sprawdzić jak to działa, na przykład jakoś tak:
+Teraz możemy sprawdzić jak to działa:
 
     :::bash
     curl localhost:3000/lists.csv
 
-Jeśli to zadziała, to podmieniamy zawartość *index.csv.ruby* na:
+Jeśli to zadziała, to podmieniamy zawartość pliku *index.csv.ruby* na:
 
     :::ruby
     response.headers["Content-Disposition"] = 'attachment; filename="lists.csv"'
@@ -800,11 +802,11 @@ Jeśli to zadziała, to podmieniamy zawartość *index.csv.ruby* na:
       csv << ["nazwisko", "imię", "repo", "link"]
       @lists.each do |list|
         csv << [
-                list.last_name,
-                list.first_name,
-                list.repo,
-                list_url(list) # korzystamy z metody pomocniczej
-               ]
+          list.last_name,
+          list.first_name,
+          list.repo,
+          list_url(list) # korzystamy z metody pomocniczej
+        ]
       end
     end
 
