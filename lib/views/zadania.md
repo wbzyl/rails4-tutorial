@@ -150,9 +150,15 @@ Skorzystać z jednego z gemów:
    your users to select multiple items from a predefined list, using
    autocompletion as they type to find each item
 
-*Uwaga* do *README* gemu DataTables:
 
-W pliku *application.js* inicjalizujemy DataTable dopiero po
+*Uwagi do Data Tables:*
+
+1\. Linki do dokumentacji gemów:
+
+* [jQuery UI Rails](https://github.com/joliss/jquery-ui-rails)
+* [jQuery DataTables for Rails](https://github.com/rweng/jquery-datatables-rails)
+
+2\. W pliku *application.js* inicjalizujemy DataTable dopiero po
 po zdarzeniu *DocumentReady*:
 
     :::js
