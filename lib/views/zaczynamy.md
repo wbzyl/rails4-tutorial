@@ -303,7 +303,7 @@ Póżniej dopiszemy do grupy *development te gemy:
     :::bash
     bundle install --local --without production
 
-(Sprawdzić wersję *rvm* Musi być co najmniej 1.16.)
+(Sprawdzić wersję *rvm*. Musi być co najmniej 1.16.)
 
 Można też zainstalować sobie gemy w~swoim katalogu domowym:
 
@@ -319,10 +319,10 @@ tej procedury *Rspec Rails*, *Twitter Bootstrap for Rails* i *Simple Form*:
     rails generate bootstrap:layout fixed
     rails generate simple_form:install --bootstrap
 
-Kończymy procedurę dopisując *bootstrap_and_overrides* do pliku
-*application.css*:
+Kończymy procedurę dopisując wiersz z *bootstrap_and_overrides* do
+pliku *application.css*:
 
-    :::css app/assets/stylesheets
+    :::css app/assets/stylesheets/application.css
      *= require bootstrap_and_overrides
      *= require_self
      *= require_tree .
@@ -441,15 +441,21 @@ Na koniec, kilka zmian domyślnych ustawień parametrów TB:
     @navbarText: #eee;
     @navbarLinkColor: #eee;
 
-    .navbar .brand {
-      color: #00A;
-    }
+    .navbar .brand { color: #00A; }
 
 Przykładowe poprawki szablonu formularza:
 
     :::rhtml _form.html.erb
     <%= f.input :quotation, :input_html => { :rows => "4", :class => "span6" } %>
     <%= f.input :source, :input_html => { :class => "span6" } %>
+
+Musimy jeszcze przesunąć zawartość elementu *body* poniżej
+baska nawigacyjnego. W tym celu dopisujemy w pliku *application.css*:
+
+    :::css app/assets/stylesheets/application.css
+    body { margin-top: 60px; }
+
+I już! Wersja 0.0 Fortunki jest gotowa.
 
 
 # Fortunka – szczegóły
