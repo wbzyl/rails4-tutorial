@@ -457,6 +457,74 @@ baska nawigacyjnego. W tym celu dopisujemy w pliku *application.css*:
 
 I już! Wersja 0.0 Fortunki jest gotowa.
 
+11\. **Wirtualne Atrybuty.** Na przykład cenę książki pamiętamy
+w bazie w groszach, ale wypisujemy/edytujemy cenę w złotówkach.
+
+Schema:
+
+    :::ruby schema.rb
+    create_table "books", :force => true do |t|
+      t.string   "author"
+      t.string   "title"
+      t.string   "isbn"
+      t.integer  "price"
+    end
+
+Do modelu dopisujemy dwie metody („getter” i „setter”):
+
+    :::ruby book.rb
+    class Book < ActiveRecord::Base
+      attr_accessible :author, :isbn, :price_pln, :title
+
+      def price_pln
+        price.to_d / 100 if price
+      end
+
+      def price_pln=(pln)
+        self.price = pln.to_d * 100 if pln.present?
+      end
+    end
+
+Zamieniamy we wszystkich widokach *price* na *price_pln*, przykładowo:
+
+    :::rhtml _form.html.erb
+    <%= f.input :price_pln %>
+
+12\. **Tagging:**
+
+* Gem [acts-as-taggable-on](https://github.com/mbleigh/acts-as-taggable-on)
+* [Tagging](http://railscasts.com/episodes/382-tagging) – \#382 RailsCasts
+
+Przykład do przetestowania na konsoli:
+
+    :::ruby
+    book = Book.find 1
+    book.tag_list
+
+    book.tag_list = "awesome, slick, hefty"
+    book.save
+    book.tag_list
+
+    Book.tagged_with "slick"
+    Book.tagged_with ["slick", "hefty"]
+
+Dodajemy listę tagów do formularza:
+
+    :::rhtml _form.html.erb
+    <%= f.input :tag_list, :label => "Tags (separated by spaces)" %>
+
+Dopisujemy w modelu:
+
+    :::ruby
+    acts_as_taggable_on :tags
+
+a na końcu pliku *application.rb* dopisujemy:
+
+    :::ruby config/application.rb
+    ActsAsTaggableOn.delimiter = ' ' # use space as delimiter
+
+Pozostałe rzeczy robimy tak jak to przedstawiono w screencaście.
+
 
 # Fortunka – szczegóły
 
