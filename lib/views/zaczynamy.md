@@ -810,13 +810,15 @@ Jeśli to zadziała, to podmieniamy zawartość pliku *index.csv.ruby* na:
     response.headers["Content-Disposition"] = 'attachment; filename="lists.csv"'
 
     CSV.generate do |csv|
-      csv << ["nazwisko", "imię", "repo", "link"]
+      csv << ["nazwisko", "imię", "login", "repo", "link"]
       @lists.each do |list|
+        login, name = list.repo.strip.sub(/^https:\/\/github.com\//, "").split("/", 2)
         csv << [
           list.last_name,
           list.first_name,
-          list.repo,
-          list_url(list) # korzystamy z metody pomocniczej
+          login,
+          name
+          # list_url(list) # możemy użyć metody pomocniczej
         ]
       end
     end
