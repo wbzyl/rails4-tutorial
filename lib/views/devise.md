@@ -104,7 +104,7 @@ oraz trochę kodu:
 
     :::ruby app/models/user.rb
     class User < ActiveRecord::Base
-      attr_accessor :password
+      attr_accessible :password, :password_confirmation, :email
 
       validates_confirmation_of :password
       validates_presence_of :password, :on => :create
