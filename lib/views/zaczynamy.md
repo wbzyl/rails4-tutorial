@@ -457,7 +457,24 @@ baska nawigacyjnego. W tym celu dopisujemy w pliku *application.css*:
 
 I już! Wersja 0.0 Fortunki jest gotowa.
 
-11\. **Wirtualne Atrybuty.** Na przykład cenę książki pamiętamy
+11\. **Walidacja**, czyli sprawdzanie poprawności (zatwierdzanie)
+danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
+
+    :::ruby
+    validates :quotation, length: {
+      minimum: 8,
+      maximum: 128
+    }
+    validates :source, presence: true
+
+    validates :price, numericality: { only_integer: true }
+    validate :email, uniqueness: true
+
+
+Zobacz też samouczek
+[Active Record Validations and Callbacks](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html).
+
+12\. **Wirtualne Atrybuty.** Na przykład cenę książki pamiętamy
 w bazie w groszach, ale wypisujemy/edytujemy cenę w złotówkach.
 
 Schema:
@@ -490,7 +507,10 @@ Zamieniamy we wszystkich widokach *price* na *price_pln*, przykładowo:
     :::rhtml _form.html.erb
     <%= f.input :price_pln %>
 
-12\. **Tagging:**
+Walidacja wirtualnych atrybutów,
+zobacz [Virtual Attributes](http://railscasts.com/episodes/16-virtual-attributes-revised?view=asciicast).
+
+13\. **Tagging:**
 
 * Gem [acts-as-taggable-on](https://github.com/mbleigh/acts-as-taggable-on)
 * [Tagging](http://railscasts.com/episodes/382-tagging) – \#382 RailsCasts
