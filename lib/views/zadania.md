@@ -17,9 +17,9 @@
 
 3\. Projekt zespołowy:
 
-* Wybór tematu projektu, podział na grupy, założenie repozytoriów: ??.??.2012
-* Rozliczenie projektu zespołowego: ??.??.2012
-* Prezentacje gotowych projektów: ??.01.2013
+* Wybór tematu projektu, podział na grupy, założenie repozytoriów: 15.11.2012
+* Rozliczenie projektu zespołowego: 14.12.2012
+* Prezentacje gotowych projektów: styczeń 2013
 
 Każdą aplikację należy uruchomić w trybie produkcyjnym
 na Sigmie, Heroku lub innym serwerze.
