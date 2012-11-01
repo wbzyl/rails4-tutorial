@@ -1485,15 +1485,34 @@ Korzystając z engine *Devise* dodać autentykację do Fortunki.
 {%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
 (źródło M. Pilgrim. <a href="http://diveintohtml5.info">Dive into HTML5</a>)
 
+
+# TODO – [przykład](https://github.com/wbzyl/library-carrierwave)
+
 Atrakcyjność Fortunki możemy zwiększyć implementując coś rzeczy
 wypisanych poniżej:
 
-* Widok strony indeks na wzór layoutu *Masonry* –
-  [Isotope](http://isotope.metafizzy.co/)
-* Obrazki w fortunkach: skorzystać z jednego z gemów
-  - [CarrierWave](https://github.com/jnicklas/carrierwave/)
-    (zob. też Trevor Turk,
-    [A Gentle Introduction to CarrierWave](http://www.engineyard.com/blog/2011/a-gentle-introduction-to-carrierwave/)).
-  - [Paperclip](https://github.com/thoughtbot/paperclip)
-* [Multiple files upload with carrierwave and nested_form](http://lucapette.com/rails/multiple-files-upload-with-carrierwave-and-nested_form/)
+Zmieniając widok strony głównej aplikacji, na przykład tak:
+
+*  [Isotope](http://isotope.metafizzy.co/)
+
+Dodając obrazki do fortunek,
+coś w stylu [Demotywatorów](http://demotywatory.pl/) lub [Kwejka](http://kwejk.pl/).
+
+Możemy skorzystać z gemu *Carrierwave*:
+
+* [home](https://github.com/jnicklas/carrierwave) –
+  classier solution for file uploads for Rails, Sinatra and other Ruby web frameworks
+* [wiki](https://github.com/jnicklas/carrierwave/wiki)
+* [application](https://github.com/jnicklas/carrierwave-example-app/blob/master/app/views/users/_form.html.erb) –
+  an example
+* [carrierwave-mongoid](https://github.com/jnicklas/carrierwave-mongoid) –
+  [Mongoid](http://mongoid.org/en/mongoid/index.html) support for CarrierWave
+* [cropping images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
+  RailsCasts \#182
+* Trevor Turk,
+  [A Gentle Introduction to CarrierWave](http://www.engineyard.com/blog/2011/a-gentle-introduction-to-carrierwave/)
+
+albo z gemu *Paperclip*:
+
+* [Paperclip](https://github.com/thoughtbot/paperclip)
 
