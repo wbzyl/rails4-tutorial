@@ -1,168 +1,173 @@
 #! /usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-# Autor: Maciej Małecki
+# Źródło:
 #
-# Zależności
+#   https://github.com/smt116/ruby.last.commit
+#
+# Użyte gemy:
+#
 #   gem install github_api bitbucket_rest_api ansi
 #
-# Format pliku CSV z danymi:
+# Sprawdzanie pozostałego limitu na github.com:
 #
-#  Imię,Nazwisko,login,repo,github|bitbucket,kiedy
-#  Nieznany,Nieznany,pypy,pypay,bitbucket,pon12
-#  Jakis,User,pypy,pypy,bitbucket,wto12
+#   curl -i https://api.github.com/rate_limit
 
-require 'ansi/code'          # http://rubydoc.info/gems/ansi/frames
-require 'bitbucket_rest_api' # http://rubydoc.info/gems/bitbucket_rest_api/frames
-require 'github_api'         # http://rubydoc.info/gems/github_api/frames
-require 'csv'
-require 'time'
-require 'optparse'
-require 'ostruct'
+begin
+  require 'ansi/code' # http://rubydoc.info/gems/ansi/frames
+  include ANSI::Code
 
-include ANSI::Code
+  require 'bitbucket_rest_api' # http://rubydoc.info/gems/bitbucket_rest_api/frames
+  require 'github_api' # http://rubydoc.info/gems/github_api/frames
+  require 'csv'
+  require 'time'
+  require 'optparse'
+  require 'ostruct'
+  require 'yaml'
 
-# na podstawie http://github.com/wbzyl/nosql-tutorial/blob/master/pp/db/mongodb/gutenberg2mongo.rb
+  # na podstawie http://github.com/wbzyl/nosql-tutorial/blob/master/pp/db/mongodb/gutenberg2mongo.rb
+  class ParseArgs
+    def self.parse(args)
+      options = OpenStruct.new
+      options.quiet_mode = false # wyświetlać informacje w przypadku błędu 404 (nieodnaleziono użytkownika bądź repo)
+      options.group = false # filtrowanie po grupie
+      options.csv_file = false # plik z danymi
+      options.message = false # wyświetlać wiadomość przesłaną razem z commitem?
+      options.user_regex = false # filtrowanie po nazwie użytkownika
+      options.commits = 1 # ilość ostatnich commitów do wyświetlenia
+      options.error_details = false # wyświetlać szczegółowy komunikat błędu?
+      options.credentials_github = false # basic_auth dla githuba
+      options.credentials_bitbucket = false # basic_auth dla bitbucketa
 
-class ParseArgs
-  def self.parse(args)
-    options = OpenStruct.new
-    options.quiet_mode = false
-    options.group = false
-    options.csv_file = false
-    options.message = false
-    options.user_regex = false
-    options.commits = 1
+      opts = OptionParser.new do |opts|
+        opts.banner = "Użycie: #{$0} plik.csv [OPCJE]"
 
-    opts = OptionParser.new do |opts|
-      opts.banner = "Użycie: #{$0} [OPCJE]"
+        opts.on("-q", "--quiet") do
+          options.quiet_mode = true
+        end
 
-      opts.on("-f", "--file DATE.CSV", "Plik csv z danymi") do |file|
-        options.csv_file = file
-      end
+        opts.on("-g", "--group GRUPA", "grupa (pon12,wto10,wto12)") do |name|
+          options.group = name
+        end
 
-      opts.on("-q", "--quiet") do
-        options.quiet_mode = true
-      end
+        opts.on("-m", "--message", "wyświetl wiadomość wysłaną z commitem") do
+          options.message = true
+        end
 
-      opts.on("-g", "--group GRUPA", "grupa (pon12,wto10,wto12)") do |name|
-        options.group = name
-      end
+        opts.on("-u", "--user REGEX", "wyrażenie regularne do filtrowania loginu") do |regex|
+          options.user_regex = regex
+        end
 
-      opts.on("-m", "--message", "wyświetl wiadomość wysłaną z commitem") do
-        options.message = true
-      end
+        opts.on("-c", "--commits NUMBER", "ilość comitów do wyświetlenia. Domyślnie 1, 0 aby wyświetlić maksymnalną ilość") do |number|
+          options.commits = number
+        end
 
-      opts.on("-u", "--user REGEX", "wyrażenie regularne do filtrowania loginu") do |regex|
-        options.user_regex = regex
-      end
+        opts.on("--error-details", "wyświetla szczegóły błędu") do
+          options.error_details = true
+        end
 
-      opts.on("-c", "--commits NUMBER", "ilość comitów do wyświetlenia. Domyślnie 1, Wszystkie 0") do |number|
-        options.commits = number
-      end
-
-      opts.separator "Pozostałe opcje:"
-
-      opts.on_tail("-h", "--help", "wypisz pomoc") do
-        puts opts
-        exit
-      end
-
-    end
-
-    opts.parse!(args)
-    options
-  end
-end
-
-options = ParseArgs.parse(ARGV)
-
-def parse_message(procrastinate, login, repo, author, message, options, lab)
-  line = "#{procrastinate} #{yellow(login + '/' + repo)} (#{author})"
-  if options.message
-    line += " {" + cyan(message) + "}"
-  end
-  if options.group && options.group == lab
-    puts line
-  elsif !options.group
-    puts line += " " + magenta(lab)
-  end
-end
-
-def commits_to_show(array_size, options)
-  if options.commits.to_i == 0
-    commits_to_show = array_size-1
-  else
-    commits_to_show = options.commits.to_i
-  end
-end
-
-def repo_not_found(login, repo, name, surname)
-  puts "Nie znaleziono konta #{yellow(login)} lub repozytorium #{yellow(repo)} dla #{red(name)} #{red(surname)}"
-end
-
-if not options.csv_file
-  puts "Pomoc: #{$0} --help"
-  exit
-end
-
-trap("SIGINT") { throw :ctrl_c }
-
-catch :ctrl_c do
-  begin
-    data = open(options.csv_file).readlines
-    csv_data = CSV.parse(data.join)
-
-    bitbucket = BitBucket.new
-    github = Github.new
-
-    csv_data.each do |repo|
-      if options.user_regex && !(repo[2].downcase =~ /#{options.user_regex}/)
-        next
-      end
-
-      lab = repo[5]
-      if repo[4]=="bitbucket"
-        begin
-          _info_array = bitbucket.repos.changesets.all repo[2], repo[3]
-
-          for i in 1..commits_to_show(_info_array.changesets.size, options)
-            last_commit = _info_array.changesets[_info_array.changesets.size-i]
-
-            date = last_commit[:timestamp]
-            procrastinate = date < Date.today.prev_day(8).to_s ? red(date) : green(date)
-            parse_message(procrastinate, repo[2], repo[3], last_commit[:raw_author], last_commit[:message], options, lab)
+        opts.on("--credentials PATH", "folder w katalogu #{ENV['HOME']} zawierający plik github.yml oraz bitbucket.yml z polami 'login' i 'password'") do |path|
+          begin
+            options.credentials_github = YAML.load_file File.join(ENV['HOME'], path, '/github.yml')
+          rescue
+            puts red("Brak pliku " + yellow("#{ENV['HOME']}/#{path}/github.yml"))
           end
-        rescue
-          if options.quiet_mode
-            next
-          else
-            repo_not_found(repo[2], repo[3], repo[0], repo[1])
+          begin
+            options.credentials_bitbucket = YAML.load_file File.join(ENV['HOME'], path, '/bitbucket.yml')
+          rescue
+            puts red("Brak pliku " + yellow("#{ENV['HOME']}/#{path}/bitbucket.yml"))
           end
         end
-      elsif repo[4]=="github"
-        begin
-          _info_array = github.repos.commits.list(repo[2], repo[3], page: 1, per_page: 0)
 
-          for i in 0..(commits_to_show(_info_array.size, options)-1)
-            last_commit = _info_array[i]
-            author = last_commit.commit.author
-            date = DateTime.parse(author[:date]).strftime("%F %T")#.iso8601(author[:date])
-            procrastinate = Date.iso8601(author[:date]).to_date < Date.today.prev_day(8) ? red(date) : green(date)
-            parse_message(procrastinate, repo[2], repo[3], author.name + " <#{author.email}>", last_commit.commit[:message], options, lab)
-          end
-        rescue
-          if options.quiet_mode
-            next
-          else
-            repo_not_found(repo[2], repo[3], repo[0], repo[1])
-          end
+        opts.separator "Pozostałe opcje:"
+
+        opts.on_tail("-h", "--help", "wypisz pomoc") do
+          puts opts
+          exit
+        end
+
+      end
+
+      options.csv_file = opts.parse!(args)[0]
+      options
+    end
+  end
+
+  options = ParseArgs.parse(ARGV)
+
+  if not options.csv_file
+    puts "Pomoc: #{$0} --help"
+    exit
+  end
+
+  data = open(options.csv_file).readlines
+  csv_data = CSV.parse(data.join)
+
+  if options.credentials_github && (options.credentials_github['login'] && options.credentials_github['password'])
+    github = Github.new login: options.credentials_github['login'], password: options.credentials_github['password']
+  else
+    github = Github.new
+  end
+  if options.credentials_bitbucket && (options.credentials_bitbucket['login'] && options.credentials_bitbucket['password'])
+    bitbucket = BitBucket.new login: options.credentials_bitbucket['login'], password: options.credentials_bitbucket['password']
+  else
+    bitbucket = BitBucket.new
+  end
+
+  csv_data.each do |repo|
+    if options.user_regex && !(repo[2].downcase =~ /#{options.user_regex}/)
+      next
+    end
+
+    begin
+      array = Array.new
+      if repo[4]=="bitbucket"
+        all = bitbucket.repos.changesets.all(repo[2], repo[3])
+        for i in 0..(all.changesets.size-1)
+          row = all.changesets[i]
+          array.push(:date => row[:timestamp], :author => row[:raw_author], :message => row[:message])
+        end
+        array.reverse
+      elsif repo[4]=="github"
+        github.repos.commits.list(repo[2], repo[3]).each do |row|
+          array.push(:date => DateTime.parse(row.commit.author[:date]).strftime("%F %T"), :author => row.commit.author[:name] + " <#{row.commit.author[:email]}>", :message => row.commit[:message])
         end
       else
-        line =  "Zdefiniuj rodzaj repozytorium!"
+        puts "Zdefiniuj typ repozytorium dla konta #{repo[2]}"
+        next
+      end
+    rescue Github::Error::NotFound, BitBucket::Error::NotFound
+      if !options.quiet_mode
+        puts "Nie znaleziono konta #{yellow(repo[2])} lub repozytorium #{yellow(repo[3])} dla #{red(repo[0])} #{red(repo[1])}"
+      end
+      next
+    end
+
+    if (options.commits.to_i == 0) || (options.commit.to_i >= array.size)
+      max = array.size-1
+    else
+      max = options.commits.to_i-1
+    end
+
+    for i in 0..max
+      date = array[i][:date] < Date.today.prev_day(8).to_s ? red(array[i][:date]) : green(array[i][:date])
+      line = "#{date} #{yellow(repo[2] + '/' + repo[3])} (#{array[i][:author]})"
+      if options.message
+        line += " {" + cyan(array[i][:message]) + "}"
+      end
+      if options.group && options.group == repo[5]
+        puts line
+      elsif !options.group
+        puts line += " " + magenta(repo[5])
       end
     end
-  rescue
-    #exit
   end
+rescue SystemExit, Interrupt
+  puts "Operacja anulowana!"
+rescue Github::Error::Forbidden, BitBucket::Error::Forbidden => e
+  puts red("Błąd przy próbie pobrania danych! prawdopodobnie wyczerpałeś limit zapytań")
+  puts "Szczegóły błędu: #{e}" if options.error_details
+rescue Exception => e
+  puts "Niezdefinowany błąd aplikacji!"
+  puts "Szczegóły błędu: #{e}" if options.error_details
 end
