@@ -117,6 +117,8 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 4. Kolejny *Przewodnik* do przestudiowania wybieramy już według własnego uznania.
 5. Michael Hartl.
    [Ruby on Rails Tutorial. Learn Rails by Example](http://www.railstutorial.org/book).
+6. Stefan Wintermeyer.
+   [Ruby on Rails 3.2](http://xyzpub.com/en/ruby-on-rails/3.2/) – a beginner’s guide
 
 
 ## Użyteczne rzeczy
