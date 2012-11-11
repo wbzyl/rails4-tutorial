@@ -945,7 +945,7 @@ w formacie YAML:
       key: 11111111111111111111
       secret: 1111111111111111111111111111111111111111
 
-Dodaję do aplikacj plik inicjujący:
+Dodaję do aplikacji plik inicjujący:
 
     :::ruby config/initializers/github.rb
     raw_config = File.read("#{ENV['HOME']}/.credentials/services.yml")

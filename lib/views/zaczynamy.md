@@ -285,6 +285,9 @@ wymieniamy na:
       gem 'rspec-rails', '~> 2.11.0'
     end
 
+    gem 'less-rails', '~> 2.2.6'
+    gem 'therubyracer', '~> 0.10.2'
+
     # alternatywa dla serwera Webrick
     gem 'thin'
 
