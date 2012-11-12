@@ -22,6 +22,7 @@ Podręczniki do języka Ruby:
   [The Bastards Book of Ruby](http://ruby.bastardsbook.com/) –
   a programming primer for counting and other unconventional tasks
 * [Hyperpolyglot](http://hyperpolyglot.org/scripting) – nie tylko Ruby!
+* [Introduction to Ruby](http://www.cs.auckland.ac.nz/references/ruby/doc_bundle/Tutorial/)
 
 Dokumentacja online:
 
