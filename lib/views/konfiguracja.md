@@ -8,7 +8,7 @@ wynika to z popularności frameworka Ruby on Rails.
 Ruby Version Manager umożliwia zainstalowanie i przełączanie
 się między różnymi implementacjami i wersjami języka Ruby.
 Jest to ważne teraz, ponieważ aktualnie przechodzimy z wersji
-1.8.7 na wersję 1.9.2.
+1.9 na wersję 2.0.
 
 Zanim zaczniemy pracę z Ruby on Rails powinniśmy też skonfigurować
 konsolę języka Ruby (**irb**) oraz konsolę frameworka Ruby on Rails
@@ -24,19 +24,26 @@ within user space, strongly encouraging **non-root usage**.”
 Podstawowe polecenia RVM:
 
     :::bash
-    rvm install ree               # alias na ostatnią wersję, np. ree-1.8.7-2011.03
-    rvm install 1.9.3-p125
-    rvm --default use 1.9.3-p125
-    rvm remove --gems 1.9.3-p125  # usuń też zainstalowane gemy
+    rvm install 1.9.3-p327
+    rvm --default use 1.9.3-p327
+    rvm remove --archive --gems 1.9.3-p327  # usuń też zainstalowane gemy
+
+[Instalacja patchowanej wersji Ruby](http://astrails.com/blog/2012/11/13/rvm-install-patched-ruby-for-faster-rails-startup):
+
+    :::bash
+    rvm get head
+    rvm install 1.9.3-p286 --patch falcon -n falcon
+    ls $rvm_path/patches/ruby/1.9.3/*/*falcon* | sort
+
+(Falcon przyśpiesza uruchamianie aplikacji Rails.)
 
 Info:
 
     rvm list
-    rvm use ree
+    rvm use 1.9.3-falcon
     rvm current
 
-
-Potrzebujemy więcej szczegółów:
+Więcej szczegółów:
 
     :::bash
     rvm env
