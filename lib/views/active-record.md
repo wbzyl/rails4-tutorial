@@ -20,8 +20,9 @@ Lista przykładów:
 1. Rodzime typy baz danych
 1. Sytuacje wyścigu, czyli *race conditions*
 
-Warto przeczytać:
+Do przeczytania:
 
+* [A Guide to Active Record Associations](http://edgeguides.rubyonrails.org/association_basics.html)
 * Simone Carletti,
   [Understanding Ruby and Rails: Delegate](http://www.simonecarletti.com/blog/2009/12/inside-ruby-on-rails-delegate/)
 
@@ -51,6 +52,12 @@ Metody pomocnicze:
 
     :::ruby
     helper.number_to_currency(9.99)
+    4.days.ago
+    4.years.ago
+    Time.now + 7.days
+    1.week.from_now
+    Time.zone.now
+    Time.zone.parse("2012-11-22 12:30:24")
 
 Więcej na temat sztuczek konsolowych:
 
@@ -67,7 +74,7 @@ Następnie, na potrzeby przykładów z tego wykładu, utworzymy zestaw
 gemów o nazwie *active_record*:
 
     :::bash
-    rvm use --create ruby-1.9.3-p194@active_record
+    rvm use --create ruby-1.9.3-p286-falcon@active_record
     gem update
     gem install rails
     rvm info
@@ -81,7 +88,7 @@ Dokumentacja:
 * [ActiveRecord::Base](http://api.rubyonrails.org/classes/ActiveRecord/Base.html)
 
 
-## Why Associations?
+# Why Associations?
 
 Przykład z rozdziału 1
 [A Guide to Active Record Associations](http://guides.rubyonrails.org/association_basics.html).
@@ -143,7 +150,7 @@ A tak usuwamy z bazy klienta i wszystkie jego zamówienia:
     @customer.destroy
 
 
-### Dodajemy powiązania między modelami
+## Dodajemy powiązania między modelami
 
 Po dopisaniu kod ustalającego powiązania między tymi modelami:
 
@@ -170,169 +177,72 @@ Usunięcie kilenta wraz z wszystkimi jego zamówieniami jest też proste:
     @customer = Customer.first  # jakiś klient
     @customer.destroy
 
-Tak jest prościej.
+Dlaczego dodajemy powiązania między modelami. Bo to ułatwia życie
+programiście. I tak jest prościej.
 
 
-## Badamy powiązanie wiele do wielu na konsoli
+# Powiązania wiele do wielu
 
-Między zasobami – *assets* i opisującymi je cechami – *tags*.
+Na dwa sposoby:
 
-Przykład pokazujący o co nam chodzi:
+* `has_and_belongs_to_many`
+* `has_many ... :through => ...`
 
-* *Asset*: Cypress. A photo of a tree. (dwa atrybuty)
-* *Tag*: tree, organic
+Zobacz też [has-many-with-set](https://github.com/ebobby/has-many-with-set).
 
-Między zasobami i opisującymi je cechami mamy powiązanie wiele do
-wielu.
+Przykłady takich powiązań:
 
-Dodatkowo, każdy zasób przypisujemy do jednego z kilku rodzajów zasobów –
-*AssetType*.  Przykład:
-
-* *Asset*: Cypress. A photo of a tree.
-* *AssetType*: Photo
-
-Między zasobem a rodzajem zasobu mamy powiązanie wiele do jednego.
-
-Tak jak poprzednio skorzystamy z generatora do wygenerowania
-**boilerplate code**:
-
-    :::bash
-    rails g model AssetType name
-    rails g model Asset name description:text asset_type:references
-    rails g model Tag name
-
-Dla powiązania wiele do wielu między *Asset* i *Tag*, zgodnie
-z konwencją Rails, powinniśmy dodać tabelę o nazwie *assets_tags*
-(nazwy tabel w kolejności alfabetycznej):
-
-    :::bash
-    # rails g model AssetsTags asset:references:index tag:references:index
-    #   ale indeksy są tworzone automatycznie dla atrybutów *references*
-    #   dlatego wystarczy
-    rails g model AssetsTags asset:references tag:references
-
-W migracji dopisujemy *id: false* (dlaczego? konwencja Rails)
-i usuwamy zbędne *timestamps* (też wymagane przez Rails?):
-
-    :::ruby
-    class CreateAssetsTags < ActiveRecord::Migration
-      def change
-        create_table :assets_tags, id: false do |t|
-          t.references :asset
-          t.references :tag
-        end
-        add_index :assets_tags, :asset_id
-        add_index :assets_tags, :tag_id
-      end
-    end
-
-Dopiero teraz migrujemy i usuwamy niepotrzebny model
-(w dowolnej kolejności):
-
-    rm app/models/assets_tags.rb
-    rake db:migrate
-
-Na koniec, dodajemy powiązania do tych modeli:
-
-    :::ruby
-    class Asset < ActiveRecord::Base
-      has_and_belongs_to_many :tags
-      belongs_to :asset_type
-    end
-
-    class Tag < ActiveRecord::Base
-      has_and_belongs_to_many :assets
-    end
-
-    class AssetType < ActiveRecord::Base
-      attr_accessible :description, :name, :asset_type_id #<= dopisujemy
-      has_many :assets
-    end
-
-Skorzystamy z zadania *rake* o nazwie *db:seed*
-do umieszczenia danych w tabelach:
-
-    :::ruby db/seeds.rb
-    AssetType.create name: 'Photo'
-    AssetType.create name: 'Painting'
-    AssetType.create name: 'Print'
-    AssetType.create name: 'Drawing'
-    AssetType.create name: 'Movie'
-    AssetType.create name: 'CD'
-
-    Asset.create name: 'Cypress', description: 'A photo of a tree.',     asset_type_id: 1
-    Asset.create name: 'Blunder', description: 'An action file.',        asset_type_id: 5
-    Asset.create name: 'Snap',    description: 'A recording of a fire.', asset_type_id: 6
-
-    Tag.create name: 'hot'
-    Tag.create name: 'red'
-    Tag.create name: 'boring'
-    Tag.create name: 'tree'
-    Tag.create name: 'organic'
-
-Ale wcześniej usuniemy bazę:
-
-    rake db:drop
-    rake db:schema:load
-
-Powiązania dodamy na konsoli Rails:
-
-    :::ruby
-    a = Asset.find 1
-    t = Tag.find [4, 5]
-    a.tags << t
-    Asset.find(2).tags << Tag.find(3)
-    Asset.find(3).tags << Tag.find([1, 2])
-
-Chcemy zbadać powiązania między powyżej wygenerowanymi modelami.
-Zabadamy powiązania z konsoli Rails.
-
-Konsola Rails:
-
-    :::ruby
-    a = Asset.find(3)
-    y a
-    a.name
-    a.description
-    a.asset_type.name
-    a.tags
-    a.tags.each { |t| puts t.name } ; nil
-    y a.asset_type
-    y a.tags
-    a.tags.each { |t| puts t.name } ; nil
-    aa = Asset.first
-    puts aa.to_yaml
-
-Przyjrzeć się uważnie co jest wypisywane na terminalu.
+* Artykuły i Autorzy
+* Programiści i Projekty poprzez Przydziały (zadanie, String)
+* Użytkownicy i Biuletyny poprzez Prenumeraty (data wygaśnięcia prenumeraty, DateTime)
+* Lekarze i Pacjenci poprzez Wizyty (data wizyty, DateTime)
 
 
-### Jeszcze jeden przykład: Author & Article
+## has_and_belongs_to_many – Article & Author
 
-Między autorami i artykułami mamy powiązanie wiele do wielu.
-Dlaczego?
+Między autorami i artykułami mamy powiązanie wiele do wielu. Dlaczego?
 
-* Utworzyć model *Author* za pomocą generatora.
-* Jak wyżej, ale utworzyć model *Article*.
-* Na koniec, utworzyć model *Bibinfo* – informacja bibliograficzna.
+* Utworzyć model *Article* za pomocą generatora.
+* Jak wyżej, ale utworzyć model *Author*.
+* Na koniec, utworzyć (bez modelu) tabelę pośredniczącą – *articles_authors*.
 
 Dodać do modeli następujące powiązania:
 
     :::ruby
-    class Author < ActiveRecord::Base
-      has_many :bibinfos
-      has_many :articles, through: :bibinfos
-    end
-
-    # relacja wiele-do-wielu via Bibinfo model
-    class Bibinfo < ActiveRecord::Base
-      belongs_to :author
-      belongs_to :article
-    end
-
     class Article < ActiveRecord::Base
-      has_many :bibinfos
-      has_many :authors, through: :bibinfos
+      has_and_belongs_to_many :authors
     end
+
+    class Author < ActiveRecord::Base
+      has_and_belongs_to_many :articles
+    end
+
+Tabelę *articles_authors* tworzymy za pomocą generatora:
+
+    :::bash
+    rails g migration create_articles_authors
+
+W wygenerowanym pliku wpisujemy:
+
+    :::ruby
+    class CreateArticlesAuthors < ActiveRecord::Migration
+      def change
+        create_table :articles_authors, id: false do |t|
+           t.references :article
+           t.references :author
+         end
+         add_index :articles_authors, :article_id
+         add_index :articles_authors, :author_id
+      end
+    end
+
+(`id: false` wymagane przez Rails).
+
+Do reszty użyjemy generatora scaffold:
+
+    :::bash
+    rails g model Author first_name last_name   # na potrzeby tego przykładu
+    rails g model Article title isbn pub_date   # wystarczą te atrybuty
 
 Przejść na konsolę. Zapisać w tabelkach następujące artykuły (książki):
 
@@ -345,20 +255,111 @@ Przejść na konsolę. Zapisać w tabelkach następujące artykuły (książki):
 * David Flanagan. **jQuery Pocket Reference**
   (Publication Date: December 2010, Pages: 160, Print ISBN: 978-1-4493-9722-7, Ebook ISBN: 978-1-4493-9732-6)
 
-*Wskazówki:*
-(i) [The has_many :through Association](http://guides.rubyonrails.org/association_basics.html#the-has_many-through-association),
-(ii) {%= link_to "jak wygenerować modele?", "/database_seed/gen-models-why_associations.sh" %},
-(iii) {%= link_to "seeds.rb", "/database_seed/seeds-why_associations.rb" %} (rozwiązanie).
+*Odpowiedź:* {%= link_to "seeds.rb", "/database_seed/seeds-articles_authors.rb" %}.
 
 Wypróbować na konsoli poniższe powiązania:
 
     :::ruby
+    author = Author.find 1
+    article = Article.find 1
     author.articles
     article.authors
-    author.bibinfos
-    article.bibinfos
-    bibinfo.author
-    bibinfo.article
+    article.authors[1].last_name
+    article.authors.each { |autor| puts autor.last_name }
+
+## has_many, through: :assignments – Prog & Proj
+
+Generujemy wszystkie trzy modele (oraz migracje):
+
+    :::bash
+    rails g model Programmer login
+    rails g model Project name due_date:datetime
+    rails g model Assignment programmer:references project:references task
+
+W modelach dopisujemy (pamiętamy aby dodać klucze obce do *attr_accessible*):
+
+    :::ruby
+    class Assignment < ActiveRecord::Base
+      belongs_to :programmer
+      belongs_to :project
+      attr_accessible :task, :programmer_id, :project_id
+    end
+
+    class Programmer < ActiveRecord::Base
+      attr_accessible :login
+      has_many :assignments
+      has_many :projects, through: :assignments
+    end
+
+    class Project < ActiveRecord::Base
+      attr_accessible :due_date, :name
+      has_many :assignments
+      has_many :programmers, through: :assignments
+    end
+
+Na konsoli dodajemy kilku programistów i kilka projektów:
+
+    :::ruby
+    Programmer.create login: "kosinska"
+    Programmer.create login: "misiut"
+    Programmer.create login: "tsott"
+    Programmer.create login: "wbzyl"
+    Project.create name: "Error 404", due_date: 1.month.from_now
+    Programmer.create login: "lorddraw"
+    Programmer.create login: "mbonczkowska"
+    Project.create name: "Karbon", due_date: 5.weeks.from_now
+
+
+A teraz najważniejsze przydzielamy zadania:
+
+    :::ruby
+    Assignment.find_or_initialize_by_programmer_id_and_project_id(1, 1).tap do |a|
+      a.task = "Models"
+      a.save!
+    end
+    Assignment.find_or_initialize_by_programmer_id_and_project_id(2, 1).tap do |a|
+      a.task = "Views"
+      a.save!
+    end
+    Assignment.find_or_initialize_by_programmer_id_and_project_id(3, 1).tap do |a|
+      a.task = "Controllers"
+      a.save!
+    end
+
+    Assignment.find_or_initialize_by_programmer_id_and_project_id(5, 2).tap do |a|
+      a.task = "Models & Controllers"
+      a.save!
+    end
+    Assignment.find_or_initialize_by_programmer_id_and_project_id(6, 2).tap do |a|
+      a.task = "Views & Tests"
+      a.save!
+    end
+
+    # teraz ja
+    Assignment.find_or_initialize_by_programmer_id_and_project_id(4, 1).tap do |a|
+      a.task = "Advise and Evaluate"
+      a.save!
+    end
+    Assignment.find_or_initialize_by_programmer_id_and_project_id(4, 2).tap do |a|
+      a.task = "Advise and Evaluate"
+      a.save!
+    end
+
+
+Przykładowe zapytania:
+
+    :::ruby
+    Project.find(1).programmers
+    Programmer.find(4).projects
+    Programmer.find(4).assignments
+    Assignment.find(3).programmer
+    Assignment.find(3).project.due_date
+    Programmer.find_by_login("lorddraw").assignments[0].task
+    Programmer.find_by_login("lorddraw").projects[0].due_date
+    Project.where(due_date: 4.weeks.from_now)
+    Project.where("due_date > ? and due_date < ?", 2.weeks.from_now, 6.weeks.from_now)
+    programmer = Programmer.find_by_login("lorddraw")
+    programmer.projects.where("due_date > ? and due_date < ?", 2.weeks.from_now, 6.weeks.from_now)
 
 
 ## Powiązania polimorficzne
