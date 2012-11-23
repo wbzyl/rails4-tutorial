@@ -137,7 +137,7 @@ gdzie dodajemy klienta i dwa jego zamówienia:
     :::ruby
     Customer.create :name => 'wlodek'
     @customer = Customer.first  # jakiś klient
-    Order.create :order_date => Time.now, :order_number => '20111003/1', :customer_id => @customer.id
+    Order.create order_date: Time.now, order_number: '20111003/1', customer_id: @customer.id
     Order.create order_date: Time.now, order_number: '20111003/2', customer_id: @customer.id
     Order.all
 
@@ -177,8 +177,9 @@ Usunięcie kilenta wraz z wszystkimi jego zamówieniami jest też proste:
     @customer = Customer.first  # jakiś klient
     @customer.destroy
 
-Dlaczego dodajemy powiązania między modelami. Bo to ułatwia życie
-programiście. I tak jest prościej.
+Dlaczego dodajemy powiązania między modelami – DSL jest intuicyjne,
+wymaga mniej kodu i kod łatwo się czyta.
+Po prostu tak jest prościej.
 
 
 # Powiązania wiele do wielu
