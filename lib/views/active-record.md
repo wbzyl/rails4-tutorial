@@ -195,7 +195,7 @@ Przykłady takich powiązań:
 
 * Artykuły i Autorzy
 * Programiści i Projekty poprzez Przydziały (zadanie, String)
-* Użytkownicy i Biuletyny poprzez Prenumeraty (data wygaśnięcia prenumeraty, DateTime)
+* Użytkownicy i Biuletyny poprzez Prenumeraty (data wygaśnięcia prenumeraty, DateTime)
 * Lekarze i Pacjenci poprzez Wizyty (data wizyty, DateTime)
 
 
@@ -625,7 +625,7 @@ SQLite:
 
 ## Race Conditions
 
-czyli tzw. **sytuacje wyścigu**.
+… czyli tzw. **sytuacje wyścigu**.
 
 Przykład: tworzymy dwa modele: *Inventory* (magazyn) i *Cart* (koszyk):
 
