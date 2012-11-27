@@ -35,7 +35,10 @@ Podstawowe polecenia RVM:
     rvm install 1.9.3-p286 --patch falcon -n falcon
     ls $rvm_path/patches/ruby/1.9.3/*/*falcon* | sort
 
-(Falcon przyśpiesza uruchamianie aplikacji Rails.)
+Falcon przyśpiesza uruchamianie aplikacji Rails. Zobacz też:
+
+* [Safe CFLAGS](http://en.gentoo-wiki.com/wiki/Safe_Cflags) na Gentoo wiki
+* [Making your ruby fly](http://alisnic.net/blog/making-your-ruby-fly/) na blogu Andrei Lisnica
 
 Info:
 
