@@ -169,7 +169,8 @@ blockquote p {
 }
 
 pre, code, tt {
-  font: 100%/1.5 'DejaVu Sans Mono', 'monospace';
+  font-family: monospace, serif;
+  font-size: 1em;
 }
 
 table caption {
