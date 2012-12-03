@@ -568,6 +568,97 @@ Teraz polecenia:
 nie odpytują bazy, ponieważ dane zostały wcześniej wczytane (*eager loading*).
 
 
+## Race Conditions
+
+… czyli tzw. **sytuacje wyścigu**.
+
+Przykład: tworzymy dwa modele: *Inventory* (magazyn) i *Cart* (koszyk):
+
+    :::bash
+    rails g model Inventory name on_hand:integer
+    rails g model Cart name quantity:integer
+
+Oto wygenerowane i nieco poprawione migracje:
+
+    :::ruby
+    class CreateInventories < ActiveRecord::Migration
+      def change
+        create_table :inventories do |t|
+          t.string :name
+          t.integer :on_hand  # na stanie
+        end
+      end
+    end
+
+    class CreateCarts < ActiveRecord::Migration
+      def change
+        create_table :carts do |t|
+          t.string :name
+          t.integer :quantity, default: 0  # dodane ręcznie
+        end
+      end
+    end
+
+Do modelu *Inventory* dodajemy walidację:
+
+    :::ruby inventory.rb
+    class Inventory < ActiveRecord::Base
+      validate :on_hand_could_not_be_negative
+
+      def on_hand_could_not_be_negative
+        errors.add(:on_hand, "can't be negative") if on_hand < 0
+      end
+    end
+
+na koniec migrujemy:
+
+    :::bash
+    rake db:migrate
+
+Przechodzimy na konsolę Ruby, gdzie umieszczamy w magazynie
+dziesięć laptopów:
+
+    :::ruby
+    Inventory.create name: 'Laptop Eee PC 1000', on_hand: 10
+
+i przy okazji sprawdzamy, czy działa walidacja:
+
+    :::ruby
+    Inventory.create name: 'Laptop Eee PC 2000', on_hand: -10
+
+Przykład pokazujący *race condition*
+Dwóch klientów jednocześnie kupuje po 8 laptopów Eee PC 1000:
+
+    :::ruby
+    Cart.create name: 'Laptop Eee PC 1000', quantity: 8
+    Cart.create name: 'Laptop Eee PC 1000', quantity: 8
+
+Oczywiście, po tym jak pierwszy kilent dodał 8 laptopów do swojego
+koszyka, zabraknie 6 laptopów dla drugiego klienta.
+Dlatego, drugi klient powinien poczekać aż zostanie uaktualniony
+stan magazynu.
+
+Możemy to zaprogramować korzystając z transakcji i wyjątków:
+
+    :::ruby
+    cart = Cart.create name: 'Laptop Eee PC 1000', quantity: -20
+
+    begin
+      # Cart.transaction do
+        item = Inventory.find_by_name cart.name
+        item.on_hand -= cart.quantity
+        item.save! # ActiveRecord::RecordInvalid: Validation failed: On hand can't be negative
+        puts "Dopiero teraz można zakupić to co mamy w koszyku."
+      # end
+    rescue
+      puts "Sorka, laptopy właśnie się skończyły!"
+    end
+
+Podobnie postępujemy z drugim klientem. Oczywiście, powyższy
+kod zamieniamy na metodę, np. o nazwie *add_item*,
+którą dodajemy do *CartController*.
+
+
 ## Rodzime typy baz danych
 
 I jak są tłumaczone z typów danych języka Ruby.
@@ -621,88 +712,3 @@ SQLite:
         :boolean     => { :name => "boolean" }
       }
     end
-
-
-## Race Conditions
-
-… czyli tzw. **sytuacje wyścigu**.
-
-Przykład: tworzymy dwa modele: *Inventory* (magazyn) i *Cart* (koszyk):
-
-    :::bash
-    rails g model Inventory name on_hand:integer
-    rails g model Cart name quantity:integer
-
-Oto wygenerowane i nieco poprawione migracje:
-
-    :::ruby
-    class CreateInventories < ActiveRecord::Migration
-      def change
-        create_table :inventories do |t|
-          t.string :name
-          t.integer :on_hand  # na stanie
-        end
-      end
-    end
-
-    class CreateCarts < ActiveRecord::Migration
-      def change
-        create_table :carts do |t|
-          t.string :name
-          t.integer :quantity, default: 0  # dodane ręcznie
-        end
-      end
-    end
-
-Do modelu *Inventory* dodajemy walidację:
-
-    :::ruby inventory.rb
-    class Inventory < ActiveRecord::Base
-      validate :on_hand_could_not_be_negative
-
-      def on_hand_could_not_be_negative
-        errors.add(:on_hand, "can't be negative") if on_hand < 0
-      end
-    end
-
-na koniec migrujemy:
-
-    :::bash
-    rake db:migrate
-
-Przechodzimy na konsolę Ruby:
-
-    :::ruby
-    Inventory.create name: 'Laptop Eee PC 1000', on_hand: 10
-
-Przykład pokazujący *race condition*
-Dwóch klientów jednocześnie kupuje po 8 laptopów Eee PC 1000:
-
-    :::ruby
-    c1 = Cart.create name: 'Laptop Eee PC 1000', quantity: 8
-    c2 = Cart.create name: 'Laptop Eee PC 1000', quantity: 8
-
-Oczywiście, po tym jak pierwszy kilent dodał 8 laptopów do swojego
-koszyka, zabraknie 6 laptopów dla drugiego klienta.
-Dlatego, drugi klient powinien poczekać aż zostanie uaktualniony
-stan magazynu.
-
-Możemy to zaprogramować korzystając z transakcji i wyjątków:
-
-    :::ruby
-    laptop = 'Laptop Eee PC 1000'
-    quantity = 8
-    c1 = Cart.create name: laptop, quantity: quantity
-    begin
-      Cart.transaction do
-        item = Inventory.find_by_name laptop
-        item.on_hand -= quantity
-        item.save!
-      end
-    rescue
-      flash[:error] = "Sorka, laptopy właśnie się skończyły!"
-    end
-
-Podobnie postępujemy z drugim klientem. Oczywiście, powyższy
-kod zamieniamy na metodę, np. o nazwie *add_item*,
-którą dodajemy do *CartController*.
