@@ -7,6 +7,8 @@
  <p class="author">źródło: <a href="http://robots.thoughtbot.com/post/159805997/heroku-wearing-suspenders">Heroku handles headache</a></p>
 </blockquote>
 
+<!--
+
 **Migracja działających i wdrożonych przed 2012 roku aplikacji:**
 „The Cedar stack is the default runtime stack on Heroku and is the
 successor to Aspen and Bamboo. It includes support for multiple
@@ -18,41 +20,37 @@ consideration required when performing a manual migration.”
 * [Migrating to the Celadon Cedar Stack](https://devcenter.heroku.com/articles/cedar-migration)
 * [Tales from upgrading to Ruby 1.9.2 – character encoding](http://www.samanage.com/blog/2011/09/tales-from-upgrading-to-ruby-1-9-2-character-encoding/)
 
+-->
 
 [Heroku](http://heroku.com/) (pronounced her-OH-koo) is a cloud application platform for
 Ruby – a new way of building and deploying web apps.
-Swoje aplikacje Rails będziemy wdrażać na Heroku za pomocą skryptu *heroku*,
-który musimy najpierw zainstalować:
+Swoje aplikacje Rails będziemy wdrażać na Heroku za pomocą programu *heroku*,
+który musimy najpierw zainstalować. W tym celu wchodzimy
+na stronę
 
-    :::bash
-    gem install heroku
+    https://toolbelt.heroku.com/
 
-Jeśli jeszcze nie umieściliśmy swojego klucza publicznego na Heroku,
-to robimy to teraz, tak:
+z której instalujemy CLI dla Heroku.
+
+Następnie zakładamy sobie na Heroku konto (tzw. „free plan”),
+zapisujemy swój klucz publiczny i logujemy się:
 
     :::bash
     heroku keys:add
+    heroku login
 
-albo podając ścieżkę do klucza:
-
-    heroku keys:add ~/.ssh/id_rsa.pub
-
-Zanim umieścimy swoją aplikację na *heroku.com*, musimy mieć tam konto (tzw. „free plan”).
-Zakładamy je, przeglądamy [dokumentację](http://devcenter.heroku.com/) i dopiero
-teraz generujemy aplikację Rails:
+Dopiero teraz generujemy aplikację Rails, którą wdrożymy na Heroku:
 
     rails new foo
 
 W pliku *Gemfile* zamieniamy wiersz z *sqlite3* na:
 
     :::ruby Gemfile
-    gem 'sqlite3', :group => :development
-    gem 'pg', :group => :production
+    gem 'sqlite3', group: :development
+    gem 'pg', group: :production
     gem 'thin'
 
-W katalogu głównym aplikacji tworzymy plik *Procfile* o zawartości:
-
-    web: bundle exec thin start -p $PORT -e $RACK_ENV/$RAILS_ENV
+i instalujemy je.
 
 Aplikację *foo* na heroku wdrażamy w czterech krokach.
 
@@ -63,16 +61,16 @@ Aplikację *foo* na heroku wdrażamy w czterech krokach.
     git add .
     git commit -m "pierwsza wersja"
 
-2\. Tworzymy nową aplikację na Heroku, wybieramy wersję
-[Celadon Cedar Stack](http://devcenter.heroku.com/articles/cedar):
+2\. Tworzymy nową aplikację na Heroku:
 
     :::bash
-    heroku create --stack cedar
-      Creating deep-sunrise-8008... done, stack is cedar
-      http://deep-sunrise-8008.herokuapp.com/ | git@heroku.com:deep-sunrise-8008.git
+    heroku create
+      Creating powerful-stream-6259... done, stack is cedar
+      http://powerful-stream-6259.herokuapp.com/ | git@heroku.com:powerful-stream-6259.git
       Git remote heroku added
 
-3\. Wdrażamy naszą aplikację na Heroku:
+
+3\. Wdrażamy naszą aplikację z gałęzi **master** na Heroku:
 
     :::bash
     git push heroku master
@@ -84,7 +82,7 @@ Aplikację *foo* na heroku wdrażamy w czterech krokach.
     heroku run rake db:migrate
 
 Przy okazji możemy też zmienić wygenerowaną nazwę aplikacji
-z *deep-sunrise-8008* na jakąś inną:
+z *powerful-stream-6259* na jakąś inną:
 
     :::bash
     heroku rename colllor
@@ -99,7 +97,15 @@ Odpowiedź Heroku powinna być taka:
 nazwie, to będziemy musieli wymyśleć inną unikalną nazwę.
 
 
-### SQLite ⇄ PostgreSQL
+
+## Podręczna dokumentacja
+
+* [DevCenter](http://devcenter.heroku.com/)
+* [Getting Started with Heroku](https://devcenter.heroku.com/articles/quickstart)
+* [Getting Started with Ruby on Heroku](https://devcenter.heroku.com/articles/ruby)
+
+
+## SQLite ⇄ PostgreSQL
 
 Jak? [Push and Pull Databases To and From Heroku](http://blog.heroku.com/archives/2009/3/18/push_and_pull_databases_to_and_from_heroku/):
 
