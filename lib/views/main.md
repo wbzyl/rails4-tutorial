@@ -10,6 +10,96 @@
 * [Rails Rumble 2012](http://blog.railsrumble.com/)
 * [Who is already on Rails?](http://rubyonrails.org/applications).
 
+## Prezentacje, styczeń 2013
+
+Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
+
+<table class="span-16" summary="harmonogram">
+  <colgroup>
+    <col class="table1"/>
+    <col class="table2"/>
+  </colgroup>
+  <caption><em>Harmonogram prezentacji</em></caption>
+  <thead>
+  </thead>
+
+<tbody>
+
+ <tr>
+ <td>08:30–08:50 <b>(07.01)</b></td>
+ <td>Error 404</td>
+ </tr>
+
+ <tr>
+ <td>08:50–09:10 <b>(07.01)</b></td>
+ <td>Karbon</td>
+ </tr>
+
+ <tr>
+ <td>09:10–09:30 <b>(07.01)</b></td>
+ <td>Ruby Team</td>
+ </tr>
+
+ <tr>
+ <td>09:30–09:50 <b>(07.01)</b></td>
+ <td>Super Fajni</td>
+ </tr>
+
+ <tr>
+ <td></td>
+ <td></td>
+ </tr>
+
+ <tr>
+ <td>08:30–08:50 <b>(14.01)</b></td>
+ <td>Dream Team</td>
+ </tr>
+
+ <tr>
+ <td>08:50–09:10 <b>(14.01)</b></td>
+ <td>Segmentation Fault</td>
+ </tr>
+
+ <tr>
+ <td>09:10–09:30 <b>(14.01)</b></td>
+ <td>Easy</td>
+ </tr>
+
+ <tr>
+ <td>09:30–09:50 <b>(14.01)</b></td>
+ <td>Skiba</td>
+ </tr>
+
+ <tr>
+ <td></td>
+ <td></td>
+ </tr>
+
+ <tr>
+ <td>08:30–08:50 <b>(21.01)</b></td>
+ <td>No Name</td>
+ </tr>
+
+ <tr>
+ <td>08:50–09:10 <b>(21.01)</b></td>
+ <td>Shadow Brokers</td>
+ </tr>
+
+ <tr>
+ <td>09:10–09:30 <b>(21.01)</b></td>
+ <td>Spotless Rails</td>
+ </tr>
+
+ <tr>
+ <td>09:10–09:30 <b>(21.01)</b></td>
+ <td>M. Małecki (Rangnarson)</td>
+ </tr>
+
+</tbody>
+</table>
+
+**Legenda:** *[R-]* -- brak README.md z opisem funkcjonalności aplikacji.
+
 
 ## Praktyczne rzeczy…
 
