@@ -71,6 +71,11 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
  </tr>
 
  <tr>
+ <td>09:50–10:10 <b>(14.01)</b></td>
+ <td>Error 500</td>
+ </tr>
+
+ <tr>
  <td></td>
  <td></td>
  </tr>
