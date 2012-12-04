@@ -92,7 +92,7 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>09:10–09:30 <b>(21.01)</b></td>
- <td>M. Małecki (Rangnarson)</td>
+ <td>M. Małecki (Ragnarson)</td>
  </tr>
 
 </tbody>

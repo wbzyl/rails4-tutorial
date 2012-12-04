@@ -3,15 +3,35 @@
 *Bootstraping*, to „stawanie na własne nogi”,
 a w informatyce — inicjowanie początkowe aplikacji.
 
-Tak więc, przez „bootstraping Rails application” możemy
-rozumieć zainicjalizowanie szablonu aplikacji ulubionymi gemami,
-własnymi wtyczkami, dodanie szablonu z atrakcyjnym layoutem,
+Innymi słowy, „bootstraping Rails application” to
+zainicjalizowanie rusztowania aplikacji ulubionymi gemami,
+dodanie szablonu z atrakcyjnym layoutem,
 usunięcie niepotrzebnych plików, itp.
 
 W ostatnich wersjach Rails cały taki proces można
 zautomatyzować za pomocą tzw. *Rails application templates*.
 Szablon aplikacji Rails, to skrypt w języku Ruby korzystający z metod
 [Rails template API][rta].
+
+
+# Rails Application Template Projects
+
+* [home](http://railsapps.github.com/rails-application-templates.html)
+
+
+## Rails Composer
+
+* [home](http://railsapps.github.com/rails-composer/) –
+  the Rails generator on steroids
+
+Zaczynamy:
+
+    :::bash
+    rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb
+    rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb -T -O
+
+
+# Mój szablon dla Rails 3.1
 
 Poniżej opiszę swój szablon aplikacji Rails, który nazwałem *html5-twitter-bootstrap.rb*,
 ponieważ użyłem w nim komponentów [Bootstrap, from Twitter](http://twitter.github.com/bootstrap/)
