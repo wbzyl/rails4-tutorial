@@ -8,7 +8,7 @@
     as aggregates or graphs – then you can avoid the nastiness of
     mapping completely.
   </p>
-  <p class="author">— Martin Fowler, <a hhref="http://martinfowler.com/bliki/OrmHate.html">OrmHate</a></p>
+  <p class="author">— Martin Fowler, <a href="http://martinfowler.com/bliki/OrmHate.html">OrmHate</a></p>
 </blockquote>
 
 Lista przykładów:
@@ -137,8 +137,10 @@ gdzie dodajemy klienta i dwa jego zamówienia:
     :::ruby
     Customer.create :name => 'wlodek'
     @customer = Customer.first  # jakiś klient
-    Order.create order_date: Time.now, order_number: '20111003/1', customer_id: @customer.id
-    Order.create order_date: Time.now, order_number: '20111003/2', customer_id: @customer.id
+    Order.create order_date: Time.now,
+      order_number: '20111003/1', customer_id: @customer.id
+    Order.create order_date: Time.now,
+      order_number: '20111003/2', customer_id: @customer.id
     Order.all
 
 A tak usuwamy z bazy klienta i wszystkie jego zamówienia:
@@ -151,6 +153,15 @@ A tak usuwamy z bazy klienta i wszystkie jego zamówienia:
 
 
 ## Dodajemy powiązania między modelami
+
+<blockquote>
+  {%= image_tag "/images/apples.jpg", :alt => "[Ensuring Data Integrity with Ruby on Rails]" %}
+  <p>While you can always fix a bug,
+   you cannot always recover of inconsistent data.
+  </p>
+  <p class="author">— P. Creux, <a href="">Ensuring Data Integrity…</a></p>
+</blockquote>
+
 
 Po dopisaniu kod ustalającego powiązania między tymi modelami:
 
@@ -168,8 +179,10 @@ tworzenie nowych zamówień dla danego klienta jest łatwiejsze:
     :::ruby
     Customer.create(name: 'rysiek')
     @customer = Customer.where(name: 'rysiek').first
-    @order = @customer.orders.create order_date: Time.now, order_number: '20111003/3'
-    @order = @customer.orders.create order_date: Time.now, order_number: '20111003/4'
+    @order = @customer.orders.create order_date: Time.now,
+      order_number: '20111003/3'
+    @order = @customer.orders.create order_date: Time.now,
+      order_number: '20111003/4'
 
 Usunięcie kilenta wraz z wszystkimi jego zamówieniami jest też proste:
 
