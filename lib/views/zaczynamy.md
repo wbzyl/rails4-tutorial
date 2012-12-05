@@ -73,6 +73,11 @@ jednego modelu w celu zapewnienia różnych prezentacji tych danych.
 Można także tworzyć nowe widoki dla modelu bez potrzeby modyfikowania
 go.”
 
+Więcej szczegółów na temat MVC:
+
+* Shane Brinkman-Davis,
+  [Essence of MVC](http://www.essenceandartifact.com/2012/12/the-essence-of-mvc.html)
+
 
 ## Jak działa MVC w Rails?
 
