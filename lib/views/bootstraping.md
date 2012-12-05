@@ -74,7 +74,6 @@ W trakcie rejestracji w pole *Callback URL* wpisałem:
 
     http://127.0.0.1:3000
 
-
 **Uwaga:**
 1\. Strategia omniauth-github* ma jakiś bug (4.12.21012)
 i logowanie nie działa; zwraca *Callback Error*.
@@ -87,6 +86,15 @@ Więcej szablonów aplikacji Rails:
   [tutorial](http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html).
 
 
+**TODO:**
+
+* Jakie rzeczy pominięto: konfiguracja MongoDB + inicjalizacja baz:
+        rake db:reseed
+        rake db:test:prepare
+* RSpec + Capybara:
+        rails generate rspec:install
+
+Reszta: [Rails App for Omniauth with Mongoid](http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html).
 
 
 # Mój szablon dla Rails 3.1
