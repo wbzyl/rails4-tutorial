@@ -14,21 +14,79 @@ Szablon aplikacji Rails, to skrypt w języku Ruby korzystający z metod
 [Rails template API][rta].
 
 
-# Rails Application Template Projects
+# Rails Composer
 
-* [home](http://railsapps.github.com/rails-application-templates.html)
+… [to generator Rails na sterydach](http://railsapps.github.com/rails-composer/)
 
-
-## Rails Composer
-
-* [home](http://railsapps.github.com/rails-composer/) –
-  the Rails generator on steroids
-
-Zaczynamy:
+Aby skorzystać z generatora, uruchamiamy polecenie *rails* w taki sposób:
 
     :::bash
-    rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb
-    rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb -T -O
+    rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb --skip-bundle
+
+A w sytuacji, a zamierzamy skorzystać z jakiejś bazy NoSQL, dopisujemy kilka opcji:
+
+    :::bash
+    rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb -T -O --skip-bundle
+
+(*-T* — skip test unit, *-O* — skip active record)
+
+**Ważne:** Na pierwsze pytanie zadane przez generator *Composer* wybieramy opcję **1**:
+
+    1)  I want to build my own application
+
+Jeśli wybraliśmy opcję **Twitter Bootstrap z LESS**  usuwamy gem *sass-rails*
+z *Gemfile* i zmieniamy rozszerzenie wygenerowanych plików `.css.sass` na `.css.less`.
+
+Po tych poprawkach instalujemy gemy:
+
+    :::bash
+    bundle install
+
+Przed uruchomieniem aplikacji musimy skonfigurować strategię
+OmniAuth+Twitter.
+W tym celu tworzymy plik *omniauth.rb* w którym wpisujemy:
+
+    :::ruby config/initializers/omniauth.rb
+    OmniAuth.config.logger = Rails.logger
+
+    raw_config = File.read("#{ENV['HOME']}/.credentials/applications.yml")
+
+    twitter = YAML.load(raw_config)['twitter']
+
+    Rails.application.config.middleware.use OmniAuth::Builder do
+      provider :twitter, twitter['provider_key'], twitter['provider_secret']
+    end
+
+a w wczytywanym powyżej pliku *.credentials/applications.yml* wpisujemy:
+
+    :::yaml
+    twitter:
+      provider_key: __wpisujemy Consumer key__
+      provider_secret: __wpisujemy Consumer secret__
+
+Oczywiście zamiast ‘jedynek’ powyżej wpisujemy prawdziwe dane
+ze strony z [swoimi aplikacjami](https://dev.twitter.com/apps/).
+Ta aplikacja została zarejstrowana na stronie
+[My applications](https://dev.twitter.com/apps) pod nazwą
+„OmniAuth+Mongoid via localhost”.
+
+W trakcie rejestracji w pole *Callback URL* wpisałem:
+
+    http://127.0.0.1:3000
+
+
+**Uwaga:**
+1\. Strategia omniauth-github* ma jakiś bug (4.12.21012)
+i logowanie nie działa; zwraca *Callback Error*.
+2\. Zobacz też [Simple OmniAuth (revised)](http://railscasts.com/episodes/241-simple-omniauth-revised?view=asciicast)
+
+Więcej szablonów aplikacji Rails:
+
+* [Rails Examples, Tutorials, and Starter Apps](http://railsapps.github.com/rails-examples-tutorials.html)
+* [Rails App for Omniauth with Mongoid](https://github.com/RailsApps/rails3-mongoid-omniauth),
+  [tutorial](http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html).
+
+
 
 
 # Mój szablon dla Rails 3.1
