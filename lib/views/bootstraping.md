@@ -93,6 +93,8 @@ Więcej szablonów aplikacji Rails:
         rake db:test:prepare
 * RSpec + Capybara:
         rails generate rspec:install
+* Konfiguracja GMail (zob. commit ac5c4d1b)
+
 
 Reszta: [Rails App for Omniauth with Mongoid](http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html).
 
