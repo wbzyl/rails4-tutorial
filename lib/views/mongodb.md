@@ -9,22 +9,19 @@
   - [MongoDB Geospatial Interactive Tutorial](http://tutorial.mongly.com/geo/index)
   - [The Little MongoDB Book](http://openmymind.net/mongodb.pdf)
 
-☸ Formtastic:
+☸ Simple Form:
 
-* [Github Home](https://github.com/justinfrench/formtastic)
-* [Flexible Formtastic styling with Sass](https://github.com/activestylus/formtastic-sass/blob/master/_formtastic_base.sass)
-  – not longer supported
-* [Formtastic without ActiveRecord](http://dondoh.tumblr.com/post/4142258573/formtastic-without-activerecord)
+* [GitHub](https://github.com/plataformatec/simple_form)
+* [Wiki](https://github.com/plataformatec/simple_form/wiki)
+* [SimpleForm 2.0 + Bootstrap: for you with love](http://blog.plataformatec.com.br/tag/simple_form/)
 
 ☸ OmniAuth:
 
 * [Demo App](http://www.omniauth.org/), [kod aplikacji](https://github.com/intridea/omniauth.org)
-* [Github Home](https://github.com/intridea/omniauth)
+* [Github](https://github.com/intridea/omniauth)
 * [Wiki](https://github.com/intridea/omniauth/wiki)
 * [OmniAuth Github strategy](https://github.com/intridea/omniauth-github)
 * [OmniAuth Identity strategy](https://github.com/intridea/omniauth-identity)
-* [Rails 3.1 with Mongoid and OmniAuth](https://github.com/railsapps/rails3-mongoid-omniauth/wiki/Tutorial)
-  – na razie nieaktualne
 
 ☸ Hosting:
 
@@ -34,49 +31,118 @@
 
 ☸ Fonty z ikonkami:
 
-* [Fontomas](http://nodeca.github.com/fontomas/)
+* [Font Awesome](http://fortawesome.github.com/Font-Awesome/),
+  [less-rails-fontawesome](https://github.com/wbzyl/less-rails-fontawesome) gem (mój)
+* [Fontello](http://fontello.com/)
 
 ☺☕♥ ⟵ kody takich znaczków odszuka za nas [Shapecatcher](http://shapecatcher.com/)
-Benjamina Milde. My musimy je naszkicować.
+Benjamina Milde. My musimy je tylko naszkicować.
 
 
 # Dziennik lekcyjny
 
-Przykładowa aplikacja CRUD listy obecności studentów.  W aplikacji
-dane będziemy przechowywać w bazie MongoDB.  Skorzystamy z gemów
-Mongoid i OmniAuth ze strategią *github*.
+Przykładowa aplikacja CRUD listy obecności studentów. Aplikacja
+korzysta z bazy MongoDB i gemu Mongoid.
+Autentykacja OmniAuth ze strategią *omniauth-github*.
 
-1\. Tak jak to opisano
-{%= link_to "Wyszukiwanie ElasticSearch", "/rails4/elasticsearch" %}
-tworzymy rusztowanie aplikacji korzystające z framweorka Bootstrap Twitter.
+* [dziennik-lekcyjny-2013](https://bitbucket.org/wbzyl/dziennik-lekcyjny-2013) –
+  repozytorium Git na Bitbucket
 
-    :::bash terminal
-    rails new dziennik-lekcyjny --skip-bundle --skip-active-record --skip-test-unit
-    rm dziennik-lekcyjny/public/index.html
+Kopiujemy szablon aplikacji *mongoid+omniauth-twitter* (Bitbucket).
 
-Dopisujemy gemy do pliku *Gemfile*:
+Po skopiowaniu zmienieniamy wartości stałych w plikach:
 
-    :::ruby Gemfile
-    gem 'bootstrap-sass', group: :assets
+* *secret_token.rb*
+* *session_store.rb*
 
-    gem 'formtastic'
-    gem 'formtastic-bootstrap'
 
-    gem 'omniauth'
-    gem 'omniauth-github'
+## Konfiguracja bazy MongoDB
 
-    gem 'mongoid'
-    gem 'bson_ext'
+Podmieniamy plik *mongoid.yml* na plik o takiej zawartości:
 
-    gem 'jbuilder'
+    :::yaml config/mongoid.yml
+    development:
+      sessions:
+        default:
+          database: dziennik_lekcyjny_2013_development
+          hosts:
+            - localhost:27017
+    production:
+      sessions:
+        default:
+          database: dziennik_lekcyjny_2013_production
+          hosts:
+            - localhost:27017
+    test:
+      sessions:
+        default:
+          database: dziennik_lekcyjny_2013_test
+          hosts:
+            - localhost:27017
+          options:
+            consistency: :strong
+            # In the test environment we lower the retries and retry interval to
+            # low amounts for fast failures.
+            max_retries: 1
+            retry_interval: 0
 
-i instalujemy je lokalnie:
 
-    :::bash terminal
-    cd dziennik-lekcyjny
-    bundle install --path=$HOME/.gems --binstubs
+## OmniAuth + Github
 
-**Uwaga:** Gem OmniAuth zostanie opisany później.
+* [OmniAuth GitHub](https://github.com/intridea/omniauth-github)
+
+W pliku *Gemfile* wykomentowujemy gem *omniauth-twitter* oraz dodajemy
+gem *omniauth-github* i po tych zmianach instalujemy gemy:
+
+    :::bash
+    bundle install
+
+W kontrolerze *SessionsControllers* w metodzie `new` podmieniamy
+`/auth/twitter` na `/auth/github`:
+
+    :::ruby
+    class SessionsController < ApplicationController
+      def new
+        redirect_to '/auth/github'
+      end
+
+Teraz rejestrujemy aplikację na [GitHubie](https://github.com/account/applications).
+
+Jeśli aplikacja będzie działać na *localhost:3000*, to w formularzu wpisujemy:
+
+    URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
+    Callback: http://localhost:3000
+
+(Oczywiście, powyżej podajemy jakiś swój URL.)
+
+Jeśli — na *sigma.ug.edu.pl:3000*, to wpisujemy:
+
+    URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
+    Callback: http://sigma.ug.edu.pl:3000
+
+(Oczywiście zamiast portu *3000* podajemy port na którym będzie działać nasza
+aplikacja na Sigmie.)
+
+Następnie ze strony [omniauth-github](https://github.com/intridea/omniauth-github)
+przeklikowujemy do pliku *github.rb* kawałek kodu, który
+dostosowujemy do konwencji Rails:
+
+    :::ruby config/initializers/github.rb
+    OmniAuth.config.logger = Rails.logger
+
+    raw_config = File.read("#{ENV['HOME']}/.credentials/applications.yml")
+    github = YAML.load(raw_config)['github']
+    Rails.application.config.middleware.use OmniAuth::Builder do
+      provider :github, github['omniauth_provider_key'], github['omniauth_provider_secret']
+    end
+
+Powyżej przyjmujemy, że
+
+    omniauth_provider_key === Client ID
+    omniauth_provider_secret === Client Secret
+
+
+# Zbędne rzeczy?
 
 Dalej postępujemy, tak jak to opisano poprzednio.
 Zmienimy tylko paletę kolorów:
@@ -93,77 +159,6 @@ z Twitter Bootstrap, dopisujemy metode *title* klasy
 
 * [application.html.erb](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/views/layouts/application.html.erb)
 * [application_helper.erb](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/helpers/application_helper.rb)
-
-
-2\. Dokończenie instalacji:
-
-    :::bash terminal
-    rails g mongoid:config
-    rails g formtastic:install
-
-Oto wygenerowany plik konfiguracyjny Mongoid:
-
-    :::yaml config/mongoid.yml
-    development:
-      host: localhost
-      database: dziennik_lekcyjny_development
-
-    test:
-      host: localhost
-      database: dziennik_lekcyjny_test
-
-    # set these environment variables on your prod server
-    production:
-      host: localhost
-      database: dziennik_lekcyjny
-      # host: <%= ENV['MONGOID_HOST'] %>
-      # port: <%= ENV['MONGOID_PORT'] %>
-      # username: <%= ENV['MONGOID_USERNAME'] %>
-      # password: <%= ENV['MONGOID_PASSWORD'] %>
-      # database: <%= ENV['MONGOID_DATABASE'] %>
-      # slaves:
-      #   - host: slave1.local
-      #     port: 27018
-      #   - host: slave2.local
-      #     port: 27019
-
-Taki plik konfiguracyjny wymaga, aby przed uruchomieniem aplikacji w trybie
-produkcyjnym były zdefiniowane w środowisku powyższe zmienne
-(ale zmienne te są wykomentowane).
-Oznacza to, że przed uruchomieniem aplikacji powinniśmy wykonać:
-
-    :::bash terminal
-    export MONGOID_HOST=localhost
-    export MONGOID_PORT=27017
-    export MONGOID_DATABASE=dziennik_lekcyjny_production
-
-Najwygodniej jest zapisać wszystkie te polecenia w pliku,
-np. o nazwie *dziennik-lekcyjny.sh*.
-Teraz przed uruchomieniem aplikacji w trybie produkcyjnym wystarczy wykonać:
-
-    :::bash
-    source dziennik-lekcyjny.sh
-
-**Uwaga**: Takie podejście jest wygodne, o ile zamierzamy wdrożyć
-aplikację na Heroku. Dlaczego?
-
-Dokończenie instalacji *formtastic* i *formtastic-bootstrap*.
-
-Initializers:
-
-    :::ruby config/initializers/formtastic.rb
-    Formtastic::Helpers::FormHelper.builder = FormtasticBootstrap::FormBuilder
-    # Set the default text area height when input is a text. Default is 20.
-    Formtastic::FormBuilder.default_text_area_height = 8
-
-CSS (ostatnie dwa pliki dodajem przy okazji teraz):
-
-    :::css app/assets/stylesheets/application.css
-    *= require_self
-    *= require formtastic-bootstrap
-    *= require formtastic-form
-    *= require dziennik-lekcyjny
-    *= require students
 
 **Uwaga**: Domyślnie, w trybie produkcyjnym, aplikacja korzysta ze
 skopilowanych *assets*:
@@ -854,134 +849,6 @@ aplikację obiekt JSON i uaktualnić zawartość strony:
 Gotowe!
 
 
-# OmniAuth + Github
-
-Zaczynamy od zarejestowania aplikacji na [Githubie](https://github.com/account/applications).
-
-Jeśli aplikacja będzie działać na *localhost*, rejstrujemy ją wpisując:
-
-    URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
-    Callback: http://localhost:3000
-
-(Oczywiście, powyżej podajemy jakiś swój URL.)
-
-Jeśli — na *sigma.ug.edu.pl*, to wpisujemy:
-
-    URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
-    Callback: http://sigma.ug.edu.pl:3000
-
-Zamiast portu *3000* podajemy port na którym będzie działać nasza
-aplikacja na Sigmie.
-
-Następnie ze strony [omniauth-github](https://github.com/intridea/omniauth-github)
-przeklikowujemy do pliku *github.rb* kawałek kodu, który
-dostosowujemy do konwencji Rails:
-
-    :::ruby config/initializers/github.rb
-    # use OmniAuth::Builder do
-    #   provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET']
-    # end
-    Rails.application.config.middleware.use OmniAuth::Builder do
-      provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET']
-    end
-
-Klucze `GITHUB_KEY`, `GITHUB_SECRET` przeklikujemy ze strony
-[Your OAuth Applications](https://github.com/account/applications).
-do pliku *dziennik-config.sh*, który dla bezpieczeństwa
-trzymam poza repozytorium:
-
-    :::bash github.sh
-     export GITHUB_KEY="11111111111111111111"
-     export GITHUB_SECRET="1111111111111111111111111111111111111111"
-
-Powyżej przyjmujemy, że
-
-    GITHUB_KEY === Client ID
-    GITHUB_SECRET === Client Secret
-
-Teraz przed uruchomieniem aplikacji wystarczy wykonać:
-
-    :::bash terminal
-    source dziennik-config.sh
-
-aby wartości *GITHUB_KEY*, *GITHUB_SECRET* były dostępne dla
-*github-strategy*.
-
-
-### To samo z *Foremanem*
-
-Instalujemy gem [Foreman](https://github.com/ddollar/foreman),
-czytamu [Introducing Foreman](http://blog.daviddollar.org/2011/05/06/introducing-foreman.html).
-
-Heroku, Newsletter, November 2011:
-
-*Foreman offers a feature very similar to config vars, but for local
-development. Create a .env file in the root of your app with your
-local config values, for example:*
-
-    DATABASE_URL=postgres://localhost/myapp
-    SESSION_SECRET=foobarbaz
-
-*Now when you run your app with **foreman start**, it will load these
-config vars into your local environment. Be sure to add .env to your
-*.gitignore* so that it does not get added to your repo.*
-
-Zobacz też Heroku,
-[Configuration and Config Vars](http://devcenter.heroku.com/articles/config-vars).
-
-
-### Nginx + Passenger
-
-Powyższe podejście nie działa jeśli aplikację uruchomimy
-za pomocą *Nginx + Passenger*.
-
-W tym przypadku postępuję tak.
-Moje prywatne dane trzymam poza repozytorium
-w katalogu *$HOME/.credentials*. Dane są zapisane
-w formacie YAML:
-
-    :::yaml HOME/.credentials/services.yml
-    github:
-      key: 11111111111111111111
-      secret: 1111111111111111111111111111111111111111
-
-Dodaję do aplikacji plik inicjujący:
-
-    :::ruby config/initializers/github.rb
-    raw_config = File.read("#{ENV['HOME']}/.credentials/services.yml")
-
-    github = YAML.load(raw_config)['github']
-
-    Rails.application.config.middleware.use OmniAuth::Builder do
-      provider :github, github['key'], github['secret']
-    end
-
-
-## Omniauth + Twitter (info, nie korzystamy)
-
-Konfiguracja OmniAuth dla *Twittera* jest analogiczna.
-Aplikację rejestrujemy [tutaj](https://dev.twitter.com/apps/new):
-
-    URL:      http://tao.inf.ug.edu.pl
-    Callback: http://localhost:3000
-
-(Oczywiście, powyżej podajemy jakiś swój URL.)
-
-Klucze zapisujemy w pliku *twitter.sh*, który będziemy
-też trzymać poza repozytorium:
-
-    :::bash twitter.sh
-    export TWITTER_KEY="111111111111111111111"
-    export TWITTER_SECRET="111111111111111111111111111111111111111111"
-
-Do pliku konfiguracyjnego OmniAuth wklepujemy:
-
-    :::ruby config/initializers/twitter.rb
-    Rails.application.config.middleware.use OmniAuth::Builder do
-      provider :twitter, ENV['TWITTER_KEY'], ENV['TWITTER_SECRET']
-    end
-
-
 ## Generujemy kontroler dla sesji
 
 …oczywiście skorzystamy z generatora:
@@ -1096,29 +963,8 @@ Github zwraca tylko tyle:
         id: 8049
         blog: !!null
 
-Dla odmiany, Twitter zwraca masę danych. Poniżej mały wyjątek:
 
-    :::yaml
-    ---
-    provider: twitter
-    uid: '52154495'
-    info:
-      nickname: wbzyl
-      name: Wlodek Bzyl
-      location: ''
-      image: http://a3.twimg.com/profile_images/.../mondrian_normal.png
-      description: ''
-      urls:
-        Website: http://sigma.ug.edu.pl/~wbzyl/
-        Twitter: http://twitter.com/wbzyl
-    credentials:
-      token: ...
-      secret: ...
-    extra:
-      access_token: !ruby/object:OAuth::AccessToken
-
-
-## Tworzymy model User
+## ??? Tworzymy model User
 
 Po pomyślnej autentykacji, dane użytkownika będziemy zapisywać
 w kolekcji *users*:
