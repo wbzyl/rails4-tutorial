@@ -141,6 +141,11 @@ Powyżej przyjmujemy, że
     omniauth_provider_key === Client ID
     omniauth_provider_secret === Client Secret
 
+W pliku *seeds.rb* zostawiamy tylko dwie role: *admin* i *student*:
+
+    rake db:reseed
+
+
 
 # Zbędne rzeczy?
 
