@@ -1,32 +1,33 @@
-#### {% title "Bootstraping Rails application" %}
+#### {% title "Bootstrapping Rails application" %}
 
-*Bootstraping*, to „stawanie na własne nogi”,
+*Bootstrapping*, to „stawanie na własne nogi”,
 a w informatyce — inicjowanie początkowe aplikacji.
 
-Innymi słowy, „bootstraping Rails application” to
+Innymi słowy, „bootstrapping Rails application” oznacza
 zainicjalizowanie rusztowania aplikacji ulubionymi gemami,
-dodanie szablonu z atrakcyjnym layoutem,
+dodanie szablonów z atrakcyjnym layoutem,
 usunięcie niepotrzebnych plików, itp.
 
 W ostatnich wersjach Rails cały taki proces można
-zautomatyzować za pomocą tzw. *Rails application templates*.
+zautomatyzować za pomocą tzw. *Rails Application Templates*.
 Szablon aplikacji Rails, to skrypt w języku Ruby korzystający z metod
-[Rails template API][rta].
+[Rails template API](http://edgeguides.rubyonrails.org/rails_application_templates.html).
 
 
 # Rails Composer
 
-… [to generator Rails na sterydach](http://railsapps.github.com/rails-composer/)
+… [to generator rusztowania aplikacji Rails na sterydach](http://railsapps.github.com/rails-composer/).
 
-Aby skorzystać z generatora, uruchamiamy polecenie *rails* w taki sposób:
+Użyję generatora aplikacji *Rails Composer*, do wygenerowania rusztowania
+aplikacji korzystającej z bazy MongoDB z logowaniem przez OmniAuth+Twitter.
+
+Ponieważ zamierzamy skorzystać z bazy NoSQL, do wywołania generatora
+dopisujemy kilka opcji:
 
     :::bash
-    rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb --skip-bundle
-
-A w sytuacji, a zamierzamy skorzystać z jakiejś bazy NoSQL, dopisujemy kilka opcji:
-
-    :::bash
-    rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb -T -O --skip-bundle
+    rails new myapp \
+      -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb \
+      -T -O --skip-bundle
 
 (*-T* — skip test unit, *-O* — skip active record)
 
@@ -34,17 +35,40 @@ A w sytuacji, a zamierzamy skorzystać z jakiejś bazy NoSQL, dopisujemy kilka
 
     1)  I want to build my own application
 
-Jeśli wybraliśmy opcję **Twitter Bootstrap z LESS**  usuwamy gem *sass-rails*
-z *Gemfile* i zmieniamy rozszerzenie wygenerowanych plików `.css.sass` na `.css.less`.
+a dalej już wybieramy opcje według własnego uznania.
 
-Po tych poprawkach instalujemy gemy:
+
+## Sprzątamy po generatorze…
+
+Jeśli wybraliśmy opcję **Twitter Bootstrap z LESS**  usuwamy gem *sass-rails*
+z pliku *Gemfile* i w katalogu *app/assets/stylesheets* zmieniamy rozszerzenie
+wygenerowanych plików z `.css.sass` na `.css.less`.
+
+Dopiero po tych poprawkach instalujemy gemy:
 
     :::bash
     bundle install
 
-Przed uruchomieniem aplikacji musimy skonfigurować strategię
-OmniAuth+Twitter.
-W tym celu tworzymy plik *omniauth.rb* w którym wpisujemy:
+Na koniec sprawdzamy, czy wygenerowana aplikacja działa
+wykonując „smoke (sanity) test”:
+
+    :::bash
+    rake -T
+    rake spec
+
+Jeśli wszystko jest OK, to przystępujemy do konfiguracji wygenerowanej aplikacji.
+
+
+## Konfiguracja strategii OmniAuth+Twitter
+
+W pliku *omniauth.rb* wykomentowujemy wygenerowany kod:
+
+    :::ruby config/initializers/omniauth.rb
+    Rails.application.config.middleware.use OmniAuth::Builder do
+      provider :twitter, ENV['OMNIAUTH_PROVIDER_KEY'], ENV['OMNIAUTH_PROVIDER_SECRET']
+    end
+
+zamiast niego wpisujemy:
 
     :::ruby config/initializers/omniauth.rb
     OmniAuth.config.logger = Rails.logger
@@ -52,48 +76,77 @@ W tym celu tworzymy plik *omniauth.rb* w którym wpisujemy:
     raw_config = File.read("#{ENV['HOME']}/.credentials/applications.yml")
 
     twitter = YAML.load(raw_config)['twitter']
-
     Rails.application.config.middleware.use OmniAuth::Builder do
-      provider :twitter, twitter['provider_key'], twitter['provider_secret']
+      provider :twitter, twitter['omniauth_provider_key'], twitter['omniauth_provider_secret']
     end
 
-a w wczytywanym powyżej pliku *.credentials/applications.yml* wpisujemy:
+a w użytym w kodzie powyżej pliku *applications.yml* wpisujemy:
 
     :::yaml
     twitter:
-      provider_key: __wpisujemy Consumer key__
-      provider_secret: __wpisujemy Consumer secret__
+      omniauth_provider_key: __ Consumer key __
+      omniauth_provider_secret: __ Consumer secret __
 
-Oczywiście zamiast ‘jedynek’ powyżej wpisujemy prawdziwe dane
-ze strony z [swoimi aplikacjami](https://dev.twitter.com/apps/).
-Ta aplikacja została zarejstrowana na stronie
-[My applications](https://dev.twitter.com/apps) pod nazwą
-„OmniAuth+Mongoid via localhost”.
+Oczywiście zamiast tekstu ‘\_\_ ... \_\_’ powyżej wpisujemy dane
+ze strony z [swoimi aplikacjami](https://dev.twitter.com/apps/).
+Moja aplikacja została zarejestrowana na tej stronie
+pod nazwą „OmniAuth+Mongoid via localhost”.
 
 W trakcie rejestracji w pole *Callback URL* wpisałem:
 
     http://127.0.0.1:3000
 
-**Uwaga:**
-1\. Strategia omniauth-github* ma jakiś bug (4.12.21012)
-i logowanie nie działa; zwraca *Callback Error*.
-2\. Zobacz też [Simple OmniAuth (revised)](http://railscasts.com/episodes/241-simple-omniauth-revised?view=asciicast)
+
+### Jakie rzeczy pominięto?
+
+Konfiguracja MongoDB oraz inicjalizację baz danych. Została zrobiona
+przez generator:
+
+    :::bash
+    rails generate mongoid:config
+    rake db:drop
+    rake db:create
+    rake db:mongoid:create_indexes
+    rake db:seed
+
+Jeśli jest potrzeba zapełnienia kolekcji danymi testowymi lub
+przygotowania bazy do testów, to wykonujemy:
+
+    :::bash
+    rake db:reseed
+    rake db:test:prepare
+
+Kiedyś trzeba będzie skonfigurować bazę danych dla
+trybu **production**.
+
+
+### Co nie działa?
+
+Musimy dopisać do modelu *Users* „timestamps”:
+
+    :::ruby app/models/user.rb
+    class User
+      include Mongoid::Document
+      include Mongoid::Timestamps
+
+Inaczej kliknięcie w zakładkę Admin generuje błąd.
+Przy okazji, dopiszę też timestamps do modelu *Role*.
+
+
+
+
+
+
+**Uwagi:**
+1\. Strategia *omniauth-github* ma jakiś bug (4.12.2012)
+i logowanie nie działa; próba zalogowania zwraca *Callback Error*.
+2\. Zobacz też [Simple OmniAuth (revised)](http://railscasts.com/episodes/241-simple-omniauth-revised?view=asciicast).
 
 Więcej szablonów aplikacji Rails:
 
 * [Rails Examples, Tutorials, and Starter Apps](http://railsapps.github.com/rails-examples-tutorials.html)
 * [Rails App for Omniauth with Mongoid](https://github.com/RailsApps/rails3-mongoid-omniauth),
   [tutorial](http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html).
-
-
-**TODO:**
-
-* Jakie rzeczy pominięto: konfiguracja MongoDB + inicjalizacja baz:
-        rake db:reseed
-        rake db:test:prepare
-* RSpec + Capybara:
-        rails generate rspec:install
-* Konfiguracja GMail (zob. commit ac5c4d1b)
 
 
 Reszta: [Rails App for Omniauth with Mongoid](http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html).
