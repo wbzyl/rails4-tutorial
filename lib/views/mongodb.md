@@ -121,13 +121,13 @@ Jeśli — na *sigma.ug.edu.pl:3000*, to wpisujemy:
     Callback: http://sigma.ug.edu.pl:3000
 
 (Oczywiście zamiast portu *3000* podajemy port na którym będzie działać nasza
-aplikacja na Sigmie.)
+aplikacja na Sigmie; URL – jw.)
 
 Następnie ze strony [omniauth-github](https://github.com/intridea/omniauth-github)
-przeklikowujemy do pliku *github.rb* kawałek kodu, który
+kopiujemy do pliku *omniauth.rb* kod, który
 dostosowujemy do konwencji Rails:
 
-    :::ruby config/initializers/github.rb
+    :::ruby config/initializers/omniauth.rb
     OmniAuth.config.logger = Rails.logger
 
     raw_config = File.read("#{ENV['HOME']}/.credentials/applications.yml")
@@ -136,10 +136,10 @@ dostosowujemy do konwencji Rails:
       provider :github, github['omniauth_provider_key'], github['omniauth_provider_secret']
     end
 
-Powyżej przyjmujemy, że
+Powyżej podstawiamy, że
 
-    omniauth_provider_key === Client ID
-    omniauth_provider_secret === Client Secret
+    omniauth_provider_key     <==  Client ID
+    omniauth_provider_secret  <==  Client Secret
 
 W pliku *seeds.rb* zostawiamy tylko dwie role: *admin* i *student*:
 
