@@ -14,6 +14,7 @@
 * [GitHub](https://github.com/plataformatec/simple_form)
 * [Wiki](https://github.com/plataformatec/simple_form/wiki)
 * [SimpleForm 2.0 + Bootstrap: for you with love](http://blog.plataformatec.com.br/tag/simple_form/)
+* [SimpleForm + Twitter Bootstrap sample application](https://github.com/rafaelfranca/simple_form-bootstrap)
 
 ☸ OmniAuth:
 
@@ -23,11 +24,13 @@
 * [OmniAuth Github strategy](https://github.com/intridea/omniauth-github)
 * [OmniAuth Identity strategy](https://github.com/intridea/omniauth-identity)
 
-☸ Hosting:
+☸ LESS + Twitter Bootstrap:
 
-* [Cloud Hosted MongoDB](https://mongolab.com/home)
-  ([{blog: mongolab}](http://blog.mongolab.com/))
-* [Node.js + MongoDB = Love: Guest Post from MongoLab](http://joyeur.com/2011/10/26/node-js-mongodb-love-guest-post-from-mongolab/?utm_source=NoSQL+Weekly+Newsletter&utm_campaign=4ed79d28a1-NoSQL_Weekly_Issue_49_November_3_2011&utm_medium=email)
+* [{less}](http://lesscss.org/) – the dynamic stylesheet language
+* [less-rails](https://github.com/metaskills/less-rails)
+* [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
+* [Customize and download Bootstrap](http://twitter.github.com/bootstrap/customize.html)
+  (customize variables)
 
 ☸ Fonty z ikonkami:
 
@@ -38,25 +41,41 @@
 ☺☕♥ ⟵ kody takich znaczków odszuka za nas [Shapecatcher](http://shapecatcher.com/)
 Benjamina Milde. My musimy je tylko naszkicować.
 
+☸ Hosting:
 
-# Dziennik lekcyjny
+* [Cloud Hosted MongoDB](https://mongolab.com/home)
+  ([{blog: mongolab}](http://blog.mongolab.com/))
+* [Node.js + MongoDB = Love: Guest Post from MongoLab](http://joyeur.com/2011/10/26/node-js-mongodb-love-guest-post-from-mongolab/)
+
+
+<blockquote>
+ {%= image_tag "/images/genesis-selling_england.jpg", :alt => "[Genesis, Selling England by the Pound]" %}
+ <p class="author"><a href="http://www.genesisfan.net/genesis/albums/selling-england-by-the-pound">Genesis,
+   Selling England by the Pound</a></p>
+</blockquote>
+
+# Dziennik lekcyjny, 12/13
 
 Przykładowa aplikacja CRUD listy obecności studentów. Aplikacja
 korzysta z bazy MongoDB i gemu Mongoid.
 Autentykacja OmniAuth ze strategią *omniauth-github*.
+Kod gotowej aplikacji:
 
 * [dziennik-lekcyjny-2013](https://bitbucket.org/wbzyl/dziennik-lekcyjny-2013) –
   repozytorium Git na Bitbucket
 
-Kopiujemy szablon aplikacji *mongoid+omniauth-twitter* (Bitbucket).
+## Zaczynamy…
 
-Po skopiowaniu zmienieniamy wartości stałych w plikach:
+Zaczynamy od skopiowania szablonu aplikacji *mongoid+omniauth-twitter*
+(Bitbucket).
+
+Po skopiowaniu zmieniamy wartości stałych w plikach:
 
 * *secret_token.rb*
 * *session_store.rb*
 
 
-## Konfiguracja bazy MongoDB
+### Konfiguracja bazy MongoDB
 
 Podmieniamy plik *mongoid.yml* na plik o takiej zawartości:
 
@@ -87,7 +106,7 @@ Podmieniamy plik *mongoid.yml* na plik o takiej zawartości:
             retry_interval: 0
 
 
-## OmniAuth + Github
+### OmniAuth + Github
 
 * [OmniAuth GitHub](https://github.com/intridea/omniauth-github)
 
@@ -145,27 +164,204 @@ W pliku *seeds.rb* zostawiamy tylko dwie role: *admin* i *student*:
 
     rake db:reseed
 
+Rola pierwszego zalogowanego użytkownika to Admin. Rola
+następnych – Student
+
+    :::ruby app/controllers/sessions_controller.rb
+    if User.count == 1        # make the first user an admin
+      user.add_role :admin
+    else
+      user.add_role :student
+    end
 
 
-# Zbędne rzeczy?
+### Więcej informacji o zalogowanym użytkowniku
 
-Dalej postępujemy, tak jak to opisano poprzednio.
-Zmienimy tylko paletę kolorów:
+[OmniAuth](https://github.com/intridea/omniauth) is a library that
+standardizes multi-provider authentication for web applications. […]
+Once the user has authenticated OmniAuth simply sets a special hash
+called the *Authentication Hash* on the Rack environment:
 
-* niebieski: \#7CD7FF
-* żółty: \#FFD91C
-* pomarańczowy: \#FD6300
-* brązowy: \#94190D
-* fioletowy: \#451327 = rgb(69, 19, 39)
+    :::ruby
+    request.env['omniauth.auth']
 
-Tworzymy szablon aplikacji wzorowany na *ContainerApp*
-z Twitter Bootstrap, dopisujemy metode *title* klasy
-*ApplicationHelper*:
+This information is meant to be as normalized as possible.
+Some fields will **always** be present:
 
-* [application.html.erb](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/views/layouts/application.html.erb)
-* [application_helper.erb](https://github.com/wbzyl/dziennik-lekcyjny/blob/master/app/helpers/application_helper.rb)
+* **provider** – the provider with which the user authenticated
+  (e.g. 'twitter' or 'facebook')
+* **uid** – an identifier unique to the given provider, such as a
+  Twitter user ID. Should be stored as a string
+* **info** – a hash containing information about the user
+* **name** - The best display name known to the strategy. Usually a
+  concatenation of first and last name, but may also be an arbitrary
+  designator or nickname for some strategies
+* **email** (optional) – The email of the authenticating user. Should
+  be provided if at all possible (but some sites such as Twitter do
+  not provide this information)
 
-**Uwaga**: Domyślnie, w trybie produkcyjnym, aplikacja korzysta ze
+Pozostałe pola –
+[Auth Hash Schema](https://github.com/intridea/omniauth/wiki/Auth-Hash-Schema).
+
+
+### LESS
+
+W pliku *application.css.less* podmienaimy linie kodu z *require* na:
+
+    :::js
+    *= require_self
+    *= require bootstrap_and_overrides.css
+
+dodajemy pusty plik *app/assets/stylesheets/dziennik_lekcyjny.less*.
+Na końcu pliku *bootstrap_and_overrides.css.less* dopisujemy:
+
+    :::css app/assets/stylesheets/bootstrap_and_overrides.css.less
+    @import "dziennik_lekcyjny";
+
+LESS zmieniający wygląd aplikacji będziemy wpisywać w *dziennik_lekcyjny*.
+Na początek zmienimy kilka kolorów:
+
+    :::css
+    @baseFontSize: 18px;
+    @baseLineHeight: 26px;
+    @textColor: black;
+
+    @navbarBackground: black;
+    @navbarBackgroundHighlight: black;
+    @navbarText: white;
+
+    @navbarBrandColor: #FF9800;
+
+    @navbarLinkColor: white;
+    @navbarLinkColorHover: #7E8AA2;
+    @navbarLinkColorActive: @navbarLinkColorHover;
+
+
+## Dodajemy model Student
+
+Generujemy rusztowanie dla modelu *Student*.
+Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
+atrybutów obecność i uwagi:
+
+    :::bash terminal
+    rails generate scaffold Student \
+      first_name:String last_name:String login:String \
+      presences:Array class_name:String group:String \
+      comments:String \
+      uid:Integer
+    rm app/assets/stylesheets/scaffolds.css.less
+
+Na razie zapełnimy kolekcję *students* tymi przykładowymi danymi:
+
+    :::ruby seeds.rb
+    Student.destroy_all
+    Student.create! last_name: "Kuszelas", first_name: "Jan", login: "jkuszelas", class_name: "nosql"
+    Student.create! last_name: "Klonowski", first_name: "Felicjan", login: "fklonowski", class_name: "nosql"
+    Student.create! last_name: "Korolczyk", first_name: "Joga", login: "jkorolczyk", class_name: "semianrium"
+    Student.create! last_name: "Grabczyk", first_name: "Simona", login: "sgrabczyk", class_name: "nosql"
+    Student.create! last_name: "Kamińska",  first_name: "Irena", login: "ikaminska", class_name: "asi"
+    Student.create! last_name: "Jankowski", first_name: "Kazimierz", login: "kjankowski", class_name: "asi"
+    Student.create! last_name: "Bzyl", first_name: "Włodzimierz", login: "wbzyl", class_name: "asi", uid: 8049
+    Student.create! last_name: "Raj", first_name: "Renia", login: "rraj", class_name: "asi", uid: 1198062
+
+Import z pliku CSV do kolekcji MongoDB, nie nada wartości atrybutom *created_at*
+i *updated_at*:
+
+    :::bash terminal
+    mongoimport --drop -d dziennik_lekcyjny_2013_development -c students --headerline --type csv wd.csv
+
+Strony wygenerowana z scaffold nie korzystają z Twitter Bootstrap.
+Aby to zmienić, nadpisujemy wszystkie wygenerowane widoki:
+
+    :::bash
+    rails g bootstrap:themed students
+
+
+### Routing
+
+W pliku *routes.rb* ustawiamy stronę główna na `students#index`:
+
+    :::ruby
+    root :to => "students#index"
+
+
+## Strona z listą studentów
+
+Skorzystam z [Gauges](https://developers.google.com/chart/interactive/docs/gallery/gauge)
+z [Google Chart Tools](https://developers.google.com/chart/).
+
+Na początek uporządkujemy widok *index.html.erb*.
+W widoku skorzystamy z metody pomocniczej *full_name*:
+
+    :::ruby app/models/student.rb
+    def full_name
+      [last_name, first_name].join(' ')
+    end
+
+    def full_name=(name)
+      split = name.split(/\s+/, 2)
+      self.last_name = split.first
+      self.first_name = split.last
+    end
+
+Dokumenty z kolekcji *students* będziemy wypisywać w takim porządku:
+
+    :::ruby app/models/student.rb
+    default_scope asc(:group, :last_name, :first_name)
+
+A to poprawiony widok:
+
+    :::rhtml app/views/students/index.html.erb
+    <%- model_class = Student -%>
+    <div class="page-header">
+      <h3><%=t '.title', :default => model_class.model_name.human.pluralize %>
+        <%= link_to t('.new', :default => t("helpers.links.new")),
+                new_student_path,
+                :class => 'btn btn-primary' %>
+      </h3>
+    </div>
+    <table class="table table-striped">
+      <tbody>
+        <% @students.each do |student| %>
+          <tr>
+            <td><%= link_to student.full_name, student_path(student) %> (<%= student.presences_length %>)</td>
+            <td><%= student.login %></td>
+            <td><%= student.class_name %></td>
+            <td><%= student.uid %></td>
+            <td>
+              <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                 edit_student_path(student), :class => 'btn btn-mini' %>
+              <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                 student_path(student), :method => :delete,
+                 :data => { :confirm => t('.confirm',
+                   :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                 :class => 'btn btn-mini btn-danger' %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+Musimy jeszcze przekształcić tablicę z listą obecności: przed umieszczeniem
+na stronie – na string; po pobraniu ze strony – na tablicę:
+
+    :::ruby app/models/student.rb
+    def presences_list
+      presences.to_a.join(' ') # .to_a handles nil attribute
+    end
+    def presences_list=(string)
+      list = string.gsub(/[,\s]+/, ' ').split(' ') # najpierw normalizacja, póżniej split
+      set(:presences, list)
+    end
+    def presences_length
+      presences.to_a.length
+    end
+
+
+
+# Uwagi
+
+Domyślnie, w trybie produkcyjnym, aplikacja korzysta ze
 skopilowanych *assets*:
 
     :::bash
@@ -199,32 +395,6 @@ Replica sets, master/slave, multiple databases – na razie
 pomijamy. Sharding – też.
 
 
-3\. Generujemy rusztowanie dla modelu *Student*.
-Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
-atrybutów nieobecność i uwagi:
-
-    :::bash terminal
-    rails generate scaffold Student last_name:String first_name:String \
-      id_number:Integer nickname:String absences:Array comments:String \
-      class_name:String group:String uid:Integer
-    rm app/assets/stylesheets/scaffolds.css.scss
-
-4\. Importujemy listę studentów (otrzymaną z sekretatriatu II)
-do bazy MongoDB:
-
-    :::bash terminal
-    mongoimport --drop -d dziennik_lekcyjny -c students --headerline --type csv wd.csv
-
-Oto fragment pliku CSV z nagłówkiem:
-
-    :::csv wd.csv
-    last_name,first_name,id_number,year,semester
-    "Kuszelas","Jan",123123,2011,summer
-    "Klonowski","Felicjan",221321,2011,summer
-    "Korolczyk","Joga",356123,2011,summer
-    "Grabczyk","Simona",491231,2011,summer
-    "Kamińska","Irena",556123,2011,summer
-    "Jankowski","Kazimierz",628942,2011,summer
 
 5\. Kilka uwag o robieniu kopii zapasowych danych z bazy MongoDB.
 
