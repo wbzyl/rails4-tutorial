@@ -389,7 +389,7 @@ Spróbuje czegoś niesztampowego – użyję
 [Gauges](https://developers.google.com/chart/interactive/docs/gallery/gauge)
 z [Google Chart Tools](https://developers.google.com/chart/).
 
-{%= image_tag "/images/lista-obecnosci-2013.png", :alt => "[Lista obecności, 12/13]" %}
+{%= image_tag "/images/gauges-2013.png", :alt => "[Lista obecności, 12/13]" %}
 
 Zaczniemy od wygenerowania nowego kontrolera z metodą index:
 
@@ -397,7 +397,7 @@ Zaczniemy od wygenerowania nowego kontrolera z metodą index:
     rails g controller gauges index
 
 
-# Uwagi
+# TODO: Uwagi
 
 Domyślnie, w trybie produkcyjnym, aplikacja korzysta ze
 skopilowanych *assets*:
