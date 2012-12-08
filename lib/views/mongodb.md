@@ -255,20 +255,31 @@ Na razie zapełnimy kolekcję *students* tymi przykładowymi danymi:
 
     :::ruby seeds.rb
     Student.destroy_all
-    Student.create! last_name: "Kuszelas", first_name: "Jan", login: "jkuszelas", class_name: "nosql"
-    Student.create! last_name: "Klonowski", first_name: "Felicjan", login: "fklonowski", class_name: "nosql"
-    Student.create! last_name: "Korolczyk", first_name: "Joga", login: "jkorolczyk", class_name: "semianrium"
-    Student.create! last_name: "Grabczyk", first_name: "Simona", login: "sgrabczyk", class_name: "nosql"
-    Student.create! last_name: "Kamińska",  first_name: "Irena", login: "ikaminska", class_name: "asi"
-    Student.create! last_name: "Jankowski", first_name: "Kazimierz", login: "kjankowski", class_name: "asi"
-    Student.create! last_name: "Bzyl", first_name: "Włodzimierz", login: "wbzyl", class_name: "asi", uid: 8049
-    Student.create! last_name: "Raj", first_name: "Renia", login: "rraj", class_name: "asi", uid: 1198062
+
+    Student.create! last_name: "Kuszelas", first_name: "Jan",
+      login: "jkuszelas", class_name: "nosql"
+    Student.create! last_name: "Klonowski", first_name: "Felicjan",
+      login: "fklonowski", class_name: "nosql"
+    Student.create! last_name: "Korolczyk", first_name: "Joga",
+      login: "jkorolczyk", class_name: "semianrium"
+    Student.create! last_name: "Grabczyk", first_name: "Simona",
+      login: "sgrabczyk", class_name: "nosql"
+    Student.create! last_name: "Kamińska",  first_name: "Irena",
+      login: "ikaminska", class_name: "asi"
+    Student.create! last_name: "Jankowski", first_name: "Kazimierz",
+      login: "kjankowski", class_name: "asi"
+    Student.create! last_name: "Bzyl", first_name: "Włodzimierz",
+      login: "wbzyl", class_name: "asi", uid: 8049
+    Student.create! last_name: "Raj", first_name: "Renia",
+      login: "rraj", class_name: "asi", uid: 1198062
 
 Import z pliku CSV do kolekcji MongoDB, nie nada wartości atrybutom *created_at*
 i *updated_at*:
 
     :::bash terminal
-    mongoimport --drop -d dziennik_lekcyjny_2013_development -c students --headerline --type csv wd.csv
+    mongoimport --drop \
+      -d dziennik_lekcyjny_2013_development -c students \
+      --headerline --type csv wd.csv
 
 Strony wygenerowana z scaffold nie korzystają z Twitter Bootstrap.
 Aby to zmienić, nadpisujemy wszystkie wygenerowane widoki:
@@ -287,21 +298,36 @@ W pliku *routes.rb* ustawiamy stronę główna na `students#index`:
 
 ## Strona z listą studentów
 
-Skorzystam z [Gauges](https://developers.google.com/chart/interactive/docs/gallery/gauge)
-z [Google Chart Tools](https://developers.google.com/chart/).
+Informacje o studentach roku zostaną umieszczone
+w widoku *index.html.erb*. Gotowy widok jest pokazany na obrazku poniżej.
 
-Na początek uporządkujemy widok *index.html.erb*.
-W widoku skorzystamy z metody pomocniczej *full_name*:
+{%= image_tag "/images/lista-obecnosci-2013.png", :alt => "[Lista obecności, 12/13]" %}
+
+Po imieniu, w nawiasie, wypisywana jest liczba obecności na zajęciach.
+Kliknięcie przycisku umieszczonego przed nazwiskiem zwiększa o jeden
+liczbę obecności studenta.
+
+W widoku będziemy korzystać z tych metod pomocniczych:
 
     :::ruby app/models/student.rb
     def full_name
       [last_name, first_name].join(' ')
     end
-
     def full_name=(name)
-      split = name.split(/\s+/, 2)
+      split = name.split(' ', 2)
       self.last_name = split.first
       self.first_name = split.last
+    end
+
+    def presences_list
+      presences.to_a.join(' ') # .to_a handles nil attribute
+    end
+    def presences_list=(string)
+      list = string.strip.split(' ') # najpierw strip, później split
+      set(:presences, list)
+    end
+    def presences_length
+      presences.to_a.length
     end
 
 Dokumenty z kolekcji *students* będziemy wypisywać w takim porządku:
@@ -314,7 +340,7 @@ A to poprawiony widok:
     :::rhtml app/views/students/index.html.erb
     <%- model_class = Student -%>
     <div class="page-header">
-      <h3><%=t '.title', :default => model_class.model_name.human.pluralize %>
+      <h3><%=t '.title', :default => model_class.model_name.human %>
         <%= link_to t('.new', :default => t("helpers.links.new")),
                 new_student_path,
                 :class => 'btn btn-primary' %>
@@ -324,39 +350,51 @@ A to poprawiony widok:
       <tbody>
         <% @students.each do |student| %>
           <tr>
-            <td><%= link_to student.full_name, student_path(student) %> (<%= student.presences_length %>)</td>
+            <td><%= link_to "<i class='icon-user icon-large'></i>".html_safe,
+                      present_student_path(student), method: :put,
+                      class: 'btn btn-mini btn-primary' %></td>
+            <td><%= link_to student.full_name, student_path(student) %>
+                      (<%= student.presences_length %>)</td>
             <td><%= student.login %></td>
             <td><%= student.class_name %></td>
             <td><%= student.uid %></td>
             <td>
               <%= link_to t('.edit', :default => t("helpers.links.edit")),
-                 edit_student_path(student), :class => 'btn btn-mini' %>
+                      edit_student_path(student),
+                      :class => 'btn btn-mini' %>
               <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
-                 student_path(student), :method => :delete,
-                 :data => { :confirm => t('.confirm',
-                   :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
-                 :class => 'btn btn-mini btn-danger' %>
+                      student_path(student),
+                      :method => :delete,
+                      :data => {
+                         :confirm =>
+                            t('.confirm', :default => t("helpers.links.confirm",
+                                          :default => 'Are you sure?'))
+                      },
+                      :class => 'btn btn-mini btn-danger' %>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
 
-Musimy jeszcze przekształcić tablicę z listą obecności: przed umieszczeniem
-na stronie – na string; po pobraniu ze strony – na tablicę:
+Musimy jeszcze poprawić kod w pozostałych widokach: zamienić *presences* na
+*presences_list*, pole *comments* zamienić z *text field* na *text area*,
+wybór nazwy grupy zamienić z *text field* na *collection select* itp.
 
-    :::ruby app/models/student.rb
-    def presences_list
-      presences.to_a.join(' ') # .to_a handles nil attribute
-    end
-    def presences_list=(string)
-      list = string.gsub(/[,\s]+/, ' ').split(' ') # najpierw normalizacja, póżniej split
-      set(:presences, list)
-    end
-    def presences_length
-      presences.to_a.length
-    end
 
+## Google Gauges na stronie głównej
+
+Strona główna z listą obecności z wygenerowanego rusztowania…???
+Spróbuje czegoś niesztampowego – użyję
+[Gauges](https://developers.google.com/chart/interactive/docs/gallery/gauge)
+z [Google Chart Tools](https://developers.google.com/chart/).
+
+{%= image_tag "/images/lista-obecnosci-2013.png", :alt => "[Lista obecności, 12/13]" %}
+
+Zaczniemy od wygenerowania nowego kontrolera z metodą index:
+
+    :::bash
+    rails g controller gauges index
 
 
 # Uwagi

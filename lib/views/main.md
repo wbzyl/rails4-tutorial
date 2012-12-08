@@ -250,6 +250,8 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 * Ryan Bates. [Railscasts](http://railscasts.com/)
 * [Rails Performance Resources](http://railslab.newrelic.com/) —
   Expert advice on tuning and optimizing your Rails app
+* Michael Hartl.
+  [Using Sublime Text 2 with Ruby on Rails](http://www.youtube.com/watch?v=05x1Jk4rT1A)
 
 
 ## Misz masz…
