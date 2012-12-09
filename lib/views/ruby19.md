@@ -50,6 +50,8 @@ Różne:
 * [Learn Ruby](http://rubykoans.com/) – with the edgecase Ruby koans
 * Shawn Lindsey.
   [My Giant List of Self Test Questions](http://shawnlindsey.com/blog/ruby-test-questions-the-great-big-ruby-test)
+* Conrad Irwin.
+  [Everything you ever wanted to know about constant lookup in Ruby](http://cirw.in/blog/constant-lookup)
 
 
 ## Hasze
