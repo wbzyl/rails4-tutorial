@@ -213,8 +213,9 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 5. Michael Hartl.
    [Ruby on Rails Tutorial. Learn Rails by Example](http://www.railstutorial.org/book).
 6. Stefan Wintermeyer.
-   [Ruby on Rails 3.2](http://xyzpub.com/en/ruby-on-rails/3.2/) – a beginner’s guide
-
+   [Ruby on Rails 3.2](http://xyzpub.com/en/ruby-on-rails/3.2/) – a beginner’s guide.
+7. [Ruby on Rails for Developers](https://github.com/generalassembly/ga-ruby-on-rails-for-devs) –
+   this course teaches experienced developers Ruby and Ruby on Rails.
 
 ## Użyteczne rzeczy
 
