@@ -100,6 +100,11 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
  <td>M. Małecki (Ragnarson)</td>
  </tr>
 
+ <tr>
+ <td>09:30–09:50 <b>(21.01)</b></td>
+ <td>Zwycięzcy</td>
+ </tr>
+
 </tbody>
 </table>
 
