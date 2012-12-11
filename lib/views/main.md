@@ -189,7 +189,12 @@ TODO:
 
 Instalacja *RVM* (*Ruby Version Manager*), konfiguracja konsoli Rails
 jest opisana tutaj:
-{%= link_to "Konfiguracja środowiska dla Rails 3", "/konfiguracja" %}
+{%= link_to "Konfiguracja środowiska dla Rails 3", "/konfiguracja" %}.
+
+Programowanie aplikacji Rails wymaga odpowiedniego skonfigurowania
+edytora. Konfiguracja edytorów Emacs i Vi nie jest łatwa i
+zajmuje dużo czasu. Najłatwiej jest skonfigurować edytor
+{%= link_to "Sublime Text 2", "/sublime_text" %}.
 
 
 ## Laboratoria
