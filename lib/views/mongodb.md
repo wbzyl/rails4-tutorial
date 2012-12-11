@@ -63,7 +63,7 @@ Kod gotowej aplikacji:
 
 * [lista-obecności-2013](https://bitbucket.org/wbzyl/lista-obecnosci-2013) –
   repozytorium Git na Bitbucket
-  
+
 
 ## Zaczynamy…
 
@@ -160,20 +160,6 @@ Powyżej podstawiamy, że
 
     omniauth_provider_key     <==  Client ID
     omniauth_provider_secret  <==  Client Secret
-
-W pliku *seeds.rb* zostawiamy tylko dwie role: *admin* i *student*:
-
-    rake db:reseed
-
-Rola pierwszego zalogowanego użytkownika to Admin. Rola
-następnych – Student
-
-    :::ruby app/controllers/sessions_controller.rb
-    if User.count == 1        # make the first user an admin
-      user.add_role :admin
-    else
-      user.add_role :student
-    end
 
 
 ### Więcej informacji o zalogowanym użytkowniku
@@ -291,6 +277,21 @@ Na razie zapełnimy kolekcję *students* tymi przykładowymi danymi:
     Student.create! last_name: "Raj", first_name: "Renia",
       login: "rraj", class_name: "asi", uid: 1198062
 
+W pliku *seeds.rb* wpisujemy role: *admin*, *student*, *guest*.
+Guest to użytkownik zalogowany via Github, którego **uid** nie ma
+na liście studentów. 
+
+    rake db:reseed
+
+**TODO** Rola pierwszego zalogowanego użytkownika to Admin. Rola
+następnych – Student
+
+    :::ruby app/controllers/sessions_controller.rb
+    if User.count == 1        # make the first user an admin
+      user.add_role :admin
+    else
+      user.add_role :student  # or :guest – POPRAWIĆ
+    end
 Import z pliku CSV do kolekcji MongoDB, nie nada wartości atrybutom *created_at*
 i *updated_at*:
 
