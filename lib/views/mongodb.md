@@ -224,7 +224,17 @@ Na początek zmienimy kilka kolorów:
     @navbarLinkColorActive: @navbarLinkColorHover;
 
 
-## Dodajemy model Student
+
+# Zaczynamy kodzenie aplikacji…
+
+Uff! Koniec poprawek w aplikacji wygenerowanej za pomocą
+Rails Composer.
+
+Kodzenie zaczniemy od modelu *Student*.
+Następnie zabierzemy się za…
+
+
+## Model Student
 
 Generujemy rusztowanie dla modelu *Student*.
 Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
@@ -277,10 +287,24 @@ Na razie zapełnimy kolekcję *students* tymi przykładowymi danymi:
     Student.create! last_name: "Raj", first_name: "Renia",
       login: "rraj", class_name: "asi", uid: 1198062
 
+
+## Rolifing Student model
+
+**TODO: Rolify** Dopisać info o rolach. 
+
 W pliku *seeds.rb* wpisujemy role: *admin*, *student*, *guest*.
 Guest to użytkownik zalogowany via Github, którego **uid** nie ma
-na liście studentów. 
+na liście studentów.
 
+Czy dodać do modelu *Student*:
+
+    :::ruby
+    include Mongoid::Document
+    resourcify
+
+zob. [Configure your resource models](https://github.com/EppO/rolify/wiki/Configuration)
+ 
+    :::bash
     rake db:reseed
 
 **TODO** Rola pierwszego zalogowanego użytkownika to Admin. Rola
