@@ -64,13 +64,17 @@ Kod gotowej aplikacji:
 * [lista-obecności-2013](https://bitbucket.org/wbzyl/lista-obecnosci-2013) –
   repozytorium Git na Bitbucket
 
+Zaczyniemy od skopiowania szablonu aplikacji
+[mongoid+omniauth-twitter](https://bitbucket.org/wbzyl/mongoid-omniauth-twitter).
+i poprawek w kodzie wygenerowango szablonu.
 
-## Zaczynamy…
+Dopiero po wprowadzeniu tych poprawkek przystąpimy do pisania
+kodu aplikacji.
 
-Zaczynamy od skopiowania szablonu aplikacji *mongoid+omniauth-twitter*
-(Bitbucket).
 
-Po skopiowaniu zmieniamy wartości stałych w plikach:
+## Poprawki w kodzie szablonu
+
+Zaczynamy od zmienienia wartości stałych w plikach:
 
 * *secret_token.rb*
 * *session_store.rb*
@@ -78,25 +82,25 @@ Po skopiowaniu zmieniamy wartości stałych w plikach:
 
 ### Konfiguracja bazy MongoDB
 
-Podmieniamy plik *mongoid.yml* na plik o takiej zawartości:
+Podmieniamy zawartość pliku *mongoid.yml* na:
 
     :::yaml config/mongoid.yml
     development:
       sessions:
         default:
-          database: dziennik_lekcyjny_2013_development
+          database: lista_obecnosci_2013_development
           hosts:
             - localhost:27017
     production:
       sessions:
         default:
-          database: dziennik_lekcyjny_2013_production
+          database: lista_obecnosci_2013_production
           hosts:
             - localhost:27017
     test:
       sessions:
         default:
-          database: dziennik_lekcyjny_2013_test
+          database: lista_obecnosci_2013_test
           hosts:
             - localhost:27017
           options:
@@ -107,12 +111,49 @@ Podmieniamy plik *mongoid.yml* na plik o takiej zawartości:
             retry_interval: 0
 
 
+### LESS
+
+W pliku *application.css.less* podmieniamy linie kodu z *require* na:
+
+    :::css
+    *= require_self
+    *= require bootstrap_and_overrides.css
+
+dodajemy pusty plik *app/assets/stylesheets/dziennik_lekcyjny.less*
+i na końcu pliku *bootstrap_and_overrides.css.less* dopisujemy:
+
+    :::css app/assets/stylesheets/bootstrap_and_overrides.css.less
+    @import "lista_obecnosci";
+
+Kod LESS zmieniający wygląd aplikacji będziemy wpisywać
+w pliku *lista_obecnosci.less*. Na razie zwiększymy rozmiar fontu,
+odstęp międzywierszowy (interlinię) oraz podmienimy kilka kolorów:
+
+    :::css app/assets/stylesheets/lista_obecnosci.less
+    @baseFontSize: 18px;
+    @baseLineHeight: 26px;
+    @textColor: black;
+
+    @navbarBackground: black;
+    @navbarBackgroundHighlight: black;
+    @navbarText: white;
+
+    @navbarBrandColor: #FF9800;
+
+    @navbarLinkColor: white;
+    @navbarLinkColorHover: #7E8AA2;
+    @navbarLinkColorActive: @navbarLinkColorHover;
+
+
 ### OmniAuth + Github
 
+Dokumentacja OmniAuth i strategii OmniAuth GitHub:
+
+* [OmniAuth: Standardized Multi-Provider Authentication](https://github.com/intridea/omniauth)
 * [OmniAuth GitHub](https://github.com/intridea/omniauth-github)
 
 W pliku *Gemfile* wykomentowujemy gem *omniauth-twitter* oraz dodajemy
-gem *omniauth-github* i po tych zmianach instalujemy gemy:
+gem *omniauth-github* i instalujemy wybrane gemy:
 
     :::bash
     bundle install
@@ -126,14 +167,16 @@ W kontrolerze *SessionsControllers* w metodzie `new` podmieniamy
         redirect_to '/auth/github'
       end
 
-Teraz rejestrujemy aplikację na [GitHubie](https://github.com/account/applications).
+Pozostało jeszcze zarejestrować aplikację na swoim koncie na
+[GitHubie](https://github.com/account/applications).
 
+*Ważne:*
 Jeśli aplikacja będzie działać na *localhost:3000*, to w formularzu wpisujemy:
 
     URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
     Callback: http://localhost:3000
 
-(Oczywiście, powyżej podajemy jakiś swój URL.)
+(Oczywiście, powyżej podajemy jakiś swój URL)
 
 Jeśli — na *sigma.ug.edu.pl:3000*, to wpisujemy:
 
@@ -162,14 +205,95 @@ Powyżej podstawiamy, że
     omniauth_provider_secret  <==  Client Secret
 
 
-### Więcej informacji o zalogowanym użytkowniku
+*Ważne:* Nie usuwamy wygenerowanego kodu, tylko go wykomentowujemy.
+Kod się jeszcze przyda przy wdrażaniu aplikacji na Heroku.
+
+I to by było tyle, jeśli chodzi o oczywiste poprawki w aplikacji wygenerowanej
+za pomocą generatora aplikacjii Rails Composer.
+
+
+
+# Zaczynamy kodzenie aplikacji
+
+(Oczywiście kodzenie to pisanie kodu.)
+
+Kodzenie zaczniemy od poprawek w wygenerowanych modelach *User*
+i *Student*.
+
+Użytkownik zalogowany via swoje konto na Github może być
+moim studentem, który uczęszcza na jedno lub kilka prowadzonych
+przeze mnie zajęć. Dlatego między modelami *User* i *Student*
+mamy relację jeden do wielu.
+
+Jeszcze tylko dopiszemy do *Gemfile* ten gem:
+
+    :::ruby Gemfile
+    gem 'strong_parameters'
+
+Dlaczego będziemy korzystać ze „strong parameters”,
+a nie z *attr_accessible* zostało opisane i wyjaśnione tutaj:
+
+* [Upgrading to Rails 4 – Parameters Security Tour](http://iconoclastlabs.com/cms/blog/posts/upgrading-to-rails-4-parameters-security-tour)
+* [Strong Parameters](http://railscasts.com/episodes/371-strong-parameters)
+
+
+## Model User
+
+Poprawiony kod modelu *User*:
+
+    :::ruby user.rb
+    class User
+      include Mongoid::Document
+      include Mongoid::Timestamps
+
+      has_many :students
+
+      rolify # https://github.com/EppO/rolify
+
+      field :provider, type: String
+      field :uid, type: String
+      field :name, type: String
+      field :email, type: String     # Github – optional
+      field :nickname, type: String  # Github – login
+
+      attr_accessible :role_ids, as: :admin
+      attr_accessible :provider, :uid, :name, :email
+
+      # run 'rake db:mongoid:create_indexes' to create indexes
+      index({ email: 1 }, { unique: true, background: true })
+
+      default_scope asc(:nickname)
+
+      def self.create_with_omniauth(auth)
+        create! do |user|
+          user.provider = auth['provider']
+          user.uid = auth['uid']
+          if auth['info']
+             user.name = auth['info']['name'] || ""
+             user.email = auth['info']['email'] || ""
+             user.nickname = auth['info']['nickname'] || ""
+          end
+        end
+      end
+
+    end
+
+Nowe rzeczy to: *has_many*, dodatkowe pole *nickname*,
+które dopisujemy do widoków.
+
+Pierwszy zalogowany użytkownik jest Adminem:
+
+    :::ruby app/controllers/sessions_controller.rb
+    if User.count == 1       # make the first user an admin
+      user.add_role :admin
+    end
 
 [OmniAuth](https://github.com/intridea/omniauth) is a library that
 standardizes multi-provider authentication for web applications. […]
 Once the user has authenticated OmniAuth simply sets a special hash
 called the *Authentication Hash* on the Rack environment:
 
-    :::ruby
+    :::ruby sessions_controller.rb
     request.env['omniauth.auth']
 
 This information is meant to be as normalized as possible.
@@ -178,63 +302,29 @@ Some fields will **always** be present:
 * **provider** – the provider with which the user authenticated
   (e.g. 'twitter' or 'facebook')
 * **uid** – an identifier unique to the given provider, such as a
-  Twitter user ID. Should be stored as a string
+  Twitter user ID; **should be stored as a string**
 * **info** – a hash containing information about the user
-* **name** - The best display name known to the strategy. Usually a
+* **name** - the best display name known to the strategy; usually a
   concatenation of first and last name, but may also be an arbitrary
   designator or nickname for some strategies
-* **email** (optional) – The email of the authenticating user. Should
+* **email** (optional) – the email of the authenticating user; should
   be provided if at all possible (but some sites such as Twitter do
   not provide this information)
 
-Pozostałe pola –
+Pozostałe pola są opisane na wiki w artykule
 [Auth Hash Schema](https://github.com/intridea/omniauth/wiki/Auth-Hash-Schema).
 
+*UID*, na przykład użytkownika *ocotcat*, możemy sprawdzić wykonując
+polecenie:
 
-### LESS
+    :::bash
+    curl -i https://api.github.com/users/octocat
 
-W pliku *application.css.less* podmienaimy linie kodu z *require* na:
-
-    :::js
-    *= require_self
-    *= require bootstrap_and_overrides.css
-
-dodajemy pusty plik *app/assets/stylesheets/dziennik_lekcyjny.less*.
-Na końcu pliku *bootstrap_and_overrides.css.less* dopisujemy:
-
-    :::css app/assets/stylesheets/bootstrap_and_overrides.css.less
-    @import "dziennik_lekcyjny";
-
-LESS zmieniający wygląd aplikacji będziemy wpisywać w *dziennik_lekcyjny*.
-Na początek zmienimy kilka kolorów:
-
-    :::css
-    @baseFontSize: 18px;
-    @baseLineHeight: 26px;
-    @textColor: black;
-
-    @navbarBackground: black;
-    @navbarBackgroundHighlight: black;
-    @navbarText: white;
-
-    @navbarBrandColor: #FF9800;
-
-    @navbarLinkColor: white;
-    @navbarLinkColorHover: #7E8AA2;
-    @navbarLinkColorActive: @navbarLinkColorHover;
+Wartość wpisana w polu ID to UID użytkownika na serwerze GitHub.
+Przykładowo dla użytkownika *ocotcat* jest to 583231.
 
 
-
-# Zaczynamy kodzenie aplikacji…
-
-Uff! Koniec poprawek w aplikacji wygenerowanej za pomocą
-Rails Composer.
-
-Kodzenie zaczniemy od modelu *Student*.
-Następnie zabierzemy się za…
-
-
-## Model Student
+## Scaffolding Student
 
 Generujemy rusztowanie dla modelu *Student*.
 Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
@@ -242,19 +332,32 @@ atrybutów obecność i uwagi:
 
     :::bash terminal
     rails generate scaffold Student \
-      first_name:String last_name:String login:String \
-      presences:Array class_name:String group:String \
-      comments:String \
-      uid:Integer
+      first_name:String last_name:String \
+      login:String \
+      repository:String \
+      class_name:String group:String \
+      presences:Array \
+      comments:String
     rm app/assets/stylesheets/scaffolds.css.less
 
-Od razu dopisujemy wartości domyślne atrybutów do modelu:
+Wygenerowana ze scaffold widoki nie korzystają z Twitter Bootstrap.
+Aby to zmienić, nadpisujemy je za pomocą polecenia:
 
-    :::ruby app/models/student.rb
+    :::bash
+    rails generate bootstrap:themed students
+
+
+### Model
+
+Dopisujemy wartości domyślne atrybutów do modelu
+oraz powiązanie z modelem *User*:
+
+    :::ruby student.rb
     class Student
     include Mongoid::Document
-
     include Mongoid::Timestamps
+
+    belongs_to :user
 
     field :first_name, type: String
     field :last_name, type: String
@@ -263,83 +366,205 @@ Od razu dopisujemy wartości domyślne atrybutów do modelu:
     field :class_name, type: String, default: "unallocated"
     field :group, type: String, default: "unallocated"
     field :comments, type: String
-    field :uid, type: Integer
+    field :repository, type: String
 
-Na razie zapełnimy kolekcję *students* tymi przykładowymi danymi:
+    default_scope asc(:last_name, :first_name)
+
+    def full_name
+      [first_name, last_name].join(' ')
+    end
+
+    def full_name=(name)
+      split = name.split(' ', 2)
+      self.first_name = split.first
+      self.last_name = split.last
+    end
+
+    def presences_list
+      presences.to_a.join(' ') # .to_a handles nil attribute
+    end
+
+    def presences_list=(string)
+      list = string.strip.split(' ') # najpierw strip, później split
+      set(:presences, list)
+    end
+
+    def presences_length
+      presences.to_a.length
+    end
+
+
+### Widoki
+
+Formularz:
+
+    :::rhtml _form.html.erb
+    <%= simple_form_for @student, html: { class: 'form-horizontal' } do |f| %>
+      <%= f.input :full_name, placeholder: 'Imię Nazwisko' %>
+      <%= f.input :login %>
+      <%= f.input :presences_list, label: "Presences (m-d)", input_html: { class: "span8"} %>
+      <%= f.input :class_name, as: :select,
+                  collection: { "nieprzydzielony" => "unallocated",
+                                "technologie nosql" => "nosql",
+                                "języki programowania" => "jp",
+                                "techniki internetowe" => "ti",
+                                "architektura serwisów internetowych" => "asi" },
+                  input_html: { class: "span8", disabled: false } %>
+
+      <%= f.association :user, collection: User.only(:nickname), label_method: :nickname %>
+
+      <%= f.input :comments, as: :text, input_html: { class: "span8", rows: "6" } %>
+      <%= f.input :uid %>
+      <%= f.input :repository %>
+      <div class="form-actions">
+        <%= f.button :submit, :class => 'btn-primary' %>
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                    students_path, :class => 'btn' %>
+      </div>
+    <% end %>
+
+Poprawki w widoku *index*:
+
+    :::rhtml index.html.erb
+    <td><%= link_to "<i class='icon-user icon-large'></i>".html_safe,
+              present_student_path(student),
+              method: :put,
+              class: 'btn btn-mini btn-primary' %></td>
+    <td><%= student.presences_list %></td>
+
+i podobne poprawki wprowadzamy w widoku *show*.
+
+
+### Kontroler
+
+Dodajemy metodę *present*:
+
+    :::ruby
+    class StudentsController < ApplicationController
+      # PUT /students/1/present
+      def present
+        @student = Student.find(params[:id])
+        @student.add_to_set(:presences, today_presence)
+        redirect_to students_url
+      end
+
+Aby skorzystać z tej metody musimy zmienić routing
+dla *students*:
+
+    :::ruby
+    resources :students do
+      put 'present', :on => :member
+    end
+
+Ze ścieżki */students/:id/present* korzystamy w widoku *index* powyżej.
+
+**Strong Parameters**: pliki z których korzysta generator scaffold
+są modyfikowane przez gem *strong_parameters* i generują taki kod:
+
+    :::ruby
+    class StudentsController < ApplicationController
+      def update
+        @student = Student.find(params[:id])
+
+        respond_to do |format|
+          if @student.update_attributes(student_params)
+          ...
+      ...
+      private
+
+        # Use this method to whitelist the permissible parameters. Example:
+        # params.require(:person).permit(:name, :age)
+        # Also, you can specialize this method with per-user checking
+        # of permissible attributes.
+        def student_params
+          params.require(:student).permit(:class_name, :comments, :full_name,
+              :group, :login, :presences, :repository, :uid)
+        end
+
+Dopisujemy do `.permit` atrybut *user_id*. Jeśli tego nie zrobimy, to
+zostanie on odfiltrowany z *params*. Z tego samego powodu musimy zastąpić
+atrybuty *first_name* i *last_name* atrybutem wirtualnym *full_name*.
+
+
+### Seeding students collection
+
+Na razie zapełnimy kolekcję *students* przykładowymi danymi:
 
     :::ruby seeds.rb
     Student.destroy_all
 
-    Student.create! last_name: "Kuszelas", first_name: "Jan",
-      login: "jkuszelas", class_name: "nosql"
-    Student.create! last_name: "Klonowski", first_name: "Felicjan",
-      login: "fklonowski", class_name: "nosql"
-    Student.create! last_name: "Korolczyk", first_name: "Joga",
-      login: "jkorolczyk", class_name: "semianrium"
-    Student.create! last_name: "Grabczyk", first_name: "Simona",
-      login: "sgrabczyk", class_name: "nosql"
-    Student.create! last_name: "Kamińska",  first_name: "Irena",
-      login: "ikaminska", class_name: "asi"
-    Student.create! last_name: "Jankowski", first_name: "Kazimierz",
-      login: "kjankowski", class_name: "asi"
-    Student.create! last_name: "Bzyl", first_name: "Włodzimierz",
-      login: "wbzyl", class_name: "asi", uid: 8049
-    Student.create! last_name: "Raj", first_name: "Renia",
-      login: "rraj", class_name: "asi", uid: 1198062
+    Student.create! full_name: "Jan Kuszelas", login: "jkuszelas", class_name: "nosql"
+    Student.create! full_name: "Felicjan Klonowski", login: "fklonowski", class_name: "ti"
+    Student.create! full_name: "Joga Korolczyk", login: "jkorolczyk", class_name: "ti"
+    Student.create! full_name: "Simona Grabczyk", login: "sgrabczyk", class_name: "nosql"
+    Student.create! full_name: "Irena Kamińska", login: "ikaminska", class_name: "asi"
+    Student.create! full_name: "Kazimierz Jankowski", login: "kjankowski", class_name: "asi"
+    Student.create! full_name: "Włodzimierz Bzyl", login: "wbzyl", class_name: "asi"
+    Student.create! full_name: "Ocot Cat", login: "ocat", class_name: "asi"
 
-
-## Rolifing Student model
-
-**TODO: Rolify** Dopisać info o rolach. 
-
-W pliku *seeds.rb* wpisujemy role: *admin*, *student*, *guest*.
-Guest to użytkownik zalogowany via Github, którego **uid** nie ma
-na liście studentów.
-
-Czy dodać do modelu *Student*:
-
-    :::ruby
-    include Mongoid::Document
-    resourcify
-
-zob. [Configure your resource models](https://github.com/EppO/rolify/wiki/Configuration)
- 
-    :::bash
-    rake db:reseed
-
-**TODO** Rola pierwszego zalogowanego użytkownika to Admin. Rola
-następnych – Student
-
-    :::ruby app/controllers/sessions_controller.rb
-    if User.count == 1        # make the first user an admin
-      user.add_role :admin
-    else
-      user.add_role :student  # or :guest – POPRAWIĆ
-    end
 Import z pliku CSV do kolekcji MongoDB, nie nada wartości atrybutom *created_at*
 i *updated_at*:
 
     :::bash terminal
     mongoimport --drop \
-      -d dziennik_lekcyjny_2013_development -c students \
+      -d lista_obecnosci_2013_development -c students \
       --headerline --type csv wd.csv
 
-Strony wygenerowana z scaffold nie korzystają z Twitter Bootstrap.
-Aby to zmienić, nadpisujemy wszystkie wygenerowane widoki:
+Jeśli daty zapiszemy w JSON-ie korzystając z deskryptora *$date* w taki sposób
+(ale cały JSON musi być zapisany jednym wierszu):
 
-    :::bash
-    rails g bootstrap:themed students
+    :::json
+    {
+      "first_name" : "Jan",
+      "last_name" : "Kuszelas",
+      "login" : "jkuszelas",
+      "class_name" : "nosql",
+      "updated_at" : { "$date" : 1355365444000 },
+      "created_at" : { "$date" : 1355365444000 }
+    }
+
+Wtedy możemy je zapisać w kolekcji za pomocą programu *mongoimport*.
+
+*Uwaga:* Na konsoli *mongo*:
+
+    :::js
+    new Date(1355365444000) //=> ISODate("20121213T02:24:04Z")
+
+Dlatego przykładowe dane zapisałem w kolekcji korzystając *seeds.rb*. 
+Tak było najwygodniej.
 
 
-### Routing
+## Rolifing Student model
 
-W pliku *routes.rb* ustawiamy stronę główna na `students#index`:
+Dopisujemy *resourcify* do modelu *Student*:
 
-    :::ruby
-    root :to => "students#index"
+    :::ruby student.rb
+    class Student
+      include Mongoid::Document
+      include Mongoid::Timestamps
+
+      resourcify # https://github.com/EppO/rolify/wiki/Configuration
+
+Dlaczego?
+Resourcify jest opisane na wiki w artykule
+[Configure your resource models](https://github.com/EppO/rolify/wiki/Configuration).
+
+Rolę `:student` dodamy użytkownikowi, którego dane zostały uaktualnione.
+Rola ta jest ograniczona do modyfikowanego dokumentu.
+
+    :::ruby students_controller.rb
+    def update
+      @student = Student.find(params[:id])
+      respond_to do |format|
+        if @student.update_attributes(student_params)
+          # scope role to a resource instance
+          @student.user.grant(:student, @student) if @student.user
 
 
-## Strona z listą studentów
+## TODO: Strona z /students
+
+
+**TODO:** uaktualnić obrazek poniżej. Ew. go poprawić.
 
 Informacje o studentach roku zostaną umieszczone
 w widoku *index.html.erb*. Gotowy widok jest pokazany na obrazku poniżej.
@@ -350,107 +575,6 @@ Po imieniu, w nawiasie, wypisywana jest liczba obecności na zajęciach.
 Kliknięcie przycisku umieszczonego przed nazwiskiem zwiększa o jeden
 liczbę obecności studenta.
 
-W widoku będziemy korzystać z tych metod pomocniczych:
-
-    :::ruby app/models/student.rb
-    def full_name
-      [last_name, first_name].join(' ')
-    end
-    def full_name=(name)
-      split = name.split(' ', 2)
-      self.last_name = split.first
-      self.first_name = split.last
-    end
-
-    def presences_list
-      presences.to_a.join(' ') # .to_a handles nil attribute
-    end
-    def presences_list=(string)
-      list = string.strip.split(' ') # najpierw strip, później split
-      set(:presences, list)
-    end
-    def presences_length
-      presences.to_a.length
-    end
-
-Dokumenty z kolekcji *students* będziemy wypisywać w takim porządku:
-
-    :::ruby app/models/student.rb
-    default_scope asc(:group, :last_name, :first_name)
-
-A to poprawiony widok:
-
-    :::rhtml app/views/students/index.html.erb
-    <%- model_class = Student -%>
-    <div class="page-header">
-      <h3><%=t '.title', :default => model_class.model_name.human %>
-        <%= link_to t('.new', :default => t("helpers.links.new")),
-                new_student_path,
-                :class => 'btn btn-primary' %>
-      </h3>
-    </div>
-    <table class="table table-striped">
-      <tbody>
-        <% @students.each do |student| %>
-          <tr>
-            <td><%= link_to "<i class='icon-user icon-large'></i>".html_safe,
-                      present_student_path(student), method: :put,
-                      class: 'btn btn-mini btn-primary' %></td>
-            <td><%= link_to student.full_name, student_path(student) %>
-                      (<%= student.presences_length %>)</td>
-            <td><%= student.login %></td>
-            <td><%= student.class_name %></td>
-            <td><%= student.uid %></td>
-            <td>
-              <%= link_to t('.edit', :default => t("helpers.links.edit")),
-                      edit_student_path(student),
-                      :class => 'btn btn-mini' %>
-              <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
-                      student_path(student),
-                      :method => :delete,
-                      :data => {
-                         :confirm =>
-                            t('.confirm', :default => t("helpers.links.confirm",
-                                          :default => 'Are you sure?'))
-                      },
-                      :class => 'btn btn-mini btn-danger' %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-
-
-## Widok częściowy – _form.html.erb
-
-Też do poprawy:
-
-    :::rhtml app/views/students/_form.html.erb
-    <%= simple_form_for @student, :html => { :class => 'form-horizontal' } do |f| %>
-      <%= f.input :first_name %>
-      <%= f.input :last_name %>
-      <%= f.input :login %>
-      <%= f.input :presences_list, label: "Presences (m-d)" %>
-      <%= f.input :class_name, as: :select,
-              collection: { "nieprzydzielony" => "unallocated",
-                            "języki programowania" => "jp",
-                            "technologie nosql" => "nosql",
-                            "techniki internetowe" => "ti",
-                            "architektura serwisów internetowych" => "asi" },
-              input_html: { class: "span8", disabled: false } %>
-      <%= f.input :group %>
-      <%= f.input :comments, as: :text, input_html: { class: "span8" }  %>
-      <%= f.input :uid %>
-      <div class="form-actions">
-        <%= f.button :submit, :class => 'btn-primary' %>
-        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
-                    students_path, :class => 'btn' %>
-      </div>
-    <% end %>
-
-Do poprawy pozostało jeszcze w widokach: zamiana *presences* na
-*presences_list*, pole *comments* zamienić z *text field* na *text area*,
-wybór nazwy grupy zamienić z *text field* na *collection select* itp.
 
 
 ## Google Gauges na stronie głównej
@@ -777,7 +901,7 @@ Na konsoli sprawdzić jak to działa:
 * [Upgrading to Rails 4 - Parameters](http://iconoclastlabs.com/cms/blog/posts/upgrading-to-rails-4-parameters-security-tour)
 
 
-## Usunąć? 
+## Usunąć?
 
 Autoryzację zaimplementujemy korzystając z gemu
 [CanCan](https://github.com/ryanb/cancan).

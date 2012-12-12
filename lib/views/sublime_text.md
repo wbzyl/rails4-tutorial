@@ -43,16 +43,19 @@
 ## Podstawowe skróty klawiszowe
 
 * uzupełnianie: `alt+/`
-* wyszukiwanie plików: 
+* wyszukiwanie plików:  `ctrl+p`
+* command palette: `shift+ctrl+p`
+* remove trailing spaces (package):  `ctrl+shift+t`
+
 
 ## Tools » New Snippet…
 
 Brak snippetów dla Markdown. Przykładowy snippet:
 
-* `link` – `[text](link)`
+* `link` – `[]()`
 
 
-## Package Control & Rails 
+## Package Control & Rails
 
 
 Instalujemy [Package Control](http://wbond.net/sublime\_packages/package\_control).
