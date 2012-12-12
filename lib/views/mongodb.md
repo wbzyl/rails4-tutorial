@@ -560,6 +560,14 @@ Rola ta jest ograniczona do modyfikowanego dokumentu.
           # scope role to a resource instance
           @student.user.grant(:student, @student) if @student.user
 
+**TODO:** Dopisać przykład pokazujący o co chodzi z *resourcify*:
+
+    :::ruby console
+    user.has_role? :admin
+    user.has_role? :student
+    user.has_role? :student, Student.first
+    user.has_role? :student, user.student[0]/.first
+
 
 ## TODO: Strona z /students
 
