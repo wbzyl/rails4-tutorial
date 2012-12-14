@@ -145,12 +145,67 @@ odstęp międzywierszowy (interlinię) oraz podmienimy kilka kolorów:
     @navbarLinkColorActive: @navbarLinkColorHover;
 
 
-### OmniAuth + Github
+### Usuwamy timestamps
+
+Dane studentów zwyczajowo otrzymuję z sekretariatu instytutu.
+Dane są zapisane w arkuszach kalkulacyjnym OpenOffice lub Excel.
+Dla każdej grupy jest to osobny plik. Schematy w którym są zapisane dane
+w każdym pliku ciut się różnią.
+
+Importu z pliku CSV do kolekcji MongoDB nie można użyć do nadania
+wartości atrybutom *created_at* i *updated_at*. Do importu danych tekstowych
+używamy mniej więcej takiego polecenia:
+
+    :::bash terminal
+    mongoimport --drop \
+      -d lista_obecnosci_2013_development -c students \
+      --headerline --type csv wd.csv
+
+Jeśli daty zapiszemy w JSON-ie, to daty możemy zapisać korzystając
+z deskryptora *$date* (ale cały JSON musi zapisujemy jednym wierszu):
+
+    :::json
+    {
+      "first_name" : "Jan",
+      "last_name" : "Kuszelas",
+      "login" : "jkuszelas",
+      "class_name" : "nosql",
+      "updated_at" : { "$date" : 1355365444000 },
+      "created_at" : { "$date" : 1355365444000 }
+    }
+
+W kolekcji MongoDB zapisujemy je też za pomocą programu *mongoimport*.
+
+*Uwaga:* Na konsoli *mongo* możemy sprawdzić jaką datę przedstawia
+`1355365444000` w taki sposób:
+
+    :::js
+    new Date(1355365444000) //=> ISODate("20121213T02:24:04Z")
+
+Jak widać daty wprowadzają duże zamieszanie w trakcie importu danych.
+Ale po włączeniu obsługi dat do każdego modelu:
+
+    :::ruby
+    include Mongoid::Timestamps
+
+korzystanie z nich nie sprawia żadnego problemu.
+
+Ponieważ nie zamierzam korzystać z dat w aplikacji usunę wygenerowany kod
+który z nich korzysta. Daty pozostawię tylko w modelu *Role*.
+
+
+### OmniAuth + Github + Private ENV Variables
 
 Dokumentacja OmniAuth i strategii OmniAuth GitHub:
 
 * [OmniAuth: Standardized Multi-Provider Authentication](https://github.com/intridea/omniauth)
 * [OmniAuth GitHub](https://github.com/intridea/omniauth-github)
+
+Sposoby na „Keeping Environment Variables Private” opisano tutaj:
+
+* Taylor Mock & Daniel Kehoe,
+  [Rails Environment Variables](http://railsapps.github.com/rails-environment-variables.html)
+* dyskusja na ten temat na [Hacker News](http://news.ycombinator.com/item?id=4918484)
 
 W pliku *Gemfile* wykomentowujemy gem *omniauth-twitter* oraz dodajemy
 gem *omniauth-github* i instalujemy wybrane gemy:
@@ -212,29 +267,84 @@ I to by było tyle, jeśli chodzi o oczywiste poprawki w aplikacji wygenerowanej
 za pomocą generatora aplikacjii Rails Composer.
 
 
+<blockquote>
+ {%= image_tag "/images/coding-drunk.jpg", :alt => "[Coding Drunk]" %}
+ <p class="author"><a href="http://radiogrraphie.org/blog/index.php?tag/fun">Blogogrraphie</a></p>
+</blockquote>
 
 # Zaczynamy kodzenie aplikacji
 
 (Oczywiście kodzenie to pisanie kodu.)
 
-Kodzenie zaczniemy od poprawek w wygenerowanych modelach *User*
-i *Student*.
+Kodzenie zaczniemy od poprawek w wygenerowanym modelu *User*
+oraz wygenerowania rusztowania dla modelu *Student*.
 
-Użytkownik zalogowany via swoje konto na Github może być
-moim studentem, który uczęszcza na jedno lub kilka prowadzonych
-przeze mnie zajęć. Dlatego między modelami *User* i *Student*
-mamy relację jeden do wielu.
+**Użytkownik** zalogowany przez swoje konto na Githubie może być
+jednym z moch **studentów** uczęszczającym na jedno lub kilka prowadzonych
+przeze mnie zajęć (dwa wytłuszczone rzeczowniki = dwa modele).
+
+Z powyższego opisu wynika, że między modelami *User* i *Student*
+jest relacja jeden do wielu.
+
+Autentykację (czyli sprawdzenie tożsamości użytkownika)
+scedujemy na GitHuba. Użyjemy gemu *OmniAuth* i strategii *OmniAuth-GitHub*.
+
+Do autoryzacji (czyli przydzielania uprawnień)
+użyjemy gemu *Rolify*. Utworzymy dwie role: „admin” i „student”.
+Admin w zasadzie może przeprowadzać dowolne operacje na dokumentach.
+Wyjątkiem będzie zmienianie niektórych atrybutów przesłanych przez GitHuba,
+na przykład *uid* lub *nickname*. Student może przeglądać tylko swoje dane
+i może zmieniać wartości tylko niektórych atrybutów, na przykład *full_name*
+lub *login*. Wartości pozostałych atrybutów, na przykład
+*presences* lub *comments*, może zmieniać tylko admin.
+
+W aplikacji użyję gemu *strong_parameters* do odfiltrowania niektórych
+atrybutów. Przykładowo, adminowi odfiltrujemy atrybuty *uid* i *nickname*,
+a studentowi – *class_name* i *comments*.
 
 
-## Strong Parameters
+### Tworzenie ról za pomocą Rolify
 
-W Rails 3 problem z *mass-assignment* zwalczamy za pomocą **attr_accessible**.
-W Rails 4 – do walki z *mass-assignment* będziemy używać techniki
-**strong parameters**.
+Metoda *resourcify* gemu [rolify](https://github.com/EppO/rolify)
+pozwala na powiązanie roli z konkretnym lub dowolnym egzemplarzem modelu.
+Aby utworzyć taką rolę dopisujemy *resourcify* do modelu:
 
-Zanim skorzystamy z tej techniki wyłączymy autoryzację via gem
-*cancan*. W tym celu usuwamy gem z *Gemfile* i plik *ability.rb*
-z katalogu *models*, w pliku *applicaytion_controller.rb*
+    :::ruby student.rb
+    class Student
+      include Mongoid::Document
+      resourcify
+
+Teraz role powiązane z modelem tworzymy za pomocą metody *add_role* lub *grant*.
+Przykładowo tak kodujemy role dla konkretnego użytkownika:
+
+    :::ruby
+    user = User.first
+    student = Student.first  # przyjmujemy, że Student belongs_to User
+
+    # rola powiązana z dowolnym egzemplarzem modelu
+    user.add_role :student, Student
+    user.grant    :student, Student
+
+    # rola powiązana z konkretnym egzemplarzem modelu
+    student.user.add_role :student, student
+    student.user.grant    :student, student
+
+Rola nie powiązana z żadnymi zasobami, to rola *globalna*:
+
+    :::ruby
+    user.add_role :admin     # rola globalna
+
+Więcej przykładów znajdziemy na [wiki](https://github.com/EppO/rolify/wiki/Usage).
+
+
+### Co to jest strong parameters?
+
+W Rails 3 problem „mass-assignment” zwalczamy za pomocą **attr_accessible**.
+W Rails 4 – do walki będziemy używać techniki **strong parameters**.
+
+Zanim skorzystamy z tej techniki usuniemy wygenerowaną autoryzację.
+W tym celu usuwamy gem *cancan* z *Gemfile*, usuwamy plik *ability.rb*
+z katalogu *models*, a w pliku *application_controller.rb*
 wykomentowujemy końcowy fragment.
 
 Aby skorzystać z dobrodziejstw *strong parameters* w naszej aplikacji Rails 3
@@ -258,14 +368,14 @@ Na przykład można to zrobić tak:
 -->
 
 Po tych zmianach w kodzie, możemy już skorzystać z dobrodziejstw
-`ActionController::Parameters`. Klasa ta definuje dwie metody:
+strong parameters. Klasa `ActionController::Parameters` definuje dwie metody:
 
 * `require(key)` – fetches the key out of the hash and raises
    a `ActionController::ParameterMissing` error if it’s missing
 * `permit(keys)` – selects only the passed keys out of the parameters hash,
-   and sets the permitted attribute to true.
+   and sets the permitted attribute to true
 
-Jak korzystać z tych metod jest opisane tutaj:
+Jak używać tych metod jest opisane tutaj:
 
 * [Strong Parameters](http://railscasts.com/episodes/371-strong-parameters)
 * [Ruby On Rails Security Guide](http://edgeguides.rubyonrails.org/security.html)
@@ -303,54 +413,43 @@ Oto prosty przykład:
 
 ## Model User
 
-Poprawiony kod modelu *User*:
+Po zalogowaniu użytkownika, zapisujemy dane udostępnione przez Githuba
+w kolekcji *users*; gdy brak jest adresu email, to prosimy użytkownika
+o jego wpisanie. Pierwszy zalogowany użytkownik będzie Adminem.
 
-    :::ruby user.rb
-    class User
-      include Mongoid::Document
-      include Mongoid::Timestamps
 
-      has_many :students
+### OmniAuth na GitHubie
 
-      rolify # https://github.com/EppO/rolify
+Cały ten proces jest zaprogramowany w kodzie kontrolera *SessionsController*:
 
-      field :provider, type: String
-      field :uid, type: String
-      field :name, type: String
-      field :email, type: String     # Github – optional
-      field :nickname, type: String  # Github – login
+    :::ruby
+    class SessionsController < ApplicationController
+      def new
+        redirect_to '/auth/github'
+      end
+      def create
+        auth = request.env["omniauth.auth"]
+        user = User.where(provider: auth['provider'], uid: auth['uid'].to_s).first ||
+            User.create_with_omniauth(auth)
+        session[:user_id] = user.id
 
-      # moved to UsersController
-      # attr_accessible :role_ids, as: :admin
-      # attr_accessible :provider, :uid, :name, :email
+        if User.count == 1       # make the first user an admin
+          user.add_role :admin   # add global role
+        end
 
-      # run 'rake db:mongoid:create_indexes' to create indexes
-      index({ email: 1 }, { unique: true, background: true })
-
-      default_scope asc(:nickname)
-
-      def self.create_with_omniauth(auth)
-        create! do |user|
-          user.provider = auth['provider']
-          user.uid = auth['uid']
-          if auth['info']
-             user.name = auth['info']['name'] || ""
-             user.email = auth['info']['email'] || ""
-             user.nickname = auth['info']['nickname'] || ""
-          end
+        if user.email.blank?
+          redirect_to edit_user_path(user), notice: "Please enter your email address."
+        else
+          redirect_to root_url, notice: 'Signed in!'
         end
       end
-
-    end
-
-Nowe rzeczy to: *has_many*, dodatkowe pole *nickname*,
-które dopisujemy do widoków.
-
-Pierwszy zalogowany użytkownik jest Adminem:
-
-    :::ruby app/controllers/sessions_controller.rb
-    if User.count == 1       # make the first user an admin
-      user.add_role :admin
+      def destroy
+        reset_session
+        redirect_to root_url, notice: 'Signed out!'
+      end
+      def failure
+        redirect_to root_url, alert: "Authentication error: #{params[:message].humanize}"
+      end
     end
 
 [OmniAuth](https://github.com/intridea/omniauth) is a library that
@@ -386,10 +485,157 @@ polecenie:
     curl -i https://api.github.com/users/octocat
 
 Wartość wpisana w polu ID to UID użytkownika na serwerze GitHub.
-Przykładowo dla użytkownika *ocotcat* jest to 583231.
+Przykładowo UID użytkownika *octocat* to 583231.
+
+
+### Poprawki w wygenerowanym kodzie modelu
+
+W modelu *User* usuwamy *attr_accessible*, dopisujemy
+powiązanie z (nieistniejącym) modelem *Student*, dodajemy kod dla atrybutu
+*nickname*:
+
+    :::ruby user.rb
+    class User
+      include Mongoid::Document
+
+      has_many :students, dependent: :delete
+
+      rolify # https://github.com/EppO/rolify
+
+      field :provider, type: String
+      field :uid, type: String
+      field :name, type: String
+      field :email, type: String     # Github – optional
+      field :nickname, type: String  # Github – login
+
+      # run 'rake db:mongoid:create_indexes' to create indexes
+      index({ email: 1 }, { unique: true, background: true })
+
+      default_scope asc(:nickname)
+
+      def self.create_with_omniauth(auth)
+        create! do |user|
+          user.provider = auth['provider']
+          user.uid = auth['uid']
+          if auth['info']
+             user.name = auth['info']['name'] || ""
+             user.email = auth['info']['email'] || ""
+             user.nickname = auth['info']['nickname'] || ""
+          end
+        end
+      end
+
+    end
+
+
+### Autoryzacja użytkowników
+
+W kontrolerze będziemy filtrować atrybuty. Autoryzację przeniesiemy do 
+*ApplicationController* i klasy *Permission*.
+
+    :::ruby users_controller.rb
+    class UsersController < ApplicationController
+      before_filter :authorize, only: [:index]
+
+      def index
+        @users = User.all
+      end
+      def edit
+        # email attribute
+      end
+      def update
+        if @user.update_attributes(user_params)
+          redirect_to root_url
+        else
+          render :edit
+        end
+      end
+
+      private
+        def user_params
+          # params[:user]
+          if current_user.has_role? :admin
+            params.require(:user).permit(:role_ids, :name, :email)
+          elsif current_user == @user
+            params.require(:user).permit(:email)
+          else
+            params.require(:user).permit()
+          end
+        end
+
+        def current_resource
+          @current_resource ||= User.find(params[:id]) if params[:id]
+        end
+    end
+
+Pozostałe metody użyte w kodzie kontrolera są zdefiniowane
+w *ApplicationController*:
+
+    :::ruby application_controller.rb
+    class ApplicationController < ActionController::Base
+      protect_from_forgery
+
+      helper_method :current_user
+      helper_method :user_signed_in?
+
+      delegate :allow?, to: :current_permission
+      helper_method :allow?
+
+      private
+        def current_user
+          begin
+            @current_user ||= User.find(session[:user_id]) if session[:user_id]
+          rescue Exception => e
+            nil
+          end
+        end
+        def authorize
+          if !current_permission.allow?(params[:controller], params[:action], current_resource)
+            redirect_to root_url, alert: "Only admin can access this page."
+          end
+        end
+        def current_permission
+          @current_permission ||= Permission.new(current_user)
+        end
+        def current_resource
+          nil
+        end
+        def user_signed_in?
+          return true if current_user
+        end
+    end
+
+Dane użytkowników może przeglądać i edytowawać tylko Admin,
+z wyjątkiem atrybutu *email*, który edytować może też jego właściciel.
+
+Uprawnienia są przydzielane w klasie *Permission*. Do sprawdzania uprawnień
+używamy metody `allow?`.
+
+    :::ruby permission.rb
+    class Permission < Struct.new(:user)
+      def allow?(controller, action, resource = nil)
+        return true if controller == "students" && action.in?(%w[index])
+
+        if user
+          return true if controller == "users" && action == "index"  &&
+               user.has_role?(:admin)
+          return true if controller == "users" && action == "edit"   &&
+              (user.has_role?(:admin) || resource == current_user)
+          return true if controller == "users" && action == "update" &&
+              (user.has_role?(:admin) || resource == current_user)
+        end
+
+        false
+      end
+    end
+
+W powyższym kodzie wzorowałem się na
+[Authorization from Scratch Part 1](http://railscasts.com/episodes/385-authorization-from-scratch-part-1).
 
 
 ## Scaffolding Student
+
+Stroną główną aplikacji będzie widok *index* modelu *Student*.
 
 Generujemy rusztowanie dla modelu *Student*.
 Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
@@ -469,12 +715,13 @@ Formularz:
       <%= f.input :login %>
       <%= f.input :presences_list, label: "Presences (m-d)", input_html: { class: "span8"} %>
       <%= f.input :class_name, as: :select,
-                  collection: { "nieprzydzielony" => "unallocated",
-                                "technologie nosql" => "nosql",
-                                "języki programowania" => "jp",
-                                "techniki internetowe" => "ti",
-                                "architektura serwisów internetowych" => "asi" },
-                  input_html: { class: "span8", disabled: false } %>
+              collection: { "nieprzydzielony" => "unallocated",
+                            "architektura serwisów internetowych" => "asi",
+                            "języki programowania" => "jp",
+                            "projekt zespołowy" => "pz",
+                            "techniki internetowe" => "ti",
+                            "technologie nosql" => "nosql" },
+              input_html: { class: "span8", disabled: false } %>
 
       <%= f.association :user, collection: User.only(:nickname), label_method: :nickname %>
 
@@ -560,7 +807,7 @@ Kod metody po poprawkach:
       if current_user && current_user.has_role?(:admin)
         params.require(:student).permit(:user_id, :full_name, :login,
            :presences_list, :class_name, :comments, :repository)
-      elsif 
+      elsif
 
       else
         params.require(:student).permit(:full_name, :login, :repository)
@@ -576,68 +823,17 @@ Na razie zapełnimy kolekcję *students* przykładowymi danymi:
     Student.destroy_all
 
     Student.create! full_name: "Jan Kuszelas", login: "jkuszelas", class_name: "nosql"
-    Student.create! full_name: "Felicjan Klonowski", login: "fklonowski", class_name: "ti"
+    Student.create! full_name: "Felicjan Klonowski", login: "fklonowski", class_name: "jp"
     Student.create! full_name: "Joga Korolczyk", login: "jkorolczyk", class_name: "ti"
-    Student.create! full_name: "Simona Grabczyk", login: "sgrabczyk", class_name: "nosql"
-    Student.create! full_name: "Irena Kamińska", login: "ikaminska", class_name: "asi"
-    Student.create! full_name: "Kazimierz Jankowski", login: "kjankowski", class_name: "asi"
-    Student.create! full_name: "Włodzimierz Bzyl", login: "wbzyl", class_name: "asi"
-    Student.create! full_name: "Ocot Cat", login: "ocat", class_name: "asi"
-
-Import z pliku CSV do kolekcji MongoDB, nie nada wartości atrybutom *created_at*
-i *updated_at*:
-
-    :::bash terminal
-    mongoimport --drop \
-      -d lista_obecnosci_2013_development -c students \
-      --headerline --type csv wd.csv
-
-Jeśli daty zapiszemy w JSON-ie korzystając z deskryptora *$date* w taki sposób
-(ale cały JSON musi być zapisany jednym wierszu):
-
-    :::json
-    {
-      "first_name" : "Jan",
-      "last_name" : "Kuszelas",
-      "login" : "jkuszelas",
-      "class_name" : "nosql",
-      "updated_at" : { "$date" : 1355365444000 },
-      "created_at" : { "$date" : 1355365444000 }
-    }
-
-Wtedy możemy je zapisać w kolekcji za pomocą programu *mongoimport*.
-
-*Uwaga:* Na konsoli *mongo*:
-
-    :::js
-    new Date(1355365444000) //=> ISODate("20121213T02:24:04Z")
-
-Dlatego przykładowe dane zapisałem w kolekcji korzystając *seeds.rb*.
-Tak było najwygodniej.
+    Student.create! full_name: "Simona Grabczyk", login: "sgrabczyk", class_name: "asi"
+    Student.create! full_name: "Irena Kamińska", login: "ikaminska", class_name: "pz"
+    Student.create! full_name: "Kazimierz Jankowski", login: "kjankowski", class_name: "unallocated"
+    Student.create! full_name: "Włodzimierz Bzyl", login: "wbzyl", class_name: "unallocated"
+    Student.create! full_name: "Ocot Cat", login: "ocat", class_name: "unallocated"
 
 
 ## Rolifing Student model
 
-Dopisujemy metodę *resourcify* do modelu *Student*:
-
-    :::ruby student.rb
-    class Student
-      include Mongoid::Document
-      include Mongoid::Timestamps
-      resourcify
-
-Ta metoda umożliwia powiązanie roli z konkretnym egzemplarzem modelu lub
-z dowolnym jego egzemplarzem. Rola nie powiązana z żadnymi zasobami,
-to rola *globalna*, na przykład:
-
-    :::ruby
-    user.add_role :admin                    # rola globalna
-    user.add_role :student, Student         # rola powiązana z zasobem
-    user.grant    :student, Student         # to samo
-    student.user.add_role :student, student # rola powiązana z konkretnym zasobem
-    student.user.grant    :student, student # to samo
-
-Więcej przykładów jest na [wiki](https://github.com/EppO/rolify/wiki/Usage).
 
 Rolę `:student` dodamy użytkownikowi, którego dane zostały uaktualnione
 danymi z GitHuba zapisanymi w kolekcji *User*.
