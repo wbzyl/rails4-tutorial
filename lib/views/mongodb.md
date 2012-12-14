@@ -225,16 +225,80 @@ moim studentem, który uczęszcza na jedno lub kilka prowadzonych
 przeze mnie zajęć. Dlatego między modelami *User* i *Student*
 mamy relację jeden do wielu.
 
-Jeszcze tylko dopiszemy do *Gemfile* ten gem:
 
-    :::ruby Gemfile
-    gem 'strong_parameters'
+## Strong Parameters
 
-Dlaczego będziemy korzystać ze „strong parameters”,
-a nie z *attr_accessible* zostało opisane i wyjaśnione tutaj:
+W Rails 3 problem z *mass-assignment* zwalczamy za pomocą **attr_accessible**.
+W Rails 4 – do walki z *mass-assignment* będziemy używać techniki
+**strong parameters**.
 
-* [Upgrading to Rails 4 – Parameters Security Tour](http://iconoclastlabs.com/cms/blog/posts/upgrading-to-rails-4-parameters-security-tour)
+Zanim skorzystamy z tej techniki wyłączymy autoryzację via gem
+*cancan*. W tym celu usuwamy gem z *Gemfile* i plik *ability.rb*
+z katalogu *models*, w pliku *applicaytion_controller.rb*
+wykomentowujemy końcowy fragment.
+
+Aby skorzystać z dobrodziejstw *strong parameters* w naszej aplikacji Rails 3
+musimy zainstalować gem *strong_parameters*.
+
+<!--
+
+2\. Ustawić w pliku *application.rb* zmienną `whitelist_attributes` na *false*:
+
+    :::ruby config/application.rb
+    config.active_record.whitelist_attributes = false
+
+(Wystarczy wykomentować ten wiersz?)
+
+3\. Włączyć `ActiveModel::ForbiddenAttributesProtection` do wszystkich modeli.
+Na przykład można to zrobić tak:
+
+    :::ruby /config/initializers/strong_parameters.rb
+    ActiveRecord::Base.send(:include,  ActiveModel::ForbiddenAttributesProtection)
+
+-->
+
+Po tych zmianach w kodzie, możemy już skorzystać z dobrodziejstw
+`ActionController::Parameters`. Klasa ta definuje dwie metody:
+
+* `require(key)` – fetches the key out of the hash and raises
+   a `ActionController::ParameterMissing` error if it’s missing
+* `permit(keys)` – selects only the passed keys out of the parameters hash,
+   and sets the permitted attribute to true.
+
+Jak korzystać z tych metod jest opisane tutaj:
+
 * [Strong Parameters](http://railscasts.com/episodes/371-strong-parameters)
+* [Ruby On Rails Security Guide](http://edgeguides.rubyonrails.org/security.html)
+* [Upgrading to Rails 4 – Parameters Security Tour](http://iconoclastlabs.com/cms/blog/posts/upgrading-to-rails-4-parameters-security-tour)
+
+Oto prosty przykład:
+
+    :::ruby console
+    params = ActionController::Parameters.new({
+      user: {
+        name: 'Octocat',
+        age:  4,
+        role: 'admin'
+      }
+    })
+    # => {"user"=>{"name"=>"Octocat", "age"=>4, "role"=>"admin"}}
+
+    # celowa pomyłka: :person zamiast :user
+    permitted = params.require(:person).permit(:name, :age)
+    # => ActionController::ParameterMissing: key not found: person
+
+    params.require(:user).permit(:age)
+    # => {"age"=>4}
+
+    permitted = params.require(:user).permit(:name, :age)
+    # => {"name"=>"Octocat", "age"=>4}
+
+    permitted            # => {"name"=>"Octocat", "age"=>4}
+    permitted.class      # => ActionController::Parameters
+    permitted.permitted? # => true
+
+    User.first.update_attributes!(permitted)
+    # => #<User id: 1, name: "Octocat", age: 4, role: "admin">
 
 
 ## Model User
@@ -256,8 +320,9 @@ Poprawiony kod modelu *User*:
       field :email, type: String     # Github – optional
       field :nickname, type: String  # Github – login
 
-      attr_accessible :role_ids, as: :admin
-      attr_accessible :provider, :uid, :name, :email
+      # moved to UsersController
+      # attr_accessible :role_ids, as: :admin
+      # attr_accessible :provider, :uid, :name, :email
 
       # run 'rake db:mongoid:create_indexes' to create indexes
       index({ email: 1 }, { unique: true, background: true })
@@ -426,7 +491,7 @@ Formularz:
 Poprawki w widoku *index*:
 
     :::rhtml index.html.erb
-    <td><%= link_to "<i class='icon-user icon-large'></i>".html_safe,
+    <td><%= link_to raw "<i class='icon-user icon-large'></i>",
               present_student_path(student),
               method: :put,
               class: 'btn btn-mini btn-primary' %></td>
@@ -458,8 +523,10 @@ dla *students*:
 
 Ze ścieżki */students/:id/present* korzystamy w widoku *index* powyżej.
 
-**Strong Parameters**: pliki z których korzysta generator scaffold
-są modyfikowane przez gem *strong_parameters* i generują taki kod:
+### Strong Parameters
+
+Pliki z których korzysta generator scaffold są modyfikowane
+przez gem *strong_parameters* i generują taki kod:
 
     :::ruby
     class StudentsController < ApplicationController
@@ -484,6 +551,21 @@ są modyfikowane przez gem *strong_parameters* i generują taki kod:
 Dopisujemy do `.permit` atrybut *user_id*. Jeśli tego nie zrobimy, to
 zostanie on odfiltrowany z *params*. Z tego samego powodu musimy zastąpić
 atrybuty *first_name* i *last_name* atrybutem wirtualnym *full_name*.
+
+Kod metody po poprawkach:
+
+    :::ruby
+    def student_params
+      # params[:student]
+      if current_user && current_user.has_role?(:admin)
+        params.require(:student).permit(:user_id, :full_name, :login,
+           :presences_list, :class_name, :comments, :repository)
+      elsif 
+
+      else
+        params.require(:student).permit(:full_name, :login, :repository)
+      end
+    end
 
 
 ### Seeding students collection
@@ -530,27 +612,36 @@ Wtedy możemy je zapisać w kolekcji za pomocą programu *mongoimport*.
     :::js
     new Date(1355365444000) //=> ISODate("20121213T02:24:04Z")
 
-Dlatego przykładowe dane zapisałem w kolekcji korzystając *seeds.rb*. 
+Dlatego przykładowe dane zapisałem w kolekcji korzystając *seeds.rb*.
 Tak było najwygodniej.
 
 
 ## Rolifing Student model
 
-Dopisujemy *resourcify* do modelu *Student*:
+Dopisujemy metodę *resourcify* do modelu *Student*:
 
     :::ruby student.rb
     class Student
       include Mongoid::Document
       include Mongoid::Timestamps
+      resourcify
 
-      resourcify # https://github.com/EppO/rolify/wiki/Configuration
+Ta metoda umożliwia powiązanie roli z konkretnym egzemplarzem modelu lub
+z dowolnym jego egzemplarzem. Rola nie powiązana z żadnymi zasobami,
+to rola *globalna*, na przykład:
 
-Dlaczego?
-Resourcify jest opisane na wiki w artykule
-[Configure your resource models](https://github.com/EppO/rolify/wiki/Configuration).
+    :::ruby
+    user.add_role :admin                    # rola globalna
+    user.add_role :student, Student         # rola powiązana z zasobem
+    user.grant    :student, Student         # to samo
+    student.user.add_role :student, student # rola powiązana z konkretnym zasobem
+    student.user.grant    :student, student # to samo
 
-Rolę `:student` dodamy użytkownikowi, którego dane zostały uaktualnione.
-Rola ta jest ograniczona do modyfikowanego dokumentu.
+Więcej przykładów jest na [wiki](https://github.com/EppO/rolify/wiki/Usage).
+
+Rolę `:student` dodamy użytkownikowi, którego dane zostały uaktualnione
+danymi z GitHuba zapisanymi w kolekcji *User*.
+Tę rolę ograniczamy do uaktualnionego egzemplarza modelu *Student*.
 
     :::ruby students_controller.rb
     def update
@@ -560,13 +651,16 @@ Rola ta jest ograniczona do modyfikowanego dokumentu.
           # scope role to a resource instance
           @student.user.grant(:student, @student) if @student.user
 
-**TODO:** Dopisać przykład pokazujący o co chodzi z *resourcify*:
+Po uruchomieniu aplikacji i zalogowaniu się do niej możemy przetestować role
+na konsoli Rails:
 
     :::ruby console
+    user = User.where(uid: '1198062').first # zakładamy, że taki użytkownik kiedyś się zalogował
     user.has_role? :admin
     user.has_role? :student
-    user.has_role? :student, Student.first
-    user.has_role? :student, user.student[0]/.first
+    user.has_role? :student, Student
+    user.has_role? :student, user.students.first
+
 
 
 ## TODO: Strona z /students

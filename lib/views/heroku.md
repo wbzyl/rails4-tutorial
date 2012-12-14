@@ -117,6 +117,14 @@ Jak? [Push and Pull Databases To and From Heroku](http://blog.heroku.com/archive
 Do trzech razy sztuka??
 
 
+## Rails Environment Variables
+
+Artykuł o tym „Keeping Environment Variables Private”. Na przykład
+klucze aplikacji zarejestrowanej na Twitterze, Githubie, Facebooku…
+
+* Taylor Mock i Daniel Kehoe,
+  [Rails Environment Variables](http://railsapps.github.com/rails-environment-variables.html)
+
 <!--
 
 # TODO

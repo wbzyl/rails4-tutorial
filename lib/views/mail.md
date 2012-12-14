@@ -16,6 +16,16 @@ do katalogu *config/initializers/*.
 
 Do wysyłania poczty użyję programu *sendmail*.
 
+Przed konfiguracją klienta pocztowego należy przeczytać
+artykuł opisujący kilka sposobów na 
+„keeping your environment variables private”:
+
+* Taylor Mock i Daniel Kehoe,
+  [Rails Environment Variables](http://railsapps.github.com/rails-environment-variables.html)
+
+Można też przejrzeć dyskusję ten temat 
+na [Hacker News](http://news.ycombinator.com/item?id=4918484).
+
 Oto przykładowy plik z danymi (w formacie [YAML](http://www.yaml.org/)),
 dla konta pocztowego na *gmail.com* i konta – na *sigmie*):
 

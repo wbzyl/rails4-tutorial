@@ -43,6 +43,8 @@
 ## Podstawowe skróty klawiszowe
 
 * uzupełnianie: `alt+/`
+* zaznaczanie prostokątne: `shift+right mouse button`
+* wielokrotne kursory: `ctrl+d`
 * wyszukiwanie plików:  `ctrl+p`
 * command palette: `shift+ctrl+p`
 * remove trailing spaces (package):  `ctrl+shift+t`
