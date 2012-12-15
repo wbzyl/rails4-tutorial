@@ -413,6 +413,11 @@ Oto prosty przykład:
 
 ## Model User
 
+Do widoku *index* aplikacji nie udało się dodać niczego fajnego.
+Na razie ta strona prezentuje się tak:
+
+{%= image_tag "/images/lista-obecnosci-users-2013.png", :alt => "[Lista obecności / Users, 12/13]" %}
+
 Po zalogowaniu użytkownika, zapisujemy dane udostępnione przez Githuba
 w kolekcji *users*; gdy brak jest adresu email, to prosimy użytkownika
 o jego wpisanie. Pierwszy zalogowany użytkownik będzie Adminem.
@@ -530,7 +535,7 @@ powiązanie z (nieistniejącym) modelem *Student*, dodajemy kod dla atrybutu
 
 ### Autoryzacja użytkowników
 
-W kontrolerze będziemy filtrować atrybuty. Autoryzację przeniesiemy do 
+W kontrolerze będziemy filtrować atrybuty. Autoryzację przeniesiemy do
 *ApplicationController* i klasy *Permission*.
 
     :::ruby users_controller.rb
@@ -614,8 +619,6 @@ używamy metody `allow?`.
     :::ruby permission.rb
     class Permission < Struct.new(:user)
       def allow?(controller, action, resource = nil)
-        return true if controller == "students" && action.in?(%w[index])
-
         if user
           return true if controller == "users" && action == "index"  &&
                user.has_role?(:admin)
@@ -624,7 +627,6 @@ używamy metody `allow?`.
           return true if controller == "users" && action == "update" &&
               (user.has_role?(:admin) || resource == current_user)
         end
-
         false
       end
     end
@@ -635,7 +637,12 @@ W powyższym kodzie wzorowałem się na
 
 ## Scaffolding Student
 
-Stroną główną aplikacji będzie widok *index* modelu *Student*.
+Stroną główną aplikacji „Lista obecności” będzie widok *index* modelu *Student*:
+
+{%= image_tag "/images/lista-obecnosci-2013.png", :alt => "[Lista obecnsosci 12/13]" %}
+
+Jak widać na obrazku powyżej, obecności nie były jeszcze sprawdzane. Stąd
+„0” w pierwszej kolumnie.
 
 Generujemy rusztowanie dla modelu *Student*.
 Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
@@ -660,48 +667,44 @@ Aby to zmienić, nadpisujemy je za pomocą polecenia:
 
 ### Model
 
-Dopisujemy wartości domyślne atrybutów do modelu
+Do wygenerowanego kodu dopisujemy wartości domyślne atrybutów do modelu
 oraz powiązanie z modelem *User*:
 
     :::ruby student.rb
     class Student
-    include Mongoid::Document
-    include Mongoid::Timestamps
+      include Mongoid::Document
+      resourcify # https://github.com/EppO/rolify/wiki/Configuration
 
-    belongs_to :user
+      belongs_to :user
+      field :first_name, type: String
+      field :last_name, type: String
+      field :login, type: String
+      field :presences, type: Array
+      field :class_name, type: String, default: "unallocated"
+      field :group, type: String, default: "2013-summer"
+      field :comments, type: String
+      field :repository, type: String
 
-    field :first_name, type: String
-    field :last_name, type: String
-    field :login, type: String
-    field :presences, type: Array
-    field :class_name, type: String, default: "unallocated"
-    field :group, type: String, default: "unallocated"
-    field :comments, type: String
-    field :repository, type: String
+      default_scope asc(:last_name, :first_name)
 
-    default_scope asc(:last_name, :first_name)
-
-    def full_name
-      [first_name, last_name].join(' ')
-    end
-
-    def full_name=(name)
-      split = name.split(' ', 2)
-      self.first_name = split.first
-      self.last_name = split.last
-    end
-
-    def presences_list
-      presences.to_a.join(' ') # .to_a handles nil attribute
-    end
-
-    def presences_list=(string)
-      list = string.strip.split(' ') # najpierw strip, później split
-      set(:presences, list)
-    end
-
-    def presences_length
-      presences.to_a.length
+      def full_name
+        [first_name, last_name].join(' ')
+      end
+      def full_name=(name)
+        split = name.split(' ', 2)
+        self.first_name = split.first
+        self.last_name = split.last
+      end
+      def presences_list
+        presences.to_a.join(' ') # .to_a handles nil attribute
+      end
+      def presences_list=(string)
+        list = string.strip.split(' ') # najpierw strip, później split
+        set(:presences, list)
+      end
+      def presences_length
+        presences.to_a.length
+      end
     end
 
 
@@ -711,113 +714,165 @@ Formularz:
 
     :::rhtml _form.html.erb
     <%= simple_form_for @student, html: { class: 'form-horizontal' } do |f| %>
-      <%= f.input :full_name, placeholder: 'Imię Nazwisko' %>
+      <%= f.input :full_name, placeholder: 'Imię Nazwisko', hint: 'Imię Nazwisko' %>
       <%= f.input :login %>
       <%= f.input :presences_list, label: "Presences (m-d)", input_html: { class: "span8"} %>
       <%= f.input :class_name, as: :select,
-              collection: { "nieprzydzielony" => "unallocated",
-                            "architektura serwisów internetowych" => "asi",
-                            "języki programowania" => "jp",
-                            "projekt zespołowy" => "pz",
-                            "techniki internetowe" => "ti",
-                            "technologie nosql" => "nosql" },
-              input_html: { class: "span8", disabled: false } %>
+                  collection: { "nieprzydzielony" => "unallocated",
+                                "architektura serwisów internetowych" => "asi",
+                                "języki programowania" => "jp",
+                                "projekt zespołowy" => "pz",
+                                "techniki internetowe" => "ti",
+                                "technologie nosql" => "nosql" },
+                  input_html: { class: "span8", disabled: false } %>
 
       <%= f.association :user, collection: User.only(:nickname), label_method: :nickname %>
 
       <%= f.input :comments, as: :text, input_html: { class: "span8", rows: "6" } %>
-      <%= f.input :uid %>
-      <%= f.input :repository %>
+      <%= f.input :repository, input_html: { class: "span8"} %>
       <div class="form-actions">
-        <%= f.button :submit, :class => 'btn-primary' %>
-        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
-                    students_path, :class => 'btn' %>
+        <%= f.button :submit, class: 'btn-primary' %>
+        <%= link_to t('.cancel', default: t("helpers.links.cancel")),
+                    students_path, class: 'btn' %>
       </div>
     <% end %>
 
 Poprawki w widoku *index*:
 
     :::rhtml index.html.erb
-    <td><%= link_to raw "<i class='icon-user icon-large'></i>",
-              present_student_path(student),
-              method: :put,
-              class: 'btn btn-mini btn-primary' %></td>
-    <td><%= student.presences_list %></td>
+    <%- model_class = Student -%>
+    <div class="page-header">
+      <h4><%= link_to raw("<i class='icon-user icon-large'></i>  ") +
+                  t('.new', default: t("helpers.links.new")),
+                  new_student_path, class: 'btn btn-primary' %>
+          <%=t '.title', default: model_class.model_name.human %>
+      </h4>
+    </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th><%= model_class.human_attribute_name(:full_name) %></th>
+          <th><%= model_class.human_attribute_name(:login) %></th>
+          <th><%= model_class.human_attribute_name(:class_name) %></th>
+          <th>GitHub</th>
+          <th><%=t '.actions', :default => t("helpers.actions") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @students.each do |student| %>
+          <tr>
+            <td><%= student.presences_length %></td>
+            <td><%= student.full_name %></td>
+            <td><%= student.login %></td>
+            <td><%= student.class_name %></td>
+            <td><%= link_to_if_on_github student %></td>
+            <td>
+              <%= link_to t('.edit', default: t("helpers.links.edit")),
+                          edit_student_path(student), class: 'btn btn-mini' %>
+              <%= link_to t('.destroy', default: t("helpers.links.destroy")),
+                          student_path(student),
+                          method: :delete,
+                          data: { confirm:
+                            t('.confirm',
+                              default: t("helpers.links.confirm",
+                                default: 'Are you sure?')) },
+                          class: 'btn btn-mini btn-danger' %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
 
-i podobne poprawki wprowadzamy w widoku *show*.
+Podobne poprawki wprowadzamy w pozostałych widokach.
 
 
 ### Kontroler
 
-Dodajemy metodę *present*:
+Dopisujemy *authorize*, *students_params* i *current_resource*.
+W metodzie update zamieniamy przekierowanie z *student_path* na *root_path*.
 
     :::ruby
     class StudentsController < ApplicationController
-      # PUT /students/1/present
-      def present
-        @student = Student.find(params[:id])
-        @student.add_to_set(:presences, today_presence)
-        redirect_to students_url
+      before_filter :authorize
+
+      def update
+            ...
+            format.html { redirect_to root_path, notice: 'Student was successfully updated.' }
+            ...
       end
 
-Aby skorzystać z tej metody musimy zmienić routing
-dla *students*:
-
-    :::ruby
-    resources :students do
-      put 'present', :on => :member
-    end
-
-Ze ścieżki */students/:id/present* korzystamy w widoku *index* powyżej.
-
-### Strong Parameters
-
-Pliki z których korzysta generator scaffold są modyfikowane
-przez gem *strong_parameters* i generują taki kod:
-
-    :::ruby
-    class StudentsController < ApplicationController
-      def update
-        @student = Student.find(params[:id])
-
-        respond_to do |format|
-          if @student.update_attributes(student_params)
-          ...
-      ...
       private
 
-        # Use this method to whitelist the permissible parameters. Example:
-        # params.require(:person).permit(:name, :age)
-        # Also, you can specialize this method with per-user checking
-        # of permissible attributes.
         def student_params
-          params.require(:student).permit(:class_name, :comments, :full_name,
-              :group, :login, :presences, :repository, :uid)
+          if current_user.has_role?(:admin)
+            params.require(:student).permit(:user_id, :full_name,
+              :login, :presences_list, :class_name, :comments, :repository)
+          else
+            params.require(:student).permit(:full_name,
+              :login, :repository)
+          end
         end
 
-Dopisujemy do `.permit` atrybut *user_id*. Jeśli tego nie zrobimy, to
-zostanie on odfiltrowany z *params*. Z tego samego powodu musimy zastąpić
-atrybuty *first_name* i *last_name* atrybutem wirtualnym *full_name*.
+        def current_resource
+          @current_resource ||= Student.find(params[:id]) if params[:id]
+        end
+    end
 
-Kod metody po poprawkach:
+Rolę `:student` dodamy użytkownikowi, którego dane zostały uaktualnione
+danymi z GitHuba zapisanymi w kolekcji *User*.
+Tę rolę ograniczamy do uaktualnionego egzemplarza modelu *Student*.
 
-    :::ruby
-    def student_params
-      # params[:student]
-      if current_user && current_user.has_role?(:admin)
-        params.require(:student).permit(:user_id, :full_name, :login,
-           :presences_list, :class_name, :comments, :repository)
-      elsif
+    :::ruby students_controller.rb
+    def update
+    @student = Student.find(params[:id])
+      respond_to do |format|
+        if @student.update_attributes(student_params)
+          # scope role to a resource instance
+          @student.user.grant(:student, @student) if @student.user
 
-      else
-        params.require(:student).permit(:full_name, :login, :repository)
+Możemy sprawdzić jak działają lokalne role na konsoli Rails:
+
+    :::ruby console
+    user = User.where(uid: '1198062').first # zakładamy, że taki użytkownik kiedyś się zalogował
+    user.has_role? :admin
+    user.has_role? :student
+    user.has_role? :student, Student
+    user.has_role? :student, user.students.first
+
+
+### Autoryzacja studentów
+
+Po dopisaniu uprawnień studentów nadal można je wszystkie ogarnąć.
+
+    :::ruby permission.rb
+    class Permission < Struct.new(:user)
+      def allow?(controller, action, resource = nil)
+        return true if controller == "students" && action == "index"
+        return true if controller == "gauges"   && action == "index"
+
+        if user
+          return true if controller == "users" && action == "index"  &&
+            user.has_role?(:admin)
+          return true if controller == "users" && action == "edit"   &&
+            (user.has_role?(:admin) || resource == current_user)
+          return true if controller == "users" && action == "update" &&
+            (user.has_role?(:admin) || resource == current_user)
+
+          return true if controller == "students" &&
+            (user.has_role?(:admin) || (action.in?(%w[edit update show]) && user.has_role?(:student, resource)))
+
+          return true if controller == "guages" && user.has_role?(:admin)
+        end
+
+        false
       end
     end
 
 
 ### Seeding students collection
 
-Na razie zapełnimy kolekcję *students* przykładowymi danymi:
+Na razie zapełnimy kolekcję *students* takimi przykładowymi danymi:
 
     :::ruby seeds.rb
     Student.destroy_all
@@ -832,66 +887,30 @@ Na razie zapełnimy kolekcję *students* przykładowymi danymi:
     Student.create! full_name: "Ocot Cat", login: "ocat", class_name: "unallocated"
 
 
-## Rolifing Student model
-
-
-Rolę `:student` dodamy użytkownikowi, którego dane zostały uaktualnione
-danymi z GitHuba zapisanymi w kolekcji *User*.
-Tę rolę ograniczamy do uaktualnionego egzemplarza modelu *Student*.
-
-    :::ruby students_controller.rb
-    def update
-      @student = Student.find(params[:id])
-      respond_to do |format|
-        if @student.update_attributes(student_params)
-          # scope role to a resource instance
-          @student.user.grant(:student, @student) if @student.user
-
-Po uruchomieniu aplikacji i zalogowaniu się do niej możemy przetestować role
-na konsoli Rails:
-
-    :::ruby console
-    user = User.where(uid: '1198062').first # zakładamy, że taki użytkownik kiedyś się zalogował
-    user.has_role? :admin
-    user.has_role? :student
-    user.has_role? :student, Student
-    user.has_role? :student, user.students.first
-
-
-
-## TODO: Strona z /students
-
-
-**TODO:** uaktualnić obrazek poniżej. Ew. go poprawić.
-
-Informacje o studentach roku zostaną umieszczone
-w widoku *index.html.erb*. Gotowy widok jest pokazany na obrazku poniżej.
-
-{%= image_tag "/images/lista-obecnosci-2013.png", :alt => "[Lista obecności, 12/13]" %}
-
-Po imieniu, w nawiasie, wypisywana jest liczba obecności na zajęciach.
-Kliknięcie przycisku umieszczonego przed nazwiskiem zwiększa o jeden
-liczbę obecności studenta.
-
-
-
 ## Google Gauges na stronie głównej
 
-Strona główna z listą obecności z wygenerowanego rusztowania
-pozostawia wiele do życzenia…
-dlatego spróbujemy czegoś niesztampowego. Użyjemy
+Do sprawdzania **obecności** spróbujemy czegoś niesztampowego –
 [Gauges](https://developers.google.com/chart/interactive/docs/gallery/gauge)
-z [Google Chart Tools](https://developers.google.com/chart/).
+z [Google Chart Tools](https://developers.google.com/chart/). Tak to ma się
+prezentować:
 
 {%= image_tag "/images/gauges-2013.png", :alt => "[Lista obecności, 12/13]" %}
 
-Zaczniemy od wygenerowania nowego kontrolera z metodą index:
+W semestrze jest piętnaście laboratoriów. Jak widać powyżej zajęcia się dopiero
+zaczęły. Przyciski są dla prowadzącego (admina) do dodawania obecności
+na laboratoriach. Przewidziany jest eksport danych do formatu arkusza
+kalkulacyjnego (Excel, OpenOffice).
+
+Zaczniemy od wygenerowania nowego kontrolera z metodą index (bez modelu, nie
+będzie potrzebny):
 
     :::bash
     rails g controller gauges index
 
 
+### Autoryzacja gauges
 
+TODO: proste
 
 
 ## TODO: Samo życie
