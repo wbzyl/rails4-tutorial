@@ -483,7 +483,7 @@ Some fields will **always** be present:
 Pozostałe pola są opisane na wiki w artykule
 [Auth Hash Schema](https://github.com/intridea/omniauth/wiki/Auth-Hash-Schema).
 
-*UID*, na przykład użytkownika *ocotcat*, możemy sprawdzić wykonując
+*UID*, na przykład użytkownika *octocat*, możemy sprawdzić wykonując
 polecenie:
 
     :::bash
@@ -884,7 +884,7 @@ Na razie zapełnimy kolekcję *students* takimi przykładowymi danymi:
     Student.create! full_name: "Irena Kamińska", login: "ikaminska", class_name: "pz"
     Student.create! full_name: "Kazimierz Jankowski", login: "kjankowski", class_name: "unallocated"
     Student.create! full_name: "Włodzimierz Bzyl", login: "wbzyl", class_name: "unallocated"
-    Student.create! full_name: "Ocot Cat", login: "ocat", class_name: "unallocated"
+    Student.create! full_name: "Octo Cat", login: "ocat", class_name: "unallocated"
 
 
 ## Google Gauges na stronie głównej
