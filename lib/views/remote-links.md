@@ -77,6 +77,9 @@ Sprawdzamy, czy plik te są wczytywane:
     curl localhost:3000/assets/start/jquery-ui-1.8.18.custom.css
     http://localhost:3000/assets/start/images/ui-bg_inset-hard_100_fcfdfd_1x100.png
 
+
+### ☯ curl jest cool
+
 Jeśli wszystko działa, to dla rozruszania wykonujemy kilka poleceń
 z programem *curl*:
 
@@ -110,7 +113,7 @@ Dodajemy fortunkę do bazy:
 na konsoli przeglądarki (zakładki *Sieć*, *XHR*).
 
 
-## Zabawy z przyciskiem *Destroy*
+## ☢ Obsługa przycisku *Destroy*
 
 Na początek zmienimy nieco kod metody *destroy*:
 
@@ -137,7 +140,7 @@ jedna linijka kodu w bloku *respond*:
 * *format.js*
 
 
-### Usuwanie rekordu z *format.html*
+## ☢ Usuwanie rekordu via *format.html*
 
 Wygenerowany przez scaffold link z *index.html.erb*:
 
@@ -159,7 +162,7 @@ Jak to działa? Co oznacza kod `rel="nofollow"`?
 Skąd się wzięła liczba `1`?
 
 
-### Usuwanie rekordu z *format.json*
+## ☢ Usuwanie rekordu via *format.json*
 
 Zmienimay kod linku w  pliku *index.html.erb* na:
 
@@ -257,9 +260,9 @@ Ten sam efekt uzyskamy po wklejeniu poniższego kodu do pliku
 
     :::js app/assets/javascripts/application.js
     $(function() {
-      $('a[data-type=\"json\"]').bind('ajax:success',
+      $('a[data-type=\"json\"]').on('ajax:success',
          function(event, data, status, xhr) {
-           $(this).closest('article').effect('explode');
+           $(this).closest('article').effect('explode', 1000);
          }
       );
     });
@@ -285,12 +288,12 @@ Zamiast niego wstawiamy plik *fortunes.js.coffee* o zawartości:
     jQuery ->
       $('a[data-type="json"]').bind 'ajax:success',
         (event, data, status, xhr) ->
-          $(this).closest('article').effect('explode')
+          $(this).closest('article').effect('explode', 1000)
 
 i nazwę tego pliku dopisujemy do *application.js*.
 
 
-## Usuwanie rekordu z *format.js*
+## Usuwanie rekordu via *format.js*
 
 Zmieniony link z *index.html.erb* (z usuniętym atrybutem *data-confirm*):
 

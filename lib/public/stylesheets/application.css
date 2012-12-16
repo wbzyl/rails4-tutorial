@@ -53,6 +53,7 @@ body {
   font-family: Verdana, "DejaVu Sans", "Trebuchet MS", sans-serif ;
   font-size: 18px;
   line-height: 26px;
+  -webkit-text-stroke: 1px transparent; /* turn antialiasing on for Chrome */
 }
 
 h1, h2, h3 {
