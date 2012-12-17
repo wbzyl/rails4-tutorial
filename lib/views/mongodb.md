@@ -66,18 +66,14 @@ Kod gotowej aplikacji:
 
 Zaczynamy od skopiowania szablonu aplikacji
 [mongoid+omniauth-twitter](https://bitbucket.org/wbzyl/mongoid-omniauth-twitter)
-i poprawek w kodzie wygenerowango szablonu.
-
-Dopiero po wprowadzeniu tych poprawkek przystąpimy do pisania
-kodu aplikacji.
-
-Od razu zmieniamy też wartości stałych:
+i zmienienia wartości tych stałych:
 
     :::ruby
-    # Your secret key for verifying the integrity of signed cookies.
-    # If you change this key, all old signed cookies will become invalid!
-    # Make sure the secret is at least 30 characters and all random,
-    # no regular words or you'll be exposed to dictionary attacks.
+    # Your secret key for verifying the integrity of signed 
+    # cookies. If you change this key, all old signed
+    # cookies will become invalid! Make sure the secret
+    # is at least 30 characters and all random, no regular
+    # words or you'll be exposed to dictionary attacks.
     MongoidOmniauthTwitter::Application.config.secret_token = '1955..[cut]..2012'
 
     # Use the database for sessions instead of the cookie-based default,
@@ -89,6 +85,10 @@ w plikach:
 
 * *secret_token.rb*
 * *session_store.rb*
+
+Po wprowadzeniu tych poprawek, zajmiemy się większymi
+poprawkami w wygenerowanym kodzie. Dopiero po tych zmianach  
+przystąpimy do pisania kodu aplikacji.
 
 
 ### Konfiguracja bazy MongoDB

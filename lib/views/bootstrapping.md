@@ -129,13 +129,23 @@ Musimy dopisać do modelu *Users* „timestamps”:
       include Mongoid::Document
       include Mongoid::Timestamps
 
+      rolify # https://github.com/EppO/rolify
+
+      field :provider, type: String
+      field :uid, type: String
+      field :name, type: String
+      field :email, type: String
+      attr_accessible :role_ids, :as => :admin, :default => :student
+
 Inaczej kliknięcie w zakładkę Admin generuje błąd.
-Przy okazji, dopiszę też timestamps do modelu *Role*.
+Przy okazji, dopisujemy też *timestamps* do modelu *Role*.
+
+Dla zalogowanego użytkownika ustawiamy domyślną rolę – *Student*.
 
 
-## Jak dodać nowe role?
+### Poprawki w szablonach
 
-Na początek, do widoku częściowego *_navigation.html.erb*
+Do widoku częściowego *_navigation.html.erb*
 wklejamy kod wypisujący na pasku nawigacji
 *Welcome Guest!* lub nazwę zalogowanego użytkownika:
 
@@ -162,7 +172,10 @@ Zalogowany użytkownik, z menu *dropdown* może przejść do strony
 z informacjami o sobie. Przy okazji tworzymy jeszcze jedną
 stronę statyczną „Milestones”; dodajemy tę stronę do routingu.
 
-Pierwszy zalogowany użytkownik będzie **Adminem**.  Zostało to
+
+## Roles – Admin, Guest…
+
+Pierwszy zalogowany użytkownik jest **Adminem**. Zostało to
 zaimplementowane w metodzie *create* kontrolera *SessionsController*:
 
     :::ruby
@@ -177,14 +190,13 @@ zaimplementowane w metodzie *create* kontrolera *SessionsController*:
         session[:user_id] = user.id
         user.add_role :admin if User.count == 1 # make the first user an admin
 
-Zdefiniujemy dwie role w pliku *seeds.rb*:
+Wszystkie role zdefiniujemy w pliku *seeds.rb*:
 
     :::ruby db/seeds.rb
     Role.create! name: :admin
-    Role.create! name: :moderator
-    Role.create! name: :student
+    Role.create! name: :guest
 
-i zapisujemy je w bazie:
+Następnie zapiszemy je w bazie:
 
     rake db:reseed
 
