@@ -57,24 +57,35 @@ Benjamina Milde. My musimy je tylko naszkicować.
 # Lista obecności, 12/13
 
 Przykładowa aplikacja CRUD listy obecności studentów. Aplikacja
-korzysta z bazy MongoDB i gemu Mongoid.
-Autentykacja OmniAuth ze strategią *omniauth-github*.
+korzysta z bazy MongoDB i gemu Mongoid,
+autentykacja to OmniAuth ze strategią *omniauth-github*.
 Kod gotowej aplikacji:
 
 * [lista-obecności-2013](https://bitbucket.org/wbzyl/lista-obecnosci-2013) –
   repozytorium Git na Bitbucket
 
-Zaczyniemy od skopiowania szablonu aplikacji
-[mongoid+omniauth-twitter](https://bitbucket.org/wbzyl/mongoid-omniauth-twitter).
+Zaczynamy od skopiowania szablonu aplikacji
+[mongoid+omniauth-twitter](https://bitbucket.org/wbzyl/mongoid-omniauth-twitter)
 i poprawek w kodzie wygenerowango szablonu.
 
 Dopiero po wprowadzeniu tych poprawkek przystąpimy do pisania
 kodu aplikacji.
 
+Od razu zmieniamy też wartości stałych:
 
-## Poprawki w kodzie szablonu
+    :::ruby
+    # Your secret key for verifying the integrity of signed cookies.
+    # If you change this key, all old signed cookies will become invalid!
+    # Make sure the secret is at least 30 characters and all random,
+    # no regular words or you'll be exposed to dictionary attacks.
+    MongoidOmniauthTwitter::Application.config.secret_token = '1955..[cut]..2012'
 
-Zaczynamy od zmienienia wartości stałych w plikach:
+    # Use the database for sessions instead of the cookie-based default,
+    # which shouldn't be used to store highly confidential information
+    MongoidOmniauthTwitter::Application.config.session_store :cookie_store,
+      key: '_lista_obecnosci_2013_session
+
+w plikach:
 
 * *secret_token.rb*
 * *session_store.rb*
