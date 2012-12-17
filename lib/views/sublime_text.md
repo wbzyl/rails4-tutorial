@@ -43,6 +43,21 @@
     ]
 
 
+### Większy font w *status bar*
+
+W pliku *~/.config/sublime-text-2/Packages/Theme - Default/Default.sublime-theme*
+dopisać *font.size* w tym elemencie:
+
+    :::json Default.sublime-theme
+    {
+        "class": "label_control",
+        "color": [255, 255, 255],
+        "shadow_color": [24, 24, 24],
+        "shadow_offset": [0, -1],
+        "font.size": 18.0
+    }
+
+
 ## Podstawowe skróty klawiszowe
 
 Najważniejsze skróty:
@@ -62,7 +77,7 @@ Pakiety:
 * remove trailing spaces (package):  `ctrl+shift+t`
 
 
-## Tools » New Snippet…
+## Tools, Rails…
 
 Brak snippetów dla Markdown. Przykładowy snippet:
 
@@ -72,13 +87,17 @@ Brak snippetów dla Markdown. Przykładowy snippet:
 
 * [emmet-sublime](https://github.com/sergeche/emmet-sublime)
 
+Rails:
 
-## Package Control & Rails
-
-
-Instalujemy [Package Control](http://wbond.net/sublime\_packages/package\_control).
-Następnie z menu wybieramy **Preferences » Package Control**
-
-* i instalujemy pakiety: *LESS syntax highlighting*, *ERB insert and toggle commands*
 * otwieramy katalog z aplikacją Rails – teraz wyszukujemy
   plik z *Goto Anything* (`ctrl+p`)
+
+
+## Package Control
+
+Instalujemy [Package Control](http://wbond.net/sublime\_packages/package\_control).
+
+Z menu **Preferences » Package Control**, **Install** wpisujemy nazwę pakietu:
+
+* pakiet [Git](https://github.com/kemayo/sublime-text-2-git/wiki)
+* pakiety: *LESS syntax highlighting*, *ERB insert and toggle commands*
