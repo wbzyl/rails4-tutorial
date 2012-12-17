@@ -56,20 +56,29 @@ Benjamina Milde. My musimy je tylko naszkicować.
 
 # Lista obecności, 12/13
 
-Przykładowa aplikacja CRUD listy obecności studentów. Aplikacja
-korzysta z bazy MongoDB i gemu Mongoid,
-autentykacja to OmniAuth ze strategią *omniauth-github*.
-Kod gotowej aplikacji:
+… to prosta aplikacja CRUD do zrządzania listą obecności studentów.
 
-* [lista-obecności-2013](https://bitbucket.org/wbzyl/lista-obecnosci-2013) –
-  repozytorium Git na Bitbucket
+Dane studentów zapisywane będą w bazie MongoDB. Do zarządzania bazą
+wykorzystamy gem Mongoid.
+Autentykacja to OmniAuth ze strategią *omniauth-github*.
+Autoryzację zaprogramujemy sami.
 
-Zaczynamy od skopiowania szablonu aplikacji
+Kod gotowej aplikacji umiesciłem w (prywatnym) repozytorium Git
+na serwerze Bitbucket:
+
+* [lista-obecności-2013](https://bitbucket.org/wbzyl/lista-obecnosci-2013)
+
+Budowanie aplikacji zaczynamy od skopiowania szablonu aplikacji
 [mongoid+omniauth-twitter](https://bitbucket.org/wbzyl/mongoid-omniauth-twitter)
-i zmienienia wartości tych stałych:
+i zmienienia w plikach:
+
+* *secret_token.rb*
+* *session_store.rb*
+
+wartości tych stałych:
 
     :::ruby
-    # Your secret key for verifying the integrity of signed 
+    # Your secret key for verifying the integrity of signed
     # cookies. If you change this key, all old signed
     # cookies will become invalid! Make sure the secret
     # is at least 30 characters and all random, no regular
@@ -81,13 +90,10 @@ i zmienienia wartości tych stałych:
     MongoidOmniauthTwitter::Application.config.session_store :cookie_store,
       key: '_lista_obecnosci_2013_session
 
-w plikach:
 
-* *secret_token.rb*
-* *session_store.rb*
 
 Po wprowadzeniu tych poprawek, zajmiemy się większymi
-poprawkami w wygenerowanym kodzie. Dopiero po tych zmianach  
+poprawkami w wygenerowanym kodzie. Dopiero po tych zmianach
 przystąpimy do pisania kodu aplikacji.
 
 
@@ -124,14 +130,15 @@ Podmieniamy zawartość pliku *mongoid.yml* na:
 
 ### LESS
 
-W pliku *application.css.less* podmieniamy linie kodu z *require* na:
+W pliku ***application.css.less*** podmieniamy linie kodu z *require* na:
 
     :::css
     *= require_self
     *= require bootstrap_and_overrides.css
 
-dodajemy pusty plik *app/assets/stylesheets/dziennik_lekcyjny.less*
-i na końcu pliku *bootstrap_and_overrides.css.less* dopisujemy:
+Dodajemy pusty plik *app/assets/stylesheets/lista_obecnosci.less*.
+
+Na końcu pliku *bootstrap_and_overrides.css.less* dopisujemy:
 
     :::css app/assets/stylesheets/bootstrap_and_overrides.css.less
     @import "lista_obecnosci";
@@ -158,22 +165,23 @@ odstęp międzywierszowy (interlinię) oraz podmienimy kilka kolorów:
 
 ### Usuwamy timestamps
 
-Dane studentów zwyczajowo otrzymuję z sekretariatu instytutu.
-Dane są zapisane w arkuszach kalkulacyjnym OpenOffice lub Excel.
-Dla każdej grupy jest to osobny plik. Schematy w którym są zapisane dane
-w każdym pliku ciut się różnią.
+Pliki z danymi studentów zwykle otrzymuję z sekretariatu Instytutu Informatyki.
+Pliki są w formacie OpenOffice lub Excel.
+Dane każdej grupy są zapisane w osobnych plikach.
+Format danych w każdym pliku jest „ciut” inny.
 
-Importu z pliku CSV do kolekcji MongoDB nie można użyć do nadania
-wartości atrybutom *created_at* i *updated_at*. Do importu danych tekstowych
-używamy mniej więcej takiego polecenia:
+Dane możemy zaimportować do bazy korzystając z programu *mongoimport*:
 
     :::bash terminal
     mongoimport --drop \
       -d lista_obecnosci_2013_development -c students \
       --headerline --type csv wd.csv
 
-Jeśli daty zapiszemy w JSON-ie, to daty możemy zapisać korzystając
-z deskryptora *$date* (ale cały JSON musi zapisujemy jednym wierszu):
+
+Niestety, w ten sposób nie można zapisać w kolekcji dat
+(atrybuty *created_at* i *updated_at*).
+
+Daty można zapisać w kolekcji, o ile dane będą w formacie JSON:
 
     :::json
     {
@@ -185,7 +193,8 @@ z deskryptora *$date* (ale cały JSON musi zapisujemy jednym wierszu):
       "created_at" : { "$date" : 1355365444000 }
     }
 
-W kolekcji MongoDB zapisujemy je też za pomocą programu *mongoimport*.
+Do zapisu dat użyliśmy deskryptora MongoDB *$date*.
+(Cały JSON musimy zapisać jednym wierszu.)
 
 *Uwaga:* Na konsoli *mongo* możemy sprawdzić jaką datę przedstawia
 `1355365444000` w taki sposób:
@@ -199,9 +208,9 @@ Ale po włączeniu obsługi dat do każdego modelu:
     :::ruby
     include Mongoid::Timestamps
 
-korzystanie z nich nie sprawia żadnego problemu.
+korzystanie z nich nie sprawia już żadnego problemu.
 
-Ponieważ nie zamierzam korzystać z dat w aplikacji usunę wygenerowany kod
+Jako że nie będziemy używać dat w aplikacji usuwamy wygenerowany kod
 który z nich korzysta. Daty pozostawię tylko w modelu *Role*.
 
 
@@ -218,14 +227,14 @@ Sposoby na „Keeping Environment Variables Private” opisano tutaj:
   [Rails Environment Variables](http://railsapps.github.com/rails-environment-variables.html)
 * dyskusja na ten temat na [Hacker News](http://news.ycombinator.com/item?id=4918484)
 
-W pliku *Gemfile* wykomentowujemy gem *omniauth-twitter* oraz dodajemy
-gem *omniauth-github* i instalujemy wybrane gemy:
+Z pliku *Gemfile* usuwamy gem *omniauth-twitter*, a zamiast niego dopisujemy
+gem *omniauth-github* po czym instalujemy gemy:
 
     :::bash
     bundle install
 
 W kontrolerze *SessionsControllers* w metodzie `new` podmieniamy
-`/auth/twitter` na `/auth/github`:
+ścieżkę `/auth/twitter` na `/auth/github`:
 
     :::ruby
     class SessionsController < ApplicationController
@@ -237,7 +246,8 @@ Pozostało jeszcze zarejestrować aplikację na swoim koncie na
 [GitHubie](https://github.com/account/applications).
 
 *Ważne:*
-Jeśli aplikacja będzie działać na *localhost:3000*, to w formularzu wpisujemy:
+Jeśli aplikacja będzie działać na *localhost:3000*, to
+w trakcie rejestracji w formularzu wpisujemy:
 
     URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
     Callback: http://localhost:3000
@@ -265,17 +275,19 @@ dostosowujemy do konwencji Rails:
       provider :github, github['omniauth_provider_key'], github['omniauth_provider_secret']
     end
 
-Powyżej podstawiamy, że
+Dane zarejestrowanej na GitHubie aplikacji wpisujemy w pliku
+*applications.yml* w taki sposób:
 
-    omniauth_provider_key     <==  Client ID
-    omniauth_provider_secret  <==  Client Secret
-
+    :::yaml .credentials/applications.yml
+    github:
+      omniauth_provider_key: tutaj wklejamy klucz Client ID
+      omniauth_provider_secret: tutaj wklejamy klucz Client Secret
 
 *Ważne:* Nie usuwamy wygenerowanego kodu, tylko go wykomentowujemy.
 Kod się jeszcze przyda przy wdrażaniu aplikacji na Heroku.
 
 I to by było tyle, jeśli chodzi o oczywiste poprawki w aplikacji wygenerowanej
-za pomocą generatora aplikacjii Rails Composer.
+za pomocą generatora aplikacjii Rails Composer. Było tego całkiem sporo!
 
 
 <blockquote>
@@ -287,12 +299,12 @@ za pomocą generatora aplikacjii Rails Composer.
 
 (Oczywiście kodzenie to pisanie kodu.)
 
-Kodzenie zaczniemy od poprawek w wygenerowanym modelu *User*
-oraz wygenerowania rusztowania dla modelu *Student*.
+Kodzenie zaczynamy od poprawek w wygenerowanym rusztowaniu
+dla modelów *User* i *Student*.
 
 **Użytkownik** zalogowany przez swoje konto na Githubie może być
-jednym z moch **studentów** uczęszczającym na jedno lub kilka prowadzonych
-przeze mnie zajęć (dwa wytłuszczone rzeczowniki = dwa modele).
+**studentem** bywającym na jednym lub kilku prowadzonych
+przeze mnie laboratoriach (dwa wytłuszczone rzeczowniki = dwa modele).
 
 Z powyższego opisu wynika, że między modelami *User* i *Student*
 jest relacja jeden do wielu.
@@ -301,17 +313,17 @@ Autentykację (czyli sprawdzenie tożsamości użytkownika)
 scedujemy na GitHuba. Użyjemy gemu *OmniAuth* i strategii *OmniAuth-GitHub*.
 
 Do autoryzacji (czyli przydzielania uprawnień)
-użyjemy gemu *Rolify*. Utworzymy dwie role: „admin” i „student”.
+użyjemy gemu *Rolify*. Utworzymy dwie role: „Admin” i „Owner”.
 Admin w zasadzie może przeprowadzać dowolne operacje na dokumentach.
-Wyjątkiem będzie zmienianie niektórych atrybutów przesłanych przez GitHuba,
-na przykład *uid* lub *nickname*. Student może przeglądać tylko swoje dane
+Wyjątkiem będzie zmienianie niektórych atrybutów otrzymanych z GitHuba,
+na przykład *uid* lub *nickname*. Owner może przeglądać tylko swoje dane
 i może zmieniać wartości tylko niektórych atrybutów, na przykład *full_name*
-lub *login*. Wartości pozostałych atrybutów, na przykład
-*presences* lub *comments*, może zmieniać tylko admin.
+lub *login*. Wartości pozostałych atrybutów, przykładowo
+*presences* lub *comments*, może zmieniać tylko Admin.
 
-W aplikacji użyję gemu *strong_parameters* do odfiltrowania niektórych
-atrybutów. Przykładowo, adminowi odfiltrujemy atrybuty *uid* i *nickname*,
-a studentowi – *class_name* i *comments*.
+W aplikacji użyję gemu *strong_parameters* do filtrowania
+atrybutów. Przykładowo, Adminowi odfiltrujemy atrybuty *uid* i *nickname*,
+a Ownerowi – *class_name* i *comments*.
 
 
 ### Tworzenie ról za pomocą Rolify
@@ -332,13 +344,13 @@ Przykładowo tak kodujemy role dla konkretnego użytkownika:
     user = User.first
     student = Student.first  # przyjmujemy, że Student belongs_to User
 
-    # rola powiązana z dowolnym egzemplarzem modelu
+    # rola powiązana z dowolnym egzemplarzem modelu (nie będziemy korzystać)
     user.add_role :student, Student
     user.grant    :student, Student
 
     # rola powiązana z konkretnym egzemplarzem modelu
-    student.user.add_role :student, student
-    student.user.grant    :student, student
+    student.user.add_role :owner, student
+    student.user.grant    :owner, student
 
 Rola nie powiązana z żadnymi zasobami, to rola *globalna*:
 
@@ -348,18 +360,19 @@ Rola nie powiązana z żadnymi zasobami, to rola *globalna*:
 Więcej przykładów znajdziemy na [wiki](https://github.com/EppO/rolify/wiki/Usage).
 
 
-### Co to jest strong parameters?
+### Na czym polega technika „strong parameters”?
 
 W Rails 3 problem „mass-assignment” zwalczamy za pomocą **attr_accessible**.
-W Rails 4 – do walki będziemy używać techniki **strong parameters**.
+W Rails 4 – będziemy używać techniki **strong parameters**.
 
-Zanim skorzystamy z tej techniki usuniemy wygenerowaną autoryzację.
-W tym celu usuwamy gem *cancan* z *Gemfile*, usuwamy plik *ability.rb*
+Zanim skorzystamy z tej techniki usuniemy wygenerowaną autoryzację –
+usuwamy gem *cancan* z *Gemfile*, usuwamy plik *ability.rb*
 z katalogu *models*, a w pliku *application_controller.rb*
 wykomentowujemy końcowy fragment.
 
-Aby skorzystać z dobrodziejstw *strong parameters* w naszej aplikacji Rails 3
+Aby korzystać z dobrodziejstw *strong parameters* w naszej aplikacji Rails 3
 musimy zainstalować gem *strong_parameters*.
+Po tych zmianach w kodzie, możemy już korzystać z filtrowania atrybutów.
 
 <!--
 
@@ -378,8 +391,7 @@ Na przykład można to zrobić tak:
 
 -->
 
-Po tych zmianach w kodzie, możemy już skorzystać z dobrodziejstw
-strong parameters. Klasa `ActionController::Parameters` definuje dwie metody:
+Klasa `ActionController::Parameters` definuje dwie metody:
 
 * `require(key)` – fetches the key out of the hash and raises
    a `ActionController::ParameterMissing` error if it’s missing
@@ -392,7 +404,7 @@ Jak używać tych metod jest opisane tutaj:
 * [Ruby On Rails Security Guide](http://edgeguides.rubyonrails.org/security.html)
 * [Upgrading to Rails 4 – Parameters Security Tour](http://iconoclastlabs.com/cms/blog/posts/upgrading-to-rails-4-parameters-security-tour)
 
-Oto prosty przykład:
+Oto prosty przykład użycia:
 
     :::ruby console
     params = ActionController::Parameters.new({
@@ -418,23 +430,28 @@ Oto prosty przykład:
     permitted.class      # => ActionController::Parameters
     permitted.permitted? # => true
 
+    permitted.include? :admin # => false
+
     User.first.update_attributes!(permitted)
     # => #<User id: 1, name: "Octocat", age: 4, role: "admin">
 
 
 ## Model User
 
-Do widoku *index* aplikacji nie udało się dodać niczego fajnego.
-Na razie ta strona prezentuje się tak:
+Na razie widok *index* dla *users* prezentuje się tak:
 
 {%= image_tag "/images/lista-obecnosci-users-2013.png", :alt => "[Lista obecności / Users, 12/13]" %}
 
-Po zalogowaniu użytkownika, zapisujemy dane udostępnione przez Githuba
-w kolekcji *users*; gdy brak jest adresu email, to prosimy użytkownika
-o jego wpisanie. Pierwszy zalogowany użytkownik będzie Adminem.
+Scaffold + Bootstrap – w sumie banał i sztampa.
+Kiedyś trzeba będzie to poprawić!
 
 
 ### OmniAuth na GitHubie
+
+Po zalogowaniu się użytkownika w aplikacji, zapisujemy jego dane przesłane
+z Githuba w kolekcji *users*; gdy w danych brak jest adresu email,
+to prosimy użytkownika o jego wpisanie.
+Pierwszy zalogowany użytkownik będzie Adminem.
 
 Cały ten proces jest zaprogramowany w kodzie kontrolera *SessionsController*:
 
@@ -443,30 +460,38 @@ Cały ten proces jest zaprogramowany w kodzie kontrolera *SessionsController*:
       def new
         redirect_to '/auth/github'
       end
+
       def create
         auth = request.env["omniauth.auth"]
         user = User.where(provider: auth['provider'], uid: auth['uid'].to_s).first ||
             User.create_with_omniauth(auth)
         session[:user_id] = user.id
 
-        if User.count == 1       # make the first user an admin
-          user.add_role :admin   # add global role
+        if User.count == 1        # make the first user an admin
+          user.add_role :admin    # add global role
+        else
+          user.grant :owner, user # add local role
         end
 
         if user.email.blank?
           redirect_to edit_user_path(user), notice: "Please enter your email address."
         else
-          redirect_to root_url, notice: 'Signed in!'
+          redirect_to root_url, notice: "Signed in!"
         end
+
       end
+
       def destroy
         reset_session
-        redirect_to root_url, notice: 'Signed out!'
+        redirect_to root_url, notice: "Signed out!"
       end
       def failure
         redirect_to root_url, alert: "Authentication error: #{params[:message].humanize}"
       end
     end
+
+
+### Czym jest OmniAuth?
 
 [OmniAuth](https://github.com/intridea/omniauth) is a library that
 standardizes multi-provider authentication for web applications. […]
@@ -504,11 +529,11 @@ Wartość wpisana w polu ID to UID użytkownika na serwerze GitHub.
 Przykładowo UID użytkownika *octocat* to 583231.
 
 
-### Poprawki w wygenerowanym kodzie modelu
+### Poprawki kodzie modelu
 
 W modelu *User* usuwamy *attr_accessible*, dopisujemy
-powiązanie z (nieistniejącym) modelem *Student*, dodajemy kod dla atrybutu
-*nickname*:
+powiązanie z (jeszcze nieistniejącym) modelem *Student*,
+dodajemy kod dla atrybutu *nickname*:
 
     :::ruby user.rb
     class User
@@ -540,7 +565,6 @@ powiązanie z (nieistniejącym) modelem *Student*, dodajemy kod dla atrybutu
           end
         end
       end
-
     end
 
 
@@ -551,28 +575,40 @@ W kontrolerze będziemy filtrować atrybuty. Autoryzację przeniesiemy do
 
     :::ruby users_controller.rb
     class UsersController < ApplicationController
-      before_filter :authorize, only: [:index]
+      before_filter :authorize
 
       def index
         @users = User.all
       end
       def edit
+        @user = User.find(params[:id])
         # email attribute
       end
       def update
+        @user = User.find(params[:id])
         if @user.update_attributes(user_params)
           redirect_to root_url
         else
           render :edit
         end
       end
+      def destroy
+        @user = User.find(params[:id])
+        @user.destroy
+
+        respond_to do |format|
+          format.html { redirect_to users_url }
+          format.json { head :no_content }
+        end
+      end
 
       private
+
         def user_params
           # params[:user]
           if current_user.has_role? :admin
             params.require(:user).permit(:role_ids, :name, :email)
-          elsif current_user == @user
+          elsif current_user.has_role? :owner
             params.require(:user).permit(:email)
           else
             params.require(:user).permit()
@@ -631,18 +667,17 @@ używamy metody `allow?`.
     class Permission < Struct.new(:user)
       def allow?(controller, action, resource = nil)
         if user
-          return true if controller == "users" && action == "index"  &&
-               user.has_role?(:admin)
-          return true if controller == "users" && action == "edit"   &&
-              (user.has_role?(:admin) || resource == current_user)
-          return true if controller == "users" && action == "update" &&
-              (user.has_role?(:admin) || resource == current_user)
+          return true if controller == "users" && action.in?(%w[index destroy]) &&
+            user.has_role?(:admin)
+          return true if controller == "users" && action.in?(%[edit update]) &&
+            (user.has_role?(:admin) || user.has_role?(:owner, resource))
         end
+
         false
       end
     end
 
-W powyższym kodzie wzorowałem się na
+Powyższy kod wzorowany jest na
 [Authorization from Scratch Part 1](http://railscasts.com/episodes/385-authorization-from-scratch-part-1).
 
 
@@ -684,9 +719,11 @@ oraz powiązanie z modelem *User*:
     :::ruby student.rb
     class Student
       include Mongoid::Document
+
       resourcify # https://github.com/EppO/rolify/wiki/Configuration
 
       belongs_to :user
+
       field :first_name, type: String
       field :last_name, type: String
       field :login, type: String
@@ -797,24 +834,39 @@ Poprawki w widoku *index*:
 
 Podobne poprawki wprowadzamy w pozostałych widokach.
 
+*TODO:* W kodzie powyżej użyć szablonu częściowego *_student.html.erb*.
+
 
 ### Kontroler
 
 Dopisujemy *authorize*, *students_params* i *current_resource*.
 W metodzie update zamieniamy przekierowanie z *student_path* na *root_path*.
 
+Rolę `:owner` dodamy użytkownikowi, którego dane zostały uaktualnione
+danymi z GitHuba z kolekcji *User*.
+Tę rolę ograniczamy do dopiero co uaktualnionego egzemplarza modelu *Student*.
+
     :::ruby
     class StudentsController < ApplicationController
       before_filter :authorize
 
       def update
-            ...
+        @student = Student.find(params[:id])
+        respond_to do |format|
+          if @student.update_attributes(student_params)
+
+            # scope role to a resource instance
+            @student.user.grant(:owner, @student) if @student.user
+
             format.html { redirect_to root_path, notice: 'Student was successfully updated.' }
             ...
+          else
+            ...
+          end
+        end
       end
 
       private
-
         def student_params
           if current_user.has_role?(:admin)
             params.require(:student).permit(:user_id, :full_name,
@@ -824,25 +876,13 @@ W metodzie update zamieniamy przekierowanie z *student_path* na *root_path*.
               :login, :repository)
           end
         end
-
         def current_resource
           @current_resource ||= Student.find(params[:id]) if params[:id]
         end
     end
 
-Rolę `:student` dodamy użytkownikowi, którego dane zostały uaktualnione
-danymi z GitHuba zapisanymi w kolekcji *User*.
-Tę rolę ograniczamy do uaktualnionego egzemplarza modelu *Student*.
 
-    :::ruby students_controller.rb
-    def update
-    @student = Student.find(params[:id])
-      respond_to do |format|
-        if @student.update_attributes(student_params)
-          # scope role to a resource instance
-          @student.user.grant(:student, @student) if @student.user
-
-Możemy sprawdzić jak działają lokalne role na konsoli Rails:
+Na konsoli Rails, sprawdzamy jak dizałają role lokalne:
 
     :::ruby console
     user = User.where(uid: '1198062').first # zakładamy, że taki użytkownik kiedyś się zalogował
@@ -860,20 +900,15 @@ Po dopisaniu uprawnień studentów nadal można je wszystkie ogarnąć.
     class Permission < Struct.new(:user)
       def allow?(controller, action, resource = nil)
         return true if controller == "students" && action == "index"
-        return true if controller == "gauges"   && action == "index"
 
         if user
-          return true if controller == "users" && action == "index"  &&
+          return true if controller == "users" && action.in?(%w[index destroy]) &&
             user.has_role?(:admin)
-          return true if controller == "users" && action == "edit"   &&
-            (user.has_role?(:admin) || resource == current_user)
-          return true if controller == "users" && action == "update" &&
-            (user.has_role?(:admin) || resource == current_user)
+          return true if controller == "users" && action.in?(%[edit update]) &&
+            (user.has_role?(:admin) || user.has_role?(:owner, resource))
 
           return true if controller == "students" &&
-            (user.has_role?(:admin) || (action.in?(%w[edit update show]) && user.has_role?(:student, resource)))
-
-          return true if controller == "guages" && user.has_role?(:admin)
+            (user.has_role?(:admin) || (action.in?(%w[edit update show]) && user.has_role?(:owner, resource)))
         end
 
         false
