@@ -14,7 +14,8 @@ Ukrywamy zbędne rzeczy:
 
 Instalujemy [Package Control](http://wbond.net/sublime\_packages/package\_control).
 
-Z menu **Preferences » Package Control**, **Install** wpisujemy nazwę pakietu:
+Instalujemy pakiety: z menu **Preferences » Package Control**
+wbieramy **Install**, gdzie wpisujemy nazwę pakietu:
 
 * [Git](https://github.com/kemayo/sublime-text-2-git/wiki)
 * *LESS syntax highlighting*
@@ -91,5 +92,5 @@ za pomocą *Goto Anything* (`ctrl+p`).
 
 Nowe snippets dla Rails:
 
-* [instalacja](https://github.com/tadast/sublime-rails-snippets) Sublime Text 2 Rails snippets
+* [instalacja Sublime Text 2 Rails snippets](https://github.com/tadast/sublime-rails-snippets)
 * [skróty](http://tadast.github.com/sublime-rails-snippets/)
