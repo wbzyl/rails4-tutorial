@@ -94,3 +94,19 @@ Nowe snippets dla Rails:
 
 * [instalacja Sublime Text 2 Rails snippets](https://github.com/tadast/sublime-rails-snippets)
 * [skróty](http://tadast.github.com/sublime-rails-snippets/)
+
+Szablon projektu dla aplikacji Rails:
+
+    :::json rails.sublime-project
+    {
+      "folders": [
+        {
+           "path": ".",
+          "folder_exclude_patterns": ["tmp", "log", "vendor", "script", "public"],
+          "file_exclude_patterns": ["config.ru", "Gemfile.lock", "Rakefile", ".gitignore"]
+        }
+      ],
+      "settings": {
+        "tab_size": 2
+      }
+    }
