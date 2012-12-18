@@ -939,17 +939,17 @@ Na razie zapełnimy kolekcję *students* takimi przykładowymi danymi:
     Student.create! full_name: "Octo Cat", login: "ocat", class_name: "unallocated"
 
 
-## Google Gauges na stronie głównej
+## Gauges, czyli mierniki
 
 Do sprawdzania **obecności** spróbujemy czegoś niesztampowego –
-[Gauges](https://developers.google.com/chart/interactive/docs/gallery/gauge)
+[mierników](https://developers.google.com/chart/interactive/docs/gallery/gauge)
 z [Google Chart Tools](https://developers.google.com/chart/). Tak to ma się
 prezentować:
 
 {%= image_tag "/images/gauges-2013.png", :alt => "[Lista obecności, 12/13]" %}
 
 W semestrze jest piętnaście laboratoriów. Jak widać powyżej zajęcia się dopiero
-zaczęły. Przyciski są dla prowadzącego (admina) do dodawania obecności
+zaczęły. Przyciski są dla Admina do dodawania obecności
 na laboratoriach. Przewidziany jest eksport danych do formatu arkusza
 kalkulacyjnego (Excel, OpenOffice).
 
@@ -957,107 +957,110 @@ Zaczniemy od wygenerowania nowego kontrolera z metodą index (bez modelu, nie
 będzie potrzebny):
 
     :::bash
-    rails g controller gauges index
+    rails g controller gauges index update
 
 
 ### Autoryzacja gauges
 
-TODO: proste
+Dopisujemy dwie linijki do pliku *permission.rb*:
 
-
-## TODO: Samo życie
-
-Zapomniałem o linkach do repozytoriów z projektami na Githubie.
-Brakuje też bieżącego rankingu.
-
-Aha, jeszcze dodałbym rok i semestr: zima, lato.
-
-1\. Poprawki w modelu:
-
-    :::ruby app/models/student.rb
-    field :repositories, type: String
-
-2\. Poprawki w szablonie formularza:
-
-    :::rhtml app/views/students/_form.html.erb
-    <%= f.input :repositories, :input_html => { class: "span10" } %>
-
-3\. Poprawki w szablonie widoku:
-
-    :::rhtml app/views/students/show.html.erb
-      <div class="attribute">
-        <span class="name">Repo URL:</span>
-        <span class="value uri"><%= @student.repositories %></span>
-      </div>
-
-*Pytanie:* Czy link do repozytorium wstawić do elementu anchor (a)?
-Argumenty za? przeciw?
-
-Gotowe. Można żyć bez migracji. Odjazd!
-
-
-## Zmiany w widoku New
-
-Musimy tylko przerobić link *Back* na przycisk.
-
-    :::rhtml app/views/students/show.html.erb
-    <div class="links">
-      <%= link_to 'Back', students_path, class: "btn primary" %>
-    </div>
-
-
-## Usuwanie danych
-
-Tak jak to było obiecane, dodamy widok *admin*, gdzie będzie można
-usunąć dane studenta z bazy.
-
-Routing:
-
-    :::ruby config/routes.rb
-    resources :students do
-      put 'not_present', :on => :member
-      get 'admin', :on => :collection
-    end
-
-Kontroler:
-
-    :::ruby app/controllers/students_controller.rb
-    # GET /students/admin
-    def admin
-      @students = Student.all
-    end
-
-    def destroy
-      @student = Student.find(params[:id])
-      @student.destroy
-
-      respond_to do |format|
-        format.html { redirect_to admin_students_url, notice: 'Student was successfully destroyed' }
-        format.json { head :no_content }
+    :::ruby permission.rb
+    class Permission < Struct.new(:user)
+      def allow?(controller, action, resource = nil)
+        ...
+        return true if controller == "gauges" && action == "index"
+        if user
+          ...
+          return true if controller == "guages" && user.has_role?(:admin)
+        end
+        false
       end
     end
 
-Widok:
+czyli każdy może wejść na stronę z miernikami, ale tylko Admin może
+uaktualnić wskazania mierników:
 
-    :::html app/views/students/admin.html.erb
-    <h1>Admin page</h1>
+    :::ruby gauges_controller.rb
+    class GaugesController < ApplicationController
+      # GET /students
+      def index
+        @students = Student.all
+      end
+      # PUT /students/1
+      def update
+        @student = Student.find(params[:id])
+        if current_user && current_user.has_role?(:admin)
+          @student.add_to_set(:presences, today_presence)
+          redirect_to(gauges_url) && return
+        end
+        redirect_to(root_url, alert: 'Only admin can do that.')
+      end
+    end
+
+Zostało jeszcze uaktualnienie routingu:
+
+    :::ruby routes.rb
+    MongoidOmniauthTwitter::Application.routes.draw do
+      resources :users, :only => [:index, :edit, :update, :destroy]
+      resources :students
+      resources :gauges, :only => [:index, :update]
+      ...
+
+### Widok z gauges
+
+[Gauges](https://developers.google.com/chart/interactive/docs/gallery/gauge)
+pochodzą z Google Visualisation Tools.
+Aby z nich skorzystać musimy wczytać „google API loader”,
+po czym załadować pakiet *gauge*.
+
+Mierniki generowane są w widoku *index*:
+
+    :::rhtml views/gauges/index.html.erb
+    <%- model_class = Student -%>
+    <% content_for :head do %>
+      <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+      <%= javascript_include_tag 'google_gauges' %>
+    <% end %>
+    <div class="page-header">
+      <h3>Obecności na zajęciach</h3>
+    </div>
 
     <% @students.each do |student| %>
-    <article class="delete">
-      <div class="student clearfix">
-        <div class="link">
-          <%= link_to '✖ Destroy', student, confirm: 'Are you sure?',
-                class: "btn danger small", method: :delete %>
-        </div>
-        <% group = student.group %>
-        <div class="full-name"><%= link_to student.full_name, student, class: group, target: "_new" %></div>
-        <div class="absences"><%= bullets(student.absences) %></div>
-      </div>
-    </article>
+      <%= content_tag :div, class: "gauge" do -%>
+        <%= content_tag :div, "",
+              { id: student.login, data: { presences_length: student.presences_length } } %>
+        <%= link_to raw("<i class='icon-dashboard'> </i>") + student.last_name,
+                gauge_path(student), method: :put, class: 'btn' %>
+      <% end %>
     <% end %>
 
+Plik *google_gauges.js* jest wczytywany tylko na stronie *index*:
 
-## Wyszukiwanie grup studentów
+    :::js app/assets/javascripts/google_gauges.js
+    google.load('visualization', '1', {packages:['gauge']});
+    google.setOnLoadCallback(drawGauges);
+
+    function drawGauges() {
+      var options = {
+        width: 162, height: 162, redFrom: 13, redTo: 15,
+        yellowFrom: 10, yellowTo: 13, greenFrom: 8, greenTo: 10,
+        max: 15, minorTicks: 0, majorTicks: [0, 15]
+      };
+      $('.gauges.index .gauge > div[id]').each(function() {
+        var gauges = new google.visualization.Gauge(document.getElementById(this.id));
+        var data = google.visualization.arrayToDataTable([
+          [this.id], [$(this).data('presences-length')]
+        ]);
+        gauges.draw(data, options);
+      });
+    }
+
+Powyższy kod inicjalizuje mierniki i umieszcza je na stronie.
+Login studenta i jego liczbę obecności są pobierane z *id* oraz
+atrybutu *data* wygenrowanego kodu HTML.
+
+
+## TODO: Wyszukiwanie grup studentów
 
 W menu umieściłem wszystkie swoje grupy laboratoryjne
 w semestrze letnim, r. akad. 2011/12:
