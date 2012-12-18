@@ -181,7 +181,13 @@ Dane możemy zaimportować do bazy korzystając z programu *mongoimport*:
 Niestety, w ten sposób nie można zapisać w kolekcji dat
 (atrybuty *created_at* i *updated_at*).
 
-Daty można zapisać w kolekcji, o ile dane będą w formacie JSON:
+*Uwaga:* Aby dodać daty, wystarczy po zaimportowaniu danych
+wykonać na konsoli Rails:
+
+    :::ruby
+    Student.find_each(&:save!)
+
+Jednak daty można zapisać w kolekcji, o ile dane będą w formacie JSON:
 
     :::json
     {
@@ -193,7 +199,7 @@ Daty można zapisać w kolekcji, o ile dane będą w formacie JSON:
       "created_at" : { "$date" : 1355365444000 }
     }
 
-Do zapisu dat użyliśmy deskryptora MongoDB *$date*.
+Do zapisu dat używamy deskryptora *$date*.
 (Cały JSON musimy zapisać jednym wierszu.)
 
 *Uwaga:* Na konsoli *mongo* możemy sprawdzić jaką datę przedstawia
@@ -210,8 +216,8 @@ Ale po włączeniu obsługi dat do każdego modelu:
 
 korzystanie z nich nie sprawia już żadnego problemu.
 
-Jako że nie będziemy używać dat w aplikacji usuwamy wygenerowany kod
-który z nich korzysta. Daty pozostawię tylko w modelu *Role*.
+Ponieważ nie będziemy używać dat w aplikacji usuniemy kod
+który z nich korzysta. Daty pozostawimy tylko w modelu *Role*.
 
 
 ### OmniAuth + Github + Private ENV Variables
@@ -219,7 +225,9 @@ który z nich korzysta. Daty pozostawię tylko w modelu *Role*.
 Dokumentacja OmniAuth i strategii OmniAuth GitHub:
 
 * [OmniAuth: Standardized Multi-Provider Authentication](https://github.com/intridea/omniauth)
-* [OmniAuth GitHub](https://github.com/intridea/omniauth-github)
+* [OmniAuth GitHub](https://github.com/intridea/omniauth-github),
+* [Managing Multiple Providers](https://github.com/intridea/omniauth/wiki/Managing-Multiple-Providers),
+  [Separating Authentication and Identity with OmniAuth](http://blog.railsrumble.com/2010/10/08/intridea-omniauth/)
 
 Sposoby na „Keeping Environment Variables Private” opisano tutaj:
 
@@ -329,7 +337,7 @@ a Ownerowi – *class_name* i *comments*.
 ### Tworzenie ról za pomocą Rolify
 
 Metoda *resourcify* gemu [rolify](https://github.com/EppO/rolify)
-pozwala na powiązanie roli z konkretnym lub dowolnym egzemplarzem modelu.
+pozwala na powiązanie roli z konkretnym lub dowolnym egzemplarzem modelu.
 Aby utworzyć taką rolę dopisujemy *resourcify* do modelu:
 
     :::ruby student.rb
@@ -370,9 +378,9 @@ usuwamy gem *cancan* z *Gemfile*, usuwamy plik *ability.rb*
 z katalogu *models*, a w pliku *application_controller.rb*
 wykomentowujemy końcowy fragment.
 
-Aby korzystać z dobrodziejstw *strong parameters* w naszej aplikacji Rails 3
+Aby skorzystać w aplikacji Rails 3 z dobrodziejstw
+filtrowania atrybutów modelu za pomocą *strong parameters*
 musimy zainstalować gem *strong_parameters*.
-Po tych zmianach w kodzie, możemy już korzystać z filtrowania atrybutów.
 
 <!--
 
@@ -442,11 +450,11 @@ Na razie widok *index* dla *users* prezentuje się tak:
 
 {%= image_tag "/images/lista-obecnosci-users-2013.png", :alt => "[Lista obecności / Users, 12/13]" %}
 
-Scaffold + Bootstrap – w sumie banał i sztampa.
-Kiedyś trzeba będzie to poprawić!
+Scaffold + Bootstrap – w sumie banał i rutyna.
+Kiedyś trzeba będzie się poprawić!
 
 
-### OmniAuth na GitHubie
+### GitHub i OmniAuth
 
 Po zalogowaniu się użytkownika w aplikacji, zapisujemy jego dane przesłane
 z Githuba w kolekcji *users*; gdy w danych brak jest adresu email,
@@ -463,22 +471,23 @@ Cały ten proces jest zaprogramowany w kodzie kontrolera *SessionsController*:
 
       def create
         auth = request.env["omniauth.auth"]
-        user = User.where(provider: auth['provider'], uid: auth['uid'].to_s).first ||
-            User.create_with_omniauth(auth)
-        session[:user_id] = user.id
 
-        if User.count == 1        # make the first user an admin
-          user.add_role :admin    # add global role
-        else
-          user.grant :owner, user # add local role
+        unless user = User.where(provider: auth['provider'], uid: auth['uid'].to_s).first
+          user = User.create_with_omniauth(auth)
+          if User.count == 1        # make the first user an admin
+            user.add_role :admin    # add global role
+          else
+            user.grant :owner, user # add local role
+          end
         end
+
+        session[:user_id] = user.id
 
         if user.email.blank?
           redirect_to edit_user_path(user), notice: "Please enter your email address."
         else
           redirect_to root_url, notice: "Signed in!"
         end
-
       end
 
       def destroy
@@ -608,13 +617,10 @@ W kontrolerze będziemy filtrować atrybuty. Autoryzację przeniesiemy do
           # params[:user]
           if current_user.has_role? :admin
             params.require(:user).permit(:role_ids, :name, :email)
-          elsif current_user.has_role? :owner
-            params.require(:user).permit(:email)
           else
-            params.require(:user).permit()
+            params.require(:user).permit(:email)
           end
         end
-
         def current_resource
           @current_resource ||= User.find(params[:id]) if params[:id]
         end
