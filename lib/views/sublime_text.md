@@ -7,8 +7,19 @@
 
 ## Rzeczy podstawowe
 
+Ukrywamy zbędne rzeczy:
+
 * View > Hide Minimap
 * View > Side Bar > Hide Side Bar
+
+Instalujemy [Package Control](http://wbond.net/sublime\_packages/package\_control).
+
+Z menu **Preferences » Package Control**, **Install** wpisujemy nazwę pakietu:
+
+* [Git](https://github.com/kemayo/sublime-text-2-git/wiki)
+* *LESS syntax highlighting*
+* *TrailingSpaces*
+* *ERB insert and toggle commands*
 
 
 ## Preferences
@@ -21,15 +32,15 @@
       "font_face": "Terminus",
       "font_size": 14,
       "tab_size": 2,
-      "translate_tabs_to_spaces": false
+      "translate_tabs_to_spaces": true
     }
 
 **» Settings – More » Syntax Specific**:
 
     :::json Markdown.sublime-settings
     {
-      "tab_size": 4,
-      "translate_tabs_to_spaces": false
+      "tab_size": 2,
+      "translate_tabs_to_spaces": true
     }
 
 **» Key Bindings – User**:
@@ -72,32 +83,13 @@ Często używane skróty:
 * wielokrotne kursory: `ctrl+d`
 * zaznaczanie prostokątne: `shift+right mouse button`
 
-Pakiety:
 
-* remove trailing spaces (package):  `ctrl+shift+t`
+## Rails…
 
+Otwieramy katalog z aplikacją Rails. Pliki wyszukujemy
+za pomocą *Goto Anything* (`ctrl+p`).
 
-## Tools, Rails…
+Nowe snippets dla Rails:
 
-Brak snippetów dla Markdown. Przykładowy snippet:
-
-* `link` – `[]()`
-
-[Emmet](http://docs.emmet.io/) – the essential toolkit for web-developers:
-
-* [emmet-sublime](https://github.com/sergeche/emmet-sublime)
-
-Rails:
-
-* otwieramy katalog z aplikacją Rails – teraz wyszukujemy
-  plik z *Goto Anything* (`ctrl+p`)
-
-
-## Package Control
-
-Instalujemy [Package Control](http://wbond.net/sublime\_packages/package\_control).
-
-Z menu **Preferences » Package Control**, **Install** wpisujemy nazwę pakietu:
-
-* pakiet [Git](https://github.com/kemayo/sublime-text-2-git/wiki)
-* pakiety: *LESS syntax highlighting*, *ERB insert and toggle commands*
+* [instalacja](https://github.com/tadast/sublime-rails-snippets) Sublime Text 2 Rails snippets
+* [skróty](http://tadast.github.com/sublime-rails-snippets/)
