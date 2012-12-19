@@ -375,28 +375,16 @@ W Rails 3 problem „mass-assignment” zwalczamy za pomocą **attr_accessible*
 W Rails 4 – będziemy używać techniki **strong parameters**.
 Technika ta polega na odfiltrowywaniu niektórych parametrów z hasza *params*.
 
+Jak zabezpieczaliśmy się przed „mass-assignment” w Rails 3:
+
+* [ActiveModel::MassAssignmentSecurity::ClassMethods](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html)
+* [attr_accessible](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html#method-i-attr_accessible)
+
 Zanim skorzystamy z tej techniki musimy usunąć już wygenerowaną autoryzację –
 usuwamy gem *cancan* z *Gemfile*, usuwamy plik *ability.rb*
 z katalogu *models*, a w pliku *application_controller.rb*
 wykomentowujemy końcowy fragment. W aplikacji Rails 3 trzeba też
 zainstalować gem *strong parameters*.
-
-<!--
-
-2\. Ustawić w pliku *application.rb* zmienną `whitelist_attributes` na *false*:
-
-    :::ruby config/application.rb
-    config.active_record.whitelist_attributes = false
-
-(Wystarczy wykomentować ten wiersz?)
-
-3\. Włączyć `ActiveModel::ForbiddenAttributesProtection` do wszystkich modeli.
-Na przykład można to zrobić tak:
-
-    :::ruby /config/initializers/strong_parameters.rb
-    ActiveRecord::Base.send(:include,  ActiveModel::ForbiddenAttributesProtection)
-
--->
 
 Klasa `ActionController::Parameters` definuje dwie metody:
 
@@ -450,7 +438,7 @@ Na razie widok *index* dla *users* prezentuje się tak:
 {%= image_tag "/images/lista-obecnosci-users-2013.png", :alt => "[Lista obecności / Users, 12/13]" %}
 
 Scaffold + Bootstrap – w sumie banał i rutyna.
-Widok ten jest dostępny tylko dla Admina. Pewnie kiedyś trzeba będzie
+Widok ten jest dostępny tylko dla Admina. Niechybnie Admin będzie chciał
 go poprawić.
 
 
@@ -538,7 +526,7 @@ Wartość wpisana w polu ID to UID użytkownika na serwerze GitHub.
 Przykładowo UID użytkownika *octocat* to 583231.
 
 
-### Poprawki kodzie modelu
+### Poprawki w kodzie modelu User
 
 W modelu *User* usuwamy *attr_accessible*, dopisujemy
 powiązanie z (jeszcze nieistniejącym) modelem *Student*,
@@ -579,7 +567,7 @@ dodajemy kod dla atrybutu *nickname*:
 
 ### Autoryzacja użytkowników
 
-W kontrolerze będziemy filtrować atrybuty. Autoryzację przeniesiemy do
+W kontrolerze będziemy tylko filtrować atrybuty. Autoryzację przeniesiemy do
 *ApplicationController* i klasy *Permission*.
 
     :::ruby users_controller.rb
@@ -633,9 +621,6 @@ w *ApplicationController*:
     class ApplicationController < ActionController::Base
       protect_from_forgery
 
-      helper_method :current_user
-      helper_method :user_signed_in?
-
       delegate :allow?, to: :current_permission
       helper_method :allow?
 
@@ -647,6 +632,8 @@ w *ApplicationController*:
             nil
           end
         end
+        helper_method :current_user
+
         def authorize
           if !current_permission.allow?(params[:controller], params[:action], current_resource)
             redirect_to root_url, alert: "Only admin can access this page."
@@ -658,18 +645,20 @@ w *ApplicationController*:
         def current_resource
           nil
         end
+
         def user_signed_in?
           return true if current_user
         end
+        helper_method :user_signed_in?
     end
 
 Dane użytkowników może przeglądać i edytowawać tylko Admin,
-z wyjątkiem atrybutu *email*, który edytować może też jego właściciel.
+z wyjątkiem atrybutu *email*, który edytować może też właściciel.
 
 Uprawnienia są przydzielane w klasie *Permission*. Do sprawdzania uprawnień
-używamy metody `allow?`.
+napiszemy metodę `allow?`:
 
-    :::ruby permission.rb
+    :::ruby app/models/permission.rb
     class Permission < Struct.new(:user)
       def allow?(controller, action, resource = nil)
         if user
@@ -684,21 +673,24 @@ używamy metody `allow?`.
     end
 
 Powyższy kod wzorowany jest na
-[Authorization from Scratch Part 1](http://railscasts.com/episodes/385-authorization-from-scratch-part-1).
+[Authorization from Scratch Part 1](http://railscasts.com/episodes/385-authorization-from-scratch-part-1)
+R. Batesa.
 
 
 ## Scaffolding Student
 
-Stroną główną aplikacji „Lista obecności” będzie widok *index* modelu *Student*:
+Stroną główną aplikacji „Lista obecności” jest strona na której
+można zobaczyć ile razy student był obecny na zajęciach i na której
+można edytować dane studentów (oczywiście, obecności też):
 
 {%= image_tag "/images/lista-obecnosci-2013.png", :alt => "[Lista obecnsosci 12/13]" %}
 
-Jak widać na obrazku powyżej, obecności nie były jeszcze sprawdzane. Stąd
-„0” w pierwszej kolumnie.
+Jak widać na powyższym obrazku, obecności nie były jeszcze sprawdzane.
+Stąd „0” w pierwszej kolumnie.
 
 Generujemy rusztowanie dla modelu *Student*.
-Oczywiście w aplikacji *Dziennik Lekcyjny* nie może zabraknąć
-atrybutów obecność i uwagi:
+Oczywiście w aplikacji „Lista obecności” nie może zabraknąć
+atrybutu obecność uwagi:
 
     :::bash terminal
     rails generate scaffold Student \
@@ -710,8 +702,8 @@ atrybutów obecność i uwagi:
       comments:String
     rm app/assets/stylesheets/scaffolds.css.less
 
-Wygenerowana ze scaffold widoki nie korzystają z Twitter Bootstrap.
-Aby to zmienić, nadpisujemy je za pomocą polecenia:
+Widoki wygenerowane ze scaffold widoki nie korzystają z Twitter Bootstrap.
+Aby to zmienić, nadpisujemy je za pomocą generatora:
 
     :::bash
     rails generate bootstrap:themed students
@@ -741,6 +733,7 @@ oraz powiązanie z modelem *User*:
 
       default_scope asc(:last_name, :first_name)
 
+      # wirtualne atrybuty: full_name, presences_list
       def full_name
         [first_name, last_name].join(' ')
       end
@@ -814,33 +807,34 @@ Poprawki w widoku *index*:
         </tr>
       </thead>
       <tbody>
-        <% @students.each do |student| %>
-          <tr>
-            <td><%= student.presences_length %></td>
-            <td><%= student.full_name %></td>
-            <td><%= student.login %></td>
-            <td><%= student.class_name %></td>
-            <td><%= link_to_if_on_github student %></td>
-            <td>
-              <%= link_to t('.edit', default: t("helpers.links.edit")),
-                          edit_student_path(student), class: 'btn btn-mini' %>
-              <%= link_to t('.destroy', default: t("helpers.links.destroy")),
-                          student_path(student),
-                          method: :delete,
-                          data: { confirm:
-                            t('.confirm',
-                              default: t("helpers.links.confirm",
-                                default: 'Are you sure?')) },
-                          class: 'btn btn-mini btn-danger' %>
-            </td>
-          </tr>
-        <% end %>
+        <%= render partial: "student", collection: @students %>
       </tbody>
     </table>
 
-Podobne poprawki wprowadzamy w pozostałych widokach.
+Wiersz tabeli z danymi studenta renderujemy w widoku częściowym *student*:
 
-*TODO:* W kodzie powyżej użyć szablonu częściowego *_student.html.erb*.
+    :::rhtml
+    <tr>
+      <td><%= student.presences_length %></td>
+      <td><%= student.full_name %></td>
+      <td><%= student.login %></td>
+      <td><%= student.class_name %></td>
+      <td><%= link_to_if_on_github student %></td>
+      <td>
+        <%= link_to t('.edit', default: t("helpers.links.edit")),
+                    edit_student_path(student), class: 'btn btn-mini' %>
+        <%= link_to t('.destroy', default: t("helpers.links.destroy")),
+                    student_path(student),
+                    method: :delete,
+                    data: { confirm:
+                      t('.confirm',
+                        default: t("helpers.links.confirm",
+                          default: 'Are you sure?')) },
+                    class: 'btn btn-mini btn-danger' %>
+      </td>
+    </tr>
+
+Podobne poprawki wprowadzamy w pozostałych widokach.
 
 
 ### Kontroler
@@ -888,7 +882,7 @@ Tę rolę ograniczamy do dopiero co uaktualnionego egzemplarza modelu *Student*.
     end
 
 
-Na konsoli Rails, sprawdzamy jak dizałają role lokalne:
+Na konsoli Rails, sprawdzamy jak działają te role lokalne:
 
     :::ruby console
     user = User.where(uid: '1198062').first # zakładamy, że taki użytkownik kiedyś się zalogował
@@ -900,7 +894,8 @@ Na konsoli Rails, sprawdzamy jak dizałają role lokalne:
 
 ### Autoryzacja studentów
 
-Po dopisaniu uprawnień studentów nadal można je wszystkie ogarnąć.
+Po dopisaniu uprawnień studentów do klasy *Permission* kod jest w dalszym
+ciągu czytelny:
 
     :::ruby permission.rb
     class Permission < Struct.new(:user)
@@ -943,18 +938,22 @@ Na razie zapełnimy kolekcję *students* takimi przykładowymi danymi:
 
 Do sprawdzania **obecności** spróbujemy czegoś niesztampowego –
 [mierników](https://developers.google.com/chart/interactive/docs/gallery/gauge)
-z [Google Chart Tools](https://developers.google.com/chart/). Tak to ma się
-prezentować:
+z [Google Chart Tools](https://developers.google.com/chart/):
 
 {%= image_tag "/images/gauges-2013.png", :alt => "[Lista obecności, 12/13]" %}
 
-W semestrze jest piętnaście laboratoriów. Jak widać powyżej zajęcia się dopiero
-zaczęły. Przyciski są dla Admina do dodawania obecności
-na laboratoriach. Przewidziany jest eksport danych do formatu arkusza
-kalkulacyjnego (Excel, OpenOffice).
+Liczba na mierniku pokazuje ile razy student był obecny na zajęciach.
+W semestrze jest piętnaście laboratoriów. Dlatego zakres miernika to 0–15.
+Jak widać na załączonym obrazku, zajęcia dopiero się
+zaczęły.
 
-Zaczniemy od wygenerowania nowego kontrolera z metodą index (bez modelu, nie
-będzie potrzebny):
+Admin klikając przyciski dodaje obecności.
+
+W następnej wersji aplikacji przewidziany jest eksport danych do formatu
+Excel, OpenOffice i PDF.
+
+Tym razem zaczniemy od wygenerowania nowego kontrolera
+z metodami `index` i `update` (bez modelu, nie będzie nam potrzebny):
 
     :::bash
     rails g controller gauges index update
@@ -962,26 +961,28 @@ będzie potrzebny):
 
 ### Autoryzacja gauges
 
-Dopisujemy dwie linijki do pliku *permission.rb*:
+To tylko dwa wiersze kodu dopisane w pliku *permission.rb*:
 
-    :::ruby permission.rb
+    :::ruby app/models/permission.rb
     class Permission < Struct.new(:user)
       def allow?(controller, action, resource = nil)
         ...
         return true if controller == "gauges" && action == "index"
         if user
           ...
-          return true if controller == "guages" && user.has_role?(:admin)
+          return true if controller == "gauges" && user.has_role?(:admin)
         end
         false
       end
     end
 
-czyli każdy może wejść na stronę z miernikami, ale tylko Admin może
-uaktualnić wskazania mierników:
+Z kodu wynika, że każdy może wejść na stronę z miernikami,
+ale tylko Admin może uaktualniać wskazania mierników:
 
     :::ruby gauges_controller.rb
     class GaugesController < ApplicationController
+      before_filter :authorize
+
       # GET /students
       def index
         @students = Student.all
@@ -989,11 +990,12 @@ uaktualnić wskazania mierników:
       # PUT /students/1
       def update
         @student = Student.find(params[:id])
-        if current_user && current_user.has_role?(:admin)
-          @student.add_to_set(:presences, today_presence)
-          redirect_to(gauges_url) && return
+
+        if @student.add_to_set(:presences, today_presence)
+          redirect_to gauges_url
+        else
+          redirect_to gauges_url, alert: 'This can’t happen. Attribute presences wasn’t updated.'
         end
-        redirect_to(root_url, alert: 'Only admin can do that.')
       end
     end
 
@@ -1024,17 +1026,20 @@ Mierniki generowane są w widoku *index*:
     <div class="page-header">
       <h3>Obecności na zajęciach</h3>
     </div>
+    <%= render partial: "gauge", collection: @students %>
 
-    <% @students.each do |student| %>
-      <%= content_tag :div, class: "gauge" do -%>
-        <%= content_tag :div, "",
-              { id: student.login, data: { presences_length: student.presences_length } } %>
-        <%= link_to raw("<i class='icon-dashboard'> </i>") + student.last_name,
-                gauge_path(student), method: :put, class: 'btn' %>
-      <% end %>
+Sam miernik jest generowany przez widok częściowy *_gauge.html.erb*:
+
+    :::rhtml app/views/gauges/_gauge.html.erb
+    <%= content_tag :div, class: "gauge" do -%>
+      <%= content_tag :div, "", {
+            id: gauge.login, data: { presences_length: gauge.presences_length }
+          } %>
+      <%= link_to raw("<i class='icon-dashboard'> </i>") + gauge.last_name,
+            gauge_path(gauge), method: :put, class: 'btn' %>
     <% end %>
 
-Plik *google_gauges.js* jest wczytywany tylko na stronie *index*:
+I wczytywany tylko na stronie *index*, plik *google_gauges.js*:
 
     :::js app/assets/javascripts/google_gauges.js
     google.load('visualization', '1', {packages:['gauge']});
@@ -1042,85 +1047,124 @@ Plik *google_gauges.js* jest wczytywany tylko na stronie *index*:
 
     function drawGauges() {
       var options = {
-        width: 162, height: 162, redFrom: 13, redTo: 15,
-        yellowFrom: 10, yellowTo: 13, greenFrom: 8, greenTo: 10,
-        max: 15, minorTicks: 0, majorTicks: [0, 15]
+        width: 162, height: 162,
+        redFrom: 13, redTo: 15,
+        yellowFrom: 10, yellowTo: 13,
+        greenFrom: 8, greenTo: 10,
+        max: 15,
+        minorTicks: 0, majorTicks: [0, 15]
       };
       $('.gauges.index .gauge > div[id]').each(function() {
-        var gauges = new google.visualization.Gauge(document.getElementById(this.id));
-        var data = google.visualization.arrayToDataTable([
-          [this.id], [$(this).data('presences-length')]
-        ]);
-        gauges.draw(data, options);
+        drawGauge(this, options);
       });
-    }
+    };
+
+    function drawGauge(domElement, options) {
+      var gauges = new google.visualization.Gauge(document.getElementById(domElement.id));
+      var data = google.visualization.arrayToDataTable([
+        [domElement.id], [$(domElement).data('presences-length')]
+      ]);
+      gauges.draw(data, options);
+    };
 
 Powyższy kod inicjalizuje mierniki i umieszcza je na stronie.
-Login studenta i jego liczbę obecności są pobierane z *id* oraz
-atrybutu *data* wygenrowanego kodu HTML.
+Login studenta i jego liczba obecności na zajęciach są odczytywane
+z *id* oraz atrybutu *data* z kodu HTML.
+
+*TODO (proste):* Zaprogramować aktualnianie obecności jako *remote link* 
+– jQuery+AJAX+format.js.
+Przykład – [jQuery & Ajax (revised)](http://railscasts.com/episodes/136-jquery-ajax-revised?view=asciicast).
 
 
-## TODO: Wyszukiwanie grup studentów
+## Wyszukiwanie grup studentów
 
-W menu umieściłem wszystkie swoje grupy laboratoryjne
-w semestrze letnim, r. akad. 2011/12:
+Do menu aplikacji dodamy dwie listy rozwijane *Classes* i *Gauges*
+z listą moich grup laboratoryjnych z semestru letniego r. ak. 12/13:
 
-{%= image_tag "/images/dziennik-menu.png", :alt => "[dziennik menu]" %}
+{%= image_tag "/images/lista-obecnosci-menu.png", :alt => "[dziennik menu]" %}
 
 Dane studentów zapisywane są w kolekcji *students*.
 Aby wyszukać wszystkich studentów z jednej grupy w zapytaniu
 dodaję: nazwę grupy, rok i semestr:
 
     :::rhtml app/views/common/_menu.html.erb
-    <%= link_to "Dziennik lekcyjny, lato 11/12", root_path, class: "brand" %>
-
+    <%= link_to "Lista obecności, 12/13", root_path, :class => 'brand' %>
     <ul class="nav">
-      <li class="active"><a href="http://tao.inf.ug.edu.pl">Home</a>
-      <li><%= link_to "About", root_path %>
-      <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">Classes</a>
-        <ul class="dropdown-menu">
-          <li><%= link_to "architektura serwisów internetowych", students_path(class_name: "asi", year: 2011, semester: "summer") %>
-          <li><%= link_to "techologie nosql", students_path(class_name: "nosql", year: 2011, semester: "summer") %>
-          <li class="divider"></li>
-          <li><a href="http://inf.ug.edu.pl/plan">plan zajęć</a>
-        </ul>
-      </li>
-      <li><%= link_to "Admin", admin_students_path %>
+      <% if user_signed_in? %>
+        <li>
+        <%= link_to 'Logout', signout_path %>
+        </li>
+      <% else %>
+        <li>
+        <%= link_to 'Login through Github', signin_path %>
+        </li>
+      <% end %>
+      <% if user_signed_in? %>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Classes <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            <li><%= link_to "techologie nosql", students_path(class_name: "nosql") %>
+            <li><%= link_to "projekt zespołowy", students_path(class_name: "pz") %>
+            <li class="divider"></li>
+            <li><%= link_to "architektura serwisów internetowych", students_path(class_name: "asi") %>
+            <li><%= link_to "techniki internetowe", students_path(class_name: "ti") %>
+            <li class="divider"></li>
+            <li><a href="http://inf.ug.edu.pl/plan/?nauczyciel=Bzyl">plan zajęć</a>
+          </ul>
+        </li>
+            <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Gauges <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            <li><%= link_to "techologie nosql", gauges_path(class_name: "nosql") %>
+            <li><%= link_to "projekt zespołowy", gauges_path(class_name: "pz") %>
+            <li class="divider"></li>
+            <li><%= link_to "architektura serwisów internetowych", gauges_path(class_name: "asi") %>
+            <li><%= link_to "techniki internetowe", gauges_path(class_name: "ti") %>
+          </ul>
+        </li>
+        <% if current_user.has_role? :admin %>
+        <li>
+          <%= link_to 'Admin', users_path %>
+        </li>
+        <% end %>
+      <% end %>
     </ul>
-    <form action="" class="pull-right">
-      <button class="btn" type="submit">Sign in through GitHub</button>
-    </form>
 
-Studentów wyszukuję w metodzie *index* kontrolera.
-Docelowo, należałoby przenieść wyszukiwanie do modelu.
+Filtrowanie (selekcję) studentów przez atrybut *class_name* dodajemy
+w metodzie *index* kontrolerów *StudentsControler* i *GaugesController*:
 
     :::ruby
-    # GET /students
-    # GET /students.json
     def index
-      # logger.info "☻ request query parametereq.query_parameters}"
+      @students = Student.class_name(class_name)
+      ...
+    end
 
-      class_name = params[:class_name] || "unknown"
-      year = params[:year] || "2011"
-      semester = params[:semester] || "summer"
+W kontrolerze *ApplicationController* dodajemy metodę prywatną *class_name*:
 
-      if params[:class_name]
-        @students = Student.where(class_name: class_name, year: year, semester: semester)
-      else
-        @students = Student.where(year: 2011) # dodać class_name: "unallocated" ?
-      end
+    :::ruby app/controllers/application_controller.rb
+    class ApplicationController < ActionController::Base
+      ...
+      private
+        def class_name
+          (params[:class_name] if user_signed_in?) || "unallocated"
+        end
+        helper_method :class_name
 
-      respond_to do |format|
-        format.html # index.html.erb
-        format.json { render json: @students }
-      end
+Na koniec w modelu *Student* dodajemy *scope*:
+
+    :::ruby app/models/student.rb
+    scope :class_name, ->(name) do
+      where(class_name: name).asc(:last_name, :first_name)
     end
 
 
-## TODO: Dodawanie (nie)obecności
+## Remote – dodawanie obecności
 
-**Tylko wersja AJAX**
+**Przerobić starą wersję na AJAX + JSON / JS?**
 
 Aktualnie kliknięcie w „buźkę” przy nazwisku studenta, przeładowuje stronę
 wyświetlając ją z dodaną kropką (nieobecność).
@@ -1202,7 +1246,9 @@ aplikację obiekt JSON i uaktualnić zawartość strony:
 Gotowe!
 
 
-## TODO: Routing (sprawdzić i ujednolicić terminologię)
+## Przyglądamy się routingowi
+
+**TODO: sprawdzić i ujednolicić terminologię**
 
 OmniAuth ma wbudowany routing dla wspieranych dostawców (*providers*).
 Dla Githuba jest to:
@@ -1223,170 +1269,6 @@ czytelność kodu:
     :::ruby config/routes.rb
     match '/signout' => 'session#destroy', :as => :signout
     match '/signin' => 'session#new', :as => :signin
-
-
-## Zapisujemy powyższe dane w bazie MongoDB
-
-Wygenerowany kod dla modelu *User* (dodać *default* dla roli?):
-
-    :::ruby app/models/user.rb
-    class User
-      include Mongoid::Document
-
-      include Mongoid::Timestamps
-
-      rolify
-      field :provider, type: String
-      field :uid, type: String
-      field :name, type: String
-      field :email, type: String
-      attr_accessible :role_ids, :as => :admin
-      attr_accessible :provider, :uid, :name, :email
-      # run 'rake db:mongoid:create_indexes' to create indexes
-      index({ email: 1 }, { unique: true, background: true })
-
-      def self.create_with_omniauth(auth)
-        create! do |user|
-          user.provider = auth['provider']
-          user.uid = auth['uid']
-          if auth['info']
-             user.name = auth['info']['name'] || ""
-             user.email = auth['info']['email'] || ""
-          end
-        end
-      end
-
-    end
-
-
-# TODO: Autoryzacja
-
-**UWAGA:** Powinno wystarczyć *strong_parameters*.
-
-
-
-## Jak działają Strong Parametergewać przykładową aplikację i scaffold.
-Na konsoli sprawdzić jak to działa:
-*require*, *permit*
-
-* [Strong Parameters](http://railscasts.com/episodes/371-strong-parameters?view=asciicast)
-* [Upgrading to Rails 4 - Parameters](http://iconoclastlabs.com/cms/blog/posts/upgrading-to-rails-4-parameters-security-tour)
-
-
-## Usunąć?
-
-Autoryzację zaimplementujemy korzystając z gemu
-[CanCan](https://github.com/ryanb/cancan).
-Dopisujemy go do *Gemfile*:
-
-    :::ruby
-    gem 'cancan'
-
-i instalujemy wykonując polecenie *bundle*.
-
-Do aplikacji dodamy trzy role:
-
-* **admin** — czyli ja, może wszystko
-* **student** — może przeglądać swoje dane, może modyfikować
-  atrybuty: *comments*, inne atrybuty?
-
-Będzie też „guest user”:
-
-* **guest** – może przeglądać dane na stronie głównej
-
-
-## CanCan Abilities
-
-* [CanCan README](https://github.com/ryanb/cancan)
-
-1\. Handle Unauthorized Access:
-
-    :::ruby app/controllers/application_controller.rb
-    class ApplicationController < ActionController::Base
-      rescue_from CanCan::AccessDenied do |exception|
-        redirect_to root_url, alert: exception.message
-      end
-    end
-
-Zobacz [Exception Handling](https://github.com/ryanb/cancan/wiki/exception-handling).
-
-W *StudentsController* dopisujemy:
-
-    :::ruby app/controllers/students_controller.rb
-    class StudentsController < ApplicationController
-      load_and_authorize_resource
-      # skip_authorize_resource :only => :index
-
-W *UsersController* dopisujemy:
-
-    :::ruby app/controllers/users_controller.rb
-    class UsersController < ApplicationController
-      load_and_authorize_resource
-
-2\. [Define Abilities](https://github.com/ryanb/cancan/wiki/Defining-Abilities):
-
-    :::ruby
-    rails g cancan:ability
-
-Wygenerowana klasa, po poprawkach:
-
-    :::ruby app/models/ability.rb
-    class Ability
-      include CanCan::Ability
-
-      def initialize(user)
-        user ||= User.new     # guest user (not logged in)
-
-        if user.admin?
-          can :manage, :all
-        elsif user.student?
-          can [:index, :show, :edit, :update], Student, uid: user.uid
-        else
-          can :index, Student
-        end
-      end
-
-    end
-
-Dopisujemy do *ApplicationController*:
-
-    :::ruby app/controllers/application_controller.rb
-    class ApplicationController < ActionController::Base
-      helper_method :current_user
-
-      private
-
-      def current_user
-        begin
-          @current_user ||= User.find(session[:user_id]) if session[:user_id]
-        rescue Mongoid::Errors::DocumentNotFound
-          nil
-        end
-      end
-
-    end
-
-Do modelu *User* dopisujemy:
-
-    :::ruby app/models/user.rb
-    def admin?
-      uid == 8049  # mój id na githubie
-    end
-    def student?
-      (uid != nil) && (uid != 8049)
-    end
-
-
-Jak zabezpieczyć się przed „mass-assignment”:
-
-* [ActiveModel::MassAssignmentSecurity::ClassMethods](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html)
-* [attr_protected](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html#method-i-attr_protected)
-* [attr_accessible](http://api.rubyonrails.org/classes/ActiveModel/MassAssignmentSecurity/ClassMethods.html#method-i-attr_accessible)
-
-Cytat: „Mass assignment security provides an interface for protecting
-attributes from end-user assignment. For more complex permissions,
-mass assignment security may be handled outside the model by extending
-a non-ActiveRecord class, such as a controller, with this behavior.”
 
 
 # Kilka uwag na marginesie…
