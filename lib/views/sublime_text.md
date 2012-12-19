@@ -86,6 +86,7 @@ Często używane skróty:
 * komentowanie bloku kodu: `ctrl+/`
 * wielokrotne kursory: `ctrl+d`
 * zaznaczanie prostokątne: `shift+right mouse button`
+* lower case: `ctrl+k ctrl+l`
 * title case: `ctrl+k ctrl+t`
 * usuń do końca wiersza: `ctrl+k ctrl+k`
 * usuń do początku wiersza: `ctrl+k ctr+backspace`
