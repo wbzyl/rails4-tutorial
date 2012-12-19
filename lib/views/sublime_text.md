@@ -46,14 +46,17 @@ wbieramy **Install**, gdzie wpisujemy nazwę pakietu:
 
 **» Key Bindings – User**:
 
-    :::json Default.sublime-keymap
+    :::json User/Default (Linux).sublime-keymap
     [
       { "keys": ["ctrl+\\"], "command": "reindent" },
-      { "keys": ["ctrl+shift+."], "command": "erb" },
+      { "keys": ["ctrl+k", "ctrl+t"], "command": "title_case" },
+      { "keys": ["ctrl+u"], "command": "expand_tabs" },
+      // non-break space
       { "keys": ["super+`"], "command": "insert", "args": {"characters": " "} },
+      // wtyczki
+      { "keys": ["ctrl+shift+."], "command": "erb" },
       { "keys": ["ctrl+shift+t"], "command": "delete_trailing_spaces" }
     ]
-
 
 ### Większy font w *status bar*
 
@@ -83,6 +86,9 @@ Często używane skróty:
 * komentowanie bloku kodu: `ctrl+/`
 * wielokrotne kursory: `ctrl+d`
 * zaznaczanie prostokątne: `shift+right mouse button`
+* title case: `ctrl+k ctrl+t`
+* usuń do końca wiersza: `ctrl+k ctrl+k`
+* usuń do początku wiersza: `ctrl+k ctr+backspace`
 
 
 ## Rails…

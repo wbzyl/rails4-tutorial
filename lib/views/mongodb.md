@@ -349,8 +349,9 @@ Teraz role powiązane z modelem tworzymy za pomocą metody *add_role* lub *grant
 Przykładowo tak kodujemy role dla konkretnego użytkownika:
 
     :::ruby
+    # przyjmujemy, że Student belongs_to User
     user = User.first
-    student = Student.first  # przyjmujemy, że Student belongs_to User
+    student = Student.first
 
     # rola powiązana z dowolnym egzemplarzem modelu (nie będziemy korzystać)
     user.add_role :student, Student
@@ -360,7 +361,7 @@ Przykładowo tak kodujemy role dla konkretnego użytkownika:
     student.user.add_role :owner, student
     student.user.grant    :owner, student
 
-Rola nie powiązana z żadnymi zasobami, to rola *globalna*:
+Role nie powiązane z żadnymi zasobami, to role *globalne*, przykładowo:
 
     :::ruby
     user.add_role :admin     # rola globalna
@@ -372,15 +373,13 @@ Więcej przykładów znajdziemy na [wiki](https://github.com/EppO/rolify/wiki/Us
 
 W Rails 3 problem „mass-assignment” zwalczamy za pomocą **attr_accessible**.
 W Rails 4 – będziemy używać techniki **strong parameters**.
+Technika ta polega na odfiltrowywaniu niektórych parametrów z hasza *params*.
 
-Zanim skorzystamy z tej techniki usuniemy wygenerowaną autoryzację –
+Zanim skorzystamy z tej techniki musimy usunąć już wygenerowaną autoryzację –
 usuwamy gem *cancan* z *Gemfile*, usuwamy plik *ability.rb*
 z katalogu *models*, a w pliku *application_controller.rb*
-wykomentowujemy końcowy fragment.
-
-Aby skorzystać w aplikacji Rails 3 z dobrodziejstw
-filtrowania atrybutów modelu za pomocą *strong parameters*
-musimy zainstalować gem *strong_parameters*.
+wykomentowujemy końcowy fragment. W aplikacji Rails 3 trzeba też
+zainstalować gem *strong parameters*.
 
 <!--
 
@@ -451,7 +450,8 @@ Na razie widok *index* dla *users* prezentuje się tak:
 {%= image_tag "/images/lista-obecnosci-users-2013.png", :alt => "[Lista obecności / Users, 12/13]" %}
 
 Scaffold + Bootstrap – w sumie banał i rutyna.
-Kiedyś trzeba będzie się poprawić!
+Widok ten jest dostępny tylko dla Admina. Pewnie kiedyś trzeba będzie
+go poprawić.
 
 
 ### GitHub i OmniAuth
