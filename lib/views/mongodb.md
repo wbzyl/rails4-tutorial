@@ -1071,10 +1071,6 @@ Powyższy kod inicjalizuje mierniki i umieszcza je na stronie.
 Login studenta i jego liczba obecności na zajęciach są odczytywane
 z *id* oraz atrybutu *data* z kodu HTML.
 
-*TODO (proste):* Zaprogramować aktualnianie obecności jako *remote link* 
-– jQuery+AJAX+format.js.
-Przykład – [jQuery & Ajax (revised)](http://railscasts.com/episodes/136-jquery-ajax-revised?view=asciicast).
-
 
 ## Wyszukiwanie grup studentów
 
@@ -1164,94 +1160,91 @@ Na koniec w modelu *Student* dodajemy *scope*:
 
 ## Remote – dodawanie obecności
 
-**Przerobić starą wersję na AJAX + JSON / JS?**
+W widoku częściowym *_gauge.html.erb* dopisujemy do *link_to* atrybuty 
+*remote* i *data*:
 
-Aktualnie kliknięcie w „buźkę” przy nazwisku studenta, przeładowuje stronę
-wyświetlając ją z dodaną kropką (nieobecność).
+    :::rhtml app/views/gauges/_gauge.html.erb
+    <%= link_to raw("<i class='icon-dashboard'> </i>") + gauge.last_name,
+          gauge_path(gauge),
+          method: :put, 
+          remote: true, data: { type: :json },
+          class: 'btn' %>
 
-Po przeładowaniu, strona wyświetla się od początku, a nie od miejsca
-w w którym kliknęliśmy. Takie zachowanie jest szczególnie uciążliwe
-przy kilku stronicowych listach studentów. Użyję Ajaxa aby to zmienić.
+W kontrolerze *gauges_controller.rb* przechodzimy na *respond_to/respond_with*
+i zmieniamy kod metody *update*:
 
-Zaczniemy od dodania formatu JSON do metody *not_present*:
+    :::ruby app/controllers/gauges_controller.rb
+    class GaugesController < ApplicationController
+      respond_to :html, only: [:index]
+      respond_to :json, only: [:update]
 
-    :::ruby app/controllers/students_controller.rb
-    # PUT /students/1/not_present
-    # PUT /students/1/not_present.json
-    def not_present
-      @student = Student.find(params[:id])
+      # PUT /students/1
+      def update
+        @student = Student.find(params[:id])
+        @student.add_to_set(:presences, today_presence)
 
-      respond_to do |format|
-        if @student.add_to_set(:absences, today_absence)
-          format.html { redirect_to students_url, notice: 'Student absences were successfully updated.' }
-          format.json { render :json => { value: bullets(@student.absences) }.to_json }
-        else
-          format.html { render action: "edit" }
-          format.json { render json: @student.errors, status: :unprocessable_entity }
+        respond_with(@student) do |format|
+          format.json { render json: @student }
         end
       end
-    end
 
-Po podmianie kodu, mamy problemy. Po kliknięciu '☺' w oknie przeglądarki
-pojawia się komunikat:
+Teraz kliknięcie przycisku, powoduje wysłanie żądania AJAX do metody
+*update* kontrolera *GaugesController*. Metoda *update* odpowiada na to
+żądanie wysyłając do przeglądarki odpowiedź z danymi studenta.
 
-    undefined method `bullets' for #<StudentsController:0x00...>
+Odpowiedzi wysyłane przez aplikację możemy podejrzeć w przeglądarce,
+na przykład w zakładce *Sieć/XHR* rozszerzenia *Firebug*:
 
-Oznacza to, że musimy przenieść kod metody pomocniczej *bullets* do
-*ApplicationController* i dodać ją z powrotem do metod pomocniczych:
-
-    :::ruby app/controllers/application_controller.rb
-    class ApplicationController < ActionController::Base
-      helper_method :today_absence, :bullets
+    :::json
+    {
+      "_id": "50d0c6f0e138238121000001",
+      "class_name": "nosql",
+      "first_name": "Jan",
+      "last_name": "Kuszelas",
+      "login": "jkuszelas",
+      "presences": ["12-20"],
       ...
+    }
 
-Aby po kliknięciu w link z '☺' wykonał się kod z *format.json*
-wystarczy, bo korzystamy z adapteru *jQuery-UJS*,
-zmodyfikować *link_to* w taki sposób:
+lub na konsoli o ile do pliku *google_gauges.js* dopiszemy:
 
-    :::rhtml app/views/students/index.html.erb
-    <div class="presence"><%= link_to '☺', not_present_student_path(student),
-        method: :put, remote: true, data: { type: :json } %>
-    </div>
+    :::js app/assets/javascripts/google_gauges.js
+    function drawGauges() {
+      ...
+      $('a[data-type=\"json\"]').on('ajax:success', function(event, data, status, xhr) {
+        link = $(this);                    // zmienna globalna
+        console.log(link);
+        console.log(JSON.stringify(data)); // prettyprint JSON object
+      });
+    };
 
-Adapter *jQuery-UJS* zmienia funkcję każdego linku z atrybutem *data-remote*
-(generowanym przez *link_to* z argumentem *remote: true*).
-Taki link wysyła żądanie *jQuery.ajax()*.
+Z tego co widać na konsoli, wystarczy odszukać miernik z linkiem:
 
-Po tej zmianie w kodzie, strona nie powinna być przeładowywana.
-Pozostaje uaktualnić jej zawartość.
+    :::js
+    link.closest(".gauge").children("div[id]")
 
-Na początek przyjrzymy się na konsoli przeglądarki wysyłanym
-żądaniom i odbieranym odpowiedziom:
+i uaktualnić jego wskazania:
 
-    :::js students.js
-    $('a[data-type=\"json\"]').bind('ajax:success', function(event, data, status, xhr) {
-      var link = $(this);
-      console.log(link);
-      console.log(JSON.stringify(data)); // prettyprint JSON object
+    :::ruby app/assets/javascripts/google_gauges.js
+    $('a[data-type=\"json\"]').on('ajax:success', function(event, data, status, xhr) {
+      // console.log(data.login, data.presences);
+      var div = $(this).closest(".gauge").children("div[id]").get(0); // get DOM element
+      var gauges = new google.visualization.Gauge(div);
+      var gauge_data = google.visualization.arrayToDataTable([
+        [data.login], [data.presences.length]
+      ]);
+      gauges.draw(gauge_data, options);
     });
 
-Z tego co widać, wystarczy odebrać wysłany przez naszą
-aplikację obiekt JSON i uaktualnić zawartość strony:
-
-    :::ruby students.js
-    $('a[data-type=\"json\"]').bind('ajax:success', function(event, data, status, xhr) {
-      var div = $(this).parent();
-      div.html('☻'); // replace content div.presence with the black smiley
-
-      var absences = div.parent().find('.absences');
-      absences.html(data.value);
-    });
-
-Gotowe!
+*TODO:* W kodzie *google_gauges.js* robimy to samo na dwa różne sposoby.
+Refaktoryzacja? Zobacz też
+[jQuery & Ajax (revised)](http://railscasts.com/episodes/136-jquery-ajax-revised?view=asciicast).
 
 
-## Przyglądamy się routingowi
+# Uwagi na marginesie…
 
-**TODO: sprawdzić i ujednolicić terminologię**
-
-OmniAuth ma wbudowany routing dla wspieranych dostawców (*providers*).
-Dla Githuba jest to:
+1\. OmniAuth ma wbudowany routing dla wspieranych dostawców (*providers*).
+Dla Githuba mamy:
 
     /auth/github          # przekierowanie na Github
     /auth/github/callback # przekierowanie po pomyślnej autentykacji
@@ -1260,20 +1253,12 @@ Dla Githuba jest to:
 Dlatego w pliku *routes.rb* wpisujemy:
 
     :::ruby config/routes.rb
-    match '/auth/:provider/callback' => 'session#create'
-    match '/auth/failure' => 'session#failure'
+    match '/auth/:provider/callback' => 'sessions#create'
+    match '/signin' => 'sessions#new', :as => :signin
+    match '/auth/failure' => 'sessions#failure'
+    match '/signout' => 'sessions#destroy', :as => :signout
 
-Metody pomocnicze *signout_path*, *signin_path* też zwiększą
-czytelność kodu:
-
-    :::ruby config/routes.rb
-    match '/signout' => 'session#destroy', :as => :signout
-    match '/signin' => 'session#new', :as => :signin
-
-
-# Kilka uwag na marginesie…
-
-1\. W trybie produkcyjnym, aplikacja korzysta ze skopilowanych *assets*:
+2\. W trybie produkcyjnym, aplikacja korzysta ze skompilowanych *assets*:
 
     :::bash
     bin/rake assets:precompile   # Compile all the assets named in config.assets.precompile
@@ -1284,12 +1269,6 @@ Po przejściu do trybu development, powinniśmy usunąć skopilowane pliki:
     bin/rake assets:clean
 
 Jeśli tego nie zrobimy, to zmiany w plikach JavaScript i CSS nie zostaną użyte.
-
-2\. Sprawdzić czymportowane pliki należy dopisać do listy *config.assets.precompile*, na przykład
-
-    :::ruby config/environments/production.rb
-    # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-    config.assets.precompile += %w( dziennik-lekcyjny )
 
 3\. **i18n**: Dodajemy do katalogu *config/initializers* plik *mongoid.rb*
 w którym wpisujemy (*i18n*):
@@ -1302,36 +1281,39 @@ Od razu zmieniamy domyślne locale na polskie (co to znaczy?):
     :::ruby config/application.rb
     config.i18n.default_locale = :pl
 
-Replica sets, master/slave, multiple databases – na razie
-pomijamy. Sharding – też.
+4\.„Rails scaffold-generated links are not DRY, and it becomes even worse,
+when someone tries to make them I18n-friendly”. Za pomocą gemu
+[link_to_action](https://github.com/denispeplin/link_to_action) możemy
+„oczyścić/wysuszyć” kod w widokach.
 
-
-4\. Kilka uwag o robieniu kopii zapasowych danych z bazy MongoDB.
+5\. Uwagi o robieniu kopii zapasowych danych z bazy MongoDB.
 
 Eksport do pliku tekstowego:
 
     :::bash terminal
-    mongoexport -d dziennik_lekcyjny -c students -o students-$(date +%Y-%m-%d).json
-    mongoexport -d dziennik_lekcyjny -c users -o users-$(date +%Y-%m-%d).json
+    mongoexport -d lista_obecnosci -c students -o students-$(date +%Y-%m-%d).json
+    mongoexport -d lista_obecnosci -c users -o users-$(date +%Y-%m-%d).json
 
 Wybieramy format JSON. Teraz odtworzenie bazy z kopii zapasowej
 może wyglądać tak:
 
     :::bash terminal
-    mongoimport --drop -d dziennik_lekcyjny -c students students-2012-03-03.json
-    mongoimport --drop -d dziennik_lekcyjny -c users users-2012-03-03.json
+    mongoimport --drop -d lista_obecnosci -c students students-2012-03-03.json
+    mongoimport --drop -d lista_obecnosci -c users users-2012-03-03.json
 
-Możemy też wykonać zrzut bazy. Zrzut wykonujemy na **działającej** bazie:
+Możemy też wykonać zrzut bazy, który wykonujemy na **działającej** bazie:
 
     :::bash
-    mongodump -d dziennik_lekcyjny -o backup
+    mongodump -d lista_obecnosci -o backup
 
 A tak odtwarzamy zawartość bazy z zrzutu:
 
     :::bash
-    mongorestore -d test --drop backup/dziennik_lekcyjny/
+    mongorestore -d test --drop backup/lista_obecnosci/
 
-**Uwaga:** W powyższym przykładzie backup wszystkich kolekcji z bazy
-*dziennik_lekcyjny* importujemy do bazy *test*, a nie
-do *dziennik_lekcyjny*! Tak na wszelki wypadek, aby bezmyślne
-przeklikanie nie skończyło się katastrofą!
+**Uwaga:** W powyższym przykładzie kopię zapasową kolekcji z bazy
+*lista_obecnosci_2013_development* importujemy do bazy *test*, a nie
+do *lista_obecnosci_2013_development*! Zamiast nazwy bazy
+*lista_obecnosci_2013_development* wpisałem *lista_obecnosci*.
+To tak na wszelki wypadek, aby bezmyślne przeklikanie powyższego
+kodu nie skończyło się katastrofą!
