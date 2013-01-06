@@ -27,12 +27,12 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>08:30–08:50 <b>(07.01)</b></td>
- <td>Error 404</td>
+ <td>Error 404 [R-]</td>
  </tr>
 
  <tr>
  <td>08:50–09:10 <b>(07.01)</b></td>
- <td>Karbon</td>
+ <td>Karbon [R-]</td>
  </tr>
 
  <tr>
@@ -42,7 +42,7 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
 
  <tr>
  <td>09:30–09:50 <b>(07.01)</b></td>
- <td>Super Fajni</td>
+ <td>Super Fajni [R-]</td>
  </tr>
 
  <tr>
