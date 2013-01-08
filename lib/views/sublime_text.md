@@ -46,7 +46,7 @@ wbieramy **Install**, gdzie wpisujemy nazwę pakietu:
 
 **» Key Bindings – User**:
 
-    :::json User/Default (Linux).sublime-keymap
+    :::json User/Default.sublime-keymap
     [
       { "keys": ["ctrl+\\"], "command": "reindent" },
       { "keys": ["ctrl+k", "ctrl+t"], "command": "title_case" },
