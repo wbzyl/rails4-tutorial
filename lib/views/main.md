@@ -74,11 +74,6 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
  <td>09:50–10:10 <b>(14.01)</b></td>
  <td>Error 500</td>
  </tr>
- 
- <tr>
- <td>09:50–10:10 <b>(14.01)</b></td>
- <td>Dream Team</td>
- </tr>
 
  <tr>
  <td></td>
@@ -108,6 +103,11 @@ Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
  <tr>
  <td>09:30–09:50 <b>(21.01)</b></td>
  <td>Zwycięzcy</td>
+ </tr>
+
+ <tr>
+ <td>09:50–10:10 <b>(21.01)</b></td>
+ <td>Dream Team</td>
  </tr>
 
 </tbody>
