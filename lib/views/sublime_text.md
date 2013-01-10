@@ -33,7 +33,14 @@ wbieramy **Install**, gdzie wpisujemy nazwę pakietu:
       "font_face": "Terminus",
       "font_size": 14,
       "tab_size": 2,
-      "translate_tabs_to_spaces": true
+      "translate_tabs_to_spaces": true,
+      "rulers": [78],
+      "caret_style": "wide",
+      "highlight_line": true,
+      "line_padding_bottom": 2,
+      "line_padding_top": 2,
+      "fade_fold_buttons": false,
+      "bold_folder_labels": true
     }
 
 **» Settings – More » Syntax Specific**:
