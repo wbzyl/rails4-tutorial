@@ -51,6 +51,9 @@ wbieramy **Install**, gdzie wpisujemy nazwę pakietu:
       "translate_tabs_to_spaces": true
     }
 
+Zbędne. Ale dla plików *Makefile* należy ustawić *translate_tabs_to_spaces*
+na *false*.
+
 **» Key Bindings – User**:
 
     :::json User/Default.sublime-keymap
@@ -96,7 +99,7 @@ Często używane skróty:
 * lower case: `ctrl+k ctrl+l`
 * title case: `ctrl+k ctrl+t`
 * usuń do końca wiersza: `ctrl+k ctrl+k`
-* usuń do początku wiersza: `ctrl+k ctr+backspace`
+* usuń do początku wiersza: `ctrl+k ctrl+backspace`
 
 
 ## Rails…
@@ -115,7 +118,7 @@ Szablon projektu dla aplikacji Rails:
     {
       "folders": [
         {
-           "path": ".",
+          "path": ".",
           "folder_exclude_patterns": ["tmp", "log", "vendor", "script", "public"],
           "file_exclude_patterns": ["config.ru", "Gemfile.lock", "Rakefile", ".gitignore"]
         }
