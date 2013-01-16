@@ -250,12 +250,17 @@ W kontrolerze *SessionsControllers* w metodzie `new` podmieniamy
         redirect_to '/auth/github'
       end
 
-Pozostało jeszcze zarejestrować aplikację na swoim koncie na
-[GitHubie](https://github.com/account/applications).
+Pozostało jeszcze zarejestrować aplikację na
+[GitHubie](https://github.com/settings/applications).
+
+Jeśli zamierzamy korzystać ze strategii *omniauth-twitter*, to aplikację
+rejestrujemy na [Twitterze](https://dev.twitter.com/apps/new).
+Więcej szczegółów znajdziemy
+w [Rails Tutorial for OmniAuth with Mongoid](http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html).
 
 *Ważne:*
 Jeśli aplikacja będzie działać na *localhost:3000*, to
-w trakcie rejestracji w formularzu wpisujemy:
+w trakcie rejestracji na GitHubie w formularzu wpisujemy:
 
     URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
     Callback: http://localhost:3000
@@ -652,11 +657,11 @@ w *ApplicationController*:
         helper_method :user_signed_in?
     end
 
-Dane użytkowników może przeglądać i edytowawać tylko Admin,
+Dane użytkowników może przeglądać i edytować tylko Admin,
 z wyjątkiem atrybutu *email*, który edytować może też właściciel.
 
 Uprawnienia są przydzielane w klasie *Permission*. Do sprawdzania uprawnień
-napiszemy metodę `allow?`:
+napiszemy metodę *allow?*
 
     :::ruby app/models/permission.rb
     class Permission < Struct.new(:user)
@@ -887,9 +892,9 @@ Na konsoli Rails, sprawdzamy jak działają te role lokalne:
     :::ruby console
     user = User.where(uid: '1198062').first # zakładamy, że taki użytkownik kiedyś się zalogował
     user.has_role? :admin
-    user.has_role? :student
-    user.has_role? :student, Student
-    user.has_role? :student, user.students.first
+    user.has_role? :owner
+    user.has_role? :owner, Student
+    user.has_role? :owner, user.students.first  #=> true
 
 
 ### Autoryzacja studentów
@@ -1160,13 +1165,13 @@ Na koniec w modelu *Student* dodajemy *scope*:
 
 ## Remote – dodawanie obecności
 
-W widoku częściowym *_gauge.html.erb* dopisujemy do *link_to* atrybuty 
+W widoku częściowym *_gauge.html.erb* dopisujemy do *link_to* atrybuty
 *remote* i *data*:
 
     :::rhtml app/views/gauges/_gauge.html.erb
     <%= link_to raw("<i class='icon-dashboard'> </i>") + gauge.last_name,
           gauge_path(gauge),
-          method: :put, 
+          method: :put,
           remote: true, data: { type: :json },
           class: 'btn' %>
 
@@ -1239,6 +1244,77 @@ i uaktualnić jego wskazania:
 *TODO:* W kodzie *google_gauges.js* robimy to samo na dwa różne sposoby.
 Refaktoryzacja? Zobacz też
 [jQuery & Ajax (revised)](http://railscasts.com/episodes/136-jquery-ajax-revised?view=asciicast).
+
+
+## Ukrywamy przyciski
+
+Tylko admin może korzystać z wszystkich przycisków.
+Studenci moga tylko podejrzeć swoje dane i edytować swój email,
+imię i nazwisko, login, nazwę rpozytorium na GitHubie.
+
+W tym celu w polach fomularza użyjemy atrybutu *disabled*.
+Najpierw zdefiniujemy metodę pomocniczą *disable_attr?*, przykład użycia:
+
+    :::rhtml
+    <%= f.input :login, input_html: { disabled: disable_attr?(:login) } %>
+
+Przydałoby się własne *FormFor*! TODO.
+
+Na razie taka implementacja, tylko dla modelu *Students*.
+Kod w *StudentsController*:
+
+    :::ruby
+    def disable_attr?(attribute)
+      if current_user.has_role? :admin
+        return false
+      else
+        return ![:email, :full_name, :login, :repository].include?(attribute)
+      end
+    end
+    helper_method :disable_attr?
+
+Póki co nie wiem jak sprawdzać zgnieżdzone hasze w params. Na przykład
+
+    :::ruby
+    params = [ :full_name, :comments, {user_attributes: [ :email ]} ]
+
+
+## Nested attributes i strong parameters
+
+W formularzu dla modelu *Student*, dodajemy pole do zmiany jego *email*,
+który zdefiniowany jest w modelu *User*.
+
+Atrybuty z innego modelu umieścimy w formularzu korzystając
+z *nested attributes*. W tym celu dopisujemy do modelu *Student*:
+
+    :::ruby
+    belongs_to :user
+    accepts_nested_attributes_for :user
+
+W metodzie *student_params* dodajemy do parametrów *permit*
+powiązany atrybut *user.email*:
+
+    :::ruby
+    def student_params
+      if current_user.has_role?(:admin)
+        params.require(:student).permit(:user_id, :full_name,
+          :login, :presences_list, :class_name, :comments, :repository)
+      else
+        # permit nested attributes for User model
+        # Mongoid uses user_attributes, ActiveRecord – user?
+        params.require(:student).permit({ user_attributes: [:email] },
+          :full_name, :login, :repository)
+      end
+    end
+
+Zmiany w formularzu modelu *Student* (korzystamy z metody pomocniczej
+*Device*):
+
+    :::rhtml
+    <%# https://github.com/plataformatec/simple_form/wiki/Nested-Models %>
+    <%= f.simple_fields_for :user do |u| %>
+      <%= u.input :email %>
+    <% end %>
 
 
 # Uwagi na marginesie…
