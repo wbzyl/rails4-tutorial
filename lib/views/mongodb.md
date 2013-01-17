@@ -260,7 +260,7 @@ w [Rails Tutorial for OmniAuth with Mongoid](http://railsapps.github.com/tutori
 
 *Ważne:*
 Jeśli aplikacja będzie działać na *localhost:3000*, to
-w trakcie rejestracji na GitHubie w formularzu wpisujemy:
+w trakcie rejestracji na w GitHubie formularzu wpisujemy:
 
     URL:      http://wbzyl.inf.ug.edu.pl/rails4/mongodb
     Callback: http://localhost:3000
@@ -459,7 +459,10 @@ Cały ten proces jest zaprogramowany w kodzie kontrolera *SessionsController*:
     :::ruby
     class SessionsController < ApplicationController
       def new
-        redirect_to '/auth/github'
+        # does not work with when deployed to passenger sub-uri
+        # redirect_to '/auth/github'
+        # but this does work
+        redirect_to(request.env['SCRIPT_NAME'].to_s + '/auth/github')
       end
 
       def create
@@ -1315,6 +1318,45 @@ Zmiany w formularzu modelu *Student* (korzystamy z metody pomocniczej
     <%= f.simple_fields_for :user do |u| %>
       <%= u.input :email %>
     <% end %>
+
+## Uruchamianie aplikacji w trybie produkcyjnym
+
+Same problemy…
+
+1\. Niepoprawne ścieżki do FontAwesome. Są takie:
+
+    :::js
+    url(/assets/..)
+
+Ale jeśli korzystamy z gemu passenger + sub-ur, to powinny być
+poprzedzone *sub-uri*, przykładowo:
+
+    :::js
+    url(/lista/assets/..)
+
+2\. W plikach konfiguracyjnych serwera Nginx należy wpisać:
+
+    :::js
+    location ~* ^/assets/ {
+      expires 1y;
+      add_header Cache-Control public;
+      add_header Last-Modified "";
+      add_header ETag "";
+      break;
+    }
+
+3\. Jeśli nie wdrażamy aplikacji na Heroku, to musimy sami skompilować
+assets:
+
+    :::bash
+    rake assets:precompile
+
+4\. Kod z *google_gauges.js* jest wykorzystywany naa stronach z miernikami
+(*gauges*).  Plik ten nie jest kompilowany, ponieważ nie jest uwzględniony
+w *application.js*. Musimy go uwzględnić w konfiguracji trybu produkcyjnego:
+
+    :::ruby config/environments/production.rb
+    config.assets.precompile += %w( google_gauges.js )
 
 
 # Uwagi na marginesie…
