@@ -1416,8 +1416,8 @@ Wybieramy format JSON. Teraz odtworzenie bazy z kopii zapasowej
 może wyglądać tak:
 
     :::bash terminal
-    mongoimport --drop -d lista_obecnosci -c students students-2012-03-03.json
-    mongoimport --drop -d lista_obecnosci -c users users-2012-03-03.json
+    mongoimport --drop -d lista_obecnosci -c students students-2013-01-17.json
+    mongoimport --drop -d lista_obecnosci -c users users-2013-01-17.json
 
 Możemy też wykonać zrzut bazy, który wykonujemy na **działającej** bazie:
 
@@ -1430,8 +1430,8 @@ A tak odtwarzamy zawartość bazy z zrzutu:
     mongorestore -d test --drop backup/lista_obecnosci/
 
 **Uwaga:** W powyższym przykładzie kopię zapasową kolekcji z bazy
-*lista_obecnosci_2013_development* importujemy do bazy *test*, a nie
-do *lista_obecnosci_2013_development*! Zamiast nazwy bazy
-*lista_obecnosci_2013_development* wpisałem *lista_obecnosci*.
+*lista_obecnosci_2013_production* importujemy do bazy *test*, a nie
+do *lista_obecnosci_2013_production*! Zamiast nazwy bazy
+*lista_obecnosci_2013_production* wpisałem *lista_obecnosci*.
 To tak na wszelki wypadek, aby bezmyślne przeklikanie powyższego
 kodu nie skończyło się katastrofą!
