@@ -1,5 +1,3 @@
-# rails new AppName -m
-
 # $HOME/.railsrc
 # --skip-test-unit --skip-bundle
 
