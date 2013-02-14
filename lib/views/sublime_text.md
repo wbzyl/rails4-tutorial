@@ -101,6 +101,17 @@ Często używane skróty:
 * usuń do końca wiersza: `ctrl+k ctrl+k`
 * usuń do początku wiersza: `ctrl+k ctrl+backspace`
 
+## Ruby
+
+Pakiety:
+
+* Auto Encoding for Ruby
+* RubyEval
+
+Skróty klawiszowe:
+
+* super+k, super+e
+
 
 ## Rails…
 
