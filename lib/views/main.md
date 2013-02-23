@@ -10,122 +10,18 @@
 * [Rails Rumble 2012](http://blog.railsrumble.com/)
 * [Who is already on Rails?](http://rubyonrails.org/applications).
 
-## Prezentacje, styczeń 2013
-
-Poniżej wpisałem **orientacyjne** godziny rozpoczęcia prezentacji.
-
-<table class="span-16" summary="harmonogram">
-  <colgroup>
-    <col class="table1"/>
-    <col class="table2"/>
-  </colgroup>
-  <caption><em>Harmonogram prezentacji</em></caption>
-  <thead>
-  </thead>
-
-<tbody>
-
- <tr>
- <td>08:30–08:50 <b>(07.01)</b></td>
- <td>Error 404 [R-]</td>
- </tr>
-
- <tr>
- <td>08:50–09:10 <b>(07.01)</b></td>
- <td>Karbon [R-]</td>
- </tr>
-
- <tr>
- <td>09:10–09:30 <b>(07.01)</b></td>
- <td>Ruby Team</td>
- </tr>
-
- <tr>
- <td>09:30–09:50 <b>(07.01)</b></td>
- <td>Super Fajni [R-]</td>
- </tr>
-
- <tr>
- <td></td>
- <td></td>
- </tr>
-
- <tr>
- <td>08:30–08:50 <b>(14.01)</b></td>
- <td>Train Toster</td>
- </tr>
-
- <tr>
- <td>08:50–09:10 <b>(14.01)</b></td>
- <td>Segmentation Fault</td>
- </tr>
-
- <tr>
- <td>09:10–09:30 <b>(14.01)</b></td>
- <td>Easy</td>
- </tr>
-
- <tr>
- <td>09:30–09:50 <b>(14.01)</b></td>
- <td>Skiba</td>
- </tr>
-
- <tr>
- <td>09:50–10:10 <b>(14.01)</b></td>
- <td>Error 500</td>
- </tr>
-
- <tr>
- <td></td>
- <td></td>
- </tr>
-
- <tr>
- <td>08:30–08:50 <b>(21.01)</b></td>
- <td>No Name</td>
- </tr>
-
- <tr>
- <td>08:50–09:10 <b>(21.01)</b></td>
- <td>Shadow Brokers</td>
- </tr>
-
- <tr>
- <td>09:10–09:30 <b>(21.01)</b></td>
- <td>Spotless Rails</td>
- </tr>
-
- <tr>
- <td>09:10–09:30 <b>(21.01)</b></td>
- <td>M. Małecki (Ragnarson)</td>
- </tr>
-
- <tr>
- <td>09:30–09:50 <b>(21.01)</b></td>
- <td>Zwycięzcy</td>
- </tr>
-
- <tr>
- <td>09:50–10:10 <b>(21.01)</b></td>
- <td>Dream Team</td>
- </tr>
-
-</tbody>
-</table>
-
-**Legenda:** *[R-]* -- brak README.md z opisem funkcjonalności aplikacji.
-
 
 ## Praktyczne rzeczy…
 
-Nie czujesz się pewnie z Ruby — spróbuj swoich sił na [Try Ruby!](http://tryruby.org/).
-Albo poczytaj [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw).
-Albo — coś prostszego [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
+Nie znasz języka Ruby — zacznij od [Try Ruby!](http://tryruby.org/)
+lub zmierz się z [Ruby Monk](http://rubymonk.com/).
+Albo przeczytaj [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw)
+lub [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 
 Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
 
-Aplikacje WWW będziemy pisać w **Rails** wersji **3.2.8**.
+Aplikacje WWW będziemy pisać w **Rails** wersji **3.2.12**.
 
 Wszystkie projekty przygotowywane na zajęciach powinny być
 udostępnione na *github.com*.
