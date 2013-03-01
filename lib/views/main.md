@@ -181,6 +181,8 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
   - [API](https://devcenter.heroku.com/articles/buildpack-api)
   - [Buildpacks Developers](https://groups.google.com/forum/?fromgroups#!forum/buildpack-developers)
   - [Ruby Buildpack](https://github.com/heroku/heroku-buildpack-ruby)
+* [Code Climate Blog](http://blog.codeclimate.com/):
+  - [7 Patterns to Refactor Fat ActiveRecord Models](http://blog.codeclimate.com/blog/2012/10/17/7-ways-to-decompose-fat-activerecord-models/)
 
 
 <blockquote>
