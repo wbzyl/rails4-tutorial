@@ -1,4 +1,4 @@
-# 2.10.2012 – zaczynamy !
+# 03.03.2013 – zaczynamy !
 
 <blockquote>
   {%= image_tag "/images/rails-for-zombies.jpg", :alt => "[Rails for Zombies]" %}
@@ -14,14 +14,14 @@
 ## Praktyczne rzeczy…
 
 Nie znasz języka Ruby — zacznij od [Try Ruby!](http://tryruby.org/)
-lub zmierz się z [Ruby Monk](http://rubymonk.com/).
-Albo przeczytaj [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw)
+lub zmierz się z [Ruby Monk](http://rubymonk.com/);
+albo przeczytaj [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw)
 lub [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 
 Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
 
-Aplikacje WWW będziemy pisać w **Rails** wersji **3.2.12**.
+Aplikacje WWW będziemy pisać w **Rails** wersji **~> 3.2.12**.
 
 Wszystkie projekty przygotowywane na zajęciach powinny być
 udostępnione na *github.com*.

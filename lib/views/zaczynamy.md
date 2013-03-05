@@ -90,15 +90,35 @@ Generujemy rusztowanie aplikacji i instalujemy gemy z których
 będzie ona korzystać:
 
     :::bash
-    rails new my_gists --skip-bundle
+    rails new my_gists --skip-bundle --no-test-framework
     cd my_gists
+
+Usuwamy niepotrzebne gemy z pliku *Gemfile*:
+
+    :::ruby Gemfile
+    gem 'sass-rails',   '~> 3.2.3'
+    gem 'coffee-rails', '~> 3.2.1'
+
+dopisujemy gemy z których będziemy korzystać:
+
+    :::ruby Gemfile
+    gem 'thin'
+    gem 'pygments.rb'
+    gem 'redcarpet'
+    group :development do
+      gem 'quiet_assets'
+    end
+
+i instalujemy je:
+
+    :::bash
     bundle install --local
-    # bundle install --path=$HOME/.gems  # lub na przykład tak
+    # bundle install --path=$HOME/.gems  #<- albo tak
 
 Następnie skorzystamy z generatora kodu o nazwie *scaffold*:
 
     :::bash
-    rails generate scaffold code lang code:text desc
+    rails generate scaffold gist snippet:text lexer:string description:string
     rake db:migrate
     rails server --port 16001
 
@@ -111,17 +131,43 @@ Lektura dokumentacji [link_to](http://api.rubyonrails.org/).
 Co to są *assets*? a *partial templates* (szablony częściowe), na
 przykład *_form.html.erb*.
 
+Kolorowanie kodu –
+[Syntax Highlighting](http://railscasts.com/episodes/207-syntax-highlighting-revised).
+
+Podmieniamy zawartośc pliku *app/views/gists/show.html.erb* na:
+
+    :::rhtml
+    <%= raw Pygments.highlight(@gist.snippet, lexer: @gist.lexer) %>
+    <p>
+      <b>Description:</b> <%= @gist.description %>
+    </p>
+    <%= link_to 'Edit', edit_gist_path(@gist) %> |
+    <%= link_to 'Back', gists_path %>
+
+Dodajemy nowy plik *app/assets/stylesheets/pygments.css.erb*:
+
+    :::rhtml
+    <%= Pygments.css(style: "colorful") %>
+
+*TODO:* Poprawić pozostałe widoki. Zacząć od *index.html.erb*.
+Zwiększyć rozmiar fontu do co najmniej 18px.
+Zwiększyć wielkość elementu *textarea* w formularzu
+w szablonie częściowym *_form.htmle.erb*.
+
 
 ### MyStaticPages
 
-Jak wyżej, generujemy rusztowanie aplikacji i instalujemy gemy:
+Jak wyżej, usuwamy niepotrzebne gemy z pliku *Gemfile*
+dodajemy gemy z których będziemy korzystać i je instalujemy.
+
+Następnie generujemy rusztowanie aplikacji:
 
     :::bash
-    rails new my_static_pages --skip-bundle
+    rails new my_static_pages --skip-bundle --no-test-framework
     cd my_static_pages
     bundle install --local
 
-Korzystamy z generatora kodu o nazwie *controller*:
+W tej aplikacji skorzystamy z generatora kodu o nazwie *controller*:
 
     :::bash
     rails generate controller pages welcome about
@@ -142,7 +188,7 @@ Routing:
       pages_welcome GET /pages/welcome(.:format) pages#welcome
         pages_about GET /pages/about(.:format)   pages#about
 
-co oznacza, że te strony są dostępne z adresów
+co oznacza, że te strony będą dostępne z adresów
 */pages/welcome* i */pages/about*.
 
 Lektura Rails API oraz Rails Guides:
@@ -156,8 +202,9 @@ Zrób to sam (kod jest poniżej):
 * własne metody pomocnicze: *title*
 * sensowniejszy routing: */pages/about* → */about*, */pages/welcome* → */welcome*
 
-Korzystamy z metody *provide*. Na każdej stronie wpisujemy
-jej tytuł w taki sposób:
+W implementacji metody *title* skorzystamy z metody *provide*.
+
+Na każdej stronie wpisujemy jej tytuł w taki sposób:
 
     :::rhtml
     <% provide :title, 'About Us' %>
@@ -214,6 +261,25 @@ Przy zmienionym routingu wykonanie polecenia `rake routes` daje:
 
 co oznacza, że te strony są dostępne z krótszych, niż poprzednio,
 adresów */welcome* i */about*.
+
+
+## Podsumowanie
+
+Opcje używane przy generowaniu rusztowania aplikacji
+zapisujemy w pliku  *~/.railsrc*:
+
+    :::bash ~/.railsrc
+    --skip-bundle
+    --no-test-framework
+
+Do dodawania i usuwania gemów w pliku *Gemfile* użyjemy
+szablonu aplikacji rails:
+
+    :::bash
+    rails new xxx --template my-rails3-app-template.rb
+
+Przykładowy szablon aplikacji Rails 3 –
+{%= link_to "wbzyl-template.rb", "/app_templates/wbzyl-template.rb" %}.
 
 
 # Fortunka krok po kroku
