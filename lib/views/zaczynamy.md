@@ -282,9 +282,9 @@ Przykładowy szablon aplikacji Rails 3 –
 {%= link_to "wbzyl-template.rb", "/app_templates/wbzyl-template.rb" %}.
 
 
-# Fortunka krok po kroku
-
 {%= image_tag "/images/dilbert-agile-programming.png", :alt => "[Agile Programming]" %}
+
+# Fortunka krok po kroku
 
 Podobne aplikacje:
 
