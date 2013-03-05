@@ -10,11 +10,12 @@ Czasami muszę wstawić coś takiego na stronie głównej aplikacji:
 
 ```js
 $(function () {
- deadline = new Date(2011, 06, 22);
- $('#defaultCountdown').countdown({
-  until: deadline,
-  compact: true,
-  layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
-  format: 'dHMS'});
+  deadline = new Date(2013, 05, 31);
+  $('#defaultCountdown').countdown({
+    until: deadline,
+    compact: true,
+    layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
+    format: 'dHMS'
+  });
 });
 ```
