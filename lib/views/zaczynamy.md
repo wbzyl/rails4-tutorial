@@ -309,12 +309,12 @@ Dobrze jest od razu zmienić rozmiar fontu na
     :::bash
     rm public/index.html
 
-3\. Wygenerowany plik *Gemfile*:
+3\. Wygenerowany plik *Gemfile* (**Rails 4.0?**):
 
     :::ruby Gemfile
     source 'https://rubygems.org'
 
-    gem 'rails', '3.2.8'
+    gem 'rails', '4.0.0.beta1'
     gem 'sqlite3'
 
     group :assets do
