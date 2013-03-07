@@ -1,5 +1,5 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
+# This code uses the Faker library.
+# Please, add the 'faker' gem to Gemfile.1
 
 # $ locate platitudes.u8
 #   /usr/share/games/fortune/platitudes.u8
