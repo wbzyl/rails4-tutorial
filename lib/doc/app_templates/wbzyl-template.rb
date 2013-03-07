@@ -74,7 +74,7 @@ end
 # run "cp config/database.yml config/database_example.yml"
 
 # add an empty favicon file
-create_file "app/assets/favicon.ico"
+create_file "app/assets/images/favicon.ico"
 
 git :init
 git add: ".", commit: "-m 'initial commit'"
