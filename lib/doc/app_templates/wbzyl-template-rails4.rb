@@ -106,7 +106,6 @@ if yes? "Do you want to generate a root controller?"
   name = ask("What should it be called?").underscore
   generate :controller, "#{name} index"
   route "root to: '#{name}\#index'"
-  remove_file "public/index.html"
 end
 
 # append_file ".gitignore", "config/database.yml"
