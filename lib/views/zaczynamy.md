@@ -372,29 +372,20 @@ i wchodząc na stronę:
     Fortune.create! quotation: 'It does not matter how slowly you go so long as you do not stop.'
     Fortune.create! quotation: 'Study the past if you would define the future.'
 
-Następnie umieszczamy powyższe fortunki w bazie, wykonujac
-na konsoli polecenie:
+Powyższe fortunki umieszczamy w bazie, wykonujac na konsoli polecenie:
 
     :::bash
     rake db:seed  # load the seed data from db/seeds.rb
 
-Powyższy kod „smells” (dlaczego?) i należy go poprawić. Na przykład
-tak jak to zrobiono tutaj {%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
+Powyższy kod „smells” (dlaczego?) i należy go poprawić.
+Na przykład tak jak to zrobiono tutaj
+{%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
 
 Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 *db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
 i ponownie uruchomić powyższe polecenie.
 
-6\. Teraz możemy już uruchomić domyślny serwer Rails:
-
-    :::bash
-    rails server -p 3000
-
-Aby obejrzeć działającą aplikację pozostaje wejść na stronę:
-
-     http://localhost:3000
-
-7\. Aby poprawić nieco layout i wygląd aplikacji skorzystaliśmy
+3\. Aby poprawić nieco layout i wygląd aplikacji skorzystaliśmy
 z popularnego frameworka [Twitter Bootstrap](http://twitter.github.com/bootstrap/).
 
 Jak z niego korzystać opisano tutaj:
@@ -411,7 +402,9 @@ Sam framework jest napisany w Less:
 Przykładowy {%= link_to "layout aplikacji", "/bootstrap/application.html.erb" %}
 korzystający z Twitter Bootstrap.
 
-Na koniec, kilka zmian domyślnych ustawień parametrów TB:
+4\. Kilka propozycji zmian domyślnych ustawień.
+
+Bootstrap:
 
     :::css app/assets/stylesheets/bootstrap_and_overrides.css.less
     @baseFontSize: 18px;
@@ -424,7 +417,10 @@ Na koniec, kilka zmian domyślnych ustawień parametrów TB:
 
     .navbar .brand { color: #00A; }
 
-Przykładowe poprawki szablonu formularza:
+**TODO:** Ikonki w *navbar*. Dodać metodę pomocniczą aplikacji
+generującą kod wyświetlający ikonki/znaczki z fontu *FontAwesome*.
+
+Szablonu formularza SimpleForm:
 
     :::rhtml _form.html.erb
     <%= f.input :quotation, :input_html => { :rows => "4", :class => "span6" } %>
@@ -433,7 +429,7 @@ Przykładowe poprawki szablonu formularza:
 I już! Wersja 0.0 Fortunki jest gotowa.
 
 
-## I co dalej?
+## TODO: I co dalej?
 
 1\. **Walidacja**, czyli sprawdzanie poprawności (zatwierdzanie)
 danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
@@ -640,61 +636,47 @@ Oto utworzony przez generator kontroler:
 
     :::ruby app/controllers/fortunes_controller.rb
     class FortunesController < ApplicationController
+      before_action :set_fortune, only: [:show, :edit, :update, :destroy]
       # GET /fortunes
       # GET /fortunes.json
       def index
         @fortunes = Fortune.all
-        respond_to do |format|
-          format.html # index.html.erb
-          format.json { render json: @fortunes }
-        end
       end
       # GET /fortunes/1
       # GET /fortunes/1.json
       def show
-        @fortune = Fortune.find(params[:id])
-        respond_to do |format|
-          format.html # show.html.erb
-          format.json { render json: @fortune }
-        end
       end
       # GET /fortunes/new
-      # GET /fortunes/new.json
       def new
         @fortune = Fortune.new
-        respond_to do |format|
-          format.html # new.html.erb
-          format.json { render json: @fortune }
-        end
       end
       # GET /fortunes/1/edit
       def edit
-        @fortune = Fortune.find(params[:id])
       end
       # POST /fortunes
       # POST /fortunes.json
       def create
-        @fortune = Fortune.new(params[:fortune])
+        @fortune = Fortune.new(fortune_params)
+
         respond_to do |format|
           if @fortune.save
             format.html { redirect_to @fortune, notice: 'Fortune was successfully created.' }
-            format.json { render json: @fortune, status: :created, location: @fortune }
+            format.json { render action: 'show', status: :created, location: @fortune }
           else
-            format.html { render action: "new" }
+            format.html { render action: 'new' }
             format.json { render json: @fortune.errors, status: :unprocessable_entity }
           end
         end
       end
-      # PUT /fortunes/1
-      # PUT /fortunes/1.json
+      # PATCH/PUT /fortunes/1
+      # PATCH/PUT /fortunes/1.json
       def update
-        @fortune = Fortune.find(params[:id])
         respond_to do |format|
-          if @fortune.update_attributes(params[:fortune])
+          if @fortune.update(fortune_params)
             format.html { redirect_to @fortune, notice: 'Fortune was successfully updated.' }
-            format.json { head :ok }
+            format.json { head :no_content }
           else
-            format.html { render action: "edit" }
+            format.html { render action: 'edit' }
             format.json { render json: @fortune.errors, status: :unprocessable_entity }
           end
         end
@@ -702,14 +684,23 @@ Oto utworzony przez generator kontroler:
       # DELETE /fortunes/1
       # DELETE /fortunes/1.json
       def destroy
-        @fortune = Fortune.find(params[:id])
         @fortune.destroy
-
         respond_to do |format|
           format.html { redirect_to fortunes_url }
-          format.json { head :ok }
+          format.json { head :no_content }
         end
       end
+
+      private
+        # Use callbacks to share common setup or constraints between actions.
+        def set_fortune
+          @fortune = Fortune.find(params[:id])
+        end
+
+        # Never trust parameters from the scary internet, only allow the white list through.
+        def fortune_params
+          params.require(:fortune).permit(:quotation, :source)
+        end
     end
 
 
