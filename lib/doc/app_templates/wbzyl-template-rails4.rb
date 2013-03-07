@@ -1,4 +1,5 @@
-# -*- coding: undecided -*-
+# -*- coding: utf-8 -*-
+#
 # cat ~/.railsrc
 # --skip-bundle
 # --no-test-framework

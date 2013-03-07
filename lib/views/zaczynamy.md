@@ -302,8 +302,8 @@ Podobne aplikacje:
 katalogu z wygenerowanym rusztowaniem:
 
     :::bash
-    rails new fortunka --template wbzyl-template-rails4.rb
-    cd fortunka
+    rails new my_fortune --template wbzyl-template-rails4.rb
+    cd my_fortune
 
 źródło {%= link_to "wbzyl-template-rails4.rb", "/doc/rails4/wbzyl-template-rails4.rb" %}
 ({%= link_to "kod", "/app_templates/wbzyl-template-rails4.rb" %}).
@@ -319,6 +319,9 @@ w elemencie *body* layoutu aplikacji:
 
     :::rhtml app/views/layouts/application.html.erb
     <%= render partial: 'shared/navbar' %>
+
+i przy okazji poprawiamy wygenerowany layout
+(można usunąć prawą kolumnę i wstawić swoje linki).
 
 2\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
