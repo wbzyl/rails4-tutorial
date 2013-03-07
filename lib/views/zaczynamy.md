@@ -320,21 +320,33 @@ w elemencie *body* layoutu aplikacji:
     :::rhtml app/views/layouts/application.html.erb
     <%= render partial: 'shared/navbar' %>
 
-i przy okazji poprawiamy wygenerowany layout
+Przy okazji ***poprawiamy wygenerowany layout***
 (można usunąć prawą kolumnę i wstawić swoje linki).
 
-2\. Generujemy rusztowanie (*scaffold*) dla fortunek:
+Generujemy rusztowanie (*scaffold*) dla fortunek:
 
     :::bash
     rails generate scaffold fortune quotation:text source:string
 
-3\. Tworzymy bazę i generujemy w niej tabelkę *fortunes* –
+Tworzymy bazę i generujemy w niej tabelkę *fortunes* –
 krótko mówiąc **migrujemy**:
 
-    :::bash
     rake db:create
     rake db:migrate
-    rails generate bootstrap:themed fortunes # nadpisujemy wszystkie szablony, l.poj. czy l.mn.?
+
+Zmieniamy routing i ustawiamy stronę startową aplikacji, dopisując
+w pliku konfiguracyjnym *config/routes.rb*:
+
+    :::ruby config/routes.rb
+    Fortunka::Application.routes.draw do
+      resources :fortunes
+      root to: 'fortunes#index'
+
+Powinniśmy jeszcze nadpisać wygenerowane szablony
+szablonami korzystającymi z Bootstrapa:
+
+    :::bash
+    rails generate bootstrap:themed fortunes
 
 *Uwaga:* Aby wykonać polecenie *rake* w trybie produkcyjnym
 *poprzedzamy je napisem RAILS_ENV=production*, przykładowo:
@@ -343,13 +355,16 @@ krótko mówiąc **migrujemy**:
     RAILS_ENV=production rake db:migrate
     RAILS_ENV=production rake db:seed
 
-4\. Ustawiamy stronę startową aplikacji, dopisując, przed
-kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
+Teraz już mozna sprawdzić jak to wszystko działa, uruchamiając serwer *thin*:
 
-    :::ruby config/routes.rb
-    root :to => 'fortunes#index'
+    :::bash
+    rails server -p 3000
 
-5\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
+i wchodząc na stronę:
+
+    http://localhost:3000
+
+2\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
     :::ruby db/seeds.rb
     Fortune.create! quotation: 'I hear and I forget. I see and I remember. I do and I understand.'
