@@ -289,23 +289,22 @@ pokazuje jakie jest może być proste.
 
 # Fortunka krok po kroku
 
+<!--
+[Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
+-->
+
 Podobne aplikacje:
 
 * [Proverb Hunter](http://proverbhunter.com/)
 * …?
 
 1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
-katalogu z wygenerowanym rusztowaniem:
+katalogu z wygenerowanym rusztowaniem
+(wpisujemy całą ścieżkę do szablonu):
 
     :::bash
     rails new fortunka --template wbzyl-template-rails4.rb
     cd fortunka
-
-<!--
-Dobrze jest od razu zmienić rozmiar fontu na
-[co najmniej 16 pikseli](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
-„anything less is a costly mistake”.
--->
 
 Teraz możemy skorzystać z generatora *bootstrap:partial*
 (navbar, navbar-devise, carousel):
