@@ -99,7 +99,8 @@ end
 # append_file ".gitignore", "config/database.yml"
 # run "cp config/database.yml config/database_example.yml"
 
-# add an empty favicon file
+# fix: add an empty favicon file
+#  or: remove from layout.html.erb
 create_file "app/assets/images/favicon.ico"
 
 git :init
