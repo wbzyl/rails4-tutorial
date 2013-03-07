@@ -299,12 +299,14 @@ Podobne aplikacje:
 * …?
 
 1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
-katalogu z wygenerowanym rusztowaniem
-(wpisujemy całą ścieżkę do szablonu):
+katalogu z wygenerowanym rusztowaniem:
 
     :::bash
     rails new fortunka --template wbzyl-template-rails4.rb
     cd fortunka
+
+źródło {%= link_to "wbzyl-template-rails4.rb", "/doc/rails4/wbzyl-template-rails4.rb" %}
+({%= link_to "kod", "/app_templates/wbzyl-template-rails4.rb" %}).
 
 Teraz możemy skorzystać z generatora *bootstrap:partial*
 (navbar, navbar-devise, carousel):
