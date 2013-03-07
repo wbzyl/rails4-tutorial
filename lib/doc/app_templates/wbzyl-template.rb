@@ -20,7 +20,7 @@ gem "simple_form"
 gsub_file 'Gemfile', /.+'sass-rails'.+\n/, ''
 gsub_file 'Gemfile', /.+'coffee-rails'.+\n/, ''
 
-# use Bootstrap for layout: http://twitter.github.com/bootstrap/
+# use Less instead of CSS: http://lesscss.org/
 
 gem "less-rails"
 gem "therubyracer"
@@ -54,7 +54,7 @@ end
 
 generate "bootstrap:install less"
 # generate layout
-generate "bootstrap:layout fixed"
+generate "bootstrap:layout"
 # to generate views
 #
 #   rails g bootstrap:themed RESOURCE_NAME
@@ -65,8 +65,7 @@ generate "bootstrap:layout fixed"
 #   rake db:migrate
 #   rails g bootstrap:themed Gist
 #
-# to use with Less:
-# add to application.css:
+# to use with Less add to application.css:
 #
 #   *= require bootstrap_and_overrides
 
@@ -75,6 +74,7 @@ inside "app/assets/stylesheets" do
   gsub_file "application.css", /\*= require_tree \./ do |match|
     "*= require bootstrap_and_overrides"
   end
+  # fix: top margin
   # append onto match
   # gsub_file "application.css", /\*\// do |match|
   #   match << "\nbody { padding-top: 60px; }"
