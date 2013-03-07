@@ -2,6 +2,8 @@
 # --skip-bundle
 # --no-test-framework
 
+# docs: http://guides.rubyonrails.org/generators.html
+
 remove_file "README.rdoc"
 remove_file "doc/README_FOR_APP"
 create_file "README.md"
@@ -32,20 +34,25 @@ gem_group :development, :test do
   gem "quiet_assets"
   gem "hirb"
   # for testing with MiniTest: https://github.com/commondream/tconsole
-  gem "tconsole"
+  # gem "tconsole"
 end
 
 gem_group :test do
   gem "capybara"
 end
 
+run "bundle install --local" # on Sigma
 # run "bundle install"
-run "bundle install"
 
 generate "rspec:install"
+
+append_to_file '.rspec' do
+  '--format documentation'
+end
+
 generate "bootstrap:install less"
 # generate layout
-generate "bootstrap:layout"
+generate "bootstrap:layout fixed"
 # to generate views
 #
 #   rails g bootstrap:themed RESOURCE_NAME
@@ -60,6 +67,23 @@ generate "bootstrap:layout"
 # add to application.css:
 #
 #   *= require bootstrap_and_overrides
+
+inside "app/assets/stylesheets" do
+  # replace
+  gsub_file "application.css", /\*= require_tree \./ do |match|
+    "*= require bootstrap_and_overrides"
+  end
+  # append onto match
+  # gsub_file "application.css", /\*\// do |match|
+  #   match << "\nbody { padding-top: 60px; }"
+  # end
+  append_to_file "application.css", "\nbody { padding-top: 60px; }\n"
+end
+
+# customize Bootstrap: http://twitter.github.com/bootstrap/customize.html
+# example, append to bootstrap_and_overrides.less
+#
+# @baseFontSize: 18px;
 
 generate "simple_form:install --bootstrap"
 
@@ -78,7 +102,3 @@ create_file "app/assets/images/favicon.ico"
 
 git :init
 git add: ".", commit: "-m 'initial commit'"
-
-# gsub_file 'config/application.rb', /class Application < Rails::Application/ do |match|
-#   match << "\n\n  config.generators.stylesheets = false\n  config.generators.javascripts = false"
-# end
