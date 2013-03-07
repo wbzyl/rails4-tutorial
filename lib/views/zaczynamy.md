@@ -272,14 +272,17 @@ zapisujemy w pliku  *~/.railsrc*:
     --skip-bundle
     --no-test-framework
 
-Do dodawania i usuwania gemów w pliku *Gemfile* użyjemy
-szablonu aplikacji rails:
+Zamiast ręcznej edycji pliku *Gemfile* oraz modyfikacji plików
+konfiguracyjnych możemy użyć szablonu aplikacji rails,
+który zrobi to za nas.
+Wystarczy podać nazwę szablonu w poleceniu *rails new*:
 
     :::bash
-    rails new xxx --template my-rails3-app-template.rb
+    rails new xxx --template wbzyl-template.rb
 
-Przykładowy szablon aplikacji Rails 3 –
-{%= link_to "wbzyl-template.rb", "/app_templates/wbzyl-template.rb" %}.
+Taki szablon łatwo napisać samemu, na przykład
+{%= link_to "wbzyl-template.rb", "/app_templates/wbzyl-template.rb" %}
+pokazuje jakie jest może być proste.
 
 
 {%= image_tag "/images/dilbert-agile-programming.png", :alt => "[Agile Programming]" %}
@@ -295,7 +298,7 @@ Podobne aplikacje:
 katalogu z wygenerowanym rusztowaniem:
 
     :::bash
-    rails new fortunka --skip-test-unit --skip-bundle
+    rails new fortunka --template wbzyl-template-rails4.rb
     cd fortunka
 
 <!--
@@ -304,160 +307,45 @@ Dobrze jest od razu zmienić rozmiar fontu na
 „anything less is a costly mistake”.
 -->
 
-2\. Usuwamy domyślną stronę aplikacji:
-
-    :::bash
-    rm public/index.html
-
-3\. Wygenerowany plik *Gemfile* (**Rails 4.0?**):
-
-    :::ruby Gemfile
-    source 'https://rubygems.org'
-
-    gem 'rails', '4.0.0.beta1'
-    gem 'sqlite3'
-
-    group :assets do
-      gem 'sass-rails',   '~> 3.2.3'
-      gem 'coffee-rails', '~> 3.2.1'
-      gem 'uglifier', '>= 1.0.3'
-    end
-    gem 'jquery-rails'
-
-wymieniamy na:
-
-    :::ruby Gemfile
-    source 'https://rubygems.org'
-
-    gem 'rails', '~> 3.2.8'
-
-    gem 'json', '~> 1.7.5'
-    gem 'simple_form', '~> 2.0.4'
-
-    gem 'sqlite3', '~> 1.3.6',  :groups => [:test, :development]
-    gem 'pg', '~> 0.14.1',      :groups => :production
-
-    # Using Capybara with RSpec:
-    #   http://rubydoc.info/github/jnicklas/capybara#Using_Capybara_with_RSpec
-    gem 'capybara', '~> 1.1.2', :groups => :test
-
-    group :assets do
-      gem 'coffee-rails', '~> 3.2.1'
-      gem 'uglifier', '>= 1.0.3'
-      gem 'twitter-bootstrap-rails', '~> 2.1.4'
-      gem 'jquery-ui-rails', '~> 2.0.2'
-      gem 'jquery-datatables-rails', '~> 1.11.1'
-    end
-    gem 'jquery-rails', '~> 2.1.3'
-
-    group :development, :test do
-      gem 'hirb', '~> 0.7.0'
-      gem 'quiet_assets', '~> 1.0.1'  # wylacza logowanie *assets pipeline*
-      gem 'rspec-rails', '~> 2.11.0'
-    end
-
-    gem 'less-rails', '~> 2.2.6'
-    gem 'therubyracer', '~> 0.10.2'
-
-    # alternatywa dla serwera Webrick
-    gem 'thin'
-
-
-Póżniej dopiszemy do grupy *development te gemy:
-
-    :::ruby
-    # Bezproblemowe zapełnianie bazy danymi testowymi:
-    #   https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md
-    gem 'factory_girl_rails'
-    gem 'faker'
-    gem 'populator'
-
-4\. Instalujemy gemy korzystając z już zainstalowanych gemów na Sigmie
-
-    :::bash
-    bundle install --local --without production
-
-(Sprawdzić wersję *rvm*. Musi być co najmniej 1.16.)
-
-Można też zainstalować sobie gemy w~swoim katalogu domowym:
-
-    :::bash
-    bundle install --path=$HOME/.gems --without production
-
-Niektóre gemy, wymagają procedury *post-install*. U nas wymagają
-tej procedury *Rspec Rails*, *Twitter Bootstrap for Rails* i *Simple Form*:
-
-    :::bash
-    rails generate rspec:install
-    rails generate bootstrap:install
-    rails generate bootstrap:layout fixed
-    rails generate simple_form:install --bootstrap
-
-Kończymy procedurę dopisując wiersz z *bootstrap_and_overrides* do
-pliku *application.css*:
-
-    :::css app/assets/stylesheets/application.css
-     *= require bootstrap_and_overrides
-     *= require_self
-     *= require_tree .
-
-Na koniec kopiujemy wygenerowany szablon *fixed.html.erb*:
-
-    :::bash
-    cp fixed.html.erb application.html.erb
-
-*Uwaga:* Jeśli nie mamy favikonek, to usuwamy linki do nich z kodu
-szablonu layoutu aplikacji *application.html.erb*.
-
-Można też skorzystać z generatora *bootstrap:partial*
+Teraz możemy skorzystać z generatora *bootstrap:partial*
 (navbar, navbar-devise, carousel):
 
     :::bash
     rails generate bootstrap:partial navbar
 
-Teraz wygenerowany szablon częściowy dopisujemy
+Wygenerowany szablon częściowy dopisujemy
 w elemencie *body* layoutu aplikacji:
 
     :::rhtml app/views/layouts/application.html.erb
     <%= render partial: 'shared/navbar' %>
 
-Z powyższego wynika, że powinniśmy zwracać uwagę na komunikaty
-wypisywane w trakcie instalacji gemów oraz należy czytać pliki *README*
-z dokumentacją w repozytoriach z kodem źrodłowym gemu.
-
-5\. Generujemy rusztowanie (*scaffold*) dla fortunek:
+2\. Generujemy rusztowanie (*scaffold*) dla fortunek:
 
     :::bash
     rails generate scaffold fortune quotation:text source:string
 
-6\. Tworzymy bazę i w nowej bazie umieszczamy tabelkę *fortunes* –
+3\. Tworzymy bazę i generujemy w niej tabelkę *fortunes* –
 krótko mówiąc **migrujemy**:
 
     :::bash
     rake db:create
     rake db:migrate
-    rails generate bootstrap:themed fortunes # nadpisujemy wszystkie szablony
+    rails generate bootstrap:themed fortunes # nadpisujemy wszystkie szablony, l.poj. czy l.mn.?
 
-*Pytanie:* Czy można było pominąć polecenie:
-
-    rails generate simple_form:install --bootstrap
-
-Sprawdzić to!
-
-*Uwaga:* Aby wykonać jakieś polecenie *rake* w trybie produkcyjnym
+*Uwaga:* Aby wykonać polecenie *rake* w trybie produkcyjnym
 *poprzedzamy je napisem RAILS_ENV=production*, przykładowo:
 
     :::bash
     RAILS_ENV=production rake db:migrate
     RAILS_ENV=production rake db:seed
 
-7\. Ustawiamy stronę startową aplikacji, dopisując, przed
+4\. Ustawiamy stronę startową aplikacji, dopisując, przed
 kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
 
     :::ruby config/routes.rb
     root :to => 'fortunes#index'
 
-8\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
+5\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
     :::ruby db/seeds.rb
     Fortune.create! quotation: 'I hear and I forget. I see and I remember. I do and I understand.'
@@ -465,11 +353,11 @@ kończącym *end*, w pliku konfiguracyjnym *config/routes.rb*:
     Fortune.create! quotation: 'It does not matter how slowly you go so long as you do not stop.'
     Fortune.create! quotation: 'Study the past if you would define the future.'
 
-Następnie umieszczamy powyższe fortunki w bazie, wykonujac w terminalu
-polecenie:
+Następnie umieszczamy powyższe fortunki w bazie, wykonujac
+na konsoli polecenie:
 
     :::bash
-    rake db:seed  # Load the seed data from db/seeds.rb
+    rake db:seed  # load the seed data from db/seeds.rb
 
 Powyższy kod „smells” (dlaczego?) i należy go poprawić. Na przykład
 tak jak to zrobiono tutaj {%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
@@ -478,7 +366,7 @@ Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 *db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
 i ponownie uruchomić powyższe polecenie.
 
-9\. Teraz możemy już uruchomić domyślny serwer Rails:
+6\. Teraz możemy już uruchomić domyślny serwer Rails:
 
     :::bash
     rails server -p 3000
@@ -487,7 +375,7 @@ Aby obejrzeć działającą aplikację pozostaje wejść na stronę:
 
      http://localhost:3000
 
-10\. Aby poprawić nieco layout i wygląd aplikacji skorzystaliśmy
+7\. Aby poprawić nieco layout i wygląd aplikacji skorzystaliśmy
 z popularnego frameworka [Twitter Bootstrap](http://twitter.github.com/bootstrap/).
 
 Jak z niego korzystać opisano tutaj:
@@ -523,15 +411,12 @@ Przykładowe poprawki szablonu formularza:
     <%= f.input :quotation, :input_html => { :rows => "4", :class => "span6" } %>
     <%= f.input :source, :input_html => { :class => "span6" } %>
 
-Musimy jeszcze przesunąć zawartość elementu *body* poniżej
-baska nawigacyjnego. W tym celu dopisujemy w pliku *application.css*:
-
-    :::css app/assets/stylesheets/application.css
-    body { margin-top: 60px; }
-
 I już! Wersja 0.0 Fortunki jest gotowa.
 
-11\. **Walidacja**, czyli sprawdzanie poprawności (zatwierdzanie)
+
+## I co dalej?
+
+1\. **Walidacja**, czyli sprawdzanie poprawności (zatwierdzanie)
 danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
 
     :::ruby
@@ -548,7 +433,7 @@ danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
 Zobacz też samouczek
 [Active Record Validations and Callbacks](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html).
 
-12\. **Wirtualne Atrybuty.** Na przykład cenę książki pamiętamy
+2\. **Wirtualne Atrybuty.** Na przykład cenę książki pamiętamy
 w bazie w groszach, ale wypisujemy/edytujemy cenę w złotówkach.
 
 Schema:
@@ -584,7 +469,7 @@ Zamieniamy we wszystkich widokach *price* na *price_pln*, przykładowo:
 Walidacja wirtualnych atrybutów,
 zobacz [Virtual Attributes](http://railscasts.com/episodes/16-virtual-attributes-revised?view=asciicast).
 
-13\. **Tagging:**
+4\. **Tagging:**
 
 * Gem [acts-as-taggable-on](https://github.com/mbleigh/acts-as-taggable-on)
 * [Tagging](http://railscasts.com/episodes/382-tagging) – \#382 RailsCasts
@@ -624,23 +509,6 @@ Pozostałe rzeczy robimy tak jak to przedstawiono w screencaście.
 
 Poniżej jest bardziej szczegółowy opis niektórych kroków.
 
-
-## Krok 1 – rusztowanie aplikacji
-
-Prawie całą powyższą procedurę można zautomatyzować.
-Wystarczy napisać swój szablon dla aplikacji Rails
-i następnie go użyć:
-
-    :::bash
-    rails new fortunka -m ⟨url albo ścieżka do szablonu⟩
-
-<!--
-Oczywiście możemy też skorzystać z jakiegoś gotowego szablonu.
-Na przykład z jednego [z moich szablonów](https://github.com/wbzyl/rat):
-
-    :::bash
-    rails new ⟨app_name⟩ -m https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb --skip-bundle
--->
 
 ## Krok 3 - dodajemy nowe gemy
 
@@ -682,16 +550,7 @@ Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby
       end
     end
 
-
-## Krok 4 – instalujemy gemy
-
-Opcji `--path` używamy tylko raz. Następnym razem uruchamiamy program
-*bundle* bez tej opcji. Możemy też pominąć argument *install*.
-
-
-## Krok 5 - generator scaffold dla fortunek
-
-### Co to jest REST?
+## Co to jest REST?
 
 <blockquote>
 {%= image_tag "/images/hfrails_cover.png", :alt => "[Head First Rails]" %}
