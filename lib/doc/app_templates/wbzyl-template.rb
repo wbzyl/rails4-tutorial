@@ -2,7 +2,9 @@
 # --skip-bundle
 # --no-test-framework
 
-# docs: http://guides.rubyonrails.org/generators.html
+# docs:
+#   http://guides.rubyonrails.org/generators.html
+#   http://rdoc.info/github/wycats/thor/master/Thor/Actions
 
 remove_file "README.rdoc"
 remove_file "doc/README_FOR_APP"
