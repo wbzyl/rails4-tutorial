@@ -730,8 +730,8 @@ Oto utworzony przez generator kontroler:
     :::ruby
     respond_to do |format|
       format.html  { redirect_to fortunes_url }
-      format.js    # destroy.js.erb
-      format.json  { render json: @fortunes }
+      format.json  { head :no_content }
+      format.js                                  # use destroy.js.erb template
     end
 
 What that says is:
@@ -740,14 +740,14 @@ What that says is:
 action, use the default template for this action
 (for *index* it is *index.html.erb*).
 
-2. If the client wants JS, use the default template
+2. If the client wants JSON, return response 204<br>
+(`gem install cheat; cheat http`).
+
+3. If the client wants JS, use the default template
 for this action (for *destroy* it is *destroy.js.html*).
 
-3. But if the client wants JSON,
-return the list of fortunes in JSON format.”
-
-Rails determines the desired response format from the HTTP **Accept
-header** submitted by the client.
+Rails determines the desired response format from
+the HTTP **Accept header** submitted by the client.
 
 Klientem może być przeglądarka, ale może też być
 inny program, na przykład *curl*:
@@ -789,7 +789,7 @@ do kodu kontrolera w metodzie *index* w bloku *respond_to*:
       format.csv { send_data @fortunes.to_csv }
     end
 
-do kodu modela:
+do kodu w modelu:
 
     :::ruby
     def self.to_csv
@@ -816,7 +816,7 @@ albo sami podajemy nazwy kolumn, na przykład:
 Sprawdzamy jak to działa:
 
     :::bash
-    curl http://localhost:3000/lists.csv
+    curl http://localhost:3000/fortunes.csv
 
 Zobacz też:
 
@@ -846,19 +846,30 @@ W kodzie kontrolera w metodzie *index* wymieniamy blok *respond_to* na:
     respond_to do |format|
       format.html # index.html.erb
       format.csv  # index.csv.ruby
-      format.json { render json: @lists }
+      format.json { render json: @fortunes }
     end
 
 Teraz możemy sprawdzić jak to działa:
 
     :::bash
-    curl localhost:3000/lists.csv
+    curl localhost:3000/fortunes.csv
 
 Jeśli to zadziała, to podmieniamy zawartość pliku *index.csv.ruby* na:
 
     :::ruby
-    response.headers["Content-Disposition"] = 'attachment; filename="lists.csv"'
+    response.headers["Content-Disposition"] = 'attachment; filename="fortunes.csv"'
+    CSV.generate do |csv|
+      csv << ["id", "quotation", "source"]
+      @fortunes.each do |fortune|
+        csv << [
+          fortune.id,
+          fortune.quotation,
+          fortune.source
+        ]
+      end
+    end
 
+<!--
     CSV.generate do |csv|
       csv << ["nazwisko", "imię", "login", "repo", "link"]
       @lists.each do |list|
@@ -872,12 +883,20 @@ Jeśli to zadziała, to podmieniamy zawartość pliku *index.csv.ruby* na:
         ]
       end
     end
+-->
 
 Oczywiście w powyższym kodzie wpisujemy dane modelu z naszej aplikacji.
 Powyżej użyłem danych dla fikcyjnego modelu *List*.
 
-Można też zdefiniować własną klasę i użyć jej zamiast
-*:source.to_proc* powyżej, na przykład ([RailsCasts \#379](http://railscasts.com/episodes/379-template-handlers)):
+**TODO, czy działa Rails 4:**
+Można też zdefiniować własną klasę i użyć jej zamiast `:source.to_proc`
+powyżej, przykładowo:
+
+    :::ruby
+    ActionView::Template.register_template_handler(:markdown, MarkdownTemplateHandler)
+
+Przykładowa definicja takiej klasy
+(zob. [RailsCasts \#379](http://railscasts.com/episodes/379-template-handlers)):
 
     :::ruby
     class MarkdownTemplateHandler
@@ -891,8 +910,14 @@ Można też zdefiniować własną klasę i użyć jej zamiast
         SOURCE
       end
     end
-    # index.html.markdown
-    ActionView::Template.register_template_handler(:markdown, MarkdownTemplateHandler)
+
+Teraz możemy użyć takiego szablonu *show.html.md*,
+ze wstawkami w ERB, przykładowo:
+
+    # Show Product
+    The Great Idea!
+    [cała lista](<%= products_path %>)
+
 
 Zobacz też José Valim,
 [Multipart templates with Markerb](http://blog.plataformatec.com.br/2011/06/multipart-templates-with-markerb/),
@@ -901,6 +926,8 @@ multipart templates made easy with Markdown + ERb.
 
 Zobacz też {%= link_to "PDF Renderer", "/pdf-renderer" %}.
 
+
+<!--
 
 ### Migracje
 
@@ -1001,18 +1028,21 @@ swój szablon {%= link_to "controler.rb", "/rails31/scaffold/controller.erb" %}
 Ale zamiast edytować kod kontrolera, powinniśmy skorzystać
 z metod *respond_with* i *respond_to*.
 
+-->
 
-## Krok 8 - zapisujemy jakieś dane w bazie
 
-Przećwiczymy proste zastosowania gemóww *Faker*
-i *Populator* (o ile już działa z Rails 3.1)
-korzystając z wygenrowanego kodu:
+## Zapisywanie przykładowych danych w bazie
+
+Tutaj przećwiczymy proste zastosowanie gemów *Faker*
+i *Populator* (o ile już działa z Rails 4).
+
+Zaczynamy od wygenerowania rusztowania dla zasobu Friend:
 
     :::bash
     rails g scaffold friend last_name:string first_name:string phone:string motto:text
     rake db:migrate
 
-Zaczynamy od „monkey patching” kodu gemu *Faker*:
+i od „monkey patching” kodu gemu *Faker*:
 
     :::ruby faker_pl.rb
     module Faker
@@ -1021,7 +1051,7 @@ Zaczynamy od „monkey patching” kodu gemu *Faker*:
         MOBILE_FORMATS  = ['(+48) ###-###-###', '###-###-###']
 
         def self.pl_phone_number(kind = :simple)
-          Faker::Base.numerify const_get("#{kind.to_s.upcase}_FORMATS").rand
+          Faker::Base.numerify const_get("#{kind.to_s.upcase}_FORMATS").sample
         end
       end
     end
@@ -1031,7 +1061,7 @@ Zaczynamy od „monkey patching” kodu gemu *Faker*:
 Sprawdzamy jak to działa na konsoli:
 
     :::bash
-    bundle exec irb
+    irb
 
 gdzie wpisujemy:
 
@@ -1071,7 +1101,7 @@ Chociaż przydałoby się dodać do powyższego kodu coś w stylu:
     end
 
 
-## Krok 9 - uruchamiamy serwer WWW
+## Uruchamiamy serwer WWW
 
 <blockquote>
  <p>
