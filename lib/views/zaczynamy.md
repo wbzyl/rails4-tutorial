@@ -386,7 +386,9 @@ Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 i ponownie uruchomić powyższe polecenie.
 
 3\. Aby poprawić nieco layout i wygląd aplikacji skorzystaliśmy
-z popularnego frameworka [Twitter Bootstrap](http://twitter.github.com/bootstrap/).
+z gemu *twitter-bootstrap-rails* ułatwiającego użycie
+frameworka [Twitter Bootstrap](http://twitter.github.com/bootstrap/)
+w aplikacjach Rails.
 
 Jak z niego korzystać opisano tutaj:
 
@@ -394,6 +396,8 @@ Jak z niego korzystać opisano tutaj:
 * [Twitter Bootstrap Basics](http://railscasts.com/episodes/328-twitter-bootstrap-basics?view=asciicast) –
   screencast
 * [Customize Bootstrap](http://twitter.github.com/bootstrap/customize.html)
+* [FontAwesome](http://fortawesome.github.com/Font-Awesome/) –
+  the iconic font designed for use with Twitter Bootstrap
 
 Sam framework jest napisany w Less:
 
@@ -404,54 +408,73 @@ korzystający z Twitter Bootstrap.
 
 4\. Kilka propozycji zmian domyślnych ustawień.
 
-Bootstrap:
+Parametrów Bootstrapa:
 
     :::css app/assets/stylesheets/bootstrap_and_overrides.css.less
     @baseFontSize: 18px;
     @baseLineHeight: 24px;
 
-    @navbarBackground: #555;
-    @navbarBackgroundHighlight: #888;
-    @navbarText: #eee;
-    @navbarLinkColor: #eee;
+    @navbarBackground: #8E001C;
+    @navbarBackgroundHighlight: #8E001C;
+    @navbarText: #FBF7E4;
+    @navbarLinkColor: #FBF7E4;
 
-    .navbar .brand { color: #00A; }
+    .navbar .brand { color: #E7E8D1; }
 
-**TODO:** Ikonki w *navbar*. Dodać metodę pomocniczą aplikacji
-generującą kod wyświetlający ikonki/znaczki z fontu *FontAwesome*.
-
-Szablonu formularza SimpleForm:
+Szablonu formularza *SimpleForm*:
 
     :::rhtml _form.html.erb
     <%= f.input :quotation, :input_html => { :rows => "4", :class => "span6" } %>
     <%= f.input :source, :input_html => { :class => "span6" } %>
 
+Na pasku *navbar* umieścimy kilka ikonek z fontu *FontAwesome*:
+
+    :::rhtml app/views/shared/_navbar.html.erb
+    <div class="container">
+      <%= link_to icon("quote-left", "Fortunes"), root_path, class: "brand" %>
+      <ul class="nav pull-right">
+        <li><%= link_to icon("home", "Tao"), "http://tao.inf.ug.edu.pl/" %></li>
+        <li><%= link_to icon("ambulance", "ASI"), "http://wbzyl.inf.ug.edu.pl/rails4/" %></li>
+      </ul>
+    </div>
+
+Powyżej użyliśmy metody pomocniczej *icon*. Kod tej metody zapiszemy
+w pliku *application_helper.rb*:
+
+    :::ruby app/helpers/application_helper.rb
+    module ApplicationHelper
+      def icon(name, title="")
+        raw "<i class='icon-#{name}'></i>#{title}"
+      end
+    end
+
+Odstęp po ikonce ustawiamy w arkuszu *application.css*:
+
+    :::css
+    i[class^="icon-"] { padding-right: .5em; }
+
 I już! Wersja 0.0 Fortunki jest gotowa.
 
 
-## TODO: I co dalej?
+## I co dalej?
 
 1\. **Walidacja**, czyli sprawdzanie poprawności (zatwierdzanie)
 danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
 
-    :::ruby
+    :::ruby app/models/fortune.rb
     validates :quotation, length: {
       minimum: 8,
       maximum: 128
     }
     validates :source, presence: true
 
-    validates :price, numericality: { only_integer: true }
-    validate :email, uniqueness: true
-
-
 Zobacz też samouczek
 [Active Record Validations and Callbacks](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html).
 
-2\. **Wirtualne Atrybuty.** Na przykład cenę książki pamiętamy
-w bazie w groszach, ale wypisujemy/edytujemy cenę w złotówkach.
+2\. **Wirtualne Atrybuty.**  Przykład: cenę książki pamiętamy
+w bazie w groszach, ale chcemy ją wypisywać i edytować w złotówkach.
 
-Schema:
+Załóżmy taką schema:
 
     :::ruby schema.rb
     create_table "books", :force => true do |t|
@@ -465,12 +488,9 @@ Do modelu dopisujemy dwie metody („getter” i „setter”):
 
     :::ruby book.rb
     class Book < ActiveRecord::Base
-      attr_accessible :author, :isbn, :price_pln, :title
-
       def price_pln
         price.to_d / 100 if price
       end
-
       def price_pln=(pln)
         self.price = pln.to_d * 100 if pln.present?
       end
@@ -484,7 +504,7 @@ Zamieniamy we wszystkich widokach *price* na *price_pln*, przykładowo:
 Walidacja wirtualnych atrybutów,
 zobacz [Virtual Attributes](http://railscasts.com/episodes/16-virtual-attributes-revised?view=asciicast).
 
-4\. **Tagging:**
+4\. **Tagging: (tylko dla Rails 3)**
 
 * Gem [acts-as-taggable-on](https://github.com/mbleigh/acts-as-taggable-on)
 * [Tagging](http://railscasts.com/episodes/382-tagging) – \#382 RailsCasts
@@ -520,17 +540,13 @@ a na końcu pliku *application.rb* dopisujemy:
 Pozostałe rzeczy robimy tak jak to przedstawiono w screencaście.
 
 
-# Fortunka – szczegóły
+## Fortunka – jeszcze dwie uwagi
 
-Poniżej jest bardziej szczegółowy opis niektórych kroków.
+1\. Potrzebne nam gemy wyszukujemy na [The Ruby Toolbox](https://www.ruby-toolbox.com/).
+Tam też sprawdzamy, czy gem jest aktywnie rozwijany,
+czy będzie działał z innymi gemami i wersjami Ruby, itp.
 
-
-## Krok 3 - dodajemy nowe gemy
-
-Dlaczego dopisaliśmy takie a nie inne gemy?
-Odpowiedzi można szukać na [The Ruby Toolbox](https://www.ruby-toolbox.com/).
-
-Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby
+2\. Modyfikujemy domyślne ustawienia konsoli Ruby
 (i równocześnie konsoli Rails):
 
     :::ruby ~/.irbrc
@@ -564,6 +580,9 @@ Przy okazji modyfikujemy domyślne ustawienia konsoli Ruby
       rescue LoadError
       end
     end
+
+Albo dodajemy kodu do *rubygems/custom_require.rb* (Ruby 2.0).
+
 
 ## Co to jest REST?
 
@@ -621,7 +640,7 @@ wypisuje szczegóły REST API aplikacji.
 <p class="author">— Y. Katz, R. A. Bigg</p>
 </blockquote>
 
-### Generator scaffold
+### Generator scaffold (Rails 4)
 
 Rusztowanie dla zasobu (ang. *resource*) *fortune* zostało wygenerowane
 za pomocą polecenia:
