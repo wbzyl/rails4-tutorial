@@ -98,6 +98,7 @@ Usuwamy niepotrzebne gemy z pliku *Gemfile*:
     :::ruby Gemfile
     gem 'sass-rails',   '~> 3.2.3'
     gem 'coffee-rails', '~> 3.2.1'
+    gem 'turbolinks'
 
 dopisujemy gemy z których będziemy korzystać:
 
@@ -121,6 +122,9 @@ Następnie skorzystamy z generatora kodu o nazwie *scaffold*:
     rails generate scaffold gist snippet:text lexer:string description:string
     rake db:migrate
     rails server --port 16001
+
+Usuwamy *turbolinks* z wygenerowanego pliku *appliaction_layout.html.erb*
+(*bug generatora scaffold*).
 
 Na koniec sprawdzimy routing aplikacji wykonując na konsoli polecenie:
 
