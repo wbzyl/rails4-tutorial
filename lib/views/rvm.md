@@ -37,7 +37,7 @@ Na przykład:
 
     :::bash
     time rake routes # 3.6s dla 1.9.3
-    time rake routes # 1.7s dla 1.9.3+ railsexpress
+    time rake routes # 1.7s dla 1.9.3 + railsexpress
     time rake routes # 1.9s dla 2.0.0
 
 Podstawowe informacje:
