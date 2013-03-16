@@ -156,7 +156,7 @@ Dodajemy nowy plik *app/assets/stylesheets/pygments.css.erb*:
 *TODO:* Poprawić pozostałe widoki. Zacząć od *index.html.erb*.
 Zwiększyć rozmiar fontu do co najmniej 18px.
 Zwiększyć wielkość elementu *textarea* w formularzu
-w szablonie częściowym *_form.htmle.erb*.
+w szablonie częściowym *_form.html.erb*.
 
 
 ### MyStaticPages
