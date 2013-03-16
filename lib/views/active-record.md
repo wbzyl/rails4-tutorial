@@ -143,6 +143,11 @@ gdzie dodajemy klienta i dwa jego zamówienia:
       order_number: '20111003/2', customer_id: @customer.id
     Order.all
 
+<blockquote>
+  <h2>Rails 4…</h2>
+  <p>Peter Brown, <a href="http://beerlington.github.com/blog/2013/03/10/a-simplified-query-interface-for-relationships-in-activerecord-4/">A Simplified Query Interface for Relationships in Active Record 4</a></p>
+</blockquote>
+
 A tak usuwamy z bazy klienta i wszystkie jego zamówienia:
 
     :::ruby
