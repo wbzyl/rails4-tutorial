@@ -20,11 +20,6 @@ gem "simple_form"
 # and remove these gems
 
 gsub_file 'Gemfile', /.+'sass-rails'.+\n/, ''
-gsub_file 'Gemfile', /.+'coffee-rails'.+\n/, ''
-
-# rails 4
-
-gsub_file 'Gemfile', /.+'turbolinks'.+\n/, ''
 
 # use Less instead of CSS: http://lesscss.org/
 
