@@ -87,110 +87,115 @@ Gemy możemy zainstalować lokalnie, na przykład w katalogu *.gems*:
 
 Od tej chwili, polecenie *bundle* będzie instalować gemy w podanej lokalizacji.
 
-## tangram112 - begin ( do usunięcia )
+
 ## RVM w stylu Gentoo-Linux
-W Gentoo nie ma potrzeby instalowania ekstra kontrolera wersji [RVM]. 
+
+W Gentoo nie ma potrzeby instalowania ekstra kontrolera wersji [RVM].
 Istnieje ogólno-systemowy mechanizm konfiguracji zainstalowanych pakietów.
 W skrócie polega on tym, że pakiet który posiada opcje konfiguracji, dostarcza systemowemu
 "kontenerowi konfiguracji" własny skrypt eselect.
-Jest to elestyczny mechanizm który przy pomocy jednej komendy systemowej "eselect", pozwla 
+Jest to elestyczny mechanizm który przy pomocy jednej komendy systemowej "eselect", pozwla
 szybko zorientować się:
+
 * jakie pakiety systemowe dostarczają opcje konfiguracji
 * jakie opcje dostarcza wybrany pakiet
+
 Zanim zobaczymy to w praktyce, przejdźmy całą ścieżkę od instalacji po konfigurację pakietu.
 
-## RoR ( Ruby on Rails ) w dystrybucji Gentoo.
+
+## Ruby on Rails w dystrybucji Gentoo
+
 Prezentowany opis wyszukania pakietów, ich instalacji oraz sprawdzenia aktualnej konfiguracji,
 pomija szczegóły związane z wersją systemu ( stabilna, niestabilna ) oraz
-ustawieniami flag kompilacji ( USE flags ). 
+ustawieniami flag kompilacji (USE flags).
 
 ## Dostępne wersje Ruby'ego i Rails
-Sprawdźmy w systemie jakie wersje: Ruby, Rails są dostępne. 
+Sprawdźmy w systemie jakie wersje: Ruby, Rails są dostępne.
 Możemy to zrobić metodą:
-* szybszą - wymaga zainstalowanego pakietu app-portage/eix który podczas 
-instalacji tworzy sobie bazę danych dostępnych pakietów.
-	:::bash
-	eix -e ruby
-	eix -e rails
 
-* standardową - ( trwa dłużej, przeszukuje metadane pakietów )
-	:::bash
-	emerge -s ruby
-	emerge -s rails
+(i) szybszą – wymaga zainstalowanego pakietu app-portage/eix który podczas
+instalacji tworzy sobie bazę danych dostępnych pakietów.
+
+    :::bash
+    eix -e ruby
+    eix -e rails
+
+(ii) standardową – (trwa dłużej, przeszukuje metadane pakietów)
+
+    :::bash
+    emerge -s ruby
+    emerge -s rails
 
 ## Instalacja
+
 Instalacja sprowadza się do wpisania poleceń:
-	:::bash
-	emerge dev-lang/ruby
-	emerge dev-ruby/rails
+
+    :::bash
+    emerge dev-lang/ruby
+    emerge dev-ruby/rails
 
 lub w jednym kawałku:
-	:::bash
-	emerge emerge dev-lang/ruby dev-ruby/rails
 
-Kod źródłowy pakietów zostanie pobrany, po czym uruchomiona zostanie kompilacja 
-której przebieg możemy śledzić na ekranie  - widok radujący serce każdego programisty :-) .
+    :::bash
+    emerge emerge dev-lang/ruby dev-ruby/rails
+
+Kod źródłowy pakietów zostanie pobrany, po czym uruchomiona zostanie
+kompilacja której przebieg możemy śledzić na ekranie – widok radujący
+serce każdego programisty.
 
 ## Sprawdzenie opcji konfiguracyjnych zainstalowanych wersji pakietów
-Gentoo posiada wygodny mechanizm konfigurowania zainstalowanych pakietów.
-Służy do tego polecenie „eselect”. Wywołanie polecenia bez parametrów, 
-wyświetli nam listę dostępnych do konfiguracji pakietów lub ustawień systemowych.
 
-* Np. polecenie
-	:::bash
-	eselect ruby
+Gentoo posiada wygodny mechanizm konfigurowania zainstalowanych
+pakietów.  Służy do tego polecenie „eselect”. Wywołanie polecenia bez
+parametrów, wyświetli nam listę dostępnych do konfiguracji pakietów
+lub ustawień systemowych.
+
+Na przykład polecenie:
+
+    :::bash
+    eselect ruby
+
 wyświetli:
-	:::bash
-	Usage: eselect ruby <action> <options>
 
-	Standard actions:
-	  help                      Display help text
-	  usage                     Display usage information
-	  version                   Display version information
+    :::bash
+    Usage: eselect ruby <action> <options>
 
-	Extra actions:
-	  cleanup                   This action is not to be called manually.
-	  list                      Lists available Ruby profiles.
-	  set <target>              Switches to a ruby profile.
-		target                  Target name or number (from 'list' action)
-	  show                      Prints the current configuration.
+    Standard actions:
+      help                      Display help text
+      usage                     Display usage information
+      version                   Display version information
 
-* Podobnie polecenie:
-	:::bash
-	eselect rails
+    Extra actions:
+      cleanup                   This action is not to be called manually.
+      list                      Lists available Ruby profiles.
+      set <target>              Switches to a ruby profile.
+            target                  Target name or number (from 'list' action)
+      show                      Prints the current configuration.
+
+Podobnie polecenie:
+
+    :::bash
+    eselect rails
+
 wyświetli:
-	:::bash
-	Usage: eselect rails <action> <options>
 
-	Standard actions:
-	  help                      Display help text
-	  usage                     Display usage information
-	  version                   Display version information
+    :::bash
+    Usage: eselect rails <action> <options>
 
-	Extra actions:
-	  list                      List available Ruby on Rails versions
-	  set <target>              Set a new Ruby on Rails version
-		target                  Target name or number (from 'list' action)
-	  show                      Manage Ruby on Rails versions
-	  update                    Updates the rails symlink to the latest version
-								available
+    Standard actions:
+      help                      Display help text
+      usage                     Display usage information
+      version                   Display version information
 
-Jeśli przerpwowadzone przez nas instlacje, były kolejnymi instalacjami wersji tych pakietów, 
-to z pomocą eselect możemy wybrać wersję ruby / rails na której zamierzamy pracować. 
-W przypadku pierwszej instalacji, konfiguracja nie jest potrzebna. 
+    Extra actions:
+      list                      List available Ruby on Rails versions
+      set <target>              Set a new Ruby on Rails version
+            target                  Target name or number (from 'list' action)
+      show                      Manage Ruby on Rails versions
+      update                    Updates the rails symlink to the latest version
+				available
 
-Gotowi ? Start, tworzymy prostą aplikację Ruby'ego z frameworkiem Rails,
-Scaffold, ale o tym już w innym tutorialu( link na słowie tutorialu).
-## tangram112 - end ( do usunięcia )
-
-
-# Roadmap for Learning Rails
-
-Roadmap specially designed for a beginner to navigate their way to Rails mastery.
-
-{%= image_tag "/images/Learning-Rails-Roadmap.png", :alt => "[Learning Rails Roadmap]" %}
-
-[Źródło](http://techiferous.com/2010/07/roadmap-for-learning-rails/)
-
-
-[rvm]: http://rvm.beginrescueend.com/ "Ruby Version Manager"
+Jeśli przeprowadzone przez nas instlacje, były kolejnymi instalacjami
+wersji tych pakietów, to z pomocą eselect możemy wybrać wersję Ruby
+i Rails na której zamierzamy pracować.  W przypadku pierwszej
+instalacji, konfiguracja nie jest potrzebna.
