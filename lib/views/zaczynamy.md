@@ -119,7 +119,7 @@ Ale możemy też pobrać gemy z internetu i zainstalować je
 u siebie, np. w katalogu *~/.gems*:
 
     :::bash
-    bundle install --path=$HOME/.gems  #<- albo tak
+    bundle install --path=$HOME/.gems
 
 Szablon aplikacji CRUD utworzymy za pomocą generatora kodu
 o nazwie *scaffold*:
