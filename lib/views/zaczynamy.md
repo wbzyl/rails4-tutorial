@@ -98,7 +98,6 @@ Usuwamy niepotrzebne gemy z pliku *Gemfile*:
     :::ruby Gemfile
     gem 'sass-rails',   '~> 3.2.3'
     gem 'coffee-rails', '~> 3.2.1'
-    gem 'turbolinks'
 
 dopisujemy gemy z których będziemy korzystać:
 
@@ -110,21 +109,33 @@ dopisujemy gemy z których będziemy korzystać:
       gem 'quiet_assets'
     end
 
-i instalujemy je:
+Szybko zainstalujemy używane przez aplikację gemy korzystając
+gemów zainstalowanych w systemie:
 
     :::bash
     bundle install --local
-    # bundle install --path=$HOME/.gems  #<- albo tak
 
-Następnie skorzystamy z generatora kodu o nazwie *scaffold*:
+Ale możemy też pobrać gemy z internetu i zainstalować je
+u siebie, np. w katalogu *~/.gems*:
+
+    :::bash
+    bundle install --path=$HOME/.gems  #<- albo tak
+
+Szablon aplikacji CRUD utworzymy za pomocą generatora kodu
+o nazwie *scaffold*:
 
     :::bash
     rails generate scaffold gist snippet:text lexer:string description:string
-    rake db:migrate
-    rails server --port 16001
 
-Usuwamy *turbolinks* z wygenerowanego pliku *appliaction_layout.html.erb*
-(*bug generatora scaffold*).
+Pozostaje wykonać migrację:
+
+    :::bash
+    rake db:migrate
+
+uruchomić serwer HTTP:
+
+    :::bash
+    rails server --port 3000
 
 Na koniec sprawdzimy routing aplikacji wykonując na konsoli polecenie:
 
