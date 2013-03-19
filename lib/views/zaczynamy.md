@@ -596,7 +596,10 @@ czy będzie działał z innymi gemami i wersjami Ruby, itp.
       end
     end
 
-Albo dodajemy kodu do *rubygems/custom_require.rb* (Ruby 2.0).
+
+<!--
+  albo wpsiujemy w pliku do *rubygems/custom_require.rb* (Ruby 2.0).
+-->
 
 
 ## Co to jest REST?
