@@ -772,6 +772,11 @@ inny program, na przykład *curl*:
 
     :::bash
     curl -I -X GET -H 'Accept: application/json' http://localhost:3000/fortunes/1
+
+W ostatnich wersjach Rails
+(zob. [Critical Ruby On Rails Issue Threatens 240,000 Websites](http://www.informationweek.com/security/vulnerabilities/critical-ruby-on-rails-issue-threatens-2/240145891))
+wymagane jest przesłanie tokena CSRF:
+
     curl    -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/1
     curl -I -X DELETE http://localhost:3000/fortunes/1.json
     curl    -X DELETE http://localhost:3000/fortunes/1
@@ -789,7 +794,7 @@ Linki do dokumentacji:
 
 ### Przykład respond_to CSV
 
-Dopisujemy do pliku *application.rb*:
+Dopisujemy w pliku *application.rb*:
 
     :::ruby config/application.rb
     require File.expand_path('../boot', __FILE__)
@@ -797,19 +802,9 @@ Dopisujemy do pliku *application.rb*:
     require 'csv'        #<= NEW!
     require 'rails/all'
 
-do kodu kontrolera w metodzie *index* w bloku *respond_to*:
+W kodzie modelu *Fortune* dodajemy metodę *to_csv*:
 
-    :::ruby
-    respond_to do |format|
-      ...
-      # format.csv { render text: @fortunes.to_csv }
-      # format.csv { render text: @lists.to_csv, content_type: "plain/text" } # nie działa; bug?
-      format.csv { send_data @fortunes.to_csv }
-    end
-
-do kodu w modelu:
-
-    :::ruby
+    :::ruby app/models/fortune.rb
     def self.to_csv
       CSV.generate do |csv|
         csv << column_names
@@ -819,7 +814,7 @@ do kodu w modelu:
       end
     end
 
-albo sami podajemy nazwy kolumn, na przykład:
+*Uwaga:* W metodzie *to_csv* możemy podać nazwy kolumn, na przykład:
 
     :::ruby
     def self.to_csv
@@ -844,38 +839,26 @@ Zobacz też:
 * [eksport do arkusza kalkulacyjnego](http://railscasts.com/episodes/362-exporting-csv-and-excel).
 
 
-### CSV via Ruby Template Handler
+### CSV via szablon *index.csv.ruby*
 
-Handler **Ruby Template** napiszemy sami.
-
-Inicjalizacja:
-
-    :::ruby config/initializers/ruby_template_handler.rb
-    ActionView::Template.register_template_handler(:ruby, :source.to_proc)
-
-Tworzymy plik *index.csv.ruby* o zawartości, na razie takiej:
+Na początek utworzymy plik *index.csv.ruby* o takiej zawartości:
 
     :::ruby app/views/lists/index.csv.ruby
     "hello CSV world"
 
-W kodzie kontrolera w metodzie *index* wymieniamy blok *respond_to* na:
-
-    :::ruby
-    respond_to do |format|
-      format.html # index.html.erb
-      format.csv  # index.csv.ruby
-      format.json { render json: @fortunes }
-    end
-
-Teraz możemy sprawdzić jak to działa:
+I sprawdzamy czy to działa:
 
     :::bash
     curl localhost:3000/fortunes.csv
 
-Jeśli to zadziała, to podmieniamy zawartość pliku *index.csv.ruby* na:
+Jeśli otworzy się arkusz kalkulacyjny w którym jest wpisane `hello world`
+to będzie oznaczać że kod zadziałał.
+
+Teraz podmieniamy zawartość pliku *index.csv.ruby* na:
 
     :::ruby
     response.headers["Content-Disposition"] = 'attachment; filename="fortunes.csv"'
+
     CSV.generate do |csv|
       csv << ["id", "quotation", "source"]
       @fortunes.each do |fortune|
@@ -887,7 +870,24 @@ Jeśli to zadziała, to podmieniamy zawartość pliku *index.csv.ruby* na:
       end
     end
 
+I jeszcze raz sprawdzamy czy to działa.
+
+*Uwaga:* W aplikacjach Rails 3 wymagana jest inicjalizacja:
+
+    :::ruby config/initializers/ruby_template_handler.rb
+    ActionView::Template.register_template_handler(:ruby, :source.to_proc)
+
 <!--
+
+W kodzie kontrolera w metodzie *index* w bloku *respond_to*:
+
+    :::ruby
+    respond_to do |format|
+      format.html
+      format.json
+      format.csv { send_data @fortunes.to_csv }
+    end
+
     CSV.generate do |csv|
       csv << ["nazwisko", "imię", "login", "repo", "link"]
       @lists.each do |list|
@@ -901,22 +901,31 @@ Jeśli to zadziała, to podmieniamy zawartość pliku *index.csv.ruby* na:
         ]
       end
     end
--->
 
 Oczywiście w powyższym kodzie wpisujemy dane modelu z naszej aplikacji.
 Powyżej użyłem danych dla fikcyjnego modelu *List*.
 
-**TODO, czy działa Rails 4:**
-Można też zdefiniować własną klasę i użyć jej zamiast `:source.to_proc`
-powyżej, przykładowo:
+-->
 
-    :::ruby
-    ActionView::Template.register_template_handler(:markdown, MarkdownTemplateHandler)
 
-Przykładowa definicja takiej klasy
-(zob. [RailsCasts \#379](http://railscasts.com/episodes/379-template-handlers)):
+## Markdown via Ruby Template Handler
 
-    :::ruby
+Zdefiniujemy swój program obsługi plików w formacie Markdown.
+Powiążemy go z rozszerzeniami *.md* i *.markdown*.
+Oznacza to, na przykład, że **zamiast** widoku *show.html.erb*
+będzie można użyć widoku *show.html.md*
+
+Program obsługi zaimplementujemy tak, aby w widokach można było użyć
+wstawek ERB.
+
+W kodzie skorzystamy z gemu *redcarpet*:
+
+    :::ruby Gemfile
+    gem "redcarpet"
+
+Przykładowa implementacja:
+
+    :::ruby config/initializers/markdown_template_handler.rb
     class MarkdownTemplateHandler
       def self.call(template)
         erb = ActionView::Template.registered_template_handler(:erb)
@@ -928,24 +937,46 @@ Przykładowa definicja takiej klasy
         SOURCE
       end
     end
+    ActionView::Template.register_template_handler(:md, :markdown, MarkdownTemplateHandler)
 
-Teraz możemy użyć takiego szablonu *show.html.md*,
-ze wstawkami w ERB, przykładowo:
+Zob. [RailsCasts \#379](http://railscasts.com/episodes/379-template-handlers).
 
-    # Show Product
-    The Great Idea!
-    [cała lista](<%= products_path %>)
+Teraz po usunięciu szablonu *show.html.erb*:
 
+    :::bash
+    rm app/views/fortunes/show.html.erb
+
+i utworzeniu szablonu *show.html.md*, na przykład:
+
+    :::rhtml app/views/fortunes/show.html.md
+    <%- model_class = Fortune -%>
+    # <%=t '.title', :default => model_class.model_name.human %>
+
+    <%= @fortune.quotation %>
+
+    *<%= @fortune.source %>*
+
+    [<%=t '.back', :default => t("helpers.links.back") %>](<%= fortunes_path %>) |
+    [<%=t '.edit', :default => t("helpers.links.edit") %>](<%= edit_fortune_path(@fortune) %>) |
+    <%= link_to t('.destroy', default: t("helpers.links.destroy")), fortune_path(@fortune),
+      method: 'delete',
+      data: {
+        confirm: t('.confirm',
+        default: t("helpers.links.confirm",
+        default: 'Are you sure?'))
+      },
+      class: 'btn btn-danger' %>
+
+zostanie on użyty zamiast usuniętego szablonu *.html.erb*.
 
 Zobacz też José Valim,
-[Multipart templates with Markerb](http://blog.plataformatec.com.br/2011/06/multipart-templates-with-markerb/),
-gem [markerb](https://github.com/plataformatec/markerb) –
-multipart templates made easy with Markdown + ERb.
-
-Zobacz też {%= link_to "PDF Renderer", "/pdf-renderer" %}.
-
+[Multipart templates with Markerb](http://blog.plataformatec.com.br/2011/06/multipart-templates-with-markerb/).
+Nazwa gemu [markerb](https://github.com/plataformatec/markerb) to skrót na
+„multipart templates made easy with Markdown + ERb”.
 
 <!--
+
+Zobacz też {%= link_to "PDF Renderer", "/pdf-renderer" %}.
 
 ### Migracje
 
