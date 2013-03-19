@@ -74,11 +74,10 @@ Następnie, na potrzeby przykładów z tego wykładu, utworzymy zestaw
 gemów o nazwie *active_record*:
 
     :::bash
-    rvm use --create ruby-1.9.3-p286-falcon@active_record
-    gem update
-    gem install rails
-    rvm info
+    rvm use --create ruby-2.0.0-p0@active_record
     rvm current
+    gem update
+    gem install rails --pre
 
 Co daje takie podejście?
 
@@ -97,8 +96,10 @@ Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.rubyo
 Generujemy przykładową aplikację:
 
     :::bash
-    rvm use ruby-1.9.3-p194@active_record
-    rails new why_associations --skip-bundle --skip-test-unit
+    rvm use ruby-2.0.0-p0@active_record
+    rvm current
+
+    rails new why_associations --skip-bundle
     cd why_associations
     bundle install --path=.bundle/gems
 
@@ -126,6 +127,12 @@ Generujemy *boilerplate code*:
     rails generate model Customer name:string
     rails generate model Order order_date:datetime order_number:string customer:references
 
+
+<blockquote>
+  <h2>Rails 4…</h2>
+  <p>Peter Brown, <a href="http://beerlington.github.com/blog/2013/03/10/a-simplified-query-interface-for-relationships-in-activerecord-4/">A Simplified Query Interface for Relationships in Active Record 4</a></p>
+</blockquote>
+
 Migrujemy i przechodzimy na konsolę:
 
     :::rails
@@ -137,24 +144,20 @@ gdzie dodajemy klienta i dwa jego zamówienia:
     :::ruby
     Customer.create :name => 'wlodek'
     @customer = Customer.first  # jakiś klient
-    Order.create order_date: Time.now,
-      order_number: '20111003/1', customer_id: @customer.id
-    Order.create order_date: Time.now,
-      order_number: '20111003/2', customer_id: @customer.id
+    Order.create order_date: Time.now, order_number: '20111003/1', customer: @customer
+    Order.create order_date: Time.now, order_number: '20111003/2', customer: @customer
     Order.all
-
-<blockquote>
-  <h2>Rails 4…</h2>
-  <p>Peter Brown, <a href="http://beerlington.github.com/blog/2013/03/10/a-simplified-query-interface-for-relationships-in-activerecord-4/">A Simplified Query Interface for Relationships in Active Record 4</a></p>
-</blockquote>
 
 A tak usuwamy z bazy klienta i wszystkie jego zamówienia:
 
     :::ruby
     @customer = Customer.first
-    @orders = Order.where customer_id: @customer.id
+    # @orders = Order.where(customer_id: @customer.id) # Rails 3
+    @orders = Order.where(customer: @customer)         # Rails 4
     @orders.each { |order| order.destroy }
     @customer.destroy
+
+Takie usuwanie rekordów jest mało intuicyjne.
 
 
 ## Dodajemy powiązania między modelami
@@ -184,10 +187,9 @@ tworzenie nowych zamówień dla danego klienta jest łatwiejsze:
     :::ruby
     Customer.create(name: 'rysiek')
     @customer = Customer.where(name: 'rysiek').first
-    @order = @customer.orders.create order_date: Time.now,
-      order_number: '20111003/3'
-    @order = @customer.orders.create order_date: Time.now,
-      order_number: '20111003/4'
+
+    @order = @customer.orders.create order_date: Time.now, order_number: '20111003/3'
+    @order = @customer.orders.create order_date: Time.now, order_number: '20111003/4'
 
 Usunięcie kilenta wraz z wszystkimi jego zamówieniami jest też proste:
 
