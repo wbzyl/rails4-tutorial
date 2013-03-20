@@ -303,17 +303,14 @@ W modelach dopisujemy (pamiętamy aby dodać klucze obce do *attr_accessible*):
     class Assignment < ActiveRecord::Base
       belongs_to :programmer
       belongs_to :project
-      attr_accessible :task, :programmer_id, :project_id
     end
 
     class Programmer < ActiveRecord::Base
-      attr_accessible :login
       has_many :assignments
       has_many :projects, through: :assignments
     end
 
     class Project < ActiveRecord::Base
-      attr_accessible :due_date, :name
       has_many :assignments
       has_many :programmers, through: :assignments
     end
@@ -334,38 +331,37 @@ Na konsoli dodajemy kilku programistów i kilka projektów:
 A teraz najważniejsze przydzielamy zadania:
 
     :::ruby
-    Assignment.find_or_initialize_by_programmer_id_and_project_id(1, 1).tap do |a|
+    Assignment.find_or_initialize_by(programmer_id: 1, project_id: 1).tap do |a|
       a.task = "Models"
       a.save!
     end
-    Assignment.find_or_initialize_by_programmer_id_and_project_id(2, 1).tap do |a|
+    Assignment.find_or_initialize_by(programmer_id: 2, project_id: 1).tap do |a|
       a.task = "Views"
       a.save!
     end
-    Assignment.find_or_initialize_by_programmer_id_and_project_id(3, 1).tap do |a|
+    Assignment.find_or_initialize_by(programmer_id:3, project_id: 1).tap do |a|
       a.task = "Controllers"
       a.save!
     end
 
-    Assignment.find_or_initialize_by_programmer_id_and_project_id(5, 2).tap do |a|
+    Assignment.find_or_initialize_by(programmer_id: 5, project_id: 2).tap do |a|
       a.task = "Models & Controllers"
       a.save!
     end
-    Assignment.find_or_initialize_by_programmer_id_and_project_id(6, 2).tap do |a|
+    Assignment.find_or_initialize_by(programmer_id: 6, project_id: 2).tap do |a|
       a.task = "Views & Tests"
       a.save!
     end
 
     # teraz ja
-    Assignment.find_or_initialize_by_programmer_id_and_project_id(4, 1).tap do |a|
+    Assignment.find_or_initialize_by(programmer_id: 4, project_id: 1).tap do |a|
       a.task = "Advise and Evaluate"
       a.save!
     end
-    Assignment.find_or_initialize_by_programmer_id_and_project_id(4, 2).tap do |a|
+    Assignment.find_or_initialize_by(programmer_id: 4, project_id: 2).tap do |a|
       a.task = "Advise and Evaluate"
       a.save!
     end
-
 
 Przykładowe zapytania:
 
@@ -460,8 +456,8 @@ Teraz już możemy przećwiczyć polimorfizm na konsoli Rails:
 gdzie wykonujemy następujący kod:
 
     :::ruby
-    p = Person.create :name => 'Wlodek'
-    c = Company.create :name => 'Instytut Informatyki'
+    p = Person.create name: 'Wlodek'
+    c = Company.create name: 'Instytut Informatyki'
     p.phone_numbers << PhoneNumber.create(number: '58-000-0000')
     c.phone_numbers << PhoneNumber.create(number: '58-001-0001')
     PhoneNumber.all
@@ -517,6 +513,11 @@ Dow wygenerowania kodu skorzystamy z generatora *model*:
     rails g model Gallery photographer:references name
     rails g model Photo gallery:references name file_path
 
+Tworzymy tabelki w bazie danych:
+
+    :::bash
+    rake db:migrate
+
 Do wygenerowanego kodu dopisujemy powiązania:
 
     :::ruby
@@ -525,57 +526,49 @@ Do wygenerowanego kodu dopisujemy powiązania:
     end
 
     class Gallery < ActiveRecord::Base
-      attr_accessible :name, :photographer_id
-
       has_many :photos
       belongs_to :photographer
     end
 
     class Photo < ActiveRecord::Base
-      attr_accessible :file_path, :name, :gallery_id
-
       belongs_to :gallery
     end
-
-Na koniec, migrujemy:
-
-    :::bash
-    rake db:migrate
 
 Dopisujemy kod do pliku *db/seeds.rb* (albo wykonujemy go bezpośrednio
 na konsoli Rails):
 
     :::ruby db/seeds.rb
-    Photographer.create name: 'Jan Saudek'
-    Photographer.create name: 'Stefan Rohner'
+    saudek = Photographer.create name: 'Jan Saudek'    #1
+    rohner = Photographer.create name: 'Stefan Rohner' #2
 
-    Gallery.create name: 'Nordic Light', photographer_id: 1
-    Gallery.create name: 'Daily Life', photographer_id: 2
-    Gallery.create name: 'India', photographer_id: 2
+    nordic_light = Gallery.create name: 'Nordic Light', photographer: saudek #1
+    daily_life   = Gallery.create name: 'Daily Life', photographer: rohner   #2
+    india        = Gallery.create name: 'India', photographer: rohner        #3
 
-    Photo.create name: 'Shadows', file_path: 'photos/img_1154.jpg', gallery_id: 1
-    Photo.create name: 'Ice Formation', file_path: 'photos/img_6836.jpg', gallery_id: 1
-    Photo.create name: 'Unknown', file_path: 'photos/img_8419.jpg', gallery_id: 2
-    Photo.create name: 'Uptown', file_path: 'photos/img_1243.jpg', gallery_id: 2
-    Photo.create name: 'India Sunset', file_path: 'photos/img_2349.jpg', gallery_id: 2
-    Photo.create name: 'Summer', file_path: 'photos/img_7744.jpg', gallery_id: 3
-    Photo.create name: 'Two cats', file_path: 'photos/img_1440.jpg', gallery_id: 3
-    Photo.create name: 'Dogs', file_path: 'photos/img_1184.jpg', gallery_id: 3
+    Photo.create name: 'Shadows', file_path: 'photos/img_1154.jpg', gallery: nordic_light
+    Photo.create name: 'Ice Formation', file_path: 'photos/img_6836.jpg', gallery: nordic_light
+    Photo.create name: 'Unknown', file_path: 'photos/img_8419.jpg', gallery: daily_life
+    Photo.create name: 'Uptown', file_path: 'photos/img_1243.jpg', gallery: daily_life
+    Photo.create name: 'India Sunset', file_path: 'photos/img_2349.jpg', gallery: daily_life
+    Photo.create name: 'Summer', file_path: 'photos/img_7744.jpg', gallery: india
+    Photo.create name: 'Two cats', file_path: 'photos/img_1440.jpg', gallery: india
+    Photo.create name: 'Dogs', file_path: 'photos/img_1184.jpg', gallery: india
 
 Na konsoli wykonujemy:
 
     :::ruby
-    galleries = Gallery.includes(:photographer, :photos).all
+    galleries = Gallery.includes(:photographer, :photos).load
 
 Wykonanie tego polecenia skutkuje trzykrotnym odpytaniem bazy:
 
-    Gallery Load (0.2ms)  SELECT "galleries".* FROM "galleries"
-    Photographer Load (0.1ms)  SELECT "photographers".* FROM "photographers"
-      WHERE "photographers"."id" IN (1, 2)
-    Photo Load (0.2ms)  SELECT "photos".* FROM "photos"
-      WHERE "photos"."gallery_id" IN (1, 2, 3)
+    Gallery Load (0.2ms)  SELECT "galleries".*
+       FROM "galleries"
+    Photographer Load (0.4ms)  SELECT "photographers".*
+       FROM "photographers" WHERE "photographers"."id" IN (1, 2)
+    Photo Load (0.3ms)  SELECT "photos".*
+       FROM "photos" WHERE "photos"."gallery_id" IN (4, 5, 6)
 
-Teraz polecenia:
+Teraz takie polecenia:
 
     :::ruby
     galleries.each do |gallery|
@@ -585,7 +578,15 @@ Teraz polecenia:
     galleries[0].photographer
     galleries[0].photos
 
-nie odpytują bazy, ponieważ dane zostały wcześniej wczytane (*eager loading*).
+nie odpytują bazy, ponieważ dane zostały już wczytane –
+**eager loading** – w poleceniu z `includes` powyżej.
+
+Ale jeśli listę galerii utworzylibyśmy tak:
+
+    :::ruby
+    galleries = Gallery.all
+
+to każde z poleceń powyżej odpytuje bazę.
 
 
 ## Race Conditions
@@ -701,6 +702,12 @@ PostgreSQL:
       timestamp:   { name: "timestamp" },
       time:        { name: "time" },
       date:        { name: "date" },
+      daterange:   { name: "daterange" },
+      numrange:    { name: "numrange" },
+      tsrange:     { name: "tsrange" },
+      tstzrange:   { name: "tstzrange" },
+      int4range:   { name: "int4range" },
+      int8range:   { name: "int8range" },
       binary:      { name: "bytea" },
       boolean:     { name: "boolean" },
       xml:         { name: "xml" },
@@ -710,12 +717,13 @@ PostgreSQL:
       cidr:        { name: "cidr" },
       macaddr:     { name: "macaddr" },
       uuid:        { name: "uuid" },
-      json:        { name: "json" }
+      json:        { name: "json" },
+      ltree:       { name: "ltree" }
     }
 
 SQLite:
 
-    :::ruby activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
+    :::ruby activerecord/lib/active_record/connection_adapters/sqlite3_adapter.rb
     def native_database_types
       {
         :primary_key => default_primary_key_type,
