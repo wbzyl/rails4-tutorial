@@ -7,54 +7,72 @@
  <p class="author">źródło: <a href="http://robots.thoughtbot.com/post/159805997/heroku-wearing-suspenders">Heroku handles headache</a></p>
 </blockquote>
 
-<!--
-
-**Migracja działających i wdrożonych przed 2012 roku aplikacji:**
-„The Cedar stack is the default runtime stack on Heroku and is the
-successor to Aspen and Bamboo. It includes support for multiple
-languages, flexible process types, HTTP 1.1, and substantially less
-code injection. While there is no automation available to migrate to
-Cedar from a previous stack this article outlines the steps and
-consideration required when performing a manual migration.”
-
-* [Migrating to the Celadon Cedar Stack](https://devcenter.heroku.com/articles/cedar-migration)
-* [Tales from upgrading to Ruby 1.9.2 – character encoding](http://www.samanage.com/blog/2011/09/tales-from-upgrading-to-ruby-1-9-2-character-encoding/)
-
--->
-
 [Heroku](http://heroku.com/) (pronounced her-OH-koo) is a cloud application platform for
 Ruby – a new way of building and deploying web apps.
+
 Swoje aplikacje Rails będziemy wdrażać na Heroku za pomocą programu *heroku*,
 który musimy najpierw zainstalować. W tym celu wchodzimy
 na stronę
 
     https://toolbelt.heroku.com/
 
-z której instalujemy CLI dla Heroku.
+z której pobieramy paczkę z programem.
 
-Następnie zakładamy sobie na Heroku konto (tzw. „free plan”),
-zapisujemy swój klucz publiczny i logujemy się:
+Następnie zakładamy na Heroku konto (tzw. „free plan”),
+przesyłamy swój klucz publiczny na Heroku
+i logujemy się na swoim koncie:
 
     :::bash
     heroku keys:add
     heroku login
 
-Dopiero teraz generujemy aplikację Rails, którą wdrożymy na Heroku:
+
+## Tworzymy aplikację Rails 4.x
+
+Tworzymy rusztowanie aplikacji korzystając z generatora *new*:
 
     rails new foo
 
-W pliku *Gemfile* zamieniamy wiersz z *sqlite3* na:
+Podmieniamy plik *Gemfile* na taki:
 
     :::ruby Gemfile
-    gem 'sqlite3', group: :development
-    gem 'pg', group: :production
-    gem 'thin'
+    source 'https://rubygems.org'
+    ruby '2.0.0'
 
-i instalujemy je.
+    gem 'rails', '4.0.0.beta1'
+    gem 'turbolinks', '1.0.0'
+    gem 'thin', '1.5.1'
+    gem 'jquery-rails', '2.2.1'
+    gem 'jbuilder', '1.0.2'
+    gem 'pygments.rb'
+    gem 'redcarpet'
 
-Aplikację *foo* na heroku wdrażamy w czterech krokach.
+    group :development do
+      gem 'sqlite3', '1.3.7'
+      gem 'quiet_assets'
+    end
+    group :assets do
+      gem 'coffee-rails', '4.0.0.beta1'
+      gem 'uglifier', '1.3.0'
+    end
+    group :production do
+      gem 'pg', '0.14.1'
+    end
+    group :heroku do
+      gem 'rails_log_stdout',           github: 'heroku/rails_log_stdout'
+      gem 'rails3_serve_static_assets', github: 'heroku/rails3_serve_static_assets'
+    end
 
-1\. Zakładamy repozytorium Git dla kodu aplikacji:
+instalujemy wybrane gemy i wykonujemy, opisane
+[tutaj](https://github.com/wbzyl/my_gists)
+poprawki w wygenerowanym kodzie.
+
+
+## Wdrażanie aplikacji
+
+Aplikację *foo* wdrażamy w czterech krokach.
+
+1\. Tworzymy repozytorium Git z kodem aplikacji:
 
     cd foo
     git init
@@ -65,10 +83,10 @@ Aplikację *foo* na heroku wdrażamy w czterech krokach.
 
     :::bash
     heroku create
-      Creating powerful-stream-6259... done, stack is cedar
-      http://powerful-stream-6259.herokuapp.com/ | git@heroku.com:powerful-stream-6259.git
-      Git remote heroku added
 
+      Creating afternoon-tor-6637... done, stack is cedar
+      http://afternoon-tor-6637.herokuapp.com/ | git@heroku.com:afternoon-tor-6637.git
+      Git remote heroku added
 
 3\. Wdrażamy naszą aplikację z gałęzi **master** na Heroku:
 
@@ -78,24 +96,22 @@ Aplikację *foo* na heroku wdrażamy w czterech krokach.
 4\. Pozostałe rzeczy, to utworzenie bazy danych, migrowanie:
 
     :::bash
-    heroku run rake db:create
-    heroku run rake db:migrate
+    heroku run bin/rake db:migrate
 
 Przy okazji możemy też zmienić wygenerowaną nazwę aplikacji
-z *powerful-stream-6259* na jakąś inną:
+z *afternoon-tor-6637* na jakąś inną:
 
     :::bash
-    heroku rename colllor
+    heroku rename piece
 
 Odpowiedź Heroku powinna być taka:
 
-    Creating foo.... done
-    http://colllor.herokuapp.com/  |  git@heroku.com:collor.git
-    Git remote heroku added
+    Renaming afternoon-tor-6637 to piece... done
+    http://piece.herokuapp.com/ | git@heroku.com:piece.git
+    Git remote heroku updated
 
 **Uwaga:** jeśli na Heroku istnieje już aplikacja o takiej
 nazwie, to będziemy musieli wymyśleć inną unikalną nazwę.
-
 
 
 ## Podręczna dokumentacja
