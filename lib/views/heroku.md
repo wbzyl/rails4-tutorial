@@ -41,11 +41,10 @@ Podmieniamy plik *Gemfile* na taki:
 
     gem 'rails', '4.0.0.beta1'
     gem 'turbolinks', '1.0.0'
-    gem 'thin', '1.5.1'
     gem 'jquery-rails', '2.2.1'
     gem 'jbuilder', '1.0.2'
-    gem 'pygments.rb'
-    gem 'redcarpet'
+
+    gem 'thin', '1.5.1'
 
     group :development do
       gem 'sqlite3', '1.3.7'
@@ -63,9 +62,10 @@ Podmieniamy plik *Gemfile* na taki:
       gem 'rails3_serve_static_assets', github: 'heroku/rails3_serve_static_assets'
     end
 
-instalujemy wybrane gemy i wykonujemy, opisane
-[tutaj](https://github.com/wbzyl/my_gists)
-poprawki w wygenerowanym kodzie.
+dodajemy swoje gemy i instalujemy je.
+
+Następnie wykonujemy opoprawki w wygenerowanym kodzie opisane
+[tutaj](https://github.com/wbzyl/my_gists).
 
 
 ## Wdrażanie aplikacji
