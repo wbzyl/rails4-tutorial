@@ -64,7 +64,7 @@ Podmieniamy plik *Gemfile* na taki:
 
 dodajemy swoje gemy i instalujemy je.
 
-Następnie wykonujemy opoprawki w wygenerowanym kodzie opisane
+Następnie wykonujemy wszystkie poprawki w wygenerowanym kodzie opisane
 [tutaj](https://github.com/wbzyl/my_gists).
 
 
@@ -106,8 +106,8 @@ z *afternoon-tor-6637* na jakąś inną:
 
 Odpowiedź Heroku powinna być taka:
 
-    Renaming afternoon-tor-6637 to piece... done
-    http://piece.herokuapp.com/ | git@heroku.com:piece.git
+    Renaming piece to herring... done
+    http://herring.herokuapp.com/ | git@heroku.com:herring.git
     Git remote heroku updated
 
 **Uwaga:** jeśli na Heroku istnieje już aplikacja o takiej
