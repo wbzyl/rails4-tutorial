@@ -90,14 +90,13 @@ Generujemy rusztowanie aplikacji i instalujemy gemy z których
 będzie ona korzystać:
 
     :::bash
-    rails new my_gists --skip-bundle --no-test-framework
+    rails new my_gists --skip-bundle
     cd my_gists
 
 Usuwamy niepotrzebne gemy z pliku *Gemfile*:
 
     :::ruby Gemfile
-    gem 'sass-rails',   '~> 3.2.3'
-    gem 'coffee-rails', '~> 3.2.1'
+    gem 'sass-rails'
 
 dopisujemy gemy z których będziemy korzystać:
 
@@ -105,9 +104,6 @@ dopisujemy gemy z których będziemy korzystać:
     gem 'thin'
     gem 'pygments.rb'
     gem 'redcarpet'
-    group :development do
-      gem 'quiet_assets'
-    end
 
 Szybko zainstalujemy używane przez aplikację gemy korzystając
 gemów zainstalowanych w systemie:
@@ -178,7 +174,7 @@ dodajemy gemy z których będziemy korzystać i je instalujemy.
 Następnie generujemy rusztowanie aplikacji:
 
     :::bash
-    rails new my_static_pages --skip-bundle --no-test-framework
+    rails new my_static_pages --skip-bundle --skip-test-unit
     cd my_static_pages
     bundle install --local
 
@@ -285,7 +281,7 @@ zapisujemy w pliku  *~/.railsrc*:
 
     :::bash ~/.railsrc
     --skip-bundle
-    --no-test-framework
+    --skip-test-unit
 
 Zamiast ręcznej edycji pliku *Gemfile* oraz modyfikacji plików
 konfiguracyjnych możemy użyć szablonu aplikacji rails,
