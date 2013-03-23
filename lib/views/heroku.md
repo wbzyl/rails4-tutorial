@@ -40,35 +40,35 @@ Podmieniamy plik *Gemfile* na taki:
     ruby '2.0.0'
 
     gem 'rails', '4.0.0.beta1'
-    gem 'turbolinks', '1.0.0'
+
     gem 'jquery-rails', '2.2.1'
+    gem 'turbolinks', '1.0.0'
     gem 'jbuilder', '1.0.2'
 
-    gem 'thin', '1.5.1'
+    gem 'thin'
 
-    group :development do
+    group :development, :test do
       gem 'sqlite3', '1.3.7'
       gem 'quiet_assets'
     end
+
     group :assets do
+      gem 'sass-rails',   '4.0.0.beta1'
       gem 'coffee-rails', '4.0.0.beta1'
       gem 'uglifier', '1.3.0'
     end
+
     group :production do
       gem 'pg', '0.14.1'
     end
-    group :heroku do
-      gem 'rails_log_stdout',           github: 'heroku/rails_log_stdout'
-      gem 'rails3_serve_static_assets', github: 'heroku/rails3_serve_static_assets'
-    end
 
-dodajemy swoje gemy i instalujemy je.
+Dopisujemy swoje gemy i instalujemy wszystko za pomocą:
 
-Następnie wykonujemy wszystkie poprawki w wygenerowanym kodzie opisane
-[tutaj](https://github.com/wbzyl/my_gists).
+    :::bash
+    bundle install # --local
 
 
-## Wdrażanie aplikacji
+## Wdrażanie aplikacji na Heroku
 
 Aplikację *foo* wdrażamy w czterech krokach.
 
@@ -93,16 +93,16 @@ Aplikację *foo* wdrażamy w czterech krokach.
     :::bash
     git push heroku master
 
-4\. Pozostałe rzeczy, to utworzenie bazy danych, migrowanie:
+4\. Pozostałe rzeczy, to utworzenie bazy danych na Heroku:
 
     :::bash
     heroku run bin/rake db:migrate
 
 Przy okazji możemy też zmienić wygenerowaną nazwę aplikacji
-z *afternoon-tor-6637* na jakąś inną:
+z *afternoon-tor-6637* na jakąś inną, przykładowo na *herring*:
 
     :::bash
-    heroku rename piece
+    heroku rename herring
 
 Odpowiedź Heroku powinna być taka:
 
@@ -110,15 +110,16 @@ Odpowiedź Heroku powinna być taka:
     http://herring.herokuapp.com/ | git@heroku.com:herring.git
     Git remote heroku updated
 
-**Uwaga:** jeśli na Heroku istnieje już aplikacja o takiej
-nazwie, to będziemy musieli wymyśleć inną unikalną nazwę.
+**Uwaga:** Nazwa zostanie zmieniona o ile na Heroku **nie istnieje**
+aplikacja o podanej nazwie.
 
 
 ## Podręczna dokumentacja
 
-* [DevCenter](http://devcenter.heroku.com/)
 * [Getting Started with Heroku](https://devcenter.heroku.com/articles/quickstart)
+* [Getting Started with Rails 4.x on Heroku](https://devcenter.heroku.com/articles/rails4)
 * [Getting Started with Ruby on Heroku](https://devcenter.heroku.com/articles/ruby)
+* [DevCenter](http://devcenter.heroku.com/)
 
 
 ## SQLite ⇄ PostgreSQL
@@ -130,7 +131,7 @@ Jak? [Push and Pull Databases To and From Heroku](http://blog.heroku.com/archive
     heroku db:push sqlite://db/development.sqlite3 --confirm APP-NAME-ON-HEROKU
     heroku db:pull sqlite://db/production.sqlite3
 
-Do trzech razy sztuka??
+Aby konwersja zadziałała potrzebne są określone wersje gemów.
 
 
 ## Rails Environment Variables
@@ -274,8 +275,3 @@ W tym celu dopiszemy do pliku *Rakefile*:
     end
 
 -->
-
-## Lektura
-
-* [Deploying to Heroku with Rails 3.1](http://railsapps.github.com/rails-heroku-tutorial.html).
-* [Sinatra + Heroku = Super Fast Deployment](http://rubysource.com/sinatra-heroku-super-fast-deployment/)
