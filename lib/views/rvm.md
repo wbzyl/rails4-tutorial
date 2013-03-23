@@ -103,30 +103,33 @@ szybko zorientować się:
 Zanim zobaczymy to w praktyce, przejdźmy całą ścieżkę od instalacji po konfigurację pakietu.
 
 
-## Ruby on Rails w dystrybucji Gentoo
+### Ruby on Rails w dystrybucji Gentoo
 
 Prezentowany opis wyszukania pakietów, ich instalacji oraz sprawdzenia aktualnej konfiguracji,
 pomija szczegóły związane z wersją systemu ( stabilna, niestabilna ) oraz
 ustawieniami flag kompilacji (USE flags).
 
-## Dostępne wersje Ruby'ego i Rails
+
+### Dostępne wersje Rubiego i Rails
+
 Sprawdźmy w systemie jakie wersje: Ruby, Rails są dostępne.
 Możemy to zrobić metodą:
 
 (i) szybszą – wymaga zainstalowanego pakietu app-portage/eix który podczas
-instalacji tworzy sobie bazę danych dostępnych pakietów.
+instalacji tworzy sobie bazę danych dostępnych pakietów:
 
     :::bash
     eix -e ruby
     eix -e rails
 
-(ii) standardową – (trwa dłużej, przeszukuje metadane pakietów)
+(ii) standardową – trwa dłużej, przeszukuje metadane pakietów:
 
     :::bash
     emerge -s ruby
     emerge -s rails
 
-## Instalacja
+
+### Instalacja
 
 Instalacja sprowadza się do wpisania poleceń:
 
@@ -143,7 +146,8 @@ Kod źródłowy pakietów zostanie pobrany, po czym uruchomiona zostanie
 kompilacja której przebieg możemy śledzić na ekranie – widok radujący
 serce każdego programisty.
 
-## Sprawdzenie opcji konfiguracyjnych zainstalowanych wersji pakietów
+
+### Sprawdzenie opcji konfiguracyjnych zainstalowanych wersji pakietów
 
 Gentoo posiada wygodny mechanizm konfigurowania zainstalowanych
 pakietów.  Służy do tego polecenie „eselect”. Wywołanie polecenia bez
@@ -195,7 +199,6 @@ wyświetli:
       update                    Updates the rails symlink to the latest version
 				available
 
-Jeśli przeprowadzone przez nas instlacje, były kolejnymi instalacjami
+Jeśli przeprowadzone przez nas instalacje, były kolejnymi instalacjami
 wersji tych pakietów, to z pomocą eselect możemy wybrać wersję Ruby
-i Rails na której zamierzamy pracować.  W przypadku pierwszej
-instalacji, konfiguracja nie jest potrzebna.
+i Rails na której zamierzamy pracować.
