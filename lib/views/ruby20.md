@@ -1,4 +1,4 @@
-#### {% title "Ruby 1.9 w pigułce" %}
+#### {% title "Ruby w pigułce" %}
 
 <blockquote>
  {%= image_tag "/images/in_a_nutshell.jpg", :alt => "[In a Nutshell]" %}

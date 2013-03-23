@@ -5,26 +5,34 @@
   <p><a href="http://www.codeschool.com/courses/rails-for-zombies-redux">Models taste like chicken…</a></p>
 </blockquote>
 
-* [Rails Rumble 2012 voting is Go](http://railsrumble.com/entries/all) –
-  300+ new ruby webapps to check out!
-* [Rails Rumble 2012](http://blog.railsrumble.com/)
-* [Who is already on Rails?](http://rubyonrails.org/applications).
+* [World Wide Web](http://www.w3.org/History/19921103-hypertext/hypertext/WWW/TheProject.html) –
+  tak wyglądała pierwsza strona WWW
+* CGI ↬ PHP
+* [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks) –
+  know-how budowania aplikacji WWW
+* [Who is already on Rails?](http://rubyonrails.org/applications):
+  - [GitHub](https://github.com/) – ok. 4 mln programistów
+  - [Twitter](https://twitter.com/) – „hits half a billion tweets a day” (26.10.2012)
+* [Rails Rumble 2012](http://blog.railsrumble.com/) –
+  [check winners](http://railsrumble.com/entries/winners)
+* Michael Hartl, [Ruby on Rails Tutorial](http://ruby.railstutorial.org/ruby-on-rails-tutorial-book?version=4.0) –
+  *Learn Rails by Example*
 
 
 ## Praktyczne rzeczy…
 
-Nie znasz języka Ruby — zacznij od [Try Ruby!](http://tryruby.org/)
+Nie znasz języka Ruby – zacznij od [Try Ruby!](http://tryruby.org/)
 lub zmierz się z [Ruby Monk](http://rubymonk.com/);
-albo przeczytaj [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (autor Zed A. Shaw)
+albo przeczytaj [Learn Ruby The Hard Way](http://ruby.learncodethehardway.org/) (Zed A. Shaw)
 lub [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 
 Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
 
-Aplikacje WWW będziemy pisać w **Rails** wersji **~> 3.2.12**.
+Aplikacje WWW będziemy pisać w **Rails** wersji co najmniej **4.0.0.beta1**.
 
 Wszystkie projekty przygotowywane na zajęciach powinny być
-udostępnione na *github.com*.
+udostępnione na serwerze Github.
 
 *Uwaga:* Przed utworzeniem pierwszego repozytorium Git
 należy podać Gitowi swoje dane. W tym celu wpisujemy na konsoli:
@@ -48,13 +56,12 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
 # Rozpiska wykładów
 
-1. {%= link_to "Zapoznajemy się z Ruby v1.9.3", "/ruby19" %}
+1. {%= link_to "Zapoznajemy się z językiem Ruby", "/ruby2" %}
 1. {%= link_to "RVM - zarządzanie wersjami Rails i Ruby", "/rvm" %}
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "Layout, czyli makieta aplikacji", "/layouty" %}
-1. {%= link_to "Bootstrapping Rails application", "/bootstrapping" %}
 1. {%= link_to "Remote links", "/remote-links" %}
 1. {%= link_to "Fortunka i18n & l10n", "/i18n" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
@@ -62,8 +69,17 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Autentykacja z Devise", "/devise" %}
 1. {%= link_to "Autoryzacja z CanCan", "/cancan" %}
 1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
+
+Różne rzeczy:
+
 1. {%= link_to "Wysyłanie poczty", "/mail" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
+1. {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}.
+
+Programowanie aplikacji Rails wymaga odpowiedniego skonfigurowania
+edytora. Konfiguracja edytorów Emacs i Vi nie jest łatwa i
+zajmuje dużo czasu. Najłatwiej jest skonfigurować edytor
+{%= link_to "Sublime Text 2", "/sublime_text" %}.
 
 <!--
 
@@ -89,15 +105,6 @@ TODO:
 1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
 -->
 
-Instalacja *RVM* (*Ruby Version Manager*), konfiguracja konsoli Rails
-jest opisana tutaj:
-{%= link_to "Konfiguracja środowiska dla Rails 3", "/konfiguracja" %}.
-
-Programowanie aplikacji Rails wymaga odpowiedniego skonfigurowania
-edytora. Konfiguracja edytorów Emacs i Vi nie jest łatwa i
-zajmuje dużo czasu. Najłatwiej jest skonfigurować edytor
-{%= link_to "Sublime Text 2", "/sublime_text" %}.
-
 
 ## Laboratoria
 
@@ -121,24 +128,24 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 1. [Getting Started with Rails](http://guides.rubyonrails.org/getting_started.html).
 2. [Active Record Query Interface](http://guides.rubyonrails.org/active_record_querying.html).
 3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
-4. Kolejny *Przewodnik* do przestudiowania wybieramy już według własnego uznania.
-5. Michael Hartl.
-   [Ruby on Rails Tutorial. Learn Rails by Example](http://www.railstutorial.org/book).
-6. Stefan Wintermeyer.
+4. Kolejny *przewodnik* do przestudiowania wybieramy już według własnego uznania.
+5. Stefan Wintermeyer.
    [Ruby on Rails 3.2](http://xyzpub.com/en/ruby-on-rails/3.2/) – a beginner’s guide.
-7. [Ruby on Rails for Developers](https://github.com/generalassembly/ga-ruby-on-rails-for-devs) –
+6. [Ruby on Rails for Developers](https://github.com/generalassembly/ga-ruby-on-rails-for-devs) –
    this course teaches experienced developers Ruby and Ruby on Rails.
 
-## Użyteczne rzeczy
+
+## Użyteczne linki
 
 * [The Ruby Toolbox](http://ruby-toolbox.com/) – know your options!
 * [GitHub Style Guides](https://github.com/styleguide/)
-* [Responsive](http://mattkersley.com/responsive/) –
-  web design testing tool
-* [jsFiddle](http://jsfiddle.net/)– easy test you snippets before implementing
-* [Three quick Rails console tips](http://37signals.com/svn/posts/3176-three-quick-rails-console-tips)
-* [HTML5 Snippet](http://html5snippet.net/) – HTML / CSS / JavaScript playground & snippet
-  sharing platform for web developers & designers
+
+
+## API
+
+* [Rails Searchable API Doc](http://railsapi.com/)
+* [Edge API](http://edgeapi.rubyonrails.org/)
+* [API dock](http://apidock.com/) – Ruby on Rails, RSpec, Ruby
 
 
 <blockquote>
@@ -151,13 +158,6 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
   <p class="author">— Samuel Coleridge (1772–1834)</p>
 </blockquote>
 
-## API
-
-* [Rails Searchable API Doc](http://railsapi.com/)
-* [Edge API](http://edgeapi.rubyonrails.org/)
-* [API dock](http://apidock.com/) – Ruby on Rails, RSpec, Ruby
-
-
 ## Screencasty
 
 * Ryan Bates. [Railscasts](http://railscasts.com/)
@@ -169,44 +169,10 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 
 ## Misz masz…
 
-* [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks)
 * [TIOBE Programming Community Index](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html)
-* [Rails 3 Application Templates](https://github.com/RailsApps/rails3-application-templates)
 * [Examples of how to build PDFs in Rails with Prawn and Prawnto](http://prawn.heroku.com/)
 * [Exploring the stdlib: logger](http://rbjl.net/50-exploring-the-stdlib-logger)
-* [PubSub Chat Using HTML5 Web Socket and em-websocket](http://railstech.com/2011/12/pubsub-chat-using-html5-web-socket-and-em-websocket/)
 * Evan Miller.
   [How Not To Sort By Average Rating](http://evanmiller.org/how-not-to-sort-by-average-rating.html)
-* [Buildpacks](http://blog.heroku.com/archives/2012/7/17/buildpacks/) – Heroku for Everything:
-  - [Hello Buildpack](https://github.com/heroku/heroku-buildpack-hello)
-  - [API](https://devcenter.heroku.com/articles/buildpack-api)
-  - [Buildpacks Developers](https://groups.google.com/forum/?fromgroups#!forum/buildpack-developers)
-  - [Ruby Buildpack](https://github.com/heroku/heroku-buildpack-ruby)
 * [Code Climate Blog](http://blog.codeclimate.com/):
-  - [7 Patterns to Refactor Fat ActiveRecord Models](http://blog.codeclimate.com/blog/2012/10/17/7-ways-to-decompose-fat-activerecord-models/)
-
-
-<blockquote>
- <p>
-  TelescopicText is primarily a set of tools for creating expanding texts in a similar way.
- </p>
- <p class="author"><a href="http://www.telescopictext.org/">Telescopic text</a></p>
-</blockquote>
-
-## Pomysły na aplikacje WWW
-
-Rails Rumble Leaderboard
-[2009](http://r09.railsrumble.com/entries),
-[2010](http://r10.railsrumble.com/entries):
-The Rails Rumble is an annual 48 hour web application development
-competition in which teams of skilled web application developers get
-one weekend to design, develop, and deploy the best web property that
-they can, using the power of Ruby and Rails.
-
-Korzystamy z nierelacyjnych baz danych:
-
-* Jim Neath.
-  [Using Redis with Ruby on Rails](http://jimneath.org/2011/03/24/using-redis-with-ruby-on-rails.html)
-* Ryan Bates.
-  [Mongoid](http://railscasts.com/episodes/238-mongoid),
-  [MongoDB and MongoMapper](http://railscasts.com/episodes/194-mongodb-and-mongomapper)
+  [7 Patterns to Refactor Fat ActiveRecord Models](http://blog.codeclimate.com/blog/2012/10/17/7-ways-to-decompose-fat-activerecord-models/)
