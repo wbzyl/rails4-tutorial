@@ -65,7 +65,6 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Remote links", "/remote-links" %}
 1. {%= link_to "Fortunka i18n & l10n", "/i18n" %}
 1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
-1. {%= link_to "TDD, BDD…", "/testowanie" %}
 1. {%= link_to "Autentykacja z Devise", "/devise" %}
 1. {%= link_to "Autoryzacja z CanCan", "/cancan" %}
 1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
@@ -85,6 +84,7 @@ zajmuje dużo czasu. Najłatwiej jest skonfigurować edytor
 
 TODO:
 
+1. {%= link_to "TDD, BDD…", "/testowanie" %}
 1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
 1. {%= link_to "Aplikacja „Todo”", "/todo" %}
 1. {%= link_to "Aplikacja „Blog”", "/blog" %}
