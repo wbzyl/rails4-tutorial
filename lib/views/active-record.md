@@ -40,13 +40,13 @@ albo tak:
     :::ruby
     include Rails.application.routes.url_helpers
     fortune_path(2)
-    fortunes_url(:host => "localhost:3000")
+    fortunes_url(host: "localhost:3000")
 
 albo tak:
 
     :::ruby konsola
     Rails.application.routes.url_helpers.fortunes_path
-    Rails.application.routes.url_helpers.fortunes_url(:host => "localhost:3000")
+    Rails.application.routes.url_helpers.fortunes_url(host: "localhost:3000")
 
 Metody pomocnicze:
 
@@ -89,9 +89,9 @@ Dokumentacja:
 
 # Why Associations?
 
-Przykład z rozdziału 1
+Przykład z rozdziału 1,
 [A Guide to Active Record Associations](http://guides.rubyonrails.org/association_basics.html).
-Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html).
+Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html).
 
 Generujemy przykładową aplikację:
 
@@ -318,47 +318,47 @@ W modelach dopisujemy (pamiętamy aby dodać klucze obce do *attr_accessible*):
 Na konsoli dodajemy kilku programistów i kilka projektów:
 
     :::ruby
-    Programmer.create login: "kosinska"
-    Programmer.create login: "misiut"
-    Programmer.create login: "tsott"
-    Programmer.create login: "wbzyl"
-    Project.create name: "Error 404", due_date: 1.month.from_now
-    Programmer.create login: "lorddraw"
-    Programmer.create login: "mbonczkowska"
-    Project.create name: "Karbon", due_date: 5.weeks.from_now
+    kosinska = Programmer.create login: "kosinska"
+    misiut = Programmer.create login: "misiut"
+    tsott = Programmer.create login: "tsott"
+    wbzyl = Programmer.create login: "wbzyl"
+    error404 = Project.create name: "Error 404", due_date: 1.month.from_now
+    lorddraw = Programmer.create login: "lorddraw"
+    mbonczkowska = Programmer.create login: "mbonczkowska"
+    karbon = Project.create name: "Karbon", due_date: 5.weeks.from_now
 
 
 A teraz najważniejsze przydzielamy zadania:
 
     :::ruby
-    Assignment.find_or_initialize_by(programmer_id: 1, project_id: 1).tap do |a|
+    Assignment.find_or_initialize_by(programmer: kosinska, project: error404).tap do |a|
       a.task = "Models"
       a.save!
     end
-    Assignment.find_or_initialize_by(programmer_id: 2, project_id: 1).tap do |a|
+    Assignment.find_or_initialize_by(programmer: misiut, project: error404).tap do |a|
       a.task = "Views"
       a.save!
     end
-    Assignment.find_or_initialize_by(programmer_id:3, project_id: 1).tap do |a|
+    Assignment.find_or_initialize_by(programmer: tsott, project: error404).tap do |a|
       a.task = "Controllers"
       a.save!
     end
 
-    Assignment.find_or_initialize_by(programmer_id: 5, project_id: 2).tap do |a|
+    Assignment.find_or_initialize_by(programmer: lorddraw, project: karbon).tap do |a|
       a.task = "Models & Controllers"
       a.save!
     end
-    Assignment.find_or_initialize_by(programmer_id: 6, project_id: 2).tap do |a|
+    Assignment.find_or_initialize_by(programmer: mbonczkowska, project_id: karbon).tap do |a|
       a.task = "Views & Tests"
       a.save!
     end
 
     # teraz ja
-    Assignment.find_or_initialize_by(programmer_id: 4, project_id: 1).tap do |a|
+    Assignment.find_or_initialize_by(programmer: wbzyl, project: error404).tap do |a|
       a.task = "Advise and Evaluate"
       a.save!
     end
-    Assignment.find_or_initialize_by(programmer_id: 4, project_id: 2).tap do |a|
+    Assignment.find_or_initialize_by(programmer: wbzyl, project: karbon).tap do |a|
       a.task = "Advise and Evaluate"
       a.save!
     end
@@ -366,11 +366,12 @@ A teraz najważniejsze przydzielamy zadania:
 Przykładowe zapytania:
 
     :::ruby
-    Project.find(1).programmers
-    Programmer.find(4).projects
-    Programmer.find(4).assignments
-    Assignment.find(3).programmer
-    Assignment.find(3).project.due_date
+    Project.find(karbon).programmers
+    Programmer.find(wbzyl).projects
+    Programmer.find(wbzyl).assignments
+    Assignment.find(tsott).programmer
+    Assignment.find(tsott).project.due_date
+
     Programmer.find_by_login("lorddraw").assignments[0].task
     Programmer.find_by_login("lorddraw").projects[0].due_date
     Project.where(due_date: 4.weeks.from_now)
