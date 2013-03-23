@@ -56,7 +56,7 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
 # Rozpiska wykładów
 
-1. {%= link_to "Zapoznajemy się z językiem Ruby", "/ruby2" %}
+1. {%= link_to "Zapoznajemy się z językiem Ruby", "/ruby20" %}
 1. {%= link_to "RVM - zarządzanie wersjami Rails i Ruby", "/rvm" %}
 1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
