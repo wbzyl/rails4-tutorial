@@ -7,7 +7,13 @@
   hall•strom</a>]</p>
 </blockquote>
 
-Na Sigmie jest zainstalowany ruby-1.9.3-p194.
+Na Sigmie są zainstalowane ruby-1.9.3-p374-railsexpress oraz ruby-2.0.0-p0.
+
+Dokumentacja online:
+
+* [Ruby Core](http://www.ruby-doc.org/core/)
+* [Ruby Standard Library](http://www.ruby-doc.org/stdlib/)
+* [Ruby Doc](http://rdoc.info/) – dokumentacja gemów
 
 Podręczniki do języka Ruby:
 
@@ -24,24 +30,18 @@ Podręczniki do języka Ruby:
 * [Hyperpolyglot](http://hyperpolyglot.org/scripting) – nie tylko Ruby!
 * [Introduction to Ruby](http://www.cs.auckland.ac.nz/references/ruby/doc_bundle/Tutorial/)
 
-Dokumentacja online:
-
-* [Ruby Core](http://www.ruby-doc.org/core/)
-* [Ruby Standard Library](http://www.ruby-doc.org/stdlib/)
-* [Ruby Doc](http://rdoc.info/) – dokumentacja gemów
-
 Screencasty:
 
 * [A set of 17 must-watch videos on Ruby](http://www.tekniqal.com/)
 
 Miejsca gdzie warto zajrzeć od czasu do czasu:
 
+* [stackoverflow](http://stackoverflow.com/questions/tagged/ruby) –
+  questions tagged with **ruby**
 * [RVM](http://rvm.beginrescueend.com/) – Ruby Version Manager
 * [Ruby Programming Language](http://rubylang.info/) –
   community driven web site, dedicated to helping
   both new and experienced Ruby developers
-* [stackoverflow](http://stackoverflow.com/questions/tagged/ruby) –
-  questions tagged with **ruby**
 * [Rubyflow](http://rubyflow.com)
 
 Różne:
@@ -75,7 +75,7 @@ Różne:
     a.methods
 
 
-## Enumerators 1.8
+## Enumerators
 
     :::ruby
     a = [2,4,6,8]
@@ -85,7 +85,7 @@ Różne:
     a.find {|n| n > 4}
     a.inject {|acc,n| acc + n}
     a.class
-    a.class.ancestors
+    a.class.ancestors # [Array, Enumerable, Object, Kernel, BasicObject]
 
 
 ## Moduł Enumerable
@@ -95,8 +95,8 @@ Różne:
     pr.max
     pr.min
     pr.map! {|n| n.to_s}
-    a = [*1..10]
-    a.group_by {|x| x % 2}  # 1.9, yields a hash
+    a = [*1..8]
+    a.group_by {|x| x % 2}  # {1=>[1, 3, 5, 7], 0=>[2, 4, 6, 8]}
     class Person
       attr_reader :age
       def initialize(age)
@@ -110,12 +110,12 @@ Różne:
     b = Person.new(30)
     c = Person.new(30)
     d = Person.new(25)
-    [a,b,c,d].sort.group_by {|person| person.age}  # 1.9
-    [a,b,c,d].sort.group_by(&:age)                 # 1.9
-    a = [*1..10]
+    [a,b,c,d].sort.group_by {|person| person.age}
+    [a,b,c,d].sort.group_by(&:age)                 # to samo, ale krócej
+    a = [*1..8]
     a.each_cons(3) {|cons| p cons }
     a.each_slice(3) {|cons| p cons }
-    a.each_cons(3).map {|x,y,z| x * y * z }
+    a.each_cons(3).map {|x,y,z| x * y * z } # [6, 24, 60, 120, 210, 336]
     nums = [1.2, 2.3, 1.8, 5.2, 3.5]
     nums.any? {|n| n < 1}   # false
     nums.all? {|n| n < 10}  # true
@@ -128,18 +128,16 @@ Różne:
 
     :::ruby
     str = "ala ma kota"
-    str[2]   # 97, ruby 1.8
+    str[2]   # "a"
     str[2,1] # "a"
-    str[2]   # "a", ruby 1.9
-    ?a       # 97, ruby 1.8
-    ?a       # "a", ruby 1.9
+    a = str[2]
+    ?a       # "a"
     ?a.ord   # 97
 
-W 1.9 napisy nie są Enumerable, tj. `str.each` nie działa.
-Za to mamy *String.each_char* i *String.chars*:
+*String.each_char* i *String.chars*:
 
     :::ruby
-    str.each_char.class
+    str.each_char.class # Enumerator
     mstr = "hello\nworld"
     mstr.each_line {|l| puts l.upcase}
     str.chars.to_a  # ["a", "l", "a", ...]
@@ -149,15 +147,17 @@ Za to mamy *String.each_char* i *String.chars*:
 "Napisy" a :symbole:
 
     :::ruby
-    words= %w{ witaj świecie }
-    words.map { |w| w.upcase }
-    words.map(&:upcase)         # 1.9
+    napisy= %w{ witaj świecie }
+    symbole= %i{ witaj świecie }
+    napisy.map { |w| w.upcase }
+    napisy.map(&:upcase)
 
-### Napisy i kodowanie
+
+## Napisy i kodowanie
 
     :::ruby
     str = "witaj świecie"
-    str.encoding
+    str.encoding # #<Encoding:UTF-8>
 
 Zadawanie kodowania w pliku via *magic comments*:
 
