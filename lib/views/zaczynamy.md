@@ -779,18 +779,45 @@ z layoutu aplikacji ten wiersz:
     :::rhtml app/views/layouts/application.html.erb
     <%= csrf_meta_tags %>
 
-Teraz polecenia z *curl* powinny zadziałać:
+lub dodamy ten kod [ActionController::RequestForgeryProtection](http://edgeapi.rubyonrails.org/classes/ActionController/RequestForgeryProtection.html)
+do kontrolera *ApplicationController*:
 
-    curl    -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/1
-    curl -I -X DELETE http://localhost:3000/fortunes/1.json
-    curl    -X DELETE http://localhost:3000/fortunes/1
-    curl -v -X POST -H 'Content-Type: application/json' \
-      --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes.json
-    curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
-      --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes
+    :::ruby
+    class ApplicationController < ActionController::Base
+      protect_from_forgery
+      skip_before_action :verify_authenticity_token, if: :json_request?
 
-Jeśli pozostawimy bez zmian layout, to rekordy można usuwać
-na konsoli przeglądarki, na przykład tak usuwamy rekord z *id=6*:
+      protected
+      def json_request?
+        request.format.json?
+      end
+    end
+
+Teraz te polecenia z *curl* powinny zadziałać:
+
+    :::bash
+    curl    -X DELETE \
+       -H 'Accept: application/json'\
+       localhost:3000/fortunes/1
+    curl -I -X DELETE \
+       localhost:3000/fortunes/1.json
+    # mało eleganckie; ale też działa
+    curl -I -X DELETE \
+       localhost:3000/fortunes/1
+
+    curl -v -X POST \
+      --data '{"quotation":"I hear and I forget."}' \
+      localhost:3000/fortunes.json
+    curl    -X POST \
+      -H 'Content-Type: application/json' \
+      --data '{"quotation":"I hear and I forget."}' \
+      localhost:3000/fortunes
+
+Jeśli nie chcemy zmieniać layoutu i dopisywać kod do kontrolera,
+to rekordy nadal można usuwać.
+
+Najprościej jest wykorzystać konsolę przeglądarki.
+Przykładowo tak usuwamy rekord z *id=6*:
 
     :::js
     $.ajax({
@@ -801,21 +828,36 @@ na konsoli przeglądarki, na przykład tak usuwamy rekord z *id=6*:
       }
     })
 
-Powyżej korzystamy z funkcji *jQuery.ajax*. Zobacz też:
+(powyżej korzystamy z funkcji *jQuery.ajax*)
 
-Korzystanie z curla jest bardziej skomplikowane:
+Wkorzystanie programu *curl* do usuwania rekordów jest nieco bardziej
+skomplikowane.
+
+Zaczynamy od pobrania ciasteczka oraz odfiltrowania tokenu CSRF:
 
     :::bash
-    # pobieramy cookie do pliku *cookie* oraz filtrujemy CSRF-Token
-    curl http://localhost:3000/fortunes --cookie-jar cookie  | grep csrf
-    # kopiujemy csrf-token do polecenia poniżej; zakładamy, że fortunka 12 istnieje
-    curl -X DELETE -H 'X-CSRF-Token: 0Dm3mqmcWcajzHkSAzqczDnLllmhlVVaNYB5Fo1tYA0=' --cookie cookie localhost:3000/fortunes/10.json
-    # nie było przekierowania, możemy ponownie użyć ten sam CSRF-Token
-    curl -X DELETE -H 'X-CSRF-Token: 0Dm3mqmcWcajzHkSAzqczDnLllmhlVVaNYB5Fo1tYA0=' --cookie cookie localhost:3000/fortunes/11.json
+    # zapisujemy cookie do pliku *cookie*
+    curl localhost:3000/fortunes --cookie-jar cookie  | grep csrf
+
+Następnie kopiujemy token CSRF do polecenia poniżej:
+
+    :::bash
+    curl -X DELETE -H 'X-CSRF-Token: 0Dm3mqmcWcajzHkSAzqczDnLllmhlVVaNYB5Fo1tYA0=' \
+      --cookie cookie localhost:3000/fortunes/10.json
+
+Ponieważ, nie było przekierowania, możemy ponownie użyć tego samego tokenu
+do usunięcia kolejnego rekordu:
+
+    :::bash
+    curl -X DELETE -H 'X-CSRF-Token: 0Dm3mqmcWcajzHkSAzqczDnLllmhlVVaNYB5Fo1tYA0=' \
+      --cookie cookie localhost:3000/fortunes/11.json
+
+*Uwaga:* Rails używa *authenticity token* tylko w żądaniach POST, PUT i DELETE.
 
 * [Understand Rails Authenticity Token](http://stackoverflow.com/questions/941594/understand-rails-authenticity-token)
-* [cURLing with Rails’ authenticity_token](http://robots.thoughtbot.com/post/3035393350/curling-with-rails-authenticity-token)
+* [**cURLing with Rails’ authenticity_token**](http://robots.thoughtbot.com/post/3035393350/curling-with-rails-authenticity-token)
 * [WARNING: Can’t verify CSRF token authenticity Rails](http://stackoverflow.com/questions/7203304/warning-cant-verify-csrf-token-authenticity-rails)
+
 
 Linki do dokumentacji:
 
@@ -1182,14 +1224,14 @@ Chociaż przydałoby się dodać do powyższego kodu coś w stylu:
     end
 
 
-## Uruchamiamy serwer WWW
-
 <blockquote>
  <p>
   {%= image_tag "/images/nifty-secretary.jpg", :alt => "[nifty secretary]" %}
  </p>
  <p class="author">źródło: <a href="http://e-girlfriday.com/blog/">Retro Graphics, WordPress Site</a></p>
 </blockquote>
+
+## Uruchamiamy serwer WWW
 
 Każdy serwer ma swoje mocne i słabe strony.
 
@@ -1209,6 +1251,12 @@ advantage of features in Unix/Unix-like kernels. Slow clients should
 only be served by placing a reverse proxy capable of fully buffering
 both the the request and response in between Unicorn and slow
 clients.
+
+<blockquote>
+  {%= image_tag "/images/puma-standard-logo.png", :alt => "[puma logo]" %}
+</blockquote>
+
+[Puma](http://puma.io/) is built for speed and **parallelism**.
 
 [Rainbows!](http://rainbows.rubyforge.org/)
 is an HTTP server for sleepy Rack applications. It is based
