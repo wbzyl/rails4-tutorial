@@ -7,7 +7,10 @@
   hall•strom</a>]</p>
 </blockquote>
 
-Na Sigmie są zainstalowane ruby-1.9.3-p374-railsexpress oraz ruby-2.0.0-p0.
+Na Sigmie są zainstalowane *ruby-1.9.3-p374-railsexpress* oraz
+*ruby-2.0.0-p0*:
+
+* [Matz on Ruby 2.0 at Heroku's Waza](https://blog.heroku.com/archives/2013/3/6/matz_highlights_ruby_2_0_at_waza)
 
 Dokumentacja online:
 
@@ -163,6 +166,11 @@ Zadawanie kodowania w pliku via *magic comments*:
 
     :::ruby
     # -*- encoding: utf-8 -*-
+
+
+## Keywords arguments
+
+* [Ruby 2.0 : Keyword arguments](http://dev.af83.com/2013/02/18/ruby-2-0-keyword-arguments.html)
 
 
 ## Metody, Procs, …
