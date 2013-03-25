@@ -771,7 +771,15 @@ inny program, na przykład *curl*:
 
 W ostatnich wersjach Rails
 (zob. [Critical Ruby On Rails Issue Threatens 240,000 Websites](http://www.informationweek.com/security/vulnerabilities/critical-ruby-on-rails-issue-threatens-2/240145891))
-wymagane jest przesłanie tokena CSRF:
+wymagane jest przesłanie tokena CSRF.
+
+Poniższe polecenia wykonają się bez błędów jeśli usuniemy
+z layoutu aplikacji ten wiersz:
+
+    :::rhtml app/views/layouts/application.html.erb
+    <%= csrf_meta_tags %>
+
+Teraz polecenia z *curl* powinny zadziałać:
 
     curl    -X DELETE -H 'Accept: application/json' http://localhost:3000/fortunes/1
     curl -I -X DELETE http://localhost:3000/fortunes/1.json
@@ -780,6 +788,34 @@ wymagane jest przesłanie tokena CSRF:
       --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes.json
     curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
       --data '{"quotation":"I hear and I forget."}' http://localhost:3000/fortunes
+
+Jeśli pozostawimy bez zmian layout, to rekordy można usuwać
+na konsoli przeglądarki, na przykład tak usuwamy rekord z *id=6*:
+
+    :::js
+    $.ajax({
+      url: 'http://localhost:3000/fortunes/6.json',
+      type: 'DELETE',
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      }
+    })
+
+Powyżej korzystamy z funkcji *jQuery.ajax*. Zobacz też:
+
+Korzystanie z curla jest bardziej skomplikowane:
+
+    :::bash
+    # pobieramy cookie do pliku *cookie* oraz filtrujemy CSRF-Token
+    curl http://localhost:3000/fortunes --cookie-jar cookie  | grep csrf
+    # kopiujemy csrf-token do polecenia poniżej; zakładamy, że fortunka 12 istnieje
+    curl -X DELETE -H 'X-CSRF-Token: 0Dm3mqmcWcajzHkSAzqczDnLllmhlVVaNYB5Fo1tYA0=' --cookie cookie localhost:3000/fortunes/10.json
+    # nie było przekierowania, możemy ponownie użyć ten sam CSRF-Token
+    curl -X DELETE -H 'X-CSRF-Token: 0Dm3mqmcWcajzHkSAzqczDnLllmhlVVaNYB5Fo1tYA0=' --cookie cookie localhost:3000/fortunes/11.json
+
+* [Understand Rails Authenticity Token](http://stackoverflow.com/questions/941594/understand-rails-authenticity-token)
+* [cURLing with Rails’ authenticity_token](http://robots.thoughtbot.com/post/3035393350/curling-with-rails-authenticity-token)
+* [WARNING: Can’t verify CSRF token authenticity Rails](http://stackoverflow.com/questions/7203304/warning-cant-verify-csrf-token-authenticity-rails)
 
 Linki do dokumentacji:
 
