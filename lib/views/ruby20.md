@@ -123,9 +123,9 @@ Różne:
     nums.any? {|n| n < 1}   # false
     nums.all? {|n| n < 10}  # true
     nums.sort
-    nums.sort.take(2)  # 1.9
-    nums.sort.drop(2)  # 1.9
-    nums.sort.take_while {|n| n < 3}  # 1.9
+    nums.sort.take(2)
+    nums.sort.drop(2)
+    nums.sort.take_while {|n| n < 3}
 
 ## Napisy
 
@@ -152,9 +152,14 @@ Różne:
     :::ruby
     napisy= %w{ witaj świecie }
     symbole= %i{ witaj świecie }
-    napisy.map { |w| w.upcase }
-    napisy.map(&:upcase)
 
+    class String; def second; self[1]; end; end
+    napisy.map { |w| w.second }
+    napisy.map(&:second)
+
+    def second(s); s[1]; end
+    napisy.map { |w| second(w) }
+    napisy.map(&method(:second))
 
 ## Napisy i kodowanie
 
@@ -206,10 +211,10 @@ Jawny argument (*&b*) Proc pobierający blok:
 ## Ruby misz masz
 
     :::ruby
-    str = "ala ma kota"           # 1.8
+    str = "ala ma kota"
     str.instance_eval { upcase }
     str.instance_eval { split }
-    str.instance_exec(/a/) {|re| split(re) }  # 1.9
+    str.instance_exec(/a/) {|re| split(re) }
 
 -->
 
