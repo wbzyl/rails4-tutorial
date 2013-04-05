@@ -101,7 +101,7 @@ Usuwamy niepotrzebne gemy z pliku *Gemfile*:
 dopisujemy gemy z których będziemy korzystać:
 
     :::ruby Gemfile
-    gem 'thin'
+    gem 'puma'
     gem 'pygments.rb'
     gem 'redcarpet'
 
@@ -196,8 +196,9 @@ Routing:
     :::bash
     rake routes
 
-      pages_welcome GET /pages/welcome(.:format) pages#welcome
-        pages_about GET /pages/about(.:format)   pages#about
+           Prefix Verb URI Pattern             Controller#Action
+    pages_welcome GET /pages/welcome(.:format) pages#welcome
+      pages_about GET /pages/about(.:format)   pages#about
 
 co oznacza, że te strony będą dostępne z adresów
 */pages/welcome* i */pages/about*.
@@ -262,13 +263,14 @@ W pliku *config/routes.rb* wygenerowany kod:
 wymieniamy na:
 
     :::ruby config/routes.rb
-    match "welcome", to: "pages#welcome"
-    match "about", to: "pages#about"
+    match "welcome", to: "pages#welcome", via: 'get'
+    match "about",   to: "pages#about",   via: 'get'
 
 Przy zmienionym routingu wykonanie polecenia `rake routes` daje:
 
-    welcome  /welcome(.:format) pages#welcome
-      about  /about(.:format)   pages#about
+     Prefix Verb URI Pattern       Controller#Action
+    welcome GET /welcome(.:format) pages#welcome
+      about GET /about(.:format)   pages#about
 
 co oznacza, że te strony są dostępne z krótszych, niż poprzednio,
 adresów */welcome* i */about*.
