@@ -443,12 +443,16 @@ Szablonu formularza *SimpleForm*:
 Na pasku *navbar* umieścimy kilka ikonek z fontu *FontAwesome*:
 
     :::rhtml app/views/shared/_navbar.html.erb
-    <div class="container">
-      <%= link_to icon("quote-left", "Fortunes"), root_path, class: "brand" %>
-      <ul class="nav pull-right">
-        <li><%= link_to icon("home", "Tao"), "http://tao.inf.ug.edu.pl/" %></li>
-        <li><%= link_to icon("ambulance", "ASI"), "http://wbzyl.inf.ug.edu.pl/rails4/" %></li>
-      </ul>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <%= link_to icon("quote-left", "Fortunes"), root_path, class: "brand" %>
+          <ul class="nav pull-right">
+            <li><%= link_to icon("home", "Tao"), "http://tao.inf.ug.edu.pl/" %></li>
+            <li><%= link_to icon("ambulance", "ASI"), "http://wbzyl.inf.ug.edu.pl/rails4/" %></li>
+          </ul>
+        </div>
+      </div>
     </div>
 
 Powyżej użyliśmy metody pomocniczej *icon*. Kod tej metody zapiszemy
