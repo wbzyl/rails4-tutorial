@@ -6,7 +6,7 @@ fortunes = [
 ]
 
 fortunes.each do |attr|
-  Fortune.find_or_initialize_by_quotation(attr[:quotation]).tap do |t|
+  Fortune.find_or_initialize_by(quotation: attr[:quotation]).tap do |t|
     t.source = attr[:source]
     t.save!
   end

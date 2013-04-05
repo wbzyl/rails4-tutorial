@@ -14,7 +14,7 @@ authors = [
 
 authors.each do |attr|
   puts "#{attr[:last_name]}, #{attr[:first_name]}"
-  Author.find_or_create_by_last_name_and_first_name(attr)
+  Author.find_or_create_by(last_name: attr[:last_name], first_name: attr[:first_name])
 end
 
 puts "="*16, "Articles", "="*16
@@ -28,7 +28,7 @@ books = [
 
 books.each do |attr|
   puts attr[:title]
-  Article.find_or_create_by_title_and_isbn_and_pub_date(attr)
+  Article.find_or_create_by(title: attr[:title], isbn: attr[:isbn], pub_date: attr[:pub_date])
 end
 
 puts "="*16, "articles_authors", "="*16
