@@ -12,29 +12,27 @@ create_file "README.md"
 
 # add these gems
 
-gem "thin"
+gem "puma"
 gem "simple_form"
 
 # and remove these gems
 
 gsub_file 'Gemfile', /.+'sass-rails'.+\n/, ''
-gsub_file 'Gemfile', /.+'coffee-rails'.+\n/, ''
 
 # use Less instead of CSS: http://lesscss.org/
 
 gem "less-rails"
-gem "therubyracer"
 
 # add Bootstrap to asset pipeline: https://github.com/seyhunak/twitter-bootstrap-rails
 
 gem_group :assets do
+  gem "therubyracer"
   gem "twitter-bootstrap-rails"
 end
 
 gem_group :development, :test do
   gem "rspec-rails"
   gem "quiet_assets"
-  gem "hirb"
   # for testing with MiniTest: https://github.com/commondream/tconsole
   # gem "tconsole"
 end
