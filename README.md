@@ -1,7 +1,7 @@
 # Rails 4, wiosna 2012/13
 
 Notatki do wykładu „Architektura serwisów internetowych”,
-Ruby on Rails v3.
+Ruby on Rails 4, Ruby 2.0.
 
 
 ## …ostateczne terminy oddania projektów
