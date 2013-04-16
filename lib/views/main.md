@@ -17,6 +17,8 @@
   [check winners](http://railsrumble.com/entries/winners)
 * Michael Hartl, [Ruby on Rails Tutorial](http://ruby.railstutorial.org/ruby-on-rails-tutorial-book?version=4.0) –
   *Learn Rails by Example*
+* Dave Kennedy,
+  [Give Vagrant a Place in Your Workflow](http://rubysource.com/give-vagrant-a-place-in-your-workflow/)
 
 
 ## Praktyczne rzeczy…

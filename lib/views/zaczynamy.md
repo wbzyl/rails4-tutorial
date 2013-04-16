@@ -587,7 +587,6 @@ czy będzie działał z innymi gemami i wersjami Ruby, itp.
     if defined? Bundler
       Gem.post_reset_hooks.reject! { |hook| hook.source_location.first =~ %r{/bundler/} }
       Gem::Specification.reset
-      load 'rubygems/custom_require.rb'
     end
 
     if defined? Rails
@@ -597,11 +596,6 @@ czy będzie działał z innymi gemami i wersjami Ruby, itp.
       rescue LoadError
       end
     end
-
-
-<!--
-  albo wpsiujemy w pliku do *rubygems/custom_require.rb* (Ruby 2.0).
--->
 
 
 ## Co to jest REST?
