@@ -739,7 +739,8 @@ Oto utworzony przez generator kontroler:
 
 ### Rendering response
 
-…czyli renderowaniem odpowiedzi zajmują się takie kawałki kodu:
+…czyli renderowaniem odpowiedzi zajmują się
+takie kawałki kodu:
 
     :::ruby
     respond_to do |format|
@@ -751,14 +752,14 @@ Oto utworzony przez generator kontroler:
 What that says is:
 
 1. If the client wants HTML in response to this
-action, use the default template for this action
+action, redirect and use the default template for this action
 (for *index* it is *index.html.erb*).
 
 2. If the client wants JSON, return response 204<br>
 (`gem install cheat; cheat http`).
 
 3. If the client wants JS, use the default template
-for this action (for *destroy* it is *destroy.js.html*).
+for this action (for *destroy* it is *destroy.js.erb*).
 
 Rails determines the desired response format from
 the HTTP **Accept header** submitted by the client.
@@ -866,15 +867,25 @@ Linki do dokumentacji:
   [ActionController::Responder](http://api.rubyonrails.org/classes/ActionController/Responder.html)
 
 
-### Przykład respond_to CSV
+### Przykład respond_to CSV dla *index*
+
+W pliku *fortunes_controller.rb* podmieniamy kod metody
+*index* na:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def index
+      @fortunes = Fortune.all
+      respond_to do |format|
+        format.html
+        format.csv { send_data Fortune.to_csv }
+      end
+    end
 
 Dopisujemy w pliku *application.rb*:
 
     :::ruby config/application.rb
     require File.expand_path('../boot', __FILE__)
-
     require 'csv'        #<= NEW!
-    require 'rails/all'
 
 W kodzie modelu *Fortune* dodajemy metodę *to_csv*:
 
@@ -910,23 +921,36 @@ Zobacz też:
 * gem [axlsx](https://github.com/randym/axlsx) –
   xlsx generation with charts, images, automated column width,
   customizable styles and full schema validation
-* [eksport do arkusza kalkulacyjnego](http://railscasts.com/episodes/362-exporting-csv-and-excel).
+* [eksport do arkusza kalkulacyjnego](http://railscasts.com/episodes/362-exporting-csv-and-excel)
 
 
 ### CSV via szablon *index.csv.ruby*
 
-Na początek utworzymy plik *index.csv.ruby* o takiej zawartości:
+W pliku *fortunes_controller.rb* podmieniamy kod metody
+*index* na:
+
+    :::ruby
+    def index
+      @fortunes = Fortune.all
+
+      respond_to do |format|
+        format.html
+        format.csv
+      end
+    end
+
+i w pliki *index.csv.ruby* wpisujemy:
 
     :::ruby app/views/lists/index.csv.ruby
     "hello CSV world"
 
-I sprawdzamy czy to działa:
+Teraz sprawdzamy czy aplikacja użyje tego pliku:
 
     :::bash
     curl localhost:3000/fortunes.csv
 
-Jeśli otworzy się arkusz kalkulacyjny w którym jest wpisane `hello world`
-to będzie oznaczać że kod zadziałał.
+Jeśli na konsoli zostanie wypisany napis `hello world`
+będzie to oznaczać że kod zadziałał.
 
 Teraz podmieniamy zawartość pliku *index.csv.ruby* na:
 
