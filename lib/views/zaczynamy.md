@@ -916,6 +916,15 @@ Sprawdzamy jak to działa:
     :::bash
     curl http://localhost:3000/fortunes.csv
 
+Możemy też dodać link, na stronie *index.html.erb*:
+
+    :::rhtml
+    <p>Pobierz:
+      <%= link_to "CSV", fortunes_path(format: "csv") %> |
+      <%= link_to "Excel", fortunes_path(format: "xls") %>
+    </p>
+
+
 Zobacz też:
 
 * gem [axlsx](https://github.com/randym/axlsx) –
