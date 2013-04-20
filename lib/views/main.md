@@ -62,7 +62,7 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "RVM - zarządzanie wersjami Rails i Ruby", "/rvm" %}
 1. {%= link_to "Kilka prostych przykładów", "/zaczynamy" %}
 1. {%= link_to "„Fortunka” v0.0", "/fortunka0" %}
-1. {%= link_to "Respond to: CSV, XLS", "/respond_to" %}
+1. {%= link_to "Odpowiedzi zależne od nagłówka MIME", "/respond_to" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "Layout, czyli makieta aplikacji", "/layouty" %}
