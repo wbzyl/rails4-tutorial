@@ -60,13 +60,15 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
 1. {%= link_to "Zapoznajemy się z językiem Ruby", "/ruby20" %}
 1. {%= link_to "RVM - zarządzanie wersjami Rails i Ruby", "/rvm" %}
-1. {%= link_to "„Fortunka” v0.0", "/zaczynamy" %}
+1. {%= link_to "Kilka prostych przykładów", "/zaczynamy" %}
+1. {%= link_to "„Fortunka” v0.0", "/fortunka0" %}
+1. {%= link_to "Respond to: CSV, XLS", "/respond_to" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
 1. {%= link_to "Krok po kroku odkrywamy Heroku", "/heroku" %}
 1. {%= link_to "Layout, czyli makieta aplikacji", "/layouty" %}
 1. {%= link_to "Remote links", "/remote-links" %}
 1. {%= link_to "Fortunka i18n & l10n", "/i18n" %}
-1. {%= link_to "„Fortunka” v1.0", "/fortunka" %}
+1. {%= link_to "„Fortunka” v1.0", "/fortunka1" %}
 1. {%= link_to "Autentykacja z Devise", "/devise" %}
 1. {%= link_to "Autoryzacja z CanCan", "/cancan" %}
 1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
