@@ -251,7 +251,6 @@ Możemy je wykonać wysyłając z konsoli odpowiednio przygotowane
 
 Ten sposób ma tę wadę, że musimy być na stronie aplikacji.
 Inaczej nie odszukamy "csrf-token".
-
 Tej wady nie ma poniższy, choć dwuetapowy, sposób.
 
 3\. Pobieramy ciasteczko oraz odfiltrowujemy token CSRF:
