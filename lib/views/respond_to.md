@@ -274,6 +274,9 @@ do usunięcia kolejnego rekordu:
 
 Dodatkowa lektura:
 
+* [Using cURL to automate HTTP jobs ](http://curl.haxx.se/docs/httpscripting.html);
+  polskie tłumaczenie – Rafał Machtyl,
+  [Sztuka pisania skrypów z żądaniami HTTP przy użyciu cURL](http://asciiwhiteplayground.site88.net/curl.html)
 * [Understand Rails Authenticity Token](http://stackoverflow.com/questions/941594/understand-rails-authenticity-token)
 * [**cURLing with Rails’ authenticity_token**](http://robots.thoughtbot.com/post/3035393350/curling-with-rails-authenticity-token)
 * [WARNING: Can’t verify CSRF token authenticity Rails](http://stackoverflow.com/questions/7203304/warning-cant-verify-csrf-token-authenticity-rails)
