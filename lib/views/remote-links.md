@@ -5,7 +5,6 @@
 * Co to jest „Unobtrusive JavaScript” (w skrócie *UJS*)?
 * Co to są „Progressive Enhancements” (stopniowe udoskonalenia)?
 
-
 <!-- * Przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links). -->
 
 Do eksperymentów z *remote links* użyjemy aplikacji
@@ -13,74 +12,21 @@ Do eksperymentów z *remote links* użyjemy aplikacji
 na Heroku na poprzednim wykładzie:
 
     :::bash
-    git clone git@heroku.com:sharp-ocean-6085.git
-    cd sharp-ocean-6085
+    git clone git://github.com/wbzyl/my_fortunes_4.x.git
+    cd my_fortunes_4.x
     rake db:create
-    rake db:migrate # aplikacja korzysta z bazy PostgreSQL; podmienić na SQLite?
+    rake db:migrate # aplikacja korzysta z bazy SQLite?
     rake db:seed
 
-Kod aplikacji jest też w moim publicznym repo na GitHubie, tutaj –
-[sharp-ocean-6085](https://github.com/wbzyl/sharp-ocean-6085).
-
-Eksperymenty z *remote links* będą ciekawsze jeśli
-użyjemy biblioteki [jQuery UI](http://jqueryui.com/).
-Wykorzystamy efekty [„explode”, „fade” i „highlight”](http://jqueryui.com/demos/effect/).
-
-Po zaznajomieniu się z tymi efektami, zabieramy się do instalacji jQuery UI.
-
-
-### Instalacja na skróty
-
-Korzystamy z gemu:
-
-* [jquery-ui-rails](https://github.com/joliss/jquery-ui-rails)
-
-Na razie, dostępna jest tylko jedna szara skórka – *Smoothness*.
-
-
-### Instalacja ze źródeł
-
-Ze strony [download](http://jqueryui.com/download) pobieramy paczkę
-z*theme* (skórką?) **Start** ze wszystkimi efektami (tak będzie wygodniej).
-
-Pobrane archiwum rozpakowujemy:
+Dodajemy *tracking branch*:
 
     :::bash
-    unzip jquery-ui-1.8.18.custom.zip
+    git checkout --track origin/remote-links
+    git pull
 
-Następnie kopiujemy pliki do odpowiednich katalogów w *vendor/assets*.
+## ☯ program curl jest cool
 
-    :::bash
-    cp  css/start  sharp-ocean-6085/vendor/assets/stylesheets/
-    cp  js/jquery-ui-1.8.18.custom.min.js  sharp-ocean-6085/vendor/assets/javascripts/
-
-Skopiowane pliki dopisujemy do pliku *application.js*
-
-    :::js app/assets/javascripts/application.js
-    //= require jquery
-    //= require jquery_ujs
-    //= require twitter/bootstrap
-    //= require jquery-ui-1.8.18.custom.min
-
-oraz do pliku *application.css.less*:
-
-    :::css app/assets/stylesheets/application.css.less
-    @import "twitter/bootstrap";
-    @import "fontawesome";
-    @import "digg_pagination";
-    @import "start/jquery-ui-1.8.18.custom.css";
-
-Sprawdzamy, czy plik te są wczytywane:
-
-    :::bash
-    curl localhost:3000/assets/jquery-ui-1.8.18.custom.min.js
-    curl localhost:3000/assets/start/jquery-ui-1.8.18.custom.css
-    http://localhost:3000/assets/start/images/ui-bg_inset-hard_100_fcfdfd_1x100.png
-
-
-### ☯ curl jest cool
-
-Jeśli wszystko działa, to dla rozruszania wykonujemy kilka poleceń
+Po pomyślnej instalacji, dla rozruszania wykonujemy kilka poleceń
 z programem *curl*:
 
     :::bash
@@ -105,12 +51,29 @@ Dodajemy fortunkę do bazy:
 
     :::bash
     curl -v -X POST -H 'Content-Type: application/json' \
-      --data '{"quotation":"I hear and I forget."}' localhost:3000/fortunes.json
+        --data '{"quotation":"I hear and I forget."}' \
+        localhost:3000/fortunes.json
     curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
-      --data '{"quotation":"I hear and I forget."}' localhost:3000/fortunes
+        --data '{"quotation":"I hear and I forget."}' \
+        localhost:3000/fortunes
 
 **Uwaga:** W trakcie eksperymentów, cały czas podglądamy co się dzieje
 na konsoli przeglądarki (zakładki *Sieć*, *XHR*).
+
+
+## Korzystamy z jQuery UI
+
+Eksperymenty z *remote links* będą ciekawsze jeśli
+użyjemy biblioteki [jQuery UI](http://jqueryui.com/).
+
+W przykładach poniżej skorzystamy z efektów
+[„explode”, „fade” i „highlight”](http://jqueryui.com/demos/effect/).
+
+Instalacja na skróty:
+
+* [jquery-ui-rails](https://github.com/joliss/jquery-ui-rails)
+
+Na razie, dostępna jest tylko jedna szara skórka – *Smoothness*.
 
 
 ## ☢ Obsługa przycisku *Destroy*
@@ -885,3 +848,47 @@ Instalacja:
     gem install coffee-script execjs therubyracer # zależności
     gem install --pre eco-source
     gem install eco
+
+
+<!--
+
+### Instalacja ze źródeł
+
+Ze strony [download](http://jqueryui.com/download) pobieramy paczkę
+z*theme* (skórką?) **Start** ze wszystkimi efektami (tak będzie wygodniej).
+
+Pobrane archiwum rozpakowujemy:
+
+    :::bash
+    unzip jquery-ui-1.8.18.custom.zip
+
+Następnie kopiujemy pliki do odpowiednich katalogów w *vendor/assets*.
+
+    :::bash
+    cp  css/start  sharp-ocean-6085/vendor/assets/stylesheets/
+    cp  js/jquery-ui-1.8.18.custom.min.js  sharp-ocean-6085/vendor/assets/javascripts/
+
+Skopiowane pliki dopisujemy do pliku *application.js*
+
+    :::js app/assets/javascripts/application.js
+    //= require jquery
+    //= require jquery_ujs
+    //= require twitter/bootstrap
+    //= require jquery-ui-1.8.18.custom.min
+
+oraz do pliku *application.css.less*:
+
+    :::css app/assets/stylesheets/application.css.less
+    @import "twitter/bootstrap";
+    @import "fontawesome";
+    @import "digg_pagination";
+    @import "start/jquery-ui-1.8.18.custom.css";
+
+Sprawdzamy, czy plik te są wczytywane:
+
+    :::bash
+    curl localhost:3000/assets/jquery-ui-1.8.18.custom.min.js
+    curl localhost:3000/assets/start/jquery-ui-1.8.18.custom.css
+    http://localhost:3000/assets/start/images/ui-bg_inset-hard_100_fcfdfd_1x100.png
+
+-->
