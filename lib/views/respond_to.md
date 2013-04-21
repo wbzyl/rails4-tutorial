@@ -196,9 +196,10 @@ Oznacza, to że polecenia z *curl* i z jednym z powyższych VERB zwrócą błą
 Dlatego dla wygody,  w trakcie poniższych eksperymentów z programem *curl* (lub na
 konsoli przeglądarki) powinniśmy wykonać jedną z trzech rzeczy:
 
-1\. Usunąć zabezpieczenie CSRF z layoutu (**niestety nie działa od 2013.04**)
+1\. Usunąć zabezpieczenie CSRF z layoutu <br>
+**Niestety nie działa od 2013.04.**
 
-2\. Dodać ten kod do kontrolera
+2\. Dodać ten kod do kodu kontrolera
 [ApplicationController](http://edgeapi.rubyonrails.org/classes/ActionController/RequestForgeryProtection.html):
 
     :::ruby
@@ -234,8 +235,7 @@ Teraz poniższe polecenia powinny wykonać się bez błędów:
 
 Nie musimy nic zmieniać w kodzie aplikacji, aby zostały wykonane
 powyższe polecenia.
-
-Możemy je wykonać na wysyłając z konsoli odpowiednio przygotowane
+Możemy je wykonać wysyłając z konsoli odpowiednio przygotowane
 żądanie AJAX. Na przykład, tak usuniemy rekord z *id=6*:
 
     :::js
@@ -247,8 +247,12 @@ Możemy je wykonać na wysyłając z konsoli odpowiednio przygotowane
       }
     })
 
-Niestety musimy być na stronie aplikacji, aby odszukać "csrf-token".
 (W kodzie powyżej korzystam z *jQuery*).
+
+Ten sposób ma tę wadę, że musimy być na stronie aplikacji.
+Inaczej nie odszukamy "csrf-token".
+
+Tej wady nie ma poniższy, choć dwuetapowy, sposób.
 
 3\. Pobieramy ciasteczko oraz odfiltrowujemy token CSRF:
 
