@@ -1,4 +1,4 @@
-#### {% title "Remote links" %}
+#### {% title "Remote links ☯" %}
 
 * Co oznacza zwrot „remote links”?
 * Jak implementujemy „remote links”?
@@ -24,44 +24,14 @@ Dodajemy *tracking branch*:
     git checkout --track origin/remote-links
     git pull
 
-## ☯ program curl jest cool
-
-Po pomyślnej instalacji, dla rozruszania wykonujemy kilka poleceń
-z programem *curl*:
-
-    :::bash
-    curl -v -X GET -H 'Accept: application/json' localhost:3000/fortunes/44
-    curl    -X GET -H 'Accept: application/json' localhost:3000/fortunes/45
-    curl -v -X DELETE localhost:3000/fortunes/2         # wpisujemy numery istniejących fortunek
-    curl    -X DELETE localhost:3000/fortunes/3         # jw (już wspomniane)
-    curl -v -X DELETE localhost:3000/fortunes/4.json    # jw
-    curl -v -X DELETE -H 'Accept: application/json' localhost:3000/fortunes/5
 
 <!--
    te polecenia (ten fragment) / których (który)
    takiej pracy / o jakiej wcześniej rozmawiał (jakie zastępuje przymiotniki)
 -->
 
-Po wykonaniu których poleceń na konsolę jest wypisywane:
 
-    :::html
-    <html><body>You are being <a href="http://localhost:3000/fortunes">redirected</a>.</body></html>
-
-Dodajemy fortunkę do bazy:
-
-    :::bash
-    curl -v -X POST -H 'Content-Type: application/json' \
-        --data '{"quotation":"I hear and I forget."}' \
-        localhost:3000/fortunes.json
-    curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
-        --data '{"quotation":"I hear and I forget."}' \
-        localhost:3000/fortunes
-
-**Uwaga:** W trakcie eksperymentów, cały czas podglądamy co się dzieje
-na konsoli przeglądarki (zakładki *Sieć*, *XHR*).
-
-
-## Korzystamy z jQuery UI
+## Instalujemy jQuery UI
 
 Eksperymenty z *remote links* będą ciekawsze jeśli
 użyjemy biblioteki [jQuery UI](http://jqueryui.com/).
