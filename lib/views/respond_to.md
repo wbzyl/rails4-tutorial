@@ -196,14 +196,14 @@ Oznacza, to że polecenia z *curl* i z jednym z powyższych VERB zwrócą błą
 Dlatego dla wygody,  w trakcie poniższych eksperymentów z programem *curl* (lub na
 konsoli przeglądarki) powinniśmy wykonać jedną z trzech rzeczy:
 
-1\. Usunąć zabezpieczenie CSRF z layoutu.
+1\. Usunąć zabezpieczenie CSRF z layoutu (**niestety nie działa od 2013.04**)
 
 2\. Dodać ten kod do kontrolera
 [ApplicationController](http://edgeapi.rubyonrails.org/classes/ActionController/RequestForgeryProtection.html):
 
     :::ruby
     class ApplicationController < ActionController::Base
-      protect_from_forgery
+      protect_from_forgery with: :exception
       skip_before_action :verify_authenticity_token, if: :json_request?
 
       protected
@@ -225,15 +225,18 @@ Teraz poniższe polecenia powinny wykonać się bez błędów:
        localhost:3000/fortunes/1
 
     curl -v -X POST \
-      --data '{"quotation":"I hear and I forget."}' \
+      --data-urlencode "fortune[quotation]=I hear an I forget" \
       localhost:3000/fortunes.json
     curl    -X POST \
       -H 'Content-Type: application/json' \
-      --data '{"quotation":"I hear and I forget."}' \
+      --data-urlencode 'fortune[quotation]:I hear and I forget.' \
       localhost:3000/fortunes
 
-Zamiast programu *curl* można przesłać te żądania korzystając
-z konsoli przeglądarki. Przykładowo tak usuwamy rekord z *id=6*:
+Nie musimy nic zmieniać w kodzie aplikacji, aby zostały wykonane
+powyższe polecenia.
+
+Możemy je wykonać na wysyłając z konsoli odpowiednio przygotowane
+żądanie AJAX. Na przykład, tak usuniemy rekord z *id=6*:
 
     :::js
     $.ajax({
@@ -244,13 +247,14 @@ z konsoli przeglądarki. Przykładowo tak usuwamy rekord z *id=6*:
       }
     })
 
-(powyżej korzystamy z *jQuery*).
+Niestety musimy być na stronie aplikacji, aby odszukać "csrf-token".
+(W kodzie powyżej korzystam z *jQuery*).
 
 3\. Pobieramy ciasteczko oraz odfiltrowujemy token CSRF:
 
     :::bash
     # zapisujemy cookie do pliku *cookie*
-    curl localhost:3000/fortunes --cookie-jar cookie  | grep csrf
+    curl -s localhost:3000/fortunes --cookie-jar cookie  | grep csrf
 
 Kopiujemy token CSRF do polecenia poniżej, na przykład:
 
