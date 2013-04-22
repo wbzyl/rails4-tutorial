@@ -87,7 +87,20 @@ generuje kod dla zasobu (ang. *resource*) *fortune*:
     end
 
 Jak widać, metody wygenrowanego kontrolera potrafią zwrócić odpowiedź
-w różnych formatach (powyżej – HTML i JSON).
+w różnych formatach, HTML i JSON:
+
+* index:
+  {%= link_to "index.html.erb", "/rails4/fortunes/index.html.erb" %},
+  {%= link_to "index.json.jbuilder", "/rails4/fortunes/index.json.jbuilder" %}
+* show:
+  {%= link_to "show.html.erb", "/rails4/fortunes/show.html.erb" %},
+  {%= link_to "show.json.jbuilder", "/rails4/fortunes/show.json.jbuilder" %}
+
+tylko HTML:
+
+* {%= link_to "\_form.html.erb", "/rails4/fortunes/\_form.html.erb" %}
+* {%= link_to "edit.html.erb", "/rails4/fortunes/edit.html.erb" %}
+* {%= link_to "new.html.erb", "/rails4/fortunes/new.html.erb" %}
 
 Odpowiedź zależy od nagłówka MIME (tak naprawdę
 od nagłówka *Accept*) przekazanego w żądaniu HTTP
