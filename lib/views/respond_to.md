@@ -239,12 +239,18 @@ Teraz poniższe polecenia powinny wykonać się bez błędów:
        localhost:3000/fortunes/1
 
     curl -v -X POST \
-      --data-urlencode "fortune[quotation]=I hear an I forget" \
+      --data-urlencode "fortune[quotation]=I hear and I forget" \
       localhost:3000/fortunes.json
     curl    -X POST \
       -H 'Content-Type: application/json' \
       --data-urlencode 'fortune[quotation]:I hear and I forget.' \
       localhost:3000/fortunes
+
+W powyższych poleceniach zamiast `--data-urlencode`
+można użyć `--data`, lub `-d`:
+
+    curl -v -X POST -d "fortune[quotation]=I hear and I forget" \
+      localhost:3000/fortunes.json
 
 Nie musimy nic zmieniać w kodzie aplikacji, aby zostały wykonane
 powyższe polecenia.
