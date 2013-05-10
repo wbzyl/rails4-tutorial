@@ -375,41 +375,46 @@ kiedy walidować (`:create`, `:update`, `:save` itd.)
 wyjaśniono w samouczkach.
 
 
-## TODO: Grand refactoring
+## Grand refactoring
 
-W widoku *index* skorzystamy z ***implicit loop***.  Wycinamy kod
-z pętlą po *@fortunes* z pliku *index.html.erb*, a ciało pętli:
+W widoku *index* wykorzystamy tzw. ***implicit loop***.
 
-    :::rhtml app/views/fortunes/index.html.erb
-    <article class="index">
-      <div class="attribute">
-        <span class="name"><%= t "simple_form.labels.fortune.quotation" %></span>
-        <span class="value"><%= fortune.quotation %></span>
-      </div>
-      <div class="attribute">
-        <span class="name"><%= t "simple_form.labels.fortune.source" %></span>
-        <span class="value"><%= fortune.source %></span>
-      </div>
-    <div class="form-actions">
-      <%= link_to 'Show', fortune, class: 'btn btn-mini'%>
-      <%= link_to 'Edit', edit_fortune_path(fortune), class: 'btn btn-mini'%>
-      <%= link_to 'Destroy', fortune, confirm: 'Are you sure?', method: :delete, class: 'btn btn-mini btn-danger'%>
-    </div>
-    </article>
-
-wklejamy do nowego pliku *_fortune.html.erb* (liczba pojedyncza!)
-
-Podmieniamy zawartość pliku *index.html.erb* na:
+Wycinamy kod z pętlą po *@fortunes* z pliku *index.html.erb*:
 
     :::rhtml app/views/fortunes/index.html.erb
-    ... tytuł i digg pagination bez zmian ...
+    <% @fortunes.each do |fortune| %>
+      <tr>
+        <td class='span1'><%= link_to fortune.id, fortune_path(fortune) %></td>
+        <td class='span6'><%= fortune.quotation %></td>
+        <td class='span3'><%= fortune.source %></td>
+        <td class='span2'>
+          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_fortune_path(fortune), :class => 'btn btn-mini' %>
+          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      fortune_path(fortune),
+                      :method => :delete,
+                      :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                      :class => 'btn btn-mini btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
 
+i zastępujemy go odwołaniem do widoku częściowego:
+
+    :::rhtml app/views/fortunes/index.html.erb
     <%= render partial: 'fortune', collection: @fortunes %>
 
-    ... div.form-actions ... bez zmian
+Wycięty kod wklejamy do pliku *_fortune.html.erb*
+i usuwamy pierwszy i ostatni wiersz (pętlę).
 
-Szablon częściowy *_fortune.html.erb* renderowany jest wielokrotnie,
-w pętli po zmiennej *fortune* (konwencja *@fortunes* → *fortune*):
+Szablon częściowy *_fortune.html.erb* renderowany jest wielokrotnie
+w pętli (*implicit loop*) po zmiennej *fortune*.
+Korzystamy z konwencji l.mn. → l.poj. (tutaj *@fortunes* → *fortune*).
+
+Jeśli wszystko działa, to scalamy zmiany i tagujemy:
+
+    :::bash
+    git tag v0.4
 
 
 ## Wyszukiwanie w fortunkach
@@ -419,34 +424,25 @@ dane po polu *quotation*:
 
     :::rhtml app/views/fortunes/index.html.erb
     <%= form_tag fortunes_path, method: :get, id: "fortunes_search", class: "form-inline" do %>
-      <%= text_field_tag :query, params[:query] %>
+      <%= text_field_tag :query, params[:query], class: "span4" %>
       <%= submit_tag "Search", name: nil, class: "btn" %>
     <% end %>
 
-Poprawiamy wygląd formularza:
-
-    :::css
-    #fortunes_search {
-      margin-top: 1em;
-      margin-bottom: 2em;
-    }
-    #query {
-      width: 30%;
-    }
-
 Aby odfiltrować zbędne rekordy, musimy w *FortunesController*
-w metodzie *index* przekazać tekst, który wpisano w formularzu
-(użyjemy metody *search*, mała refaktoryzacja):
+w metodzie *index* przekazać tekst, który wpisano w formularzu.
+
+W tym celu użyjemy nowej metody *text_search*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def index
-      @fortunes = Fortune.order('created_at DESC')
-        .text_search(params[:query])
-        .page(params[:page]).per_page(4)
+      @fortunes = Fortune.text_search(params[:query])
+        .order('created_at DESC')
+        .page(params[:page])
+        .per_page(4)
       respond_with(@fortunes)
     end
 
-kod metody wpisujemy w klasie *Fortune*:
+Kod metody wpisujemy w klasie *Fortune*:
 
     :::ruby app/models/fortune.rb
     def self.text_search(query)
@@ -456,7 +452,7 @@ kod metody wpisujemy w klasie *Fortune*:
         # PostgreSQL; i – ignore case
         # where("quotation ilike :q or source ilike :q", q: "%#{query}%")
       else
-        scoped
+        all
       end
     end
 
@@ -464,15 +460,26 @@ Metoda *text_search* jest wykonywana zawsze po wejściu na stronę *index*,
 nawet jak nic nie wyszukujemy. Prześledzić działanie *search*? Jak?
 Co oznacza *scoped*?
 
-### Nowe idee w wyszukiwaniu
 
-* Florian R. Hanke.
-  [Picky](https://github.com/floere/picky) –
-  easy to use and fast Ruby semantic search engine.
-  Przykłady:
-  - [twixtel](http://www.twixtel.ch/),
-  - [gemsearch](http://gemsearch.heroku.com/)
+## Nowe idee w wyszukiwaniu
 
+Florian R. Hanke, [Picky](https://github.com/floere/picky) –
+easy to use and fast Ruby semantic search engine.
+
+Przykłady użycia:
+
+* [twixtel](http://www.twixtel.ch/),
+* [gemsearch](http://gemsearch.heroku.com/)
+
+
+Tagujemy tę wersję:
+
+    :::bash
+    git tag v0.5
+
+
+
+# TODO: Komentarze do fortunek
 
 <blockquote>
  <p>
@@ -490,12 +497,8 @@ Co oznacza *scoped*?
  <p class="author">— Frederick P. Brooks, Jr.</p>
 </blockquote>
 
-# Komentarze do fortunek
-
-**TODO (PG_search):** Dodać wyszukiwanie we wszystkich modelach: Fortune, Comment…
-
-W widoku *show.html.erb* fortunki powinna być możliwość dopisywania
-własnych komentarzy.
+W widoku *show.html.erb* fortunki chcielibyśmy mieć możliwość
+dopisywania własnych komentarzy.
 
 Przygotujemy sobie też stronę ze wszystkimi komentarzami.
 Przyda się adminowi przy usuwaniu i edycji komentarzy.
