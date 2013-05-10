@@ -86,7 +86,8 @@ inside "app/assets/stylesheets" do
   # gsub_file "application.css", /\*\// do |match|
   #   match << "\nbody { padding-top: 60px; }"
   # end
-  append_to_file "application.css", "\nbody { padding-top: 60px; }\n"
+  # FIX: fixed
+  # append_to_file "application.css", "\nbody { padding-top: 60px; }\n"
 end
 
 # customize Bootstrap: http://twitter.github.com/bootstrap/customize.html
