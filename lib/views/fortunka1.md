@@ -24,6 +24,10 @@ Ale rusztowanie aplikacji wygenerujemy za pomocą szablonu aplikacji Rails:
     rails new fortune-responders-4.x \
       -m https://raw.github.com/wbzyl/rails4-tutorial/master/lib/doc/app_templates/wbzyl-template-rails4.rb
 
+Link do repozytorium z kodem fortunki
+[fortune-responders-4.x](https://github.com/wbzyl/fortune-responders-4.x).
+
+
 ## Robótki ręczne…
 
 Dopisujemy gemy *responders* i *will_paginate* do pliku *Gemfile*:
