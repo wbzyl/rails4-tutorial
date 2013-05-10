@@ -21,87 +21,133 @@ Co na tym zyskujemy opisano tutaj:
 Ale rusztowanie aplikacji wygenerujemy za pomocą szablonu aplikacji Rails:
 
     :::bash
-    rails new fortune-responders \
-      -m https://raw.github.com/wbzyl/rat/master/html5-twitter-bootstrap.rb \
-      --skip-bundle
-
-*Fortunka v1.0* gotowa do sklonowania jest na Githubie:
-
-    :::bash
-    git clone git://github.com/wbzyl/fortunes-responders.git
-
+    rails new fortune-responders-4.x \
+      -m https://raw.github.com/wbzyl/rails4-tutorial/master/lib/doc/app_templates/wbzyl-template-rails4.rb
 
 ## Robótki ręczne…
 
-Zaczynamy od dopisania gemu *responders* do *Gemfile*:
+Dopisujemy gemy *responders* i *will_paginate* do pliku *Gemfile*:
 
     :::ruby Gemfile
-    gem 'sqlite3'
+    gem 'responders', git: 'git://github.com/plataformatec/responders.git'
+    gem 'will_paginate', git: 'git://github.com/mislav/will_paginate.git'
 
-    gem 'thin'
+Korzystamy z ostatnich wersji gemów z repozytoriów.
+Te wersje powinny działać z Rails 4.0.0.rc1.
 
-    gem 'responders'
-    gem 'will_paginate'
-    gem 'faker', :group => :development
 
-    # silence assets pipeline log messages
-    gem 'quiet_assets', :group => :development
+<blockquote>
+  {%= image_tag "/images/fraunhofer-lines.jpg", :alt => "[Fraunhofer lines]" %}
+  <p>
+    [Herschel do Babbage’a, kiedy ten nie był w stanie dojrzeć ciemnych
+    linii Fraunhofera]
+    Często nie widzimy czegoś dlatego, że
+    <b>nie wiemy jak to zobaczyć</b>, a nie na skutek
+    jakichś braków w organie widzenia…
+    Nauczę cię jak je dostrzec.
+  </p>
+</blockquote>
 
-    # quickly see your routes under /rails/routes
-    gem 'sextant', :group => :development
+## Instalacja i instalacja następcza
 
-Instalujemy gemy i wykonujemy procedurę *post-install*:
+… czyli *install* i *post install*:
 
     :::bash
     bundle install
     rails generate responders:install
-        create  lib/application_responder.rb
-       prepend  app/controllers/application_controller.rb
-        insert  app/controllers/application_controller.rb
-        create  config/locales/responders.en.yml
+      create  lib/application_responder.rb
+     prepend  app/controllers/application_controller.rb
+      insert  app/controllers/application_controller.rb
+      create  config/locales/responders.en.yml
 
-Jak widać powyżej, generator *responders:install* utworzył plik
-*application_responder.rb* i dopisał kilka rzeczy do pliku
-*application_controller.rb*:
+Jak widać powyżej, generator *responders:install* dodał kilka plików
+i dopisał coś do pliku *application_controller.rb*.
 
-<blockquote>
-<p><a href="http://blog.bigbinary.com/2012/05/10/csrf-and-rails.html">CSRF and Rails</a></p>
-<p><a href="http://blog.bigbinary.com/2012/05/10/xss-and-rails.html">XSS and Rails</a></p>
-<p class="author">— Neeraj Singh<p>
-</blockquote>
+*application_responder.rb*:
+
+    :::ruby lib/application_responder.rb
+    class ApplicationResponder < ActionController::Responder
+      include Responders::FlashResponder
+      include Responders::HttpCacheResponder
+      # Uncomment this responder if you want your resources to redirect to the collection
+      # path (index action) instead of the resource path for POST/PUT/DELETE requests.
+      # include Responders::CollectionResponder
+    end
+
+Google podpowiada, że *responder* to hiszpańskie słowo na odpowiadać / odezwać / odczytać.
+Jak widać w kodzie powyżej mamy do dyspozycji trzy respondery:
+
+* *FlashResponder* (i18n dla komunikatów flash)
+* *HttpCacheResponder* (dodaje do żądania nagłówek Last-Modified)
+* *CollectionResponder* (po uaktualnieniu lub zapisaniu rekordu w bazie jesteśmu przekierowywani na index)
+
+*app/controllers/application_controller.rb*:
 
     :::ruby app/controllers/application_controller.rb
     require "application_responder"
     class ApplicationController < ActionController::Base
       self.responder = ApplicationResponder
       respond_to :html
-
-      protect_from_forgery
+      # Prevent CSRF attacks by raising an exception.
+      # For APIs, you may want to use :null_session instead.
+      protect_from_forgery with: :exception
     end
 
-Generujemy **resource controller** dla Fortunki:
+*responders.en.yml*:
+
+    :::yaml config/locales/responders.en.yml
+    en:
+      flash:
+        actions:
+          create:
+            notice: '%{resource_name} was successfully created.'
+            # alert: '%{resource_name} could not be created.'
+          update:
+            notice: '%{resource_name} was successfully updated.'
+            # alert: '%{resource_name} could not be updated.'
+          destroy:
+            notice: '%{resource_name} was successfully destroyed.'
+            alert: '%{resource_name} could not be destroyed.'
+
+Generujemy *navbar*:
+
+    :::bash
+    rails generate bootstrap:partial navbar
+        create  app/views/shared/_navbar.html.erb
+
+dodajemy go do layoutu aplikacji i przy okazji poprawiamy go.
+
+
+## Co to jest *responders controller*?
+
+Oto odpowiedź:
 
     :::bash
     rails generate responders_controller
+    Usage:
+      rails generate responders_controller NAME [field:type field:type] [options]
       ...
-      Description:
+    Description:
         Stubs out a scaffolded controller and its views. Different from rails
         scaffold_controller, it uses respond_with instead of respond_to blocks.
         Pass the model name, either CamelCased or under_scored. The controller
         name is retrieved as a pluralized version of the model name.
 
-    rails generate responders_controller Fortune
-        create  app/controllers/fortunes_controller.rb
-        invoke  erb
-        create    app/views/fortunes
-        create    app/views/fortunes/index.html.erb
-        create    app/views/fortunes/edit.html.erb
-        create    app/views/fortunes/show.html.erb
-        create    app/views/fortunes/new.html.erb
-        create    app/views/fortunes/_form.html.erb
+Generujemy kontroler:
+
+    :::bash
+    rails generate responders_controller Fortune quotation:text source:string
+      create  app/controllers/fortunes_controller.rb
+      invoke  erb
+      create    app/views/fortunes
+      create    app/views/fortunes/index.html.erb
+      create    app/views/fortunes/edit.html.erb
+      create    app/views/fortunes/show.html.erb
+      create    app/views/fortunes/new.html.erb
+      create    app/views/fortunes/_form.html.erb
       ...
 
-*resource controller* definiuje siedem metod:
+*responder controller* definiuje siedem metod:
 
 * *index*, *show*
 * *new*, *create*
@@ -134,7 +180,7 @@ Oto kod wygenerowanego kontrolera:
       end
       def update
         @fortune = Fortune.find(params[:id])
-        @fortune.update_attributes(params[:fortune])
+        @fortune.update(params[:fortune])
         respond_with(@fortune)
       end
       def destroy
@@ -144,51 +190,68 @@ Oto kod wygenerowanego kontrolera:
       end
     end
 
-Dla porównania kod kontrolera wygenerowanego przez generator *scaffold*:
-{%= link_to "fortunes_controller.rb", "/rails31/scaffold/fortunes_controller.rb" %}.
+Jak widać wygenerowany kontroler nie korzysta ze *strong parameters*.
+Dopisujemy brakujący kod i poprawiamy co trzeba. Oto kod po poprawkach:
 
-Generujemy model *Fortune*, migrujemy i zapisujemy w bazie dane testowe:
+    :::ruby app/controllers/fortunes_controller.rb
+    class FortunesController < ApplicationController
+      before_action :set_fortune, only: [:show, :edit, :update, :destroy]
+      def index
+        @fortunes = Fortune.all
+        respond_with(@fortunes)
+      end
+      def show
+        respond_with(@fortune)
+      end
+      def new
+        @fortune = Fortune.new
+        respond_with(@fortune)
+      end
+      def edit
+      end
+      def create
+        @fortune = Fortune.new(fortune_params)
+        @fortune.save
+        respond_with(@fortune)
+      end
+      def update
+        @fortune.update(fortune_params)
+        respond_with(@fortune)
+      end
+      def destroy
+        @fortune.destroy
+        respond_with(@fortune)
+      end
+    private
+      # Use callbacks to share common setup or constraints between actions.
+      def set_fortune
+        @fortune = Fortune.find(params[:id])
+      end
+      # Never trust parameters from the scary internet, only allow the white list through.
+      def fortune_params
+        params.require(:fortune).permit(:quotation, :source)
+      end
+    end
+
+Pozostał wygenerować model *Fortune*, migracja modelu:
 
     :::bash
     rails generate model Fortune quotation:text source:string
     rake db:migrate
+
+i zapisanie w bazie jakiś danych testowych:
+
     rake db:seed
 
-zmieniamy routing, tak aby uri
+Tagujemy tę wersję:
 
-    http://localhost:3000
-
-przekierowywał na:
-
-    http://localhost:3000/fortunes
-
-
-## Wchodzimy na stronę główną…
-
-…i od razu widzimy, że coś jest nie tak!
-
-Nie są wypisywane fortunki. Widzimy tylko przyciski.  Od razu to
-naprawimy – dopisujemy trochę kodu *boilerplate* do szablonów:
-*_form*, *index*, *show*.
-
-Aplikację po tych poprawkach klonujemy z repo:
-
-    :::bash
-    git clone git@github.com:wbzyl/fortunes-responders.git
-
-gdzie (przy okazji) zwiększyłem w formularzu szerokość elementów
-*input* i *textarea*:
-
-    :::css
-    input, textarea {
-      width: 100%;
-    }
+    git tag v0.1
 
 
 # Dochodząc do v1.0
 
 Zaczynamy od najłatwiejszej rzeczy – paginacji.
-Ze strony [Ruby Toolbox](https://www.ruby-toolbox.com/search?utf8=%E2%9C%93&q=pagination)
+Przeglądają gemy na stronie [Ruby Toolbox](https://www.ruby-toolbox.com/search?utf8=%E2%9C%93&q=pagination)
 widzimy, że tak naprawdę mamy tylko jedną opcję:
 
 * [will_paginate](https://github.com/mislav/will_paginate)
@@ -198,9 +261,6 @@ Zmiany w kodzie będziemy wprowadzać na osobnej gałęzi:
 
     :::bash
     git checkout -b pagination
-
-Po zaimplementowaniu paginacji, wykonamy rebase na gałąź master
-i usuniemy niepotrzebną już gałąź paginate.
 
 Podmieniamy w kodzie metody *index* kontrolera *FortunesController*:
 
@@ -256,28 +316,17 @@ Dopisujemy do pliku *en.yml*:
 
 (Zamieniam previous, next i page na «, » i …, odpowiednio.)
 
-Gotowa paginacja? Gotowa! Czyli teraz pora na małe rebase.
-Poniższe polecenia wykonujemy będąc na gałęzi *pagination*
-(powinniśmy na niej być):
+Wykonujemy commit i na gałęzi master scalamy zmiany i tagujemy tę wersję:
 
     :::bash
-    git status
-    git add .
-    git commit -m "gotowa paginacja z will_paginate"
-    gitk --all
-    git rebase -i master
-    gitk --all
-    git checkout master
     git merge pagination
-    gitk --all
-    git branch -d pagination
-    git tag v0.0.1
+    git tag v0.2
 
 
 ## Walidacja
 
 Do czego jest nam potrzebna walidacja wyjaśniono w samouczku
-[Active Record Validations and Callbacks](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html).
+[Active Record Validations](http://edgeguides.rubyonrails.org/active_record_validations.html):
 
 * Baza powinna zawsze zawierać prawidłowe dane.
 * Zanim zapiszemy coś w bazie powinniśmy sprawdzić
@@ -285,7 +334,10 @@ Do czego jest nam potrzebna walidacja wyjaśniono w samouczku
 * Gdzie to sprawdzenie najlepiej wykonać?
   W przeglądarce? W aplikacji Rails?
   Lepiej w kontrolerze, czy modelu? Dlaczego?
-  Może lepiej walidację zostawić to serwerowi bazy?
+  Może lepiej walidację zostawić serwerowi bazy danych?
+
+Przy okazji warto też przejrzeć samouczek
+[Active Record Callbacks](http://edgeguides.rubyonrails.org/active_record_callbacks.html).
 
 Dopisujemy walidację do modelu *Fortune*:
 
@@ -302,14 +354,10 @@ Sprawdzamy na konsoli Rails jak działa walidacja:
 
     :::ruby
     f = Fortune.new
-    f.valid?
-      => false
-    f.errors.messages
-      => {:quotation=>["can't be blank"]}
-    f.errors[:quotation].any?
-      => true
-    f.save
-      => false
+    f.valid?                   #=> false
+    f.errors.messages          #=> {:quotation=>["can't be blank"]}
+    f.errors[:quotation].any?  #=> true
+    f.save                     #=> false
     f.source = "a"
     f.valid?
     f.errors.messages
@@ -319,126 +367,11 @@ Sprawdzamy na konsoli Rails jak działa walidacja:
 
 Pozostałe rzeczy: *validates_with*, *validates_each*, walidacja warunkowa,
 walidacja dla powiązanego modelu *validates_associated*, opcja `:on` –
-kiedy walidować (`:create`, `:update`, `:save` itd.), walidacja warunkowa
+kiedy walidować (`:create`, `:update`, `:save` itd.)
+wyjaśniono w samouczkach.
 
 
-**Ważne:** Powinniśmy sprawdzić jak działa walidacja w przeglądarce.
-Sama konsola to za mało!
-
-Dodatkowa lektura:
-
-* [validates :rails_3, :awesome => true](http://lindsaar.net/2010/1/31/validates_rails_3_awesome_is_true)
-* [Creating Custom Validation Methods](http://edgeguides.rubyonrails.org/active_record_validations_callbacks.html#creating-custom-validation-methods)
-* [Building Rails 3 custom validators](http://www.perfectline.ee/blog/building-ruby-on-rails-3-custom-validators)
-* [Sexy Validation in Rails3](http://thelucid.com/2010/01/08/sexy-validation-in-edge-rails-rails-3/)
-
-
-## Formularze z *simple_form*
-
-Jak tworzyć formularze w aplikacjach Rails opisano w samouczku
-[Rails Form helpers](http://edgeguides.rubyonrails.org/form_helpers.html).
-Po lekturze tego samouczka jedna sprawa jest jasna: „forms aren’t easy”.
-Za to autorzy [simple_form](https://github.com/plataformatec/simple_form)
-obiecują, że z ich gemem „forms are easy!”.
-
-Dostępne opcje znajdziemy pliku *simple_form.rb*. Dla przykładu
-zmienimy walidację HTML5 na *false*:
-
-    :::ruby config/initializers/simple_form.rb
-    # Tell browsers whether to use default HTML5 validations (novalidate option).
-    # Default is enabled.
-    config.browser_validations = false
-
-W wygenerowanym formularzu dopisujemy *:rows => 4*. Domyślna wartość, ok. 40,
-to zdecydowanie za dużo.
-
-    :::rhtml
-    <%= simple_form_for(@fortune) do |f| %>
-      <%= f.error_notification %>
-      <div class="form-inputs">
-        <%= f.input :quotation, :input_html => { :rows => 4 } %>
-        <%= f.input :source %>
-      </div>
-      <div class="form-actions">
-        <%= f.button :submit %>
-      </div>
-    <% end %>
-
-<!--  niepotrzebne z Bootsrap
-Zaczynamy od ustawienia takiego samego fontu dla elementów *input[type=text]* oraz *textarea*:
-
-    :::css public/stylesheets/applications.css
-    input[type="text"], textarea {
-      font: inherit;
-    }
-
-Inaczej, elementy te przy takiej samej liczbie kolumn, bądą miały różną szerokość.
-(Albo można ustawić *width* dla elementów *input* oraz *textarea*.)
--->
-
-
-<blockquote>
-  {%= image_tag "/images/fraunhofer-lines.jpg", :alt => "[Fraunhofer lines]" %}
-  <p>
-    [Herschel do Babbage’a, kiedy ten nie był w stanie dojrzeć ciemnych
-    linii Fraunhofera]
-    Często nie widzimy czegoś dlatego, że
-    <b>nie wiemy jak to zobaczyć</b>, a nie na skutek
-    jakichś braków w organie widzenia…
-    Nauczę cię jak je dostrzec.
-  </p>
-</blockquote>
-
-
-## Responders
-
-Google podpowiada, że *responder* to hiszpańskie słowo na odpowiadać / odezwać / odczytać.
-Zapoznawanie się z tą biblioteką zaczynamy od lektury
-[README](https://github.com/plataformatec/responders),
-gdzie dowiadujemy się, że mamy do dyspozycji trzy prekonfigurowane respondery:
-
-* *FlashResponder* (i18n dla komunikatów flash)
-* *HttpCacheResponder* (dodaje do żądania nagłówek Last-Modified)
-* *CollectionResponder* (po uaktualnieniu lub zapisaniu rekordu w bazie jesteśmu przekierowywani na index)
-
-Co więcej, możemy pisać swoje respondery, ale tego nie będziemy robić.
-Wczytujemy do edytora wygenerowany plik *application_responder.rb*:
-
-    :::ruby lib/application_responder.rb
-    class ApplicationResponder < ActionController::Responder
-      include Responders::FlashResponder
-      include Responders::HttpCacheResponder
-
-      # Uncomment this responder if you want your resources to redirect to the collection
-      # path (index action) instead of the resource path for POST/PUT/DELETE requests.
-      include Responders::CollectionResponder
-    end
-
-i odkomentowujemy linijkę z *CollectionResponder*. Co to da?
-
-Modyfikujemy plik *application_controller.rb* dopisując linijkę:
-
-    :::ruby app/controllers/application_controller.rb
-    respond_to :json, except: [:create, :update, :destroy]
-
-Generator *responders:install* utworzył plik locales z komunikatami flash:
-
-    :::yaml config/locales/responders.en.yml
-    en:
-      flash:
-        actions:
-          create:
-            notice: '%{resource_name} was successfully created.'
-          update:
-            notice: '%{resource_name} was successfully updated.'
-          destroy:
-            notice: '%{resource_name} was successfully destroyed.'
-            alert: '%{resource_name} could not be destroyed.'
-
-Jak to przetłumaczyć na język polski?
-
-
-## Grand refactoring
+## TODO: Grand refactoring
 
 W widoku *index* skorzystamy z ***implicit loop***.  Wycinamy kod
 z pętlą po *@fortunes* z pliku *index.html.erb*, a ciało pętli:
@@ -475,38 +408,7 @@ Szablon częściowy *_fortune.html.erb* renderowany jest wielokrotnie,
 w pętli po zmiennej *fortune* (konwencja *@fortunes* → *fortune*):
 
 
-## RSS: atom
-
-Dopisujemy do kontrolera:
-
-    :::ruby
-    respond_to :html, :atom
-
-i dodajemy nowy widok:
-
-    :::ruby app/views/fortunes/index.atom.builder
-    atom_feed do |feed|
-      feed.title "My Fortunes"
-      feed.updated @fortunes.first.updated_at
-      @fortunes.each do |fortune|
-        feed.entry(fortune) do |entry|
-          entry.content fortune.quotation, type: "html"
-        end
-      end
-    end
-
-W pliku z layoutem dopisujemy w znaczniku *head*:
-
-    :::rhtml app/views/layouts/application.html.erb
-    <%= auto_discovery_link_tag(:atom, fortunes_path(:atom)) %>
-
-Aby sprawdzić jak to działa, wchodzimy na stronę:
-
-    http://localhost:3000/fortunes.atom
-
-
-
-# Wyszukiwanie w fortunkach
+## Wyszukiwanie w fortunkach
 
 Na stronie z listą fortunek dodamy formularz, który będzie filtrował
 dane po polu *quotation*:
@@ -615,43 +517,6 @@ Pozostało utworzyć bazy i wykonać jeszcze raz migracje:
     :::bash
     rake db:create:all
     rake db:migrate
-
-
-### Transfer bazy: Sqlite → PostgreSQL
-
-* David Dollar.
-  [Valkyrie](https://github.com/ddollar/valkyrie) – transfer data between databases
-* Ricardo Chimal.
-  [Taps](https://github.com/ricardochimal/taps) – simple database import/export app
-
-Dodajemy gemy *valkyrie* i *taps* do grupy development i instalujemy je:
-
-    :::bash
-    bundle install --binstubs
-
-Teraz możemy przenieść bazę z SQLite do PostgreSQL za pomocą *valkyrie*:
-
-    :::bash
-    # nie zadziałało… problemy z authentication
-    bin/valkyrie sqlite://db/development.sqlite3 \
-      postgres://wbzyl@localhost/fortune_responders_development
-
-albo *taps*:
-
-    :::bash
-    # też nie zadziałało
-    # bin/taps server sqlite://db/development.sqlite3 wbzyl secret
-    # bin/taps pull postgres://wbzyl@localhost/fortune_responders_development \
-    #   http://wbzyl:secret@localhost:5000
-
-Zmieniamy konfigurację
-([psql: FATAL…](http://www.cyberciti.biz/faq/psql-fatal-ident-authentication-failed-for-user/)):
-
-    :::text /var/lib/pgsql/data/pg_hba.conf
-    local	all	all	trust
-    host	all	127.0.0.1/32	trust
-
-i ponownie wykonujemy polecenie *valkyrie*.
 
 
 ## Full text search with PostgreSQL
@@ -839,292 +704,6 @@ gemu [Kaminari](https://github.com/amatsuda/kaminari). Wystarczy dopisać w wi
     <div id="paginator">
       <%= paginate @fortunes, :remote => true %>
     </div>
-
-
-# Tagowanie
-
-Tagowanie dodamy, korzystając z gemu
-[acts-as-taggable-on](http://github.com/mbleigh/acts-as-taggable-on).
-Po dopisaniu gemu do pliku *Gemfile*:
-
-    :::ruby Gemfile
-    gem 'acts-as-taggable-on', '~> 2.2.2'
-
-instalujemy go i dalej postępujemy zgodnie z instrukcją z *README*:
-
-    :::bash
-    bundle install
-    rails generate acts_as_taggable_on:migration
-    rake db:migrate
-
-Warto przyjrzeć się wygenerowanej migracji:
-
-    :::ruby
-    class ActsAsTaggableOnMigration < ActiveRecord::Migration
-      def self.up
-        create_table :tags do |t|
-          t.string :name
-        end
-        create_table :taggings do |t|
-          t.references :tag
-          # You should make sure that the column created is
-          # long enough to store the required class names.
-          t.references :taggable, :polymorphic => true
-          t.references :tagger, :polymorphic => true
-          # limit is created to prevent mysql error o index lenght for myisam table type.
-          # http://bit.ly/vgW2Ql
-          t.string :context, :limit => 128
-          t.datetime :created_at
-        end
-        add_index :taggings, :tag_id
-        add_index :taggings, [:taggable_id, :taggable_type, :context]
-      end
-
-      def self.down
-        drop_table :taggings
-        drop_table :tags
-      end
-    end
-
-<blockquote>
- <p>
-  A little inaccuracy saves a world of explanation.
- </p>
-</blockquote>
-
-[Polimorficzne powiązanie](http://edgeguides.rubyonrails.org/association_basics.html#polymorphic-associations)
-oznacza, że jeden model może być w relacji *belongs_to*
-do więcej niż jednego modelu:
-
-    :::ruby
-    t.references :taggable, :polymorphic => true
-
-co rozwija się do takiego kodu:
-
-    :::ruby
-    t.integer :taggable_id
-    t.string  :taggable_type
-
-który możemy tak zinterpretować:
-
-* *Tagging* belongs to *Fortune*
-* *Fortune* has many *Taggings*
-
-
-## Zmiany w kodzie modelu
-
-Dopisujemy do modelu:
-
-    :::ruby app/models/fortune.rb
-    class Fortune < ActiveRecord::Base
-      acts_as_taggable_on :tags
-      ActsAsTaggableOn::TagList.delimiter = " "
-
-Przy okazji, zmieniamy z przecinka na spację domyślny znak
-oddzielający tagi.
-
-Po tych zmianach przyjrzymy się bliżej polimorfizowi na konsoli:
-
-    :::ruby
-    f = Fortune.find 1
-    f.tag_list = "everything nothing always"            # proxy
-    # f.tag_list = ['everything', 'nothing', 'always']  # tak też można
-    f.save
-    f.tags
-    f.taggings
-
-W widoku częściowym *_form.html.erb* dopisujemy:
-
-    :::rhtml app/views/fortunes/_form.html.erb
-    <%= f.input :tag_list, :input_html => {:size => 40} %>
-
-A w widoku częściowym *_fortune.html.erb* oraz w widoku *show.html.erb* (2 razy)
-dopisujemy:
-
-    :::rhtml app/views/fortunes/_fortune.html.erb
-    <p><i>Tags:</i> <%= @fortune.tag_list %></p>
-
-
-### Dodajemy losowe tagi do fortunek
-
-Poprawiamy *seeds.rb*:
-
-    :::ruby db/seeds.rb
-    platitudes = File.readlines(Rails.root.join('db', 'platitudes.u8'), "\n%\n")
-    tags = ['always', 'always', 'sometimes', 'never', 'maybe', 'ouch', 'wow', 'nice', 'wonderful']
-    platitudes.map do |p|
-      reg = /\t?(.+)\n\t\t--\s*(.*)\n%\n/m
-      m = p.match(reg)
-      if m
-        f = Fortune.new :quotation => m[1], :source => m[2]
-      else
-        f = Fortune.new :quotation => p[0..-4], :source => Faker::Name.name
-      end
-      f.tag_list = tags.sample(rand(tags.size - 3))
-      f.save
-    end
-
-Teraz, kasujemy bazę i wrzucamy jeszcze raz cytaty, ale tym razem z tagami:
-
-    rake db:drop
-    rake db:setup
-
-
-## Chmurka tagów
-
-Jak samemu wygenerować chmurkę tagów opisał
-Jason Davies, [Word Cloud Generator](http://www.jasondavies.com/wordcloud/).
-
-Aby wyrenderować chmurkę tagów – niestety nie tak ładną jak ta:
-
-{%= image_tag "/images/wordly.png", :alt => "[chmurka tagów]" %}
-
-postępujemy tak jak to opisano
-w [README](https://github.com/mbleigh/acts-as-taggable-on/blob/master/README.rdoc)
-w sekcji „Tag cloud calculations”:
-
-    :::rhtml app/views/fortunes/index.html.erb
-    <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
-      <%= link_to tag.name, LINK_DO_CZEGO?, :class => css_class %>
-    <% end %>
-
-Aby ten kod zadziałał musimy zdefiniować zmienną *@tags*, wczytać kod
-metody pomocniczej *tag_cloud*, wystylizować chmurkę tagów oraz
-podmienić *LINK_DO_CZEGO?* na coś sensownego.
-
-Zaczniemy od zdefiniowania zmiennej *@tags*:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    def index
-      @fortunes = ... bez zmian ...
-      @tags = Fortune.tag_counts
-      respond_with(@fortunes)
-    end
-
-Teraz spróbujemy przyjrzeć się bliżej zmiennej *tag*. W tym celu skorzystamy
-z metody pomocniczej *debug* (na razie zamiast *LINK_DO_CZEGO?* wpiszemy *fortunes_path*:
-
-    :::rhtml app/views/fortunes/index.html.erb
-    <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
-      <%= link_to tag.name, fortunes_path, :class => css_class %>
-      <%= debug(tag.class) %>
-      <%= debug(tag) %>
-    <% end %>
-
-Po ponownym wczytaniu strony *fortunes\#index* widzimy, że
-zmienna *tag*, to obiekt klasy:
-
-    :::ruby
-    ActsAsTaggableOn::Tag(id: integer, name: string)
-
-na przykład:
-
-    :::yaml
-    attributes:
-      id: 1
-      name: sometimes
-      count: 151
-
-Tagi powinny mieć wielkość zależną od częstości ich występowania:
-
-    :::css public/stylesheets/application.css
-    .css1 { font-size: 1.0em; }
-    .css2 { font-size: 1.2em; }
-    .css3 { font-size: 1.4em; }
-    .css4 { font-size: 1.6em; }
-
-Tyle debuggowania – usuwamy zbędny kod z *debug*. Opakowujemy *tag_cloud*
-elementem *div\#tag_cloud*, ustawiamy jego szerokość, powiedzmy na
-250px i pozycjonujemy abolutnie w prawym górnym rogu, gdzie jest
-trochę wolnego miejsca:
-
-    :::css public/stylesheets/application.css
-    #tag-cloud {
-      background-color: #E1F5C4; /* jasnozielony */
-      margin-top: 1em;
-      margin-bottom: 1em;
-      padding: 1em;
-      width: 100%;
-    }
-
-I już możemy obejrzeć rezultaty naszej pracy!
-
-Powinniśmy jeszcze dopisać do widoku częściowego *_fortune.html.erb*
-kod wypisujący tagi:
-
-    :::rhtml app/views/fortunes/_fortune.html.erb
-    <div class="attribute">
-      <span class="name"><%= t "simple_form.labels.fortune.source" %></span>
-      <span class="value tags"><%= fortune.tag_list.join(", ") %>
-      </span>
-    </div>
-
-
-<blockquote>
- {%= image_tag "/images/word-cloud.png", :alt => "[word cloud: REST on wikipedia]" %}
-</blockquote>
-
-## Dodajemy własną akcję do REST
-
-Mając chmurkę z tagami, wypadałoby olinkować tagi tak, aby
-po kliknięciu na nazwę wyświetliły się fortunki otagowane
-tą nazwą.
-
-Zaczniemy od zmian w routingu. Usuwamy wiersz:
-
-    :::ruby config/routes.rb
-    resources :fortunes
-
-Zamiast niego wklejamy:
-
-    :::ruby config/routes.rb
-    resources :fortunes do
-      collection do
-        get :tags
-      end
-    end
-
-Sprawdzamy co się zmieniło w routingu:
-
-    :::bash
-    rake routes
-
-i widzimy, że mamy **jeden** dodatkowy uri:
-
-    tags_fortunes GET /fortunes/tags(.:format) {:action=>"tags", :controller=>"fortunes"}
-
-Na koniec, zamieniamy link *fortunes_path* w chmurce tagów na:
-
-    :::rhtml
-    <%= link_to tag.name, tags_fortunes_path(name: tag.name), class: css_class %>
-
-Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
-
-    :::ruby app/controllers/fortunes_controller.rb
-    before_filter only: [:index, :tags] do
-      @tags = Fortune.tag_counts
-    end
-
-    # respond_with nic nie wie o tags
-    def tags
-      @fortunes = Fortune.tagged_with(params[:name])
-        .page(params[:page]).per_page(4)
-      respond_with(@fortunes) do |format|
-        format.html { render action: 'index' }
-      end
-    end
-
-    def index
-      @fortunes = Fortune.text_search(params[:query])
-        .page(params[:page]).per_page(4)
-      respond_with(@fortunes)
-    end
-
-Zrobione!
-
-    :::bash
-    ... interactive rebase ...
-    git tag v0.0.4
 
 
 <blockquote>
@@ -1485,6 +1064,12 @@ Korzystając z engine *Devise* dodać autentykację do Fortunki.
 
 # TODO – [przykład](https://github.com/wbzyl/library-carrierwave)
 
+<blockquote>
+<p><a href="http://blog.bigbinary.com/2012/05/10/csrf-and-rails.html">CSRF and Rails</a></p>
+<p><a href="http://blog.bigbinary.com/2012/05/10/xss-and-rails.html">XSS and Rails</a></p>
+<p class="author">— Neeraj Singh<p>
+</blockquote>
+
 Atrakcyjność Fortunki możemy zwiększyć implementując coś rzeczy
 wypisanych poniżej:
 
@@ -1513,3 +1098,290 @@ albo z gemu *Paperclip*:
 
 * [Paperclip](https://github.com/thoughtbot/paperclip)
 
+
+
+
+# TODO: Tagowanie
+
+Tagowanie dodamy, korzystając z gemu
+[acts-as-taggable-on](http://github.com/mbleigh/acts-as-taggable-on).
+Po dopisaniu gemu do pliku *Gemfile*:
+
+    :::ruby Gemfile
+    gem 'acts-as-taggable-on', '~> 2.2.2'
+
+instalujemy go i dalej postępujemy zgodnie z instrukcją z *README*:
+
+    :::bash
+    bundle install
+    rails generate acts_as_taggable_on:migration
+    rake db:migrate
+
+Warto przyjrzeć się wygenerowanej migracji:
+
+    :::ruby
+    class ActsAsTaggableOnMigration < ActiveRecord::Migration
+      def self.up
+        create_table :tags do |t|
+          t.string :name
+        end
+        create_table :taggings do |t|
+          t.references :tag
+          # You should make sure that the column created is
+          # long enough to store the required class names.
+          t.references :taggable, :polymorphic => true
+          t.references :tagger, :polymorphic => true
+          # limit is created to prevent mysql error o index lenght for myisam table type.
+          # http://bit.ly/vgW2Ql
+          t.string :context, :limit => 128
+          t.datetime :created_at
+        end
+        add_index :taggings, :tag_id
+        add_index :taggings, [:taggable_id, :taggable_type, :context]
+      end
+
+      def self.down
+        drop_table :taggings
+        drop_table :tags
+      end
+    end
+
+<blockquote>
+ <p>
+  A little inaccuracy saves a world of explanation.
+ </p>
+</blockquote>
+
+[Polimorficzne powiązanie](http://edgeguides.rubyonrails.org/association_basics.html#polymorphic-associations)
+oznacza, że jeden model może być w relacji *belongs_to*
+do więcej niż jednego modelu:
+
+    :::ruby
+    t.references :taggable, :polymorphic => true
+
+co rozwija się do takiego kodu:
+
+    :::ruby
+    t.integer :taggable_id
+    t.string  :taggable_type
+
+który możemy tak zinterpretować:
+
+* *Tagging* belongs to *Fortune*
+* *Fortune* has many *Taggings*
+
+
+## Zmiany w kodzie modelu
+
+Dopisujemy do modelu:
+
+    :::ruby app/models/fortune.rb
+    class Fortune < ActiveRecord::Base
+      acts_as_taggable_on :tags
+      ActsAsTaggableOn::TagList.delimiter = " "
+
+Przy okazji, zmieniamy z przecinka na spację domyślny znak
+oddzielający tagi.
+
+Po tych zmianach przyjrzymy się bliżej polimorfizowi na konsoli:
+
+    :::ruby
+    f = Fortune.find 1
+    f.tag_list = "everything nothing always"            # proxy
+    # f.tag_list = ['everything', 'nothing', 'always']  # tak też można
+    f.save
+    f.tags
+    f.taggings
+
+W widoku częściowym *_form.html.erb* dopisujemy:
+
+    :::rhtml app/views/fortunes/_form.html.erb
+    <%= f.input :tag_list, :input_html => {:size => 40} %>
+
+A w widoku częściowym *_fortune.html.erb* oraz w widoku *show.html.erb* (2 razy)
+dopisujemy:
+
+    :::rhtml app/views/fortunes/_fortune.html.erb
+    <p><i>Tags:</i> <%= @fortune.tag_list %></p>
+
+
+### Dodajemy losowe tagi do fortunek
+
+Poprawiamy *seeds.rb*:
+
+    :::ruby db/seeds.rb
+    platitudes = File.readlines(Rails.root.join('db', 'platitudes.u8'), "\n%\n")
+    tags = ['always', 'always', 'sometimes', 'never', 'maybe', 'ouch', 'wow', 'nice', 'wonderful']
+    platitudes.map do |p|
+      reg = /\t?(.+)\n\t\t--\s*(.*)\n%\n/m
+      m = p.match(reg)
+      if m
+        f = Fortune.new :quotation => m[1], :source => m[2]
+      else
+        f = Fortune.new :quotation => p[0..-4], :source => Faker::Name.name
+      end
+      f.tag_list = tags.sample(rand(tags.size - 3))
+      f.save
+    end
+
+Teraz, kasujemy bazę i wrzucamy jeszcze raz cytaty, ale tym razem z tagami:
+
+    rake db:drop
+    rake db:setup
+
+
+## Chmurka tagów
+
+Jak samemu wygenerować chmurkę tagów opisał
+Jason Davies, [Word Cloud Generator](http://www.jasondavies.com/wordcloud/).
+
+Aby wyrenderować chmurkę tagów – niestety nie tak ładną jak ta:
+
+{%= image_tag "/images/wordly.png", :alt => "[chmurka tagów]" %}
+
+postępujemy tak jak to opisano
+w [README](https://github.com/mbleigh/acts-as-taggable-on/blob/master/README.rdoc)
+w sekcji „Tag cloud calculations”:
+
+    :::rhtml app/views/fortunes/index.html.erb
+    <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
+      <%= link_to tag.name, LINK_DO_CZEGO?, :class => css_class %>
+    <% end %>
+
+Aby ten kod zadziałał musimy zdefiniować zmienną *@tags*, wczytać kod
+metody pomocniczej *tag_cloud*, wystylizować chmurkę tagów oraz
+podmienić *LINK_DO_CZEGO?* na coś sensownego.
+
+Zaczniemy od zdefiniowania zmiennej *@tags*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    def index
+      @fortunes = ... bez zmian ...
+      @tags = Fortune.tag_counts
+      respond_with(@fortunes)
+    end
+
+Teraz spróbujemy przyjrzeć się bliżej zmiennej *tag*. W tym celu skorzystamy
+z metody pomocniczej *debug* (na razie zamiast *LINK_DO_CZEGO?* wpiszemy *fortunes_path*:
+
+    :::rhtml app/views/fortunes/index.html.erb
+    <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
+      <%= link_to tag.name, fortunes_path, :class => css_class %>
+      <%= debug(tag.class) %>
+      <%= debug(tag) %>
+    <% end %>
+
+Po ponownym wczytaniu strony *fortunes\#index* widzimy, że
+zmienna *tag*, to obiekt klasy:
+
+    :::ruby
+    ActsAsTaggableOn::Tag(id: integer, name: string)
+
+na przykład:
+
+    :::yaml
+    attributes:
+      id: 1
+      name: sometimes
+      count: 151
+
+Tagi powinny mieć wielkość zależną od częstości ich występowania:
+
+    :::css public/stylesheets/application.css
+    .css1 { font-size: 1.0em; }
+    .css2 { font-size: 1.2em; }
+    .css3 { font-size: 1.4em; }
+    .css4 { font-size: 1.6em; }
+
+Tyle debuggowania – usuwamy zbędny kod z *debug*. Opakowujemy *tag_cloud*
+elementem *div\#tag_cloud*, ustawiamy jego szerokość, powiedzmy na
+250px i pozycjonujemy abolutnie w prawym górnym rogu, gdzie jest
+trochę wolnego miejsca:
+
+    :::css public/stylesheets/application.css
+    #tag-cloud {
+      background-color: #E1F5C4; /* jasnozielony */
+      margin-top: 1em;
+      margin-bottom: 1em;
+      padding: 1em;
+      width: 100%;
+    }
+
+I już możemy obejrzeć rezultaty naszej pracy!
+
+Powinniśmy jeszcze dopisać do widoku częściowego *_fortune.html.erb*
+kod wypisujący tagi:
+
+    :::rhtml app/views/fortunes/_fortune.html.erb
+    <div class="attribute">
+      <span class="name"><%= t "simple_form.labels.fortune.source" %></span>
+      <span class="value tags"><%= fortune.tag_list.join(", ") %>
+      </span>
+    </div>
+
+
+<blockquote>
+ {%= image_tag "/images/word-cloud.png", :alt => "[word cloud: REST on wikipedia]" %}
+</blockquote>
+
+## Dodajemy własną akcję do REST
+
+Mając chmurkę z tagami, wypadałoby olinkować tagi tak, aby
+po kliknięciu na nazwę wyświetliły się fortunki otagowane
+tą nazwą.
+
+Zaczniemy od zmian w routingu. Usuwamy wiersz:
+
+    :::ruby config/routes.rb
+    resources :fortunes
+
+Zamiast niego wklejamy:
+
+    :::ruby config/routes.rb
+    resources :fortunes do
+      collection do
+        get :tags
+      end
+    end
+
+Sprawdzamy co się zmieniło w routingu:
+
+    :::bash
+    rake routes
+
+i widzimy, że mamy **jeden** dodatkowy uri:
+
+    tags_fortunes GET /fortunes/tags(.:format) {:action=>"tags", :controller=>"fortunes"}
+
+Na koniec, zamieniamy link *fortunes_path* w chmurce tagów na:
+
+    :::rhtml
+    <%= link_to tag.name, tags_fortunes_path(name: tag.name), class: css_class %>
+
+Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
+
+    :::ruby app/controllers/fortunes_controller.rb
+    before_filter only: [:index, :tags] do
+      @tags = Fortune.tag_counts
+    end
+
+    # respond_with nic nie wie o tags
+    def tags
+      @fortunes = Fortune.tagged_with(params[:name])
+        .page(params[:page]).per_page(4)
+      respond_with(@fortunes) do |format|
+        format.html { render action: 'index' }
+      end
+    end
+
+    def index
+      @fortunes = Fortune.text_search(params[:query])
+        .page(params[:page]).per_page(4)
+      respond_with(@fortunes)
+    end
+
+Zrobione!
+
+    :::bash
+    ... interactive rebase ...
+    git tag v0.0.4
