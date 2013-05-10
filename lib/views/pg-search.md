@@ -4,7 +4,7 @@
 <p><a href="http://sigma.inf.ug.edu.pl/~jdarecki/fedora15.html">Instalacja MySQl, PostgreSQL... w Fedorze 15</p></p>
 </blockquote>
 
-… czyli do *full text search** użyjemy gemów:
+… czyli do *full text search* użyjemy gemów:
 
 * [texticle](https://github.com/tenderlove/texticle)
 * [pg_search](https://github.com/Casecommons/pg_search)
