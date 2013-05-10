@@ -25,14 +25,12 @@ gsub_file 'Gemfile', /.+'sass-rails'.+\n/, ''
 
 gem "less-rails"
 
-# add Bootstrap to asset pipeline: https://github.com/seyhunak/twitter-bootstrap-rails
+# gem 'jquery-ui-rails'
+# gem 'jquery-datatables-rails'
 
-gem_group :assets do
-  # gem 'jquery-ui-rails'
-  # gem 'jquery-datatables-rails'
-  gem "therubyracer"
-  gem "twitter-bootstrap-rails"
-end
+# add Bootstrap to asset pipeline: https://github.com/seyhunak/twitter-bootstrap-rails
+gem "therubyracer"
+gem "twitter-bootstrap-rails"
 
 gem_group :development, :test do
   gem "rspec-rails"
