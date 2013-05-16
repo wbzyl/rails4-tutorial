@@ -6,8 +6,8 @@ projektu.
 
 R. Bates przedstawił instalację w dwóch screencastach:
 
-* [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise)
-  ([revised](http://railscasts.com/episodes/209-devise-revised)).
+* [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise),
+  [revised](http://railscasts.com/episodes/209-devise-revised).
 * [Customizing Devise](http://asciicasts.com/episodes/210-customizing-devise).
 
 <blockquote>
@@ -26,8 +26,7 @@ Zaczynamy od lektury krótkiego wprowadzenia w temat:
 I tak zrobimy. Dodamy autentykację do aplikacji „Blog” przedstawionej
 na jednym z poprzednich wykładów. W przykładzie będziemy się wzorować
 na przykładzie przedstawionym przez R. Batesa
-w [Authentication from Scratch ](http://asciicasts.com/episodes/250-authentication-from-scratch)
-([revised](http://railscasts.com/episodes/250-authentication-from-scratch-revised)).
+w [Authentication from Scratch ](http://asciicasts.com/episodes/250-authentication-from-scratch)  ([revised](http://railscasts.com/episodes/250-authentication-from-scratch-revised)).
 
 
 <blockquote>
