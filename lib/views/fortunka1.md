@@ -479,7 +479,7 @@ Tagujemy tę wersję:
 
 
 
-# TODO: Komentarze do fortunek
+# Komentarze do fortunek
 
 <blockquote>
  <p>
@@ -500,60 +500,79 @@ Tagujemy tę wersję:
 W widoku *show.html.erb* fortunki chcielibyśmy mieć możliwość
 dopisywania własnych komentarzy.
 
-Przygotujemy sobie też stronę ze wszystkimi komentarzami.
-Przyda się adminowi przy usuwaniu i edycji komentarzy.
+Dodatkowo przygotujemy stronę ze wszystkimi komentarzami,
+gdzie będzie można usuwać i edtować komentarze.
 
 Jak zwykle nowy kod będziemy wpisywać na nowej gałęzi:
 
+    :::ruby
     git checkout -b comments
 
-Dopiero po sprawdzeniu, że kod jet OK, przeniesiemy go na gałąź master.
+Dopiero po sprawdzeniu, że kod jest OK, przeniesiemy go na gałąź master.
 
 Zaczynamy od wygenerowania rusztowania dla zasobu *Comment*:
 
     rails g resource Comment fortune:references \
         body:string author:string
+
+      invoke  active_record
+      create    db/migrate/..._create_comments.rb
+      create    app/models/comment.rb
+      invoke    rspec
+      create      spec/models/comment_spec.rb
+      invoke  controller
+      create    app/controllers/comments_controller.rb
+      invoke    erb
+      create      app/views/comments
+
     rake db:migrate
 
-Ponieważ do fortunka może mieć wiele komentarzy, zagnieżdżamy
+Ponieważ fortunka może mieć wiele komentarzy, zagnieżdżamy
 zasoby w tej kolejności:
 
     :::ruby
     resources :fortunes do
       resources :comments
-      collection do
-        get :tags
-      end
-    en
+    end
 
-i sprawdzamy jak wygląda routing po tej zmianie:
+Sprawdzamy jak wygląda routing po tej zmianie:
 
     :::bash
     rake routes
 
-wypisuje nowy routing:
+(poniżej usunięto `(.:format)` w URI Pattern)
 
+                  Prefix Verb   URI Pattern                             Controller#Action
+                    root GET    /                                       fortunes#index
+        fortune_comments GET    /fortunes/:fortune_id/comments          comments#index
+                         POST   /fortunes/:fortune_id/comments          comments#create
+     new_fortune_comment GET    /fortunes/:fortune_id/comments/new      comments#new
+    edit_fortune_comment GET    /fortunes/:fortune_id/comments/:id/edit comments#edit
+         fortune_comment GET    /fortunes/:fortune_id/comments/:id      comments#show
+                         PATCH  /fortunes/:fortune_id/comments/:id      comments#update
+                         PUT    /fortunes/:fortune_id/comments/:id      comments#update
+                         DELETE /fortunes/:fortune_id/comments/:id      comments#destroy
+                fortunes GET    /fortunes                               fortunes#index
+                         POST   /fortunes                               fortunes#create
+             new_fortune GET    /fortunes/new                           fortunes#new
+            edit_fortune GET    /fortunes/:id/edit                      fortunes#edit
+                 fortune GET    /fortunes/:id                           fortunes#show
+                         PATCH  /fortunes/:id                           fortunes#update
+                         PUT    /fortunes/:id                           fortunes#update
+                         DELETE /fortunes/:id                           fortunes#destroy
 
-        fortune_comments GET    /fortunes/:fortune_id/comments(.:format)          comments#index
-                         POST   /fortunes/:fortune_id/comments(.:format)          comments#create
-     new_fortune_comment GET    /fortunes/:fortune_id/comments/new(.:format)      comments#new
-    edit_fortune_comment GET    /fortunes/:fortune_id/comments/:id/edit(.:format) comments#edit
-         fortune_comment GET    /fortunes/:fortune_id/comments/:id(.:format)      comments#show
-                         PUT    /fortunes/:fortune_id/comments/:id(.:format)      comments#update
-                         DELETE /fortunes/:fortune_id/comments/:id(.:format)      comments#destroy
+Dla porównania stary routing:
 
-
-oraz stary routing:
-
-    tags_fortunes GET    /fortunes/tags(.:format)     fortunes#tags
-         fortunes GET    /fortunes(.:format)          fortunes#index
-                  POST   /fortunes(.:format)          fortunes#create
-      new_fortune GET    /fortunes/new(.:format)      fortunes#new
-     edit_fortune GET    /fortunes/:id/edit(.:format) fortunes#edit
-          fortune GET    /fortunes/:id(.:format)      fortunes#show
-                  PUT    /fortunes/:id(.:format)      fortunes#update
-                  DELETE /fortunes/:id(.:format)      fortunes#destroy
-             root        /                            fortunes#index
+          Prefix Verb   URI Pattern                  Controller#Action
+            root GET    /                            fortunes#index
+        fortunes GET    /fortunes(.:format)          fortunes#index
+                 POST   /fortunes(.:format)          fortunes#create
+     new_fortune GET    /fortunes/new(.:format)      fortunes#new
+    edit_fortune GET    /fortunes/:id/edit(.:format) fortunes#edit
+         fortune GET    /fortunes/:id(.:format)      fortunes#show
+                 PATCH  /fortunes/:id(.:format)      fortunes#update
+                 PUT    /fortunes/:id(.:format)      fortunes#update
+                 DELETE /fortunes/:id(.:format)      fortunes#destroy
 
 
 Przechodzimy do modelu *Comment*, gdzie znajdujemy dopisane
@@ -562,7 +581,6 @@ przez generator powiązanie:
     :::ruby app/models/comment.rb
     class Comment < ActiveRecord::Base
       belongs_to :fortune
-      attr_accessible :author, :body
     end
 
 Przechodzimy do modelu *Fortune*, gdzie sami dopisujemy drugą stronę powiązania:
@@ -572,9 +590,7 @@ Przechodzimy do modelu *Fortune*, gdzie sami dopisujemy drugą stronę powiązan
       has_many :comments, dependent: :destroy
       ...
 
-Nie zapominamy o migracji:
-
-    rake db:migrate
+## Modele na konsoli Rails
 
 Wchodzimy na konsolę Rails (*sandbox*):
 
@@ -584,79 +600,81 @@ Wchodzimy na konsolę Rails (*sandbox*):
 Na konsoli wykonujemy:
 
     :::ruby
-    Fortune.first.comments  #=> []
+    Fortune.last.comments  #=> []
 
 czyli komentarze pierwszej fortunki tworzą pustą tablicę.
 Aby dodać komentarz możemy postąpić tak:
 
     :::ruby
-    Fortune.first.comments << Comment.new(author: "Ja", body: "Fajne!")
+    Fortune.last.comments << Comment.new(author: "Ja", body: "Fajne!")
     Comment.all
 
 
-### Gdzie będziemy wypisywać komentarze?
+## Gdzie będziemy wypisywać komentarze?
 
-Nie ma większego sensu wypisywanie wszystkich komentarzy. Dlatego,
-będziemy wypisywać tylko komentarze dla konkretnej fortunki.
-Wypiszemy je w widoku *fortunes/show*:
+Komentarze będziemy wypisywać tylko dla fortunki
+do której zostały dodane.
+
+Dlatego dodamy je do widoku *fortunes/show*:
 
     :::rhtml app/views/fortunes/show.html.erb
     <% if @fortune.comments.any? %>
-    <h2>Comments</h2>
+      <h2>Comments</h2>
       <% @fortune.comments.each do |comment| %>
-      <div class="attribute">
-        <span class="name"><%= t "simple_form.labels.comment.body" %></span>
-        <span class="value"><%= comment.body %></span>
-      </div>
-      <div class="attribute">
-        <span class="name"><%= t "simple_form.labels.comment.author" %></span>
-        <span class="value"><%= comment.author %></span>
-      </div>
-
+      <dl class="dl-horizontal">
+        <dt><%= model_class.human_attribute_name(:body) %>:</strong></dt>
+        <dd><%= comment.body %></dd>
+        <dt><strong><%= model_class.human_attribute_name(:author) %>:</strong></dt>
+        <dd><%= comment.author %></dd>
+      </dl>
       <div class="form-actions">
-        <%= link_to 'Destroy', [@fortune, comment], method: :delete, class: 'btn-mini btn-danger'%>
+        <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+           [@fortune, comment], method: :delete, class: 'btn btn-danger'%>
       </div>
       <% end %>
     <% end %>
 
-W taki sposób:
+A link do zagnieżdżonego zasobu *comments*:
+
+    DELETE /fortunes/:fortune_id/comments/:id(.:format)  comments#destroy
+
+tworzymy w taki sposób:
 
     :::ruby
-    link_to 'Destroy', [@fortune, comment]
+    link_to 'Delete', [@fortune, comment], method: :delete
 
-tworzymy link do zagnieżdżonego zasobu *comments*:
-
-    DELETE /fortunes/:fortune_id/comments/:id    comments#destroy
+(Link jeszcze nie działa!)
 
 
-### Gdzie będziemy dodawać nowe komentarze?
+## Gdzie będziemy dodawać nowe komentarze?
 
-Chyba najwygodniej będzie dodawać komentarze też widoku *show*:
+Najwygodniej jest dodawać komentarze w widoku *show*:
 
     :::rhtml app/views/fortunes/show.html.erb
-    <h2>Add new comment</h2>
     <%= simple_form_for [@fortune, @comment], :html => { :class => 'form-horizontal' } do |f| %>
+
     <% if f.error_notification %>
     <div class="alert alert-error fade in">
       <a class="close" data-dismiss="alert" href="#">&times;</a>
       <%= f.error_notification %>
     </div>
     <% end %>
-    <div class="form-inputs">
-      <%= f.input :author %>
-      <%= f.input :body %>
-    </div>
+
+    <%= f.input :body, :input_html => { :class => "span6" } %>
+    <%= f.input :author, :input_html => { :class => "span6" } %>
+
     <div class="form-actions">
-      <%= f.button :submit %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+              fortunes_path, :class => 'btn' %>
+      <%= f.button :submit, :class => 'btn btn-primary' %>
     </div>
     <% end %>
 
-Musimy jeszcze dopisać w kontrolerze *FortunesController*
-definicję *comment* do kodu metody *destroy*:
+Aby dodawanie komentarzy działało musimy zdefiniować
+zmienną *@comment* w *FortunesController*:
 
     :::ruby app/controllers/fortunes_controller.rb
     def show
-      @fortune = Fortune.find(params[:id])
       @comment = Comment.new
       respond_with(@fortune)
     end
@@ -675,9 +693,11 @@ wklepujemy poniższy kod:
 
       # POST /fortunes/:fortune_id/comments
       def create
-        @comment = @fortune.comments.build(params[:comment])
+        @comment = @fortune.comments.build(comment_params)
         @comment.save
         respond_with(@fortune, @comment, location: @fortune)
+        # uwaga! taki kod nie działa:
+        # respond_with([@fortune, @comment], location: @fortune)
       end
 
       # DELETE /fortunes/:fortune_id/comments/:id
@@ -685,43 +705,30 @@ wklepujemy poniższy kod:
         @comment = @fortune.comments.find(params[:id])
         @comment.destroy
         respond_with(@fortune, @comment, location: @fortune)
+        # uwaga! jw.
+      end
+
+    private
+      def comment_params
+        params.require(:comment).permit(:body, :author)
       end
     end
 
 W powyższym kodzie wymuszamy za pomocą konstrukcji z *location*,
 przeładowanie strony. Po zapisaniu w bazie nowej fortunki lub po jej
-usunięciu będziemy przekierowywanie do widoku *show* dla fortunki
+usunięciu nastąpi przekierowywanie do widoku *show* dla fortunki
 a nie do widoku *show* (którego nie ma) dla komentarzy!
 
 To jeszcze nie wszystko. Musimy napisać metody *edit* oraz *update*.
-Być może powinniśmy napisać też widok do edycji komentarzy!
-
 Ale to zrobimy później. Teraz zabierzemy się za refaktoryzację kodu.
 
 
 ## Refaktoryzacja widoku „show”
 
 Usuwamy kod formularza wpisany pod znacznikiem *Add new comment*.
-Z usuniętego kodu tworzymy szablon częściowy *comments/_form.html.erb*:
+Z usuniętego kodu tworzymy szablon częściowy *comments/_form.html.erb*.
 
-    :::rhtml app/views/comments/_form.html.erb
-    <%= simple_form_for [@fortune, @comment], :html => { :class => 'form-horizontal' } do |f| %>
-    <% if f.error_notification %>
-    <div class="alert alert-error fade in">
-      <a class="close" data-dismiss="alert" href="#">&times;</a>
-      <%= f.error_notification %>
-    </div>
-    <% end %>
-    <div class="form-inputs">
-      <%= f.input :author %>
-      <%= f.input :body %>
-    </div>
-    <div class="form-actions">
-      <%= f.button :submit %>
-    </div>
-    <% end %>
-
-W widoku, zamiast usuniętego kodu wpisujemy:
+W widoku *show*, zamiast usuniętego kodu wpisujemy:
 
     :::rhtml app/views/fortunes/show.html.erb
     <h2>Add new comment</h2>
@@ -731,19 +738,20 @@ Następnie usuwamy z widoku pętlę pod *Comments*. Z ciała pętli tworzymy
 drugi szablon częściowy *comments/_comment.html.erb*:
 
     :::rhtml app/views/comments/_comment.html.erb
-    <div class="attribute">
-      <span class="name"><%= t "simple_form.labels.comment.body" %></span>
-      <span class="value"><%= comment.body %></span>
-    </div>
-    <div class="attribute">
-      <span class="name"><%= t "simple_form.labels.comment.author" %></span>
-      <span class="value"><%= comment.author %></span>
-    </div>
+    <%- model_class = Comment -%>
 
+    <dl class="dl-horizontal">
+      <dt><%= model_class.human_attribute_name(:body) %>:</strong></dt>
+      <dd><%= comment.body %></dd>
+      <dt><strong><%= model_class.human_attribute_name(:author) %>:</strong></dt>
+      <dd><%= comment.author %></dd>
+    </dl>
     <div class="form-actions">
-      <%= link_to 'Destroy', [@fortune, comment], method: :delete, class: 'btn-mini btn-danger'%>
+      <%= link_to t('.edit', :default => t("helpers.links.edit")),
+         edit_fortune_comment_path(@fortune, comment), class: 'btn' %>
+      <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+        [@fortune, comment], method: :delete, class: 'btn btn-danger'%>
     </div>
-    <% end %>
 
 W widoku, zamiast usuniętego kodu wpisujemy:
 
@@ -752,7 +760,6 @@ W widoku, zamiast usuniętego kodu wpisujemy:
     <h2>Comments</h2>
     <%= render partial: 'comments/comment', collection: @fortune.comments %>
     <% end %>
-
 
 
 ## Reszta obiecanego kodu
@@ -772,19 +779,15 @@ W widoku, zamiast usuniętego kodu wpisujemy:
       respond_with(@fortune, @comment, location: @fortune)
     end
 
-oraz brakujący link do edycji fortunki w widoku *comments/_comment*:
-
-    :::rhtml app/views/comments/_comment.html.erb
-    <%= link_to 'Edit', edit_fortune_comment_path(@fortune, comment), class: 'btn-mini' %>
-
-no i szablon widoku – *comments/edit.html.erb*:
+oraz szablon widoku – *comments/edit.html.erb*:
 
     :::rhtml app/views/comments/edit.html.erb
-    <% title "Editing comment" %>
-    <%= render :partial => 'form' %>
-    <div class="form-actions">
-      <%= link_to 'Show Fortune', @comment.fortune, class: 'btn' %>
+    <%- model_class = Comment -%>
+    <div class="page-header">
+      <h1><%=t '.title', :default => [:'helpers.titles.edit', 'Edit %{model}'],
+        :model => model_class.model_name.human %></h1>
     </div>
+    <%= render :partial => 'form' %>
 
 
 ## Walidacja komentarzy
@@ -798,6 +801,10 @@ Będziemy wymagać, aby każde pole było niepuste:
       validates :body, presence: true
     end
 
+<!--
+
+# Zbędne w Rails 4.
+
 Musimy też utworzyć widok *comments/new.html.erb*:
 
     :::rhtml app/views/comments/new.html.erb
@@ -807,14 +814,16 @@ Musimy też utworzyć widok *comments/new.html.erb*:
       <%= link_to 'Back to Fortune', @comment.fortune, class: 'btn' %>
     </div>
 
-Będziemy go potrzebować jak użytkownik kilknie przycisk
+Będziemy go potrzebować jak użytkownik kliknie przycisk
 „Create Comment” przy jednym z pól pustym.
 
+-->
 
-# Engines are back in Rails… 3.1
 
-Engines to aplikacje Rails, zazwyczajowo zaprogramowana jako gem albo wtyczka.
-Na przykład gem *Devise* implementuje autentykację, a – *Kaminari* paginację.
+# Engines are back in Rails 3.1+
+
+Engine to aplikacja Rails zaprogramowana jako gem. Na przykład gem
+*Devise* implementuje autentykację, a gem *Kaminari* – paginację.
 
 Engines dla Rails wymyślił [James Adams](https://github.com/lazyatom/engines).
 Z engines był jeden problem. Nie było gwarancji, że nowa wersja Rails
@@ -827,13 +836,13 @@ Nieco Railsowej archeologii:
  artykuł z 2005 roku
 * [Odpowiedź J. Adamsa](http://article.gmane.org/gmane.comp.lang.ruby.rails/29166)
 
-Korzystając z engine *Devise* dodać autentykację do Fortunki.
+Korzystając z *Devise* dodać autentykację do Fortunki.
 
 {%= image_tag "/images/head-element.png", :alt => "[source: http://diveintohtml5.org/]" %}<br>
 (źródło M. Pilgrim. <a href="http://diveintohtml5.info">Dive into HTML5</a>)
 
 
-# TODO – [przykład](https://github.com/wbzyl/library-carrierwave)
+# TODOs
 
 <blockquote>
 <p><a href="http://blog.bigbinary.com/2012/05/10/csrf-and-rails.html">CSRF and Rails</a></p>
@@ -850,29 +859,28 @@ Zmieniając widok strony głównej aplikacji, na przykład tak:
 
 Dodając obrazki do fortunek,
 coś w stylu [Demotywatorów](http://demotywatory.pl/) lub [Kwejka](http://kwejk.pl/).
+Można skorzystać z gemu [Carrierwave](https://github.com/jnicklas/carrierwave):
 
-Możemy skorzystać z gemu *Carrierwave*:
-
-* [home](https://github.com/jnicklas/carrierwave) –
-  classier solution for file uploads for Rails, Sinatra and other Ruby web frameworks
-* [wiki](https://github.com/jnicklas/carrierwave/wiki)
+* [Wiki](https://github.com/jnicklas/carrierwave/wiki)
 * [application](https://github.com/jnicklas/carrierwave-example-app/blob/master/app/views/users/_form.html.erb) –
   an example
 * [carrierwave-mongoid](https://github.com/jnicklas/carrierwave-mongoid) –
   [Mongoid](http://mongoid.org/en/mongoid/index.html) support for CarrierWave
-* [cropping images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
+* [Cropping images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
   RailsCasts \#182
 * Trevor Turk,
   [A Gentle Introduction to CarrierWave](http://www.engineyard.com/blog/2011/a-gentle-introduction-to-carrierwave/)
 
-albo z gemu *Paperclip*:
-
-* [Paperclip](https://github.com/thoughtbot/paperclip)
+lub z gemu [Paperclip](https://github.com/thoughtbot/paperclip).
 
 
+**TODO:** Uaktualnić przykład *library-carrierwave* (Bitbucket)
+do Rails 4.0.
 
 
-# TODO: Tagowanie
+## Tagowanie
+
+**TODO:** Zobacz [Milestones](https://github.com/mbleigh/acts-as-taggable-on/issues/milestones).
 
 Tagowanie dodamy, korzystając z gemu
 [acts-as-taggable-on](http://github.com/mbleigh/acts-as-taggable-on).
@@ -1150,9 +1158,3 @@ Pozostała refaktoryzacja *@tags*, oraz napisanie metody *tags*:
         .page(params[:page]).per_page(4)
       respond_with(@fortunes)
     end
-
-Zrobione!
-
-    :::bash
-    ... interactive rebase ...
-    git tag v0.0.4
