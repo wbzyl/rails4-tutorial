@@ -875,7 +875,7 @@ lub z gemu [Paperclip](https://github.com/thoughtbot/paperclip).
 
 
 **TODO:** Uaktualnić przykład *library-carrierwave* (Bitbucket)
-do Rails 4.0.
+do Rails 4.0.x.
 
 
 ## Tagowanie
