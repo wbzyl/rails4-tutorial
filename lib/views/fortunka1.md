@@ -628,6 +628,8 @@ Dlatego dodamy je do widoku *fortunes/show*:
         <dd><%= comment.author %></dd>
       </dl>
       <div class="form-actions">
+        <%= link_to t('.edit', :default => t("helpers.links.edit")),
+           edit_fortune_comment_path(@fortune, comment), class: 'btn' %>
         <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
            [@fortune, comment], method: :delete, class: 'btn btn-danger'%>
       </div>

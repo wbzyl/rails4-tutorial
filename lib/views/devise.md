@@ -18,15 +18,12 @@ R. Bates przedstawił instalację w dwóch screencastach:
 
 Zgodnie z sugestią autorów gemu Devise powinniśmy
 zacząć od samodzielnego napisania od zera prostej autentykacji.
+I tak zrobimy.
 
-Zaczynamy od lektury krótkiego wprowadzenia w temat:
-
-* [006 RC Ruby on Rails Authentication Basics](http://railscoach.com/006-rc-ruby-on-rails-authentication-basics/)
-
-I tak zrobimy. Dodamy autentykację do aplikacji „Blog” przedstawionej
-na jednym z poprzednich wykładów. W przykładzie będziemy się wzorować
-na przykładzie przedstawionym przez R. Batesa
-w [Authentication from Scratch ](http://asciicasts.com/episodes/250-authentication-from-scratch)  ([revised](http://railscasts.com/episodes/250-authentication-from-scratch-revised)).
+Dodamy autentykację do aplikacji
+[Fortunka v1.0](https://github.com/wbzyl/fortune-responders-4.x).
+Skorzystamy z kodu aplikacji
+[Authentication from Scratch](http://asciicasts.com/episodes/250-authentication-from-scratch)  ([revised](http://railscasts.com/episodes/250-authentication-from-scratch-revised), [źródło](https://github.com/railscasts/250-authentication-from-scratch-revised)).
 
 
 <blockquote>
@@ -42,8 +39,12 @@ w [Authentication from Scratch ](http://asciicasts.com/episodes/250-authenticat
 Model:
 
     :::bash
+    rails g resource user email password_digest
+
+    # ???
     rails g model user \
       email:string password_hash:string password_salt:string
+
     rake db:migrate
 
 Kontroler:
