@@ -4,11 +4,12 @@ Dlaczego autentykacja z Devise. Jest wiele argumentów za. Wszystkie
 są wymienione w [README](https://github.com/plataformatec/devise)
 projektu.
 
-R. Bates przedstawił instalację w dwóch screencastach:
+R. Bates omówił jak korzystać z Devise w tych screencastach:
 
 * [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise),
   [revised](http://railscasts.com/episodes/209-devise-revised).
 * [Customizing Devise](http://asciicasts.com/episodes/210-customizing-devise).
+
 
 <blockquote>
   <p>{%= image_tag "/images/linux-from-scratch.jpg", :alt => "[linux from scratch]" %}</p>
@@ -17,12 +18,16 @@ R. Bates przedstawił instalację w dwóch screencastach:
 # Autentykacja od zera
 
 Zgodnie z sugestią autorów gemu Devise powinniśmy
-zacząć od samodzielnego napisania od zera prostej autentykacji.
+zacząć od napisania od zera prostej autentykacji.
 I tak zrobimy.
 
-Dodamy autentykację do aplikacji
-[Fortunka v1.0](https://github.com/wbzyl/fortune-responders-4.x).
-Skorzystamy z kodu aplikacji
+Skorzystamy z metody
+[has_secure_password](http://edgeapi.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html)
+oraz gemu [bcrypt-ruby](https://github.com/codahale/bcrypt-ruby).
+
+Autentykację dodamy do
+[Fortunki v1.0](https://github.com/wbzyl/fortune-responders-4.x).
+Będziemy się wzorować na kodzie aplikacji
 [Authentication from Scratch](http://asciicasts.com/episodes/250-authentication-from-scratch)  ([revised](http://railscasts.com/episodes/250-authentication-from-scratch-revised), [źródło](https://github.com/railscasts/250-authentication-from-scratch-revised)).
 
 
@@ -34,18 +39,17 @@ Skorzystamy z kodu aplikacji
    na Stack Overflow]</a></p>
 </blockquote>
 
-## Rejestracja
+## TODO: Rejestracja
 
-Model:
+Zaczynamy od implementacji rejestracji (*sign in*).
+
+Generujemy zasób (*resource*):
 
     :::bash
     rails g resource user email password_digest
-
-    # ???
-    rails g model user \
-      email:string password_hash:string password_salt:string
-
     rake db:migrate
+
+<!-- rails g model user email:string password_hash:string password_salt:string -->
 
 Kontroler:
 
@@ -105,29 +109,18 @@ oraz trochę kodu:
 
     :::ruby app/models/user.rb
     class User < ActiveRecord::Base
-      attr_accessible :password, :password_confirmation, :email
+      has_secure_password
 
-      validates_confirmation_of :password
-      validates_presence_of :password, :on => :create
-      validates_presence_of :email
       validates_uniqueness_of :email
-
-      before_save :encrypt_password
-
-      private
-      def encrypt_password
-        if password.present?
-          self.password_salt = BCrypt::Engine.generate_salt
-          self.password_hash = BCrypt::Engine.hash_secret(password, password_salt)
-        end
-      end
+      #-> do kontrolera:
+      # attr_accessible :password, :password_confirmation, :email
     end
 
 Powyżej do zakodowania hasła użyliśmy gemu *bcrypt-ruby*.
 Instalujemy go w aplikacji:
 
     :::ruby Gemfile
-    gem 'bcrypt-ruby', :require => 'bcrypt'
+    gem 'bcrypt-ruby'
 
 Dopiero teraz rejestrujemy się. Po rejestracji
 sprawdzamy na konsoli co zostało zapisane w bazie w tabeli *users*:
