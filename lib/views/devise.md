@@ -146,11 +146,15 @@ z której będziemy korzystać. Użytkownik nie musi
 wiedzieć/domyślać się jak działa logowanie albo rejestracja.
 
     :::ruby config/routes.rb
-    get "register" => "users#new",    :as => "register"
-    get "login"    => "sessions#new", :as => "login"
+    get "register" => "users#new",        :as => "register"
+    get "login"    => "sessions#new",     :as => "login"
+    get "logout"   => "sessions#destroy", :as => "logout"
 
     resources :users
     resources :sessions
+
+**TODO:** Poprawić argumenty w *link_to*:
+*session_new* na *login*, *users_new* na *register*.
 
 Logowanie to REST **bez modelu**.
 Oznacza to, że z walidacją będzie problem. (Czyżby?)
@@ -227,22 +231,18 @@ To jest proste o ile w naszej aplikacji jest jakaś
 strona na którą będzie można przekierować
 wylogowanego użytkownika.
 
-Zaczynamy od routingu:
-
-    :::ruby config/routes.rb
-    get "register" => "users#new",        :as => "register"
-    get "login"    => "sessions#new",     :as => "login"
-    get "logout"   => "sessions#destroy", :as => "logout"
-
-**TODO:** Poprawić argumenty w *link_to*:
-*session_new* na *login*, *users_new* na *register*.
-
-Jak widać wylogowywanie polega na wpisaniu do sesji
+Jak widać w kodzie poniżej, wylogowywanie polega na wpisaniu do sesji
 pod *:user_id* wartości *nil*.
+
+    :::ruby
+    def destroy
+      session[:user_id] = nil
+      redirect_to root_url, notice: "Logged out!"
+    end
 
 Oczywiście, nie będziemy zmuszać użytkownika do wpisywania
 w przeglądarce: *register*, *login*, *logout*. Wpisywanie zastąpimy
-klikaniem. W tym celu dodamy do layoutu aplikacji odpowiednie linki:
+klikaniem. W tym celu do layoutu aplikacji dodamy te linki:
 
     :::rhtml app/views/shared/_navbar.html.erb
     <ul class="nav pull-right">
