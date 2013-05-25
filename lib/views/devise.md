@@ -120,8 +120,10 @@ Dodajemy widok z formularzem rejestracji:
         <%= f.input :email %>
         <%= f.input :password %>
         <%= f.input :password_confirmation %>
-       </div>
-       <div class="actions"><%= f.submit %></div>
+      </div>
+      <div class="actions">
+        <%= f.button :submit, class: 'btn-primary' %>
+      </div>
     <% end %>
 
 oraz przycisk 'Register':
