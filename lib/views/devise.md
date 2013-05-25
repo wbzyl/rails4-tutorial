@@ -122,7 +122,7 @@ Dodajemy widok z formularzem rejestracji:
         <%= f.input :password_confirmation %>
       </div>
       <div class="actions">
-        <%= f.button :submit, class: 'btn-primary' %>
+        <%= f.button :submit, class: 'btn btn-primary' %>
       </div>
     <% end %>
 
