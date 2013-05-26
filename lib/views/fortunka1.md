@@ -468,7 +468,7 @@ easy to use and fast Ruby semantic search engine.
 
 Przykłady użycia:
 
-* [twixtel](http://www.twixtel.ch/),
+* [The Phonebook of Switzerland](http://tel.local.ch/en),
 * [gemsearch](http://gemsearch.heroku.com/)
 
 
