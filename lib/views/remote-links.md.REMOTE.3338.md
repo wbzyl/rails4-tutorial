@@ -24,22 +24,6 @@ Dodajemy *tracking branch*:
     git checkout --track origin/remote-links
     git pull
 
-Eksperymenty na konsoli będą przyjemniejsze jeśli usuniemy
-zabezpieczenie CSRF. Można tego nie robić, ale wtedy zamiast jednego
-polecenia na konsoli trzeba bedzie ich wykonac kilka.
-
-## ☯ program curl jest cool
-
-Po pomyślnej instalacji, dla rozruszania wykonujemy kilka poleceń
-z programem *curl*:
-
-    :::bash
-    curl -v -X GET -H 'Accept: application/json' localhost:3000/fortunes/44
-    curl    -X GET -H 'Accept: application/json' localhost:3000/fortunes/45
-    curl -v -X DELETE localhost:3000/fortunes/2         # wpisujemy numery istniejących fortunek
-    curl    -X DELETE localhost:3000/fortunes/3         # jw (już wspomniane)
-    curl -v -X DELETE localhost:3000/fortunes/4.json    # jw
-    curl -v -X DELETE -H 'Accept: application/json' localhost:3000/fortunes/5
 
 <!--
    te polecenia (ten fragment) / których (który)

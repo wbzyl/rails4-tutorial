@@ -1,0 +1,25 @@
+<%= form_for(@fortune) do |f| %>
+  <% if @fortune.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@fortune.errors.count, "error") %> prohibited this fortune from being saved:</h2>
+
+      <ul>
+      <% @fortune.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :quotation %><br />
+    <%= f.text_area :quotation %>
+  </div>
+  <div class="field">
+    <%= f.label :source %><br />
+    <%= f.text_field :source %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

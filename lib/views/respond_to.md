@@ -87,7 +87,20 @@ generuje kod dla zasobu (ang. *resource*) *fortune*:
     end
 
 Jak widać, metody wygenrowanego kontrolera potrafią zwrócić odpowiedź
-w różnych formatach (powyżej – HTML i JSON).
+w różnych formatach, HTML i JSON:
+
+* index:
+  {%= link_to "index.html.erb", "/rails4/fortunes/index.html.erb" %},
+  {%= link_to "index.json.jbuilder", "/rails4/fortunes/index.json.jbuilder" %}
+* show:
+  {%= link_to "show.html.erb", "/rails4/fortunes/show.html.erb" %},
+  {%= link_to "show.json.jbuilder", "/rails4/fortunes/show.json.jbuilder" %}
+
+tylko HTML:
+
+* {%= link_to "\_form.html.erb", "/rails4/fortunes/\_form.html.erb" %}
+* {%= link_to "edit.html.erb", "/rails4/fortunes/edit.html.erb" %}
+* {%= link_to "new.html.erb", "/rails4/fortunes/new.html.erb" %}
 
 Odpowiedź zależy od nagłówka MIME (tak naprawdę
 od nagłówka *Accept*) przekazanego w żądaniu HTTP
@@ -196,14 +209,15 @@ Oznacza, to że polecenia z *curl* i z jednym z powyższych VERB zwrócą błą
 Dlatego dla wygody,  w trakcie poniższych eksperymentów z programem *curl* (lub na
 konsoli przeglądarki) powinniśmy wykonać jedną z trzech rzeczy:
 
-1\. Usunąć zabezpieczenie CSRF z layoutu.
+1\. Usunąć zabezpieczenie CSRF z layoutu <br>
+**Niestety nie działa od 2013.04.**
 
-2\. Dodać ten kod do kontrolera
+2\. Dodać ten kod do kodu kontrolera
 [ApplicationController](http://edgeapi.rubyonrails.org/classes/ActionController/RequestForgeryProtection.html):
 
     :::ruby
     class ApplicationController < ActionController::Base
-      protect_from_forgery
+      protect_from_forgery with: :exception
       skip_before_action :verify_authenticity_token, if: :json_request?
 
       protected
@@ -225,15 +239,23 @@ Teraz poniższe polecenia powinny wykonać się bez błędów:
        localhost:3000/fortunes/1
 
     curl -v -X POST \
-      --data '{"quotation":"I hear and I forget."}' \
+      --data-urlencode "fortune[quotation]=I hear and I forget" \
       localhost:3000/fortunes.json
     curl    -X POST \
       -H 'Content-Type: application/json' \
-      --data '{"quotation":"I hear and I forget."}' \
+      --data-urlencode 'fortune[quotation]:I hear and I forget.' \
       localhost:3000/fortunes
 
-Zamiast programu *curl* można przesłać te żądania korzystając
-z konsoli przeglądarki. Przykładowo tak usuwamy rekord z *id=6*:
+W powyższych poleceniach zamiast `--data-urlencode`
+można użyć `--data`, lub `-d`:
+
+    curl -v -X POST -d "fortune[quotation]=I hear and I forget" \
+      localhost:3000/fortunes.json
+
+Nie musimy nic zmieniać w kodzie aplikacji, aby zostały wykonane
+powyższe polecenia.
+Możemy je wykonać wysyłając z konsoli odpowiednio przygotowane
+żądanie AJAX. Na przykład, tak usuniemy rekord z *id=6*:
 
     :::js
     $.ajax({
@@ -244,13 +266,17 @@ z konsoli przeglądarki. Przykładowo tak usuwamy rekord z *id=6*:
       }
     })
 
-(powyżej korzystamy z *jQuery*).
+(W kodzie powyżej korzystam z *jQuery*).
+
+Ten sposób ma tę wadę, że musimy być na stronie aplikacji.
+Inaczej nie odszukamy "csrf-token".
+Tej wady nie ma poniższy, choć dwuetapowy, sposób.
 
 3\. Pobieramy ciasteczko oraz odfiltrowujemy token CSRF:
 
     :::bash
     # zapisujemy cookie do pliku *cookie*
-    curl localhost:3000/fortunes --cookie-jar cookie  | grep csrf
+    curl -s localhost:3000/fortunes --cookie-jar cookie  | grep csrf
 
 Kopiujemy token CSRF do polecenia poniżej, na przykład:
 
@@ -267,6 +293,9 @@ do usunięcia kolejnego rekordu:
 
 Dodatkowa lektura:
 
+* [Using cURL to automate HTTP jobs ](http://curl.haxx.se/docs/httpscripting.html);
+  polskie tłumaczenie (starej wersji, niestety) – Rafał Machtyl,
+  [Sztuka pisania skrypów z żądaniami HTTP przy użyciu cURL](http://asciiwhiteplayground.site88.net/curl.html)
 * [Understand Rails Authenticity Token](http://stackoverflow.com/questions/941594/understand-rails-authenticity-token)
 * [**cURLing with Rails’ authenticity_token**](http://robots.thoughtbot.com/post/3035393350/curling-with-rails-authenticity-token)
 * [WARNING: Can’t verify CSRF token authenticity Rails](http://stackoverflow.com/questions/7203304/warning-cant-verify-csrf-token-authenticity-rails)

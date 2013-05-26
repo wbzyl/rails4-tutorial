@@ -71,6 +71,7 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "„Fortunka” v1.0", "/fortunka1" %}
 1. {%= link_to "Autentykacja z Devise", "/devise" %}
 1. {%= link_to "Autoryzacja z CanCan", "/cancan" %}
+1. {%= link_to "Wyszukiwanie pełnotekstowe z PostgreSQL", "/pg-search" %}
 1. {%= link_to "Mongoid + OmniAuth z autoryzacją przez GitHub", "/mongodb" %}
 
 Różne rzeczy:

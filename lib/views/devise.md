@@ -4,10 +4,12 @@ Dlaczego autentykacja z Devise. Jest wiele argumentów za. Wszystkie
 są wymienione w [README](https://github.com/plataformatec/devise)
 projektu.
 
-R. Bates przedstawił instalację w dwóch screencastach:
+R. Bates omówił jak korzystać z Devise w tych screencastach:
 
-* [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise).
+* [Introducing Devise](http://asciicasts.com/episodes/209-introducing-devise),
+  [revised](http://railscasts.com/episodes/209-devise-revised).
 * [Customizing Devise](http://asciicasts.com/episodes/210-customizing-devise).
+
 
 <blockquote>
   <p>{%= image_tag "/images/linux-from-scratch.jpg", :alt => "[linux from scratch]" %}</p>
@@ -16,17 +18,17 @@ R. Bates przedstawił instalację w dwóch screencastach:
 # Autentykacja od zera
 
 Zgodnie z sugestią autorów gemu Devise powinniśmy
-zacząć od samodzielnego napisania od zera prostej autentykacji.
+zacząć od napisania od zera prostej autentykacji.
+I tak zrobimy.
 
-Zaczynamy od lektury krótkiego wprowadzenia w temat:
+Skorzystamy z metody
+[has_secure_password](http://edgeapi.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html)
+oraz gemu [bcrypt-ruby](https://github.com/codahale/bcrypt-ruby).
 
-* [006 RC Ruby on Rails Authentication Basics](http://railscoach.com/006-rc-ruby-on-rails-authentication-basics/)
-
-
-I tak zrobimy. Dodamy autentykację do aplikacji „Blog” przedstawionej
-na jednym z poprzednich wykładów. W przykładzie będziemy się wzorować
-na przykładzie przedstawionym przez R. Batesa
-w [Authentication from Scratch ](http://asciicasts.com/episodes/250-authentication-from-scratch).
+Autentykację dodamy do
+[Fortunki v1.0](https://github.com/wbzyl/fortune-responders-4.x).
+Będziemy się wzorować na kodzie aplikacji
+[Authentication from Scratch](http://asciicasts.com/episodes/250-authentication-from-scratch)  ([revised](http://railscasts.com/episodes/250-authentication-from-scratch-revised), [przykładowa aplikacja](https://github.com/railscasts/250-authentication-from-scratch-revised)).
 
 
 <blockquote>
@@ -39,135 +41,141 @@ w [Authentication from Scratch ](http://asciicasts.com/episodes/250-authenticat
 
 ## Rejestracja
 
-Model:
+Zaczynamy od implementacji rejestracji (*sign in*, *register*).
+
+Generujemy zasób (*resource*) *User*:
 
     :::bash
-    rails g model user \
-      email:string password_hash:string password_salt:string
+    rails g resource user email password_digest
     rake db:migrate
 
-Kontroler:
+<!-- rails g model user email:string password_hash:string password_salt:string -->
+
+Do kontrolera *UsersController* dopisujemy metody *new* i *create*:
 
     :::ruby app/controllers/users_controller.rb
     class UsersController < ApplicationController
       def new
         @user = User.new
       end
-
       def create
-        @user = User.new(params[:user])
+        @user = User.new(comment_params)
         if @user.save
-          redirect_to root_url, :notice => "Registered!"
+          redirect_to root_url, notice: "Thank you for registering!"
         else
           render "new"
         end
       end
+    private
+      def comment_params
+        params.require(:user).permit(:email, :password, :password_confirmation)
+      end
     end
 
-Widok:
+Do modelu *User* dopisujemy *has_secure_password* oraz walidację
+*email*:
 
-    :::ruby app/views/users/new.html.erb
+    :::ruby app/models/user.rb
+    class User < ActiveRecord::Base
+      has_secure_password
+      validates :email, uniqueness: true, presence:true
+    end
+
+Te walidacje:
+
+    :::ruby
+    validates password, presence: true
+    validates password_confirmation, presence: true
+
+są automatycznie dodawane przez *has_secure_password*.
+
+Metoda *has_secure_password* korzysta z gemu *bcrypt-ruby*.
+Dodajemy go do pliku *Gemfile* i instalujemy.
+
+Teraz sprawdzimy jak działa *has_secure_password* na konsoli rails:
+
+    :::ruby
+    user = User.new email: 'wbzyl@ug.edu.pl'
+
+    user.valid?          #=> false
+    user.errors.messages #=> {:password=>["can't be blank"]}
+    user.password = 'sekret'
+    user.valid?          #=> true
+    user.save            #=> true
+
+    user.password_digest #=> "$2a$10...Yq"
+
+    user.authenticate 'sekret' #=> #<User id: 1, email: "wbzyl@sigma.ug.edu.pl"...
+    user.authenticate '123456' #=> false
+
+    User.find_by(email: 'wbzyl@ug.edu.pl')
+    User.find_by(email: 'wbzyl@ug.edu.pl').try(:authenticate, 'sekret')
+
+Dodajemy widok z formularzem rejestracji:
+
+    :::rhtml app/views/users/new.html.erb
     <h1>Register</h1>
-
     <%= simple_form_for @user do |f| %>
       <div class="inputs">
         <%= f.input :email %>
         <%= f.input :password %>
         <%= f.input :password_confirmation %>
-       </div>
-       <div class="actions"><%= f.submit %></div>
+      </div>
+      <div class="actions">
+        <%= f.button :submit, class: 'btn btn-primary' %>
+      </div>
     <% end %>
 
-Model *User* nie ma zdefiniowanych atrybutów:
-*password* i *password_confirmation*. Coś z tym trzeba będzie zrobić.
+oraz przycisk 'Register':
 
-Zmieniamy wygenerowany routing na bardziej przyjazny:
+    :::rhtml app/views/layout/shared/_navbar.html.erb
+    <ul class="nav pull-right">
+      <li><%= link_to "Register", new_user_path %></li>
+    </ul>
 
-    :::ruby config/routes.rb
-    get "register" => "users#new", :as => "register"
-    # to trzeba będzie zmienić; teraz tak będzie wygodnie
-    root :to => "users#new"
-    resources :users
 
-Uruchomiamy serwer i wchodzimy na dowolny z poniższych uri:
+## Logowanie
 
-    http://localhost:3000/
-    http://localhost:3000/register
-    http://localhost:3000/users/new
-
-Kończy się to następującym komunikatem o błędzie:
-
-    undefined method `password' for #<User:0x0000...>
-
-Dodajemy do modelu *User* brakującą metodę i przy okazji – walidację
-oraz trochę kodu:
-
-    :::ruby app/models/user.rb
-    class User < ActiveRecord::Base
-      attr_accessible :password, :password_confirmation, :email
-
-      validates_confirmation_of :password
-      validates_presence_of :password, :on => :create
-      validates_presence_of :email
-      validates_uniqueness_of :email
-
-      before_save :encrypt_password
-
-      private
-      def encrypt_password
-        if password.present?
-          self.password_salt = BCrypt::Engine.generate_salt
-          self.password_hash = BCrypt::Engine.hash_secret(password, password_salt)
-        end
-      end
-    end
-
-Powyżej do zakodowania hasła użyliśmy gemu *bcrypt-ruby*.
-Instalujemy go w aplikacji:
-
-    :::ruby Gemfile
-    gem 'bcrypt-ruby', :require => 'bcrypt'
-
-Dopiero teraz rejestrujemy się. Po rejestracji
-sprawdzamy na konsoli co zostało zapisane w bazie w tabeli *users*:
+…implementujemy w kontrolerze o zwyczajowej nazwie *SessionsController*:
 
     :::ruby
-    User.all
-    wbzyl@sigma.ug.edu.pl|$2a$10$pZSeY.CDAPCoLdO0kTWu8em...|$2a$10$pZSeY.CDAPCo...
-
-OK! Jesteśmy w połowie drogi. Przystępujemy do kodowania drugiej połowy.
-
-
-## Logowanie, czyli *Logging in*
-
-Informację o zalogowaniu użytkownika będziemy zapisywać w sesji.
-Kod umieścimy w kontrolerze o mało odkrywczej nazwie *SessionsController*:
-
     rails g controller sessions new
 
-Dodajemy do routingu skróty ukrywające przed użytkownikiem technologię
-REST z której będziemy korzystać. Użytkownik nie musi
+Informację o zalogowaniu użytkownika będziemy zapisywać w sesji.
+
+Do routingu dodamy skróty ukrywające przed użytkownikiem technologię
+z której będziemy korzystać. Użytkownik nie musi
 wiedzieć/domyślać się jak działa logowanie albo rejestracja.
 
-
     :::ruby config/routes.rb
-    get "register" => "users#new",    :as => "register"
-    get "login"    => "sessions#new", :as => "login"
-
-    root :to => "users#new"  # to trzeba będzie zmienić
+    get "register" => "users#new",        :as => "register"
+    get "login"    => "sessions#new",     :as => "login"
+    get "logout"   => "sessions#destroy", :as => "logout"
 
     resources :users
     resources :sessions
 
-Logowanie to REST **bez modelu**. Oznacza to, że
-z walidacją będzie problem.
-I nie będziemy mogli też użyć *simple_form_for* w widoku
-*sessions#new*.
+**TODO:** Poprawić argumenty w *link_to*:
+*session_new* na *login*, *users_new* na *register*.
 
-Ale jakoś sobie z tym poradzimy! Teraz zajmiemy się formularzem dla
-*sessions#new*:
+Logowanie to REST **bez modelu**.
+Oznacza to, że z walidacją będzie problem. (Czyżby?)
+Nie będzie można użyć metody pomocniczej *simple_form_for*.
+
+Ale jakoś sobie z tym poradzimy!
+
+Zaczynamy od widoku z formularzem dla *sessions#new*:
 
     :::rhtml app/views/sessions/new.html.erb
+    <%= simple_form_for :sessions, { url: sessions_path } do |f| %>
+      <%= f.input :email %>
+      <%= f.input :password %>
+      <div class="form-actions">
+        <%= f.button :submit, 'Logi In', class: 'btn btn-primary' %>
+      </div>
+    <% end %>
+
+<!--
     <h1>Log in</h1>
     <%= form_tag sessions_path do %>
       <div class="inputs">
@@ -181,94 +189,73 @@ Ale jakoś sobie z tym poradzimy! Teraz zajmiemy się formularzem dla
         </div>
       <div class="actions"><%= submit_tag %></div>
     <% end %>
+-->
 
-Po wypełnieniu formularza, kilkamy przycisk „Save changes” i zostajemy
+Po wypełnieniu formularza, kilkamy przycisk „Log In” i zostajemy
 przekierowani (ponieważ działa routing REST) do metody *create*:
 
     :::ruby app/controllers/sessions_controller.rb
     class SessionsController < ApplicationController
-      def new
-      end
-
       def create
-        user = User.authenticate(params[:email], params[:password])
-        if user
+        user = User.find_by_email(params[:sessions][:email])
+        if user && user.authenticate(params[:sessions][:password])
           session[:user_id] = user.id
-          redirect_to root_url, :notice => "Logged in!"
+          redirect_to root_url, notice: "Logged in!"
         else
-          flash.now.alert = "Invalid email or password"
+          flash.now.alert = "Email or password is invalid."
           render "new"
         end
       end
-    end
-
-Pytanie. Dlaczego jeśli zamienimy powyżej dwa wiersze
-kodu po *else* na:
-
-    :::ruby
-    render "new", :alert => "Invalid email or password"
-
-to nigdy nie zobaczymy tej wiadomości? Kto to wie?
-
-Zanim będziemy mogli się przyjrzeć jak to działa,
-musimy jeszcze napisać metodę *authenticate*:
-
-    :::ruby app/models/user.rb
-    def self.authenticate(email, password)
-      user = find_by_email(email)
-      if user && user.password_hash == BCrypt::Engine.hash_secret(password, user.password_salt)
-        user
-      else
-        nil
+      def destroy
+        session[:user_id] = nil
+        redirect_to root_url, notice: "Logged out!"
       end
     end
 
-I już możemy się logować do aplikacji!
+W metodzie *destroy* zakładamy, że wejście
+na *root_url* nie wymaga logowania.
+
+Dodajemy przycisk do logowania:
+
+    :::rhtml app/views/shared/_navbar.html.erb
+    <ul class="nav pull-right">
+      ...
+      <li><%= link_to "Register", new_user_path %></li>
+      <li><%= link_to "Log In", new_session_path %></li>
+    </ul>
+
+I możemy się logować do aplikacji!
 
 
-## Wylogowywanie się z aplikacji
+## Wylogowywanie
 
-To jest proste! O ile w naszej aplikacji jest jakaś
-strona na którą można będzie przekierować
+To jest proste o ile w naszej aplikacji jest jakaś
+strona na którą będzie można przekierować
 wylogowanego użytkownika.
 
-Zaczynamy od routingu:
-
-    :::ruby config/routes.rb
-    get "register" => "users#new",    :as => "register"
-
-    get "login"    => "sessions#new", :as => "login"
-    get "logout"   => "sessions#destroy", :as => "logout"
-
-W metodzie *destroy* zakładamy, że wejście
-na *root_url* nie wymaga logowania:
-
-    :::ruby app/controllers/sessions_controller.rb
-    def destroy
-      session[:user_id] = nil
-      redirect_to root_url, :notice => "Logged out!"
-    end
-
-Jak widać wylogowywanie polega na wpisaniu do sesji
+Jak widać w kodzie poniżej, wylogowywanie polega na wpisaniu do sesji
 pod *:user_id* wartości *nil*.
 
-
-## Dodajemy linki
+    :::ruby
+    def destroy
+      session[:user_id] = nil
+      redirect_to root_url, notice: "Logged out!"
+    end
 
 Oczywiście, nie będziemy zmuszać użytkownika do wpisywania
 w przeglądarce: *register*, *login*, *logout*. Wpisywanie zastąpimy
-klikaniem. W tym celu dodamy do layoutu aplikacji odpowiednie linki:
+klikaniem. W tym celu do layoutu aplikacji dodamy te linki:
 
-    :::rhtml app/views/layouts/application.html.erb
-    <nav id="authentication">
+    :::rhtml app/views/shared/_navbar.html.erb
+    <ul class="nav pull-right">
       <% if current_user %>
-        Welcome <%= current_user.email %>!
-        <%= link_to "Log out", logout_path %>
+        <li><div class="logged-in">Logged in as <%= current_user.email %></div></li>
+        <li><%= link_to "Log Out", session_path("current"), method: "delete" %></li>
       <% else %>
-        <%= link_to "Register", register_path %> or
-        <%= link_to "Log in", login_path %>
+        <li><%= link_to "Register", new_user_path %></li>
+        <li><%= link_to "Log In", new_session_path %></li>
       <% end %>
-    </nav>
+    </ul>
 
 Powyżej korzystamy z metody pomocniczej o zwyczajowej nazwie
 *current_user*:
@@ -281,56 +268,36 @@ Powyżej korzystamy z metody pomocniczej o zwyczajowej nazwie
       @current_user ||= User.find(session[:user_id]) if session[:user_id]
     end
 
-Nie powinniśmy też zapomnieć o zabezpieczeniu się przed „mass assignment”:
+Sprawdzamy jak działa logowanie i wylogowywanie.
 
-    :::ruby app/models/user.rb
-    class User < ActiveRecord::Base
-      attr_accessible :email, :password, :password_confirmation
-      attr_accessor :password
+Działa? Tagujemy tę wersję:
 
-oraz zmianie domyślnej strony aplikacji z powrotem na *posts#index*:
+    git tag v0.7
 
-    :::ruby
-    root :to => "posts#index"
-
-Na koniec poprawki w CSS:
-
-    :::css public/stylesheets/application.css
-    #authentication {
-      width: 75%;
-      margin: 0 auto;
-      padding: 20px 40px;
-      text-align: right;
-      background-color: #EBE54D;
-    }
-
-    #container {
-      width: 75%;
-      margin: 0 auto;
-      background-color: #FFF;
-      padding: 20px 40px;
-    }
+Jesteśmy w połowie drogi. Przystępujemy do kodowania drugiej połowy.
 
 
-## To jeszcze nie koniec…
+## TODO: To jeszcze nie koniec…
 
-Oczwiście sam mechanizm do niczego nie jest przydatny!
-Do dopiero początek w przydzielaniu i ograniczaniu uprawnień do
-części naszej aplikacji.
+Oczwiście sama autentykacja do niczego nie jest przydatna!
+Do dopiero początek w przydzielaniu i ograniczaniu uprawnień
+w naszej aplikacji.
 
-Takie rzeczy to już *autoryzacja* a nie *autentykacja*.
+Ale takie rzeczy to już *autoryzacja* a nie *autentykacja*.
 Obecnie najpopularniejszym gemem wspomagajacym tworzenie kodu dla
 *autoryzacji* jest [CanCan](https://github.com/ryanb/cancan).
 
-W CanCanie uprawnienia użytkowników
+Jeśli korzystamy z gemu CanCan, to przydzielanie uprawnień użytkownikom
 [definiujemy w klasie Ability](https://github.com/ryanb/cancan/wiki/defining-abilities).
 
-Ale jeśli chcemy tylkoa, aby dodawanie postów i komentarzy ograniczyć
-do zalogowanych użytkowników, to autoryzację możemy zaimpelentować
-samemu. Jest to bardzoa łatwe. Wystarczy w kontrolerach dopisać:
+Ale jeśli chcemy, aby dodawanie fortunek i komentarzy ograniczyć tylko
+do zalogowanych użytkowników, to taką autoryzację możemy
+zaimplementować samemu.
+
+Jest to bardzo łatwe. Wystarczy w kontrolerach dopisać:
 
     :::ruby
-    class PostsController < ApplicationController
+    class FortunesController < ApplicationController
       before_filter :login_required, :except => [:index, :show]
 
     class CommentsController < ApplicationController

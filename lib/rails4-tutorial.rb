@@ -55,7 +55,7 @@ module WB
       erb(markdown(:"#{params[:section]}"))
     end
 
-    get %r{^([-_\w\/]+)\/([-_\w]+)\.((\w{1,4})(\.\w{1,4})?)$} do
+    get %r{^([-_\w\/]+)\/([-_\w]+)\.((\w{1,4})(\.\w{1,8})?)$} do
 
       translate = { # to coderay syntax names
         'html.erb' => 'erb',
@@ -63,6 +63,7 @@ module WB
         'erb' => 'erb',
         'rb' => 'ruby',
         'ru' => 'ruby',
+        'json.jbuilder' => 'ruby',
         'js' => 'javascript',
         'yml' => 'yaml',
         'sh' => 'bash',

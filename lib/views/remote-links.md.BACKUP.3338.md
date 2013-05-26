@@ -24,9 +24,11 @@ Dodajemy *tracking branch*:
     git checkout --track origin/remote-links
     git pull
 
+<<<<<<< HEAD
 Eksperymenty na konsoli będą przyjemniejsze jeśli usuniemy
 zabezpieczenie CSRF. Można tego nie robić, ale wtedy zamiast jednego
 polecenia na konsoli trzeba bedzie ich wykonac kilka.
+
 
 ## ☯ program curl jest cool
 
@@ -40,6 +42,8 @@ z programem *curl*:
     curl    -X DELETE localhost:3000/fortunes/3         # jw (już wspomniane)
     curl -v -X DELETE localhost:3000/fortunes/4.json    # jw
     curl -v -X DELETE -H 'Accept: application/json' localhost:3000/fortunes/5
+=======
+>>>>>>> 79eac20b6a1a0a1d705af5361251cc7f2c580ce8
 
 <!--
    te polecenia (ten fragment) / których (który)

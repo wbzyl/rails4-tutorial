@@ -1,4 +1,4 @@
-#### {% title "Remote links ☯" %}
+#### {% title "Remote links" %}
 
 * Co oznacza zwrot „remote links”?
 * Jak implementujemy „remote links”?
@@ -28,6 +28,7 @@ Eksperymenty na konsoli będą przyjemniejsze jeśli usuniemy
 zabezpieczenie CSRF. Można tego nie robić, ale wtedy zamiast jednego
 polecenia na konsoli trzeba bedzie ich wykonac kilka.
 
+
 ## ☯ program curl jest cool
 
 Po pomyślnej instalacji, dla rozruszania wykonujemy kilka poleceń
@@ -46,8 +47,26 @@ z programem *curl*:
    takiej pracy / o jakiej wcześniej rozmawiał (jakie zastępuje przymiotniki)
 -->
 
+Po wykonaniu których poleceń na konsolę jest wypisywane:
 
-## Instalujemy jQuery UI
+    :::html
+    <html><body>You are being <a href="http://localhost:3000/fortunes">redirected</a>.</body></html>
+
+Dodajemy fortunkę do bazy:
+
+    :::bash
+    curl -v -X POST -H 'Content-Type: application/json' \
+        --data '{"quotation":"I hear and I forget."}' \
+        localhost:3000/fortunes.json
+    curl    -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
+        --data '{"quotation":"I hear and I forget."}' \
+        localhost:3000/fortunes
+
+**Uwaga:** W trakcie eksperymentów, cały czas podglądamy co się dzieje
+na konsoli przeglądarki (zakładki *Sieć*, *XHR*).
+
+
+## Korzystamy z jQuery UI
 
 Eksperymenty z *remote links* będą ciekawsze jeśli
 użyjemy biblioteki [jQuery UI](http://jqueryui.com/).
