@@ -61,6 +61,7 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Zapoznajemy się z językiem Ruby", "/ruby20" %}
 1. {%= link_to "RVM - zarządzanie wersjami Rails i Ruby", "/rvm" %}
 1. {%= link_to "Kilka prostych przykładów", "/zaczynamy" %}
+1. {%= link_to "Kilka prostych przykładów (cd.)", "/zaczynamy-cont" %}
 1. {%= link_to "„Fortunka” v0.0", "/fortunka0" %}
 1. {%= link_to "Odpowiedzi zależne od nagłówka MIME", "/respond_to" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
