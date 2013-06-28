@@ -1,5 +1,12 @@
 #### {% title "Mongoid + OmniAuth via GitHub" %}
 
+**TODO:**
+
+1. Zamiast google gauges użyć
+  [d3.js style gauges](http://tomerdoron.blogspot.com/2011/12/google-style-gauges-using-d3js.html)
+  albo (prostsze) [Donut Multiples](http://bl.ocks.org/mbostock/3888852).
+
+
 ☸ Mongo links:
 
 * Ryan Bates, [Mongoid](http://railscasts.com/episodes/238-mongoid?view=asciicast) – asciicast
