@@ -181,6 +181,11 @@ do *jquery-datatables-rails*.
 
 ### Trekking
 
+{%= image_tag("/images/graniatatr-profilmale_mini.jpg", :alt => "[Granią Tatr]", :width => 1000) %}
+
+Źródło: [Bieg Granią Tatr]("http://www.graniatatr.pl/").
+[Mapka w większym formacie](http://www.graniatatr.pl/images/profilmale.JPG).
+
 O co może chodzić w aplikacji Trekking? Najprościej jest przekonać się
 samemu wchodząc na stronę
 [Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html).
