@@ -17,10 +17,13 @@ within user space, strongly encouraging **non-root usage**.”
 Podstawowe polecenia RVM:
 
     :::bash
-    rvm install 2.0.0-p0
-    rvm --default use 2.0.0-p0 # ustawiamy domyślną wersję
+    rvm install 2.0.0-p247
+    rvm list
+    rvm --default use 2.0.0-p247 # ustawiamy domyślną wersję
     rvm remove --archive --gems 1.9.3-p327
-    rvm use 1.9.3-p392
+    rvm use 2.0.0-p0
+
+<!--
 
 [Instalacja patchowanej wersji Ruby](http://astrails.com/blog/2012/11/13/rvm-install-patched-ruby-for-faster-rails-startup):
 
@@ -40,7 +43,9 @@ Na przykład:
     time rake routes # 1.7s dla 1.9.3 + railsexpress
     time rake routes # 1.9s dla 2.0.0
 
-Podstawowe informacje:
+-->
+
+Podstawowe informacje o zainstalowanych wersjach:
 
     :::bash
     rvm list
