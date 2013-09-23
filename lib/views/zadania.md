@@ -181,6 +181,11 @@ do *jquery-datatables-rails*.
 
 ### Trekking
 
+{%= image_tag("/images/graniatatr-profilmale_mini.jpg", :alt => "[Granią Tatr]", :width => 1000) %}
+
+Źródło: [Bieg Granią Tatr]("http://www.graniatatr.pl/").
+[Mapka w większym formacie](http://www.graniatatr.pl/images/profilmale.JPG).
+
 O co może chodzić w aplikacji Trekking? Najprościej jest przekonać się
 samemu wchodząc na stronę
 [Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html).
@@ -193,15 +198,16 @@ Użyteczne linki:
 * [Cartographer](https://github.com/joshuamiller/cartographer)
 * [Map Icons Collection](http://mapicons.nicolasmollet.com/)
 
-### Przechodzimy na nierelacyjną bazę danych
 
-W swojej aplikacji zamienić relacyjną bazę danych na dokumentową bazę
-danych, na przykład MongoDB, albo Redis, albo jakąś inną.
+### Geospatial Data With MongoDB
 
-Kilka linków dla wariantu z bazą MongoDB:
+* A. Jesse Jiryu Davis.
+  [Efficiently Paging Geospatial Data With MongoDB ](http://emptysqua.re/blog/paging-geo-mongodb/);
+  przykładowa aplikacja – [MongoDB Geospatial Paging Demo](http://emptysqua.re/geopaging)
 
-* dokumentacja do gemu [Mongo](http://api.mongodb.org/ruby/current/)
-* screencast R. Batesa, [Mongoid](http://railscasts.com/episodes/238-mongoid).
+Skorzystać z gemu
+[Mongoid](http://mongoid.org/en/mongoid/index.html) lub
+[Mongo](http://api.mongodb.org/ruby/current/).
 
 
 # Różne fajne rzeczy
