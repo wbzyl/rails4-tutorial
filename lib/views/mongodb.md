@@ -742,7 +742,7 @@ oraz powiązanie z modelem *User*:
       field :login, type: String
       field :presences, type: Array
       field :class_name, type: String, default: "unallocated"
-      field :group, type: String, default: "2013-summer"
+      field :group, type: Integer, default: 0
       field :comments, type: String
       field :repository, type: String
 

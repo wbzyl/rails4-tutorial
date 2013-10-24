@@ -1,4 +1,4 @@
-# 03.03.2013 – zaczynamy !
+# 07.10.2013 – zaczynamy !
 
 <blockquote>
   {%= image_tag "/images/rails-for-zombies.jpg", :alt => "[Rails for Zombies]" %}
@@ -32,7 +32,7 @@ lub [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
 
-Aplikacje WWW będziemy pisać w **Rails** wersji co najmniej **4.0.0.beta1**.
+Aplikacje WWW będziemy pisać w **Rails** wersji co najmniej **4.0.0**.
 
 Wszystkie projekty przygotowywane na zajęciach powinny być
 udostępnione na serwerze Github.

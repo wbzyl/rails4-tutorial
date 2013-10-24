@@ -373,6 +373,13 @@ Two in one: c2f and f2c:
     end
 
 
+## Przykład z dziedziny NLP
+
+* Nathan Kleyn,
+  [n-grams](http://www.sitepoint.com/natural-language-processing-ruby-n-grams/) –
+  Natural Language Processing with Ruby
+
+
 ## Rekurencja – silnia i wieża Hanoi
 
 Tak wygląda zwykła implementacja:
