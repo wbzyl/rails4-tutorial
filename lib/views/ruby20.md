@@ -57,6 +57,19 @@ Różne:
   [Everything you ever wanted to know about constant lookup in Ruby](http://cirw.in/blog/constant-lookup)
 
 
+## Tablice
+
+    :::ruby
+    a = [1,2,3,4,5,6]
+    a.object_id
+    a.to_a.object_id
+    a.to_s
+    a.methods
+
+* A Guide to Ruby Collections,
+  [Part I: Arrays](http://www.sitepoint.com/guide-ruby-collections-part-arrays/)
+
+
 ## Hasze
 
     :::ruby
@@ -67,15 +80,8 @@ Różne:
     h #  {5=>6, 1=>2, 7=>8, 3=>4}
     h.to_a
 
-
-## Tablice
-
-    :::ruby
-    a = [1,2,3,4,5,6]
-    a.object_id
-    a.to_a.object_id
-    a.to_s
-    a.methods
+* A Guide to Ruby Collections,
+  [Part II: Hashes, Sets, and Ranges](http://www.sitepoint.com/guide-ruby-collections-ii-hashes-sets-ranges/)
 
 
 ## Enumerators
