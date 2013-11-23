@@ -17,11 +17,17 @@ within user space, strongly encouraging **non-root usage**.”
 Podstawowe polecenia RVM:
 
     :::bash
+    rvm list known
     rvm install 2.0.0-p247
     rvm list
-    rvm --default use 2.0.0-p247 # ustawiamy domyślną wersję
-    rvm remove --archive --gems 1.9.3-p327
-    rvm use 2.0.0-p0
+
+    rvm install 2.0.0-p353
+    rvm gemset copy 2.0.0-p247 2.0.0-p353
+
+    rvm use 2.0.0-p353
+
+    rvm --default 2.0.0-p353    # ustawiamy domyślną wersję Ruby
+    rvm remove --archive --gems 2.0.0-p247
 
 <!--
 
