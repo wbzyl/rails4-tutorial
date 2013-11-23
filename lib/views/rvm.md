@@ -29,6 +29,8 @@ Podstawowe polecenia RVM:
     rvm --default 2.0.0-p353    # ustawiamy domyślną wersję Ruby
     rvm remove --archive --gems 2.0.0-p247
 
+    rvm docs generate-ri        # generujemy dokumentację
+
 <!--
 
 [Instalacja patchowanej wersji Ruby](http://astrails.com/blog/2012/11/13/rvm-install-patched-ruby-for-faster-rails-startup):
