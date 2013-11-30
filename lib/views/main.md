@@ -4,7 +4,7 @@
   {%= image_tag "/images/coding-horror.jpg", :alt => "[Rails for Zombies]", :width => "300" %}
   <p>Any application that can be written in JavaScript, 
     will eventually be written in JavaScript.</p>
-  <p class="author"><a href="http://www.codinghorror.com/blog/2007/07/the-principle-of-least-power.html">Atwood’s Law (2007)</a></p>
+  <p class="author"><a href="http://www.codinghorror.com/blog/2009/08/all-programming-is-web-programming.html">Atwood’s Law (2007)</a></p>
 </blockquote>
 
 * [World Wide Web](http://www.w3.org/History/19921103-hypertext/hypertext/WWW/TheProject.html) –
