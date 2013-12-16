@@ -29,9 +29,11 @@ Podstawowe polecenia RVM:
     rvm --default 2.0.0-p353    # ustawiamy domyślną wersję Ruby
     rvm remove --archive --gems 2.0.0-p247
 
-    rvm docs generate-ri        # generujemy dokumentację
+    rvm docs generate           # generujemy dokumentację
 
 <!--
+
+    rvm docs generate-ri
 
 [Instalacja patchowanej wersji Ruby](http://astrails.com/blog/2012/11/13/rvm-install-patched-ruby-for-faster-rails-startup):
 
@@ -210,7 +212,7 @@ wyświetli:
             target                  Target name or number (from 'list' action)
       show                      Manage Ruby on Rails versions
       update                    Updates the rails symlink to the latest version
-				available
+                available
 
 Jeśli przeprowadzone przez nas instalacje, były kolejnymi instalacjami
 wersji tych pakietów, to z pomocą eselect możemy wybrać wersję Ruby
