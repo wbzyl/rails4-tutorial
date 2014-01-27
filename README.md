@@ -32,3 +32,7 @@ $(function () {
   s.parentNode.insertBefore(g,s)}(document,'script'));
 </script>
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/wbzyl/rails4-tutorial/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
