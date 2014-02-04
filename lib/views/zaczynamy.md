@@ -60,29 +60,37 @@ Generujemy rusztowanie aplikacji i instalujemy gemy z których
 będzie ona korzystać:
 
     :::bash
-    rails new my_gists --skip-bundle
+    rails new my_gists --skip-bundle --skip-test-unit
     cd my_gists
 
-Usuwamy niepotrzebne gemy z pliku *Gemfile*:
+Swoje opcje możemy wpisać w pliku *~/.railsrc *, na przykład
+
+    :::bash
+    --skip-bundle
+    --skip-test-unit
+
+Dopisujemy do pliku *Gemfile* gemy z których będziemy korzystać:
 
     :::ruby Gemfile
-    gem 'sass-rails'
-
-dopisujemy gemy z których będziemy korzystać:
-
-    :::ruby Gemfile
-    gem 'puma'
     gem 'pygments.rb'
     gem 'redcarpet'
+    gem 'quiet_assets'
 
-Szybko zainstalujemy używane przez aplikację gemy korzystając
-gemów zainstalowanych w systemie:
+oraz usuwamy gemy z których nie będziemy korzystać:
+
+    :::ruby Gemfile
+    gem 'sass-rails', '~> 4.0.0'
+
+Jeśli potrzebne gemy są już zainstalowane w systemie, to
+możemy użyć opcji `--local` w trakcie ich instalacji:
 
     :::bash
     bundle install --local
 
-Ale możemy też pobrać gemy z internetu i zainstalować je
-u siebie, np. w katalogu *~/.gems*:
+Taraz instalacja powinna się wykonać dużo szybciej!
+
+Możemy też pobrać gemy z internetu i zainstalować je
+np. w katalogu *~/.gems*:
 
     :::bash
     bundle install --path=$HOME/.gems
@@ -91,7 +99,7 @@ Szablon aplikacji CRUD utworzymy za pomocą generatora kodu
 o nazwie *scaffold*:
 
     :::bash
-    rails generate scaffold gist snippet:text lexer:string description:string
+    rails generate scaffold gist snippet:text lang:string description:string
 
 Pozostaje wykonać migrację:
 
@@ -118,9 +126,18 @@ Kolorowanie kodu –
 Podmieniamy zawartośc pliku *app/views/gists/show.html.erb* na:
 
     :::rhtml
-    <%= raw Pygments.highlight(@gist.snippet, lexer: @gist.lexer) %>
+    <p id="notice"><%= notice %></p>
     <p>
-      <b>Description:</b> <%= @gist.description %>
+      <strong>Lang:</strong>
+      <%= @gist.lang %>
+    </p>
+    <p>
+      <strong>Snippet:</strong>
+    </p>
+    <%= raw Pygments.highlight(@gist.snippet, lexer: @gist.lang) %>
+    <p>
+      <strong>Description:</strong>
+      <%= @gist.description %>
     </p>
     <%= link_to 'Edit', edit_gist_path(@gist) %> |
     <%= link_to 'Back', gists_path %>
@@ -130,10 +147,14 @@ Dodajemy nowy plik *app/assets/stylesheets/pygments.css.erb*:
     :::rhtml
     <%= Pygments.css(style: "colorful") %>
 
-**Zadanie:**
-Poprawić pozostałe widoki. Zacząć od *index.html.erb*. Zwiększyć
-rozmiar fontu do co najmniej 18px. Zwiększyć wielkość elementu
-*textarea* w formularzu w szablonie częściowym *_form.html.erb*.
+**Zadania:**
+
+1\. Poprawić pozostałe widoki. Zacząć od *index.html.erb*.
+
+2\. Zwiększyć rozmiar fontu do co najmniej 18px.
+
+3\. W formularzu w szablonie częściowym *_form.html.erb*.
+zwiększyć wielkość elementu *textarea*.
 
 
 ## MyStaticPages
@@ -265,6 +286,14 @@ Wystarczy podać nazwę szablonu w poleceniu *rails new*:
 Taki szablon łatwo napisać samemu, na przykład
 {%= link_to "wbzyl-template.rb", "/app_templates/wbzyl-template.rb" %}
 pokazuje jakie może to być proste.
+
+
+## MyPlaces
+
+* Rails4 + MongoDB + [Mongoid](http://mongoid.org/en/mongoid/index.html)
+* [Leafletjs](http://leafletjs.com/)
+* [Lotniska](/doc/mongodb/geo/lotniska.geojson)
+
 
 
 <blockquote>
