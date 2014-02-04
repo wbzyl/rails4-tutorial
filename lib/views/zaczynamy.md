@@ -292,8 +292,7 @@ pokazuje jakie może to być proste.
 
 * Rails4 + MongoDB + [Mongoid](http://mongoid.org/en/mongoid/index.html)
 * [Leafletjs](http://leafletjs.com/)
-* [Lotniska](/doc/mongodb/geo/lotniska.geojson)
-
+* {%= link_to "Lotniska PL", "/doc/mongodb/geo/lotniska.geojson" %}
 
 
 <blockquote>
