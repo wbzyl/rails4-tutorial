@@ -1,37 +1,21 @@
-# Rails 4, wiosna 2012/13
+# Rails 4, wiosna r. ak. 2013/14
 
-Notatki do wykładu „Architektura serwisów internetowych”,
-Ruby on Rails 4, Ruby 2.0.
+Notatki do wykładu „Architektura Serwisów Internetowych”
+
+Wersje programów:
+
+* Ruby 2.1.0
+* Ruby on Rails 4.0.2
 
 
-## …ostateczne terminy oddania projektów
+TODO:
 
-Czasami muszę wstawić coś takiego na stronie głównej aplikacji:
-
-```js
-$(function () {
-  deadline = new Date(2013, 05, 31);
-  $('#defaultCountdown').countdown({
-    until: deadline,
-    compact: true,
-    layout: '<b>{dn}{dl} {hnn}{sep}{mnn}{sep}{snn}</b>',
-    format: 'dHMS'
-  });
-});
-```
-
-## Google Analytics?
-
-```html
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-<script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery-1.6.1.min.js"%3E%3C/script%3E'))</script>
-<script>
-  var _gaq=[['_setAccount','UA-20399167-1'],['_trackPageview']];
-  (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
-  g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-  s.parentNode.insertBefore(g,s)}(document,'script'));
-</script>
-```
+1. Dokończyć *MyStaticPages*.
+2. W repozytorium rails4/asi dopisać do *README.md*.
+3. *MyPlaces*:
+  - import *airports.csv* do MongoDB
+  - zmiana formatu na bardziej przyjazny dla MongoDB
+  - JQ – konwersja na GeoJSON
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/wbzyl/rails4-tutorial/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
