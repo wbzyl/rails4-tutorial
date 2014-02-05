@@ -290,6 +290,8 @@ adresów */welcome* i */about*.
 
 * Rails4 + MongoDB + [Mongoid](http://mongoid.org/en/mongoid/index.html)
 * [Leafletjs](http://leafletjs.com/)
+  - [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw);
+  [demo](http://leaflet.github.io/Leaflet.draw/)
 * [Our Airports Data](http://www.ourairports.com/data/)
 * {%= link_to "Lotniska PL", "/doc/data/lotniska.json" %}
 
