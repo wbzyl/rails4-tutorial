@@ -1,4 +1,4 @@
-# Notatki do „Architektura Serwisów Internetowych” 13/14
+### Architektura Serwisów Internetowych, 13/14
 
 Wersje programów:
 
