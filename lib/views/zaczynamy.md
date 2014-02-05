@@ -293,7 +293,8 @@ adresów */welcome* i */about*.
 * [Our Airports Data](http://www.ourairports.com/data/)
 * {%= link_to "Lotniska PL", "/doc/data/lotniska.json" %}
 
-1. JSON -> GeoJSON.
+TODO: JSON -> GeoJSON.
+
 
 
 ## Podsumowanie
