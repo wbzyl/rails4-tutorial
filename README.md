@@ -1,6 +1,4 @@
-# Rails 4, wiosna r. ak. 2013/14
-
-Notatki do wykładu „Architektura Serwisów Internetowych”
+# Notatki do „Architektura Serwisów Internetowych” 13/14
 
 Wersje programów:
 
