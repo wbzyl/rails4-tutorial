@@ -56,20 +56,18 @@ Więcej szczegółów na temat MVC:
 
 ## MyGists
 
-Generujemy rusztowanie aplikacji i instalujemy gemy z których
-będzie ona korzystać:
+Zaczynamy od wygenerowania rusztowanie aplikacji:
 
     :::bash
     rails new my_gists --skip-bundle --skip-test-unit
-    cd my_gists
 
-Swoje opcje możemy wpisać w pliku *~/.railsrc *, na przykład
+Następnie przechodzimy do katalogu z wygenerowanym kodem:
 
     :::bash
-    --skip-bundle
-    --skip-test-unit
+    cd my_gists
 
-Dopisujemy do pliku *Gemfile* gemy z których będziemy korzystać:
+gdzie w pliku *Gemfile* dopisujemy gemy z których będziemy
+korzystać:
 
     :::ruby Gemfile
     gem 'pygments.rb'
@@ -81,19 +79,20 @@ oraz usuwamy gemy z których nie będziemy korzystać:
     :::ruby Gemfile
     gem 'sass-rails', '~> 4.0.0'
 
-Jeśli potrzebne gemy są już zainstalowane w systemie, to
-możemy użyć opcji `--local` w trakcie ich instalacji:
+Gemy instalujemy za pomocą programu *bundle*:
 
     :::bash
-    bundle install --local
+    bundle install
 
-Taraz instalacja powinna się wykonać dużo szybciej!
-
-Możemy też pobrać gemy z internetu i zainstalować je
-np. w katalogu *~/.gems*:
+Jeśli nie mamy uprawnień do instalacji gemów w systemie,
+instalujemy je gdzieś w swoim katalogu domowym, np. w katalogu *~/.gems*:
 
     :::bash
     bundle install --path=$HOME/.gems
+
+Ale jeśli gemy z których korzystamy są już zainstalowane w systemie, to
+możemy użyć opcji `--local` w trakcie ich instalacji.
+Taka instalacja wykonuje się dużo szybciej!
 
 Szablon aplikacji CRUD utworzymy za pomocą generatora kodu
 o nazwie *scaffold*:
@@ -101,29 +100,34 @@ o nazwie *scaffold*:
     :::bash
     rails generate scaffold gist snippet:text lang:string description:string
 
-Pozostaje wykonać migrację:
+Po wygenerowaniu kodu wykonujemy migrację:
 
     :::bash
     rake db:migrate
 
-uruchomić serwer HTTP:
+Po uruchomieniu prostego serwera HTTP:
 
     :::bash
     rails server --port 3000
 
-Na koniec sprawdzimy routing aplikacji wykonując na konsoli polecenie:
+Aplikacja jest dotępna z takiego url *localhost:3000*.
+
+Routing aplikacji sprawdzamy wykonując na konsoli polecenie:
 
     :::bash
     rake routes
 
-Lektura dokumentacji [link_to](http://api.rubyonrails.org/).
-Co to są *assets*? a *partial templates* (szablony częściowe), na
-przykład *_form.html.erb*.
+lub w przeglądarce *localhost:3000/rails/info/routes*.
 
-Kolorowanie kodu –
-[Syntax Highlighting](http://railscasts.com/episodes/207-syntax-highlighting-revised).
+Więcej informacji znajdziemy w sekcji
+[Routing](http://guides.rubyonrails.org/routing.html) w Rails Guides.
 
-Podmieniamy zawartośc pliku *app/views/gists/show.html.erb* na:
+Kolorowanie kodu:
+
+* [Syntax Highlighting](http://railscasts.com/episodes/207-syntax-highlighting-revised).
+* [Pygments.rb](https://github.com/tmm1/pygments.rb)
+
+Na koniec podmieniamy zawartośc pliku *app/views/gists/show.html.erb* na:
 
     :::rhtml
     <p id="notice"><%= notice %></p>
@@ -147,20 +151,23 @@ Dodajemy nowy plik *app/assets/stylesheets/pygments.css.erb*:
     :::rhtml
     <%= Pygments.css(style: "colorful") %>
 
-**Zadania:**
+Lektura dokumentacji funkcji pomocniczej [link_to](http://api.rubyonrails.org/).
+Co to są *assets*? a *partial templates* (szablony częściowe),
+na przykład *_form.html.erb*.
 
-1\. Poprawić pozostałe widoki. Zacząć od *index.html.erb*.
 
-2\. Zwiększyć rozmiar fontu do co najmniej 18px.
+### TODO
 
-3\. W formularzu w szablonie częściowym *_form.html.erb*.
+1. Poprawić pozostałe widoki. Zacząć od *index.html.erb*.
+2. Zwiększyć rozmiar fontu do co najmniej 18px.
+3. W formularzu w szablonie częściowym *_form.html.erb*.
 zwiększyć wielkość elementu *textarea*.
 
 
 ## MyStaticPages
 
 Jak wyżej, usuwamy niepotrzebne gemy z pliku *Gemfile*
-dodajemy gemy z których będziemy korzystać i je instalujemy.
+dodajemy gemy z których będziemy korzystać.
 
 Następnie generujemy rusztowanie aplikacji:
 
@@ -267,6 +274,25 @@ co oznacza, że te strony są dostępne z krótszych, niż poprzednio,
 adresów */welcome* i */about*.
 
 
+### TODO
+
+1. Dodać stronę *todo*. Skorzystać z wtyczki jQuery
+   [Isotope](http://isotope.metafizzy.co/) ([github](https://github.com/desandro/isotope))
+   do wyświetlania na stronie *index* karteczek z rzeczami do zrobienia.
+2. Użyć [ReStructuredText](http://en.wikipedia.org/wiki/ReStructuredText).
+   Zob. też [GitHub Markup](https://github.com/github/markup),
+   gem [RbST](https://github.com/alphabetum/rbst).
+3. Użyć gemu [Carrierwave](https://github.com/carrierwaveuploader/carrierwave)
+   do wstawiania obrazków.
+
+
+## MyPlaces
+
+* Rails4 + MongoDB + [Mongoid](http://mongoid.org/en/mongoid/index.html)
+* [Leafletjs](http://leafletjs.com/)
+* {%= link_to "Lotniska PL", "/doc/mongodb/geo/lotniska.geojson" %}
+
+
 ## Podsumowanie
 
 Często używane opcje zapisujemy w pliku  *~/.railsrc*:
@@ -281,18 +307,12 @@ który zrobi to za nas.
 Wystarczy podać nazwę szablonu w poleceniu *rails new*:
 
     :::bash
-    rails new xxl --template wbzyl-template.rb
+    rails new my_app --template wbzyl-template.rb
 
+**TODO:**
 Taki szablon łatwo napisać samemu, na przykład
 {%= link_to "wbzyl-template.rb", "/app_templates/wbzyl-template.rb" %}
 pokazuje jakie może to być proste.
-
-
-## MyPlaces
-
-* Rails4 + MongoDB + [Mongoid](http://mongoid.org/en/mongoid/index.html)
-* [Leafletjs](http://leafletjs.com/)
-* {%= link_to "Lotniska PL", "/doc/mongodb/geo/lotniska.geojson" %}
 
 
 <blockquote>
