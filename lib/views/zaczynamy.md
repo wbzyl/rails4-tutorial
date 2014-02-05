@@ -292,6 +292,7 @@ adresów */welcome* i */about*.
 * [Leafletjs](http://leafletjs.com/)
   - [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw);
   [demo](http://leaflet.github.io/Leaflet.draw/)
+  - [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)
 * [Our Airports Data](http://www.ourairports.com/data/)
 * {%= link_to "Lotniska PL", "/doc/data/lotniska.json" %}
 
