@@ -9,7 +9,8 @@ Wersje programów:
 TODO:
 
 1. Dokończyć *MyStaticPages*.
-2. W repozytorium rails4/asi dopisać do *README.md*.
+2. W repozytorium [rails4/asi](https://github.com/rails4/asi)
+   dopisać co trzeba w *README.md*.
 3. *MyPlaces*:
   - import *airports.csv* do MongoDB
   - zmiana formatu na bardziej przyjazny dla MongoDB
