@@ -290,7 +290,10 @@ adresów */welcome* i */about*.
 
 * Rails4 + MongoDB + [Mongoid](http://mongoid.org/en/mongoid/index.html)
 * [Leafletjs](http://leafletjs.com/)
-* {%= link_to "Lotniska PL", "/doc/mongodb/geo/lotniska.geojson" %}
+* [Our Airports Data](http://www.ourairports.com/data/)
+* {%= link_to "Lotniska PL", "/doc/data/lotniska.json" %}
+
+1. JSON -> GeoJSON.
 
 
 ## Podsumowanie
