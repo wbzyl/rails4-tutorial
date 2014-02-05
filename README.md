@@ -15,6 +15,9 @@ TODO:
   - import *airports.csv* do MongoDB
   - zmiana formatu na bardziej przyjazny dla MongoDB
   - JQ – konwersja na GeoJSON
+  - Mongoid –
+    zapytania z [geo_near](http://mongoid.org/en/mongoid/docs/querying.html#geo_near)
+4. Ruby + Mongo – przykłady z zapytaniami geo.
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/wbzyl/rails4-tutorial/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
