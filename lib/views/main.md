@@ -2,7 +2,7 @@
 
 <blockquote>
   {%= image_tag "/images/coding-horror.jpg", :alt => "[Rails for Zombies]", :width => "300" %}
-  <p>Any application that can be written in JavaScript, 
+  <p>Any application that can be written in JavaScript,
     will eventually be written in JavaScript.</p>
   <p class="author"><a href="http://www.codinghorror.com/blog/2009/08/all-programming-is-web-programming.html">Atwood’s Law (2007)</a></p>
 </blockquote>
@@ -64,7 +64,6 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 1. {%= link_to "Zapoznajemy się z językiem Ruby", "/ruby20" %}
 1. {%= link_to "RVM - zarządzanie wersjami Rails i Ruby", "/rvm" %}
 1. {%= link_to "Kilka prostych przykładów", "/zaczynamy" %}
-1. {%= link_to "Kilka prostych przykładów (cd.)", "/zaczynamy-cont" %}
 1. {%= link_to "„Fortunka” v0.0", "/fortunka0" %}
 1. {%= link_to "Odpowiedzi zależne od nagłówka MIME", "/respond_to" %}
 1. {%= link_to "ActiveRecord na konsoli", "/active-record" %}
