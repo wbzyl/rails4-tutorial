@@ -292,9 +292,62 @@ adresów */welcome* i */about*.
 * [Leafletjs](http://leafletjs.com/)
   - [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw);
   [demo](http://leaflet.github.io/Leaflet.draw/)
+  - [Leaflet Plotter](https://github.com/scripter-co/leaflet-plotter)
   - [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)
 * [Our Airports Data](http://www.ourairports.com/data/)
 * {%= link_to "Lotniska PL", "/doc/data/lotniska.json" %}
+
+Generujemy szablon aplikacji:
+
+    rails new my_places --skip-bundle --skip-test-unit --skip-active-record
+
+Usuwamy gem *sass-rails* i dodajemy gem *mongoid*.
+
+    :::ruby Gemfile
+    # gem 'mongoid', '~> 3.1.6'
+    gem 'mongoid', github: 'mongoid/mongoid'
+
+Generujemy plik konfiguracyjny dla MongoDB:
+
+    rails g mongoid:config
+      create  config/mongoid.yml
+
+Moje miejsca to lotniska.
+
+Pobieramy plik *aitports.csv* ze strony
+[Our Airports](http://www.ourairports.com/data/).
+Importujemy dane do MongoDB za pomocą programu
+*mongoimport*:
+
+    mongoimport --collection airports  --headerline --type csv airports.csv
+      connected to: 127.0.0.1
+      2014-02-08T21:44:49.825+0100 check 9 45618
+      2014-02-08T21:44:49.897+0100 imported 45617 objects
+
+Przykładowy rekord:
+
+    :::json
+    {
+      "_id": ObjectId("52f6973f4fc0cda07918c564"),
+      "id": 6523,
+      "ident": "00A",
+      "type": "heliport",
+      "name": "Total Rf Heliport",
+      "latitude_deg": 40.07080078125,
+      "longitude_deg": -74.9336013793945,
+      "elevation_ft": 11,
+      "continent": "NA",
+      "iso_country": "US",
+      "iso_region": "US-PA",
+      "municipality": "Bensalem",
+      "scheduled_service": "no",
+      "gps_code": "00A",
+      "iata_code": "",
+      "local_code": "00A",
+      "home_link": "",
+      "wikipedia_link": "",
+      "keywords": ""
+    }
 
 TODO: JSON -> GeoJSON.
 
