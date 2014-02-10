@@ -1,0 +1,2725 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.5142993927002,
+          49.6575012207031
+        ]
+      },
+      "properties": {
+        "title": "Arlamów Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.0018997192383,
+          49.8050003051758
+        ]
+      },
+      "properties": {
+        "title": "Bielsko Biala Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.9109992980957,
+          52.2685012817383
+        ]
+      },
+      "properties": {
+        "title": "Babice Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.9556007385254,
+          53.103099822998
+        ]
+      },
+      "properties": {
+        "title": "Bydgoszcz-Biedaszkowo Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.1706008911,
+          53.101398468
+        ]
+      },
+      "properties": {
+        "title": "Białystok-Krywlany Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.1436004639,
+          52.0057983398
+        ]
+      },
+      "properties": {
+        "title": "Biała Podlaska Airport",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.5242004394531,
+          53.5750007629395
+        ]
+      },
+      "properties": {
+        "title": "Borne Sulinowo Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.9776992798,
+          53.0968017578
+        ]
+      },
+      "properties": {
+        "title": "Bydgoszcz Ignacy Jan Paderewski Airport",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.763299942,
+          54.4160003662
+        ]
+      },
+      "properties": {
+        "title": "Cewice Military Airport",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.2047004699707,
+          50.8849983215332
+        ]
+      },
+      "properties": {
+        "title": "Częstochowa-Rudniki",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.353099822998,
+          54.4047012329102
+        ]
+      },
+      "properties": {
+        "title": "Darłówek Naval Air Base",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.8936004639,
+          51.551399231
+        ]
+      },
+      "properties": {
+        "title": "Deblin Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.7307996749878,
+          53.4777984619141
+        ]
+      },
+      "properties": {
+        "title": "Ziemsko Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.4232997894287,
+          54.1408004760742
+        ]
+      },
+      "properties": {
+        "title": "Elblag Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.4661998748779,
+          54.3776016235352
+        ]
+      },
+      "properties": {
+        "title": "Gdańsk Lech Wałęsa Airport",
+        "description": "large_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.8491992950439,
+          53.5243988037109
+        ]
+      },
+      "properties": {
+        "title": "Grudziadz Lisie Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.6728000641,
+          50.2694015503
+        ]
+      },
+      "properties": {
+        "title": "Gliwice Glider Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.2811107635498,
+          52.184440612793
+        ]
+      },
+      "properties": {
+        "title": "Góraszka Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.2858009338379,
+          52.8064002990723
+        ]
+      },
+      "properties": {
+        "title": "Inowroclaw Glider Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.3306007385,
+          52.8293991089
+        ]
+      },
+      "properties": {
+        "title": "Inowroclaw Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.8174991607666,
+          49.6577987670898
+        ]
+      },
+      "properties": {
+        "title": "Iwonicz Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.6452808380127,
+          54.7102813720703
+        ]
+      },
+      "properties": {
+        "title": "Jastarnia Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.7855997085571,
+          50.8988990783691
+        ]
+      },
+      "properties": {
+        "title": "Jelenia Góra Glider Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.7597198486328,
+          50.9283294677734
+        ]
+      },
+      "properties": {
+        "title": "Jeżów Sudecki Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.7317008972168,
+          50.8967018127441
+        ]
+      },
+      "properties": {
+        "title": "Kielce Maslow Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.1700000762939,
+          52.3199996948242
+        ]
+      },
+      "properties": {
+        "title": "Kazimierz Biskup Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.4321994781494,
+          54.0435981750488
+        ]
+      },
+      "properties": {
+        "title": "Kȩtrzyn-Wilamowo Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.7847995758057,
+          50.0777015686035
+        ]
+      },
+      "properties": {
+        "title": "John Paul II International Airport Kraków-Balice Airport",
+        "description": "large_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.034200668335,
+          50.2380981445312
+        ]
+      },
+      "properties": {
+        "title": "Muchowiec Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.0848999023438,
+          50.5292015075684
+        ]
+      },
+      "properties": {
+        "title": "Kamien Slaski Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.2656002044678,
+          54.0424995422363
+        ]
+      },
+      "properties": {
+        "title": "Koszalin Zegrze Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.2017002105713,
+          50.0896987915039
+        ]
+      },
+      "properties": {
+        "title": "Pobiednik Wielki Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.7371997833252,
+          49.6810989379883
+        ]
+      },
+      "properties": {
+        "title": "Krosno Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.9664001465,
+          52.3316993713
+        ]
+      },
+      "properties": {
+        "title": "Krzesiny Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.0799999237,
+          50.4743003845
+        ]
+      },
+      "properties": {
+        "title": "Katowice International Airport",
+        "description": "large_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.0219993591,
+          49.9399986267
+        ]
+      },
+      "properties": {
+        "title": "Bielsko-Bialo Kaniow Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.6902777778,
+          51.2319444444
+        ]
+      },
+      "properties": {
+        "title": "Lublin Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.1781997680664,
+          51.1828002929688
+        ]
+      },
+      "properties": {
+        "title": "Legnica Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.1791000366,
+          51.551700592
+        ]
+      },
+      "properties": {
+        "title": "Lask Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.3980998993,
+          51.7219009399
+        ]
+      },
+      "properties": {
+        "title": "Łódź Władysław Reymont Airport",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.3444404602051,
+          53.6080589294434
+        ]
+      },
+      "properties": {
+        "title": "Łańsk / Gryźliny Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.3946990967,
+          51.2219009399
+        ]
+      },
+      "properties": {
+        "title": "Lublin Radwiec Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.521900177002,
+          51.8349990844727
+        ]
+      },
+      "properties": {
+        "title": "Leszno Strzyzewi Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.1961994171,
+          51.4230003357
+        ]
+      },
+      "properties": {
+        "title": "Lubin Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.1455993652,
+          52.004699707
+        ]
+      },
+      "properties": {
+        "title": "Leczyca Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.1341991425,
+          54.0269012451
+        ]
+      },
+      "properties": {
+        "title": "Malbork Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.0827999115,
+          53.3950996399
+        ]
+      },
+      "properties": {
+        "title": "Miroslawiec Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.5558300018311,
+          53.8077812194824
+        ]
+      },
+      "properties": {
+        "title": "Mikołajki Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.4620990753174,
+          50.3222999572754
+        ]
+      },
+      "properties": {
+        "title": "Mielec Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.6558990479,
+          52.1954994202
+        ]
+      },
+      "properties": {
+        "title": "Minsk Mazowiecki Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.6518001556,
+          52.4510993958
+        ]
+      },
+      "properties": {
+        "title": "Modlin Airport",
+        "description": "large_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.770299911499,
+          50.9578018188477
+        ]
+      },
+      "properties": {
+        "title": "Mirosławice Private Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.6236000061,
+          49.7456016541
+        ]
+      },
+      "properties": {
+        "title": "Nowy Sącz-Łososina Dolna Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.5349998474121,
+          51.625
+        ]
+      },
+      "properties": {
+        "title": "Nowe Miasto nad Pilica Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.0503005981,
+          49.4627990723
+        ]
+      },
+      "properties": {
+        "title": "Nowy Targ Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.4150009155273,
+          53.7731018066406
+        ]
+      },
+      "properties": {
+        "title": "Olsztyn Dajtki Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.51720047,
+          54.57970047
+        ]
+      },
+      "properties": {
+        "title": "Oksywie Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.8456001282,
+          51.7010993958
+        ]
+      },
+      "properties": {
+        "title": "Ostrów Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.7817001343,
+          50.6333007812
+        ]
+      },
+      "properties": {
+        "title": "Opole-Polska Nowa Wieś Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.5149993896484,
+          50.5182991027832
+        ]
+      },
+      "properties": {
+        "title": "Pińczów Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.7124996185303,
+          53.1699981689453
+        ]
+      },
+      "properties": {
+        "title": "Pila Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0442008972168,
+          52.4338989257812
+        ]
+      },
+      "properties": {
+        "title": "Poznań-Kobylnica Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.721399307251,
+          52.562198638916
+        ]
+      },
+      "properties": {
+        "title": "Plock Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.8262996674,
+          52.4210014343
+        ]
+      },
+      "properties": {
+        "title": "Poznań-Ławica Airport",
+        "description": "large_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.6716003417969,
+          54.2480010986328
+        ]
+      },
+      "properties": {
+        "title": "Pruszcz Gdanski Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.6882991790771,
+          51.3830986022949
+        ]
+      },
+      "properties": {
+        "title": "Piotrków Trybunalski-Bujny Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.8539009094,
+          52.3793983459
+        ]
+      },
+      "properties": {
+        "title": "Powidz Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.213300705,
+          51.3891983032
+        ]
+      },
+      "properties": {
+        "title": "Radom Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.6282997131348,
+          50.07080078125
+        ]
+      },
+      "properties": {
+        "title": "Rybnik-Gotarowice Glider Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.0480995178223,
+          50.1053009033203
+        ]
+      },
+      "properties": {
+        "title": "Rzeszów Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1100006103516,
+          51.4789009094238
+        ]
+      },
+      "properties": {
+        "title": "Radom-Piastrów Glider Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.0189990997,
+          50.1100006104
+        ]
+      },
+      "properties": {
+        "title": "Rzeszów-Jasionka Airport",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.9021997452,
+          53.5847015381
+        ]
+      },
+      "properties": {
+        "title": "Szczecin-Goleniów \"Solidarność\" Airport",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.6337995529175,
+          53.3921012878418
+        ]
+      },
+      "properties": {
+        "title": "Szczecin-Dąbie Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.1075000762939,
+          54.4789009094238
+        ]
+      },
+      "properties": {
+        "title": "Redzikowo Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.8262996674,
+          53.790599823
+        ]
+      },
+      "properties": {
+        "title": "Swidwin Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.2928009033203,
+          52.198600769043
+        ]
+      },
+      "properties": {
+        "title": "Sochaczew Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0956001281738,
+          54.4082984924316
+        ]
+      },
+      "properties": {
+        "title": "Słupsk-Krȩpa Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.9983005523682,
+          50.627498626709
+        ]
+      },
+      "properties": {
+        "title": "Stalowa Wola-Turbia Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.8992004394531,
+          54.0727996826172
+        ]
+      },
+      "properties": {
+        "title": "Suwałki Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.690299987793,
+          51.2318992614746
+        ]
+      },
+      "properties": {
+        "title": "Świdnik Lotnisko Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.9377002716064,
+          53.4818992614746
+        ]
+      },
+      "properties": {
+        "title": "Szczytno-Szymany International Airport",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.0977993011,
+          51.584400177
+        ]
+      },
+      "properties": {
+        "title": "Tomaszow Mazowiecki Military Air Base",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.5459003448486,
+          53.0292015075684
+        ]
+      },
+      "properties": {
+        "title": "Torun Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.9671001434,
+          52.1656990051
+        ]
+      },
+      "properties": {
+        "title": "Warsaw Chopin Airport",
+        "description": "large_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.0156002044678,
+          52.5847015380859
+        ]
+      },
+      "properties": {
+        "title": "Włocławek-Kruszyn Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.885799408,
+          51.1026992798
+        ]
+      },
+      "properties": {
+        "title": "Copernicus Wrocław Airport",
+        "description": "large_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.9986000061035,
+          51.2061004638672
+        ]
+      },
+      "properties": {
+        "title": "Wrocław-Szymanów Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.2043991088867,
+          50.7016983032227
+        ]
+      },
+      "properties": {
+        "title": "Zamość-Mokre Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.7986001968,
+          52.1385002136
+        ]
+      },
+      "properties": {
+        "title": "Zielona Góra-Babimost Airport",
+        "description": "medium_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.4083003997803,
+          51.627498626709
+        ]
+      },
+      "properties": {
+        "title": "Tomaszowo Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.4638996124268,
+          51.9789009094238
+        ]
+      },
+      "properties": {
+        "title": "Zielona Góra-Przylep Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.2180995941162,
+          49.7710990905762
+        ]
+      },
+      "properties": {
+        "title": "Żar Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.713611,
+          51.240278
+        ]
+      },
+      "properties": {
+        "title": "Lublin Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.2187995911,
+          52.5344009399
+        ]
+      },
+      "properties": {
+        "title": "Bednary Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.6869440078735,
+          54.2007217407227
+        ]
+      },
+      "properties": {
+        "title": "Kołobrzeg-Bagicz",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.2901935577393,
+          53.7610816955566
+        ]
+      },
+      "properties": {
+        "title": "Płoty  (Maków)",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.942777633667,
+          53.9519424438477
+        ]
+      },
+      "properties": {
+        "title": "Borsk Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.2841663360596,
+          53.5194435119629
+        ]
+      },
+      "properties": {
+        "title": "Broczyno Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.413610458374,
+          50.8369445800781
+        ]
+      },
+      "properties": {
+        "title": "Brzeg-Skarbimierz Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.421667098999,
+          52.9394454956055
+        ]
+      },
+      "properties": {
+        "title": "Chojna Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.8730564117432,
+          52.5758323669434
+        ]
+      },
+      "properties": {
+        "title": "Chrcynno Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.1016674041748,
+          51.6191673278809
+        ]
+      },
+      "properties": {
+        "title": "Dęblin-Ułęż Air Base",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.2591667175293,
+          53.5244445800781
+        ]
+      },
+      "properties": {
+        "title": "Debrzno Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.6025009155273,
+          54.396110534668
+        ]
+      },
+      "properties": {
+        "title": "Gdańsk-Wrzeszcz Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.976110458374,
+          51.8872222900391
+        ]
+      },
+      "properties": {
+        "title": "Gostyń-Gola Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.2936000823975,
+          52.7877998352051
+        ]
+      },
+      "properties": {
+        "title": "Gorzów-Wojcieszyce Airport (under construction)",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.9843997955322,
+          53.812198638916
+        ]
+      },
+      "properties": {
+        "title": "Brzezie Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.2733001708984,
+          51.6568984985352
+        ]
+      },
+      "properties": {
+        "title": "Chociw  (Kanice) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.261100769043,
+          53.5705986022949
+        ]
+      },
+      "properties": {
+        "title": "Debrzno  (Słupia) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.2119007110596,
+          54.3683013916016
+        ]
+      },
+      "properties": {
+        "title": "Dębnica Kaszubska Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.4430999755859,
+          54.6046981811523
+        ]
+      },
+      "properties": {
+        "title": "Gdynia  (Rumia) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.5969009399414,
+          52.2322006225586
+        ]
+      },
+      "properties": {
+        "title": "Granowo Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.5063991546631,
+          54.5250015258789
+        ]
+      },
+      "properties": {
+        "title": "Jarosławiec Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.8042001724243,
+          53.426700592041
+        ]
+      },
+      "properties": {
+        "title": "Kliniska  (Szczecin) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.0105991363525,
+          53.3114013671875
+        ]
+      },
+      "properties": {
+        "title": "Koronowo Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.6238994598389,
+          51.814998626709
+        ]
+      },
+      "properties": {
+        "title": "Leszno  (Rydzyna) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.9053001403809,
+          54.0452995300293
+        ]
+      },
+      "properties": {
+        "title": "Łukęcin  (Pobierowo) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.3714008331299,
+          53.4583015441895
+        ]
+      },
+      "properties": {
+        "title": "Machliny Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.5116996765137,
+          52.750301361084
+        ]
+      },
+      "properties": {
+        "title": "Mieszkowice Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.1569004058838,
+          53.386100769043
+        ]
+      },
+      "properties": {
+        "title": "Mirosławiec  (Nowe Laski) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.5372009277344,
+          54.0691986083984
+        ]
+      },
+      "properties": {
+        "title": "Mostowo Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.4505996704102,
+          53.6082992553711
+        ]
+      },
+      "properties": {
+        "title": "Osie  (Lipinki) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.013599395752,
+          50.948299407959
+        ]
+      },
+      "properties": {
+        "title": "Ostrowy  (Łobodno) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.7182998657227,
+          51.7038993835449
+        ]
+      },
+      "properties": {
+        "title": "Rossoszyca  (Warta) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.6686000823975,
+          51.1627998352051
+        ]
+      },
+      "properties": {
+        "title": "Środa Śląska  (Komorniki) Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.7919006347656,
+          53.36669921875
+        ]
+      },
+      "properties": {
+        "title": "Wielbark Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.6224994659424,
+          52.3011016845703
+        ]
+      },
+      "properties": {
+        "title": "Września Highway Strip",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.2700004577637,
+          51.790599822998
+        ]
+      },
+      "properties": {
+        "title": "Aleksandrów Łódzki Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.2283306121826,
+          53.4047203063965
+        ]
+      },
+      "properties": {
+        "title": "Białousy Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.4099998474121,
+          49.5202789306641
+        ]
+      },
+      "properties": {
+        "title": "Bezmiechowa Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.9327802658081,
+          51.2033309936523
+        ]
+      },
+      "properties": {
+        "title": "Brochocin Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.7916698455811,
+          51.5516700744629
+        ]
+      },
+      "properties": {
+        "title": "Chojne Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.6202802658081,
+          53.9436111450195
+        ]
+      },
+      "properties": {
+        "title": "Dębica Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.1980590820312,
+          51.6272201538086
+        ]
+      },
+      "properties": {
+        "title": "Dęblin-Podlodów Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.8675003051758,
+          51.5944404602051
+        ]
+      },
+      "properties": {
+        "title": "Dębno Polskie Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.4930992126465,
+          51.7991981506348
+        ]
+      },
+      "properties": {
+        "title": "Goszczanów Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.7138900756836,
+          53.3113899230957
+        ]
+      },
+      "properties": {
+        "title": "Jaworze Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.0124228001,
+          50.0607101557
+        ]
+      },
+      "properties": {
+        "title": "Kraków-Łęg Airport",
+        "description": "heliport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.5391693115234,
+          52.4736099243164
+        ]
+      },
+      "properties": {
+        "title": "Kroczewo Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.7005596160889,
+          52.0538902282715
+        ]
+      },
+      "properties": {
+        "title": "Krzewica Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.9833335876465,
+          51.966667175293
+        ]
+      },
+      "properties": {
+        "title": "Łagowo Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1988906860352,
+          52.2169418334961
+        ]
+      },
+      "properties": {
+        "title": "Międzylesie Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.4566707611084,
+          53.4700012207031
+        ]
+      },
+      "properties": {
+        "title": "Nadarzyce Poligon Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.5936107635498,
+          51.0641708374023
+        ]
+      },
+      "properties": {
+        "title": "Namysłów Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.2474994659,
+          50.9786109924
+        ]
+      },
+      "properties": {
+        "title": "Oława-Stanowice Field (closed)",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.3556003570557,
+          51.5671997070312
+        ]
+      },
+      "properties": {
+        "title": "Orsk Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.9383296966553,
+          53.0050010681152
+        ]
+      },
+      "properties": {
+        "title": "Przasnysz Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.9972190856934,
+          52.211109161377
+        ]
+      },
+      "properties": {
+        "title": "Radzewice Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.6286106109619,
+          51.7541694641113
+        ]
+      },
+      "properties": {
+        "title": "Radzyń Podlaski-Marynin Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.9097194671631,
+          53.7097206115723
+        ]
+      },
+      "properties": {
+        "title": "Rostki Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.3066692352295,
+          54.2449989318848
+        ]
+      },
+      "properties": {
+        "title": "Skibno Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.1202793121338,
+          49.2750015258789
+        ]
+      },
+      "properties": {
+        "title": "Smolnik Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.2150001525879,
+          53.6116714477539
+        ]
+      },
+      "properties": {
+        "title": "Stare Drawsko Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.413330078125,
+          53.2966690063477
+        ]
+      },
+      "properties": {
+        "title": "Watorowo Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.2000007629395,
+          54.5911102294922
+        ]
+      },
+      "properties": {
+        "title": "Wejherowo Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.3199996948242,
+          49.4466705322266
+        ]
+      },
+      "properties": {
+        "title": "Weremień Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.2477798461914,
+          51.8352813720703
+        ]
+      },
+      "properties": {
+        "title": "Wschowa-Łysiny Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.5263900756836,
+          52.9313888549805
+        ]
+      },
+      "properties": {
+        "title": "Wysokie Mazowieckie Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.1283330917358,
+          51.2033348083496
+        ]
+      },
+      "properties": {
+        "title": "Zgorzelec-Żarska Wieś Airport",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.7250003814697,
+          51.310001373291
+        ]
+      },
+      "properties": {
+        "title": "Krzywa Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.1049995422363,
+          51.4599990844727
+        ]
+      },
+      "properties": {
+        "title": "Gozdnica Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.3199996948,
+          50.8829994202
+        ]
+      },
+      "properties": {
+        "title": "Swiebodzice Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.5900001525879,
+          51.560001373291
+        ]
+      },
+      "properties": {
+        "title": "Szprotawa-Wiechlice Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.6459999084473,
+          50.3084983825684
+        ]
+      },
+      "properties": {
+        "title": "Bystrzyca Klodzka Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.4349994659424,
+          51.2150001525879
+        ]
+      },
+      "properties": {
+        "title": "Olesnica Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.2430000305176,
+          52.2350006103516
+        ]
+      },
+      "properties": {
+        "title": "Kakolewo Air Base",
+        "description": "closed",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.7250003814697,
+          52.523998260498
+        ]
+      },
+      "properties": {
+        "title": "Przytoczna Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0400009155,
+          52.3219985962
+        ]
+      },
+      "properties": {
+        "title": "Zerniki Gadki Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1870002746582,
+          52.0750007629395
+        ]
+      },
+      "properties": {
+        "title": "Konstancin-Jeziorna Airfield",
+        "description": "small_airport",
+        "marker-size": "medium",
+        "marker-symbol": "airport"
+      }
+    }
+  ]
+}
