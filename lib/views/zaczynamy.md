@@ -527,13 +527,13 @@ configuration* używanych w aplikacjach Rails.
     a.properties["description"] = "big_airport"
     a.save
 
-OK.
+Jest dobrze!
 
 
-### Mapka zamiast tabeli na stronie /airports
+### Mapka zamiast tabeli
 
-Po wejściu na stronę */airports* renderowana jest tabelka.
-Tabelki nie specjalnie się nadają do prezentacji GeoJSON-ów.
+Po wejściu na stronę *airports* renderowana jest tabelka.
+Tabelki nie specjalnie nadają się do prezentacji GeoJSON-ów.
 
 Dlatego kod widoku:
 
@@ -563,21 +563,20 @@ Dlatego kod widoku:
 
 zastąpimy mapką. Do generowania mapek użyjemy biblioteki
 [Leafletjs](http://leafletjs.com/).
-
 Przy okazji, warto wiedzieć, zobacz
 [Mapping geoJSON files on GitHub](https://help.github.com/articles/mapping-geojson-files-on-github),
 że mapki na GitHubie też korzystają z biblioteki Leafletjs oraz wtyczki do niej
 o nazwie [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster).
 
-Inne użyteczne wtyczki:
 
-- [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw);
-[demo](http://leaflet.github.io/Leaflet.draw/)
-- [Leaflet Plotter](https://github.com/scripter-co/leaflet-plotter)
+### Leafletjs maps from scratch
 
+* [Rails 3 and Leaflet Maps](http://rorandme.blogspot.com/)
 
 
+### Leafletjs maps via leaflet-rails gem
 
+* [source](https://github.com/axyjo/leaflet-rails)
 
 
 ### TODO
@@ -587,8 +586,14 @@ Do CREATE i DELETE użyć mapki.
 1. Utworzyć indeks [2dsphere](http://docs.mongodb.org/manual/core/2dsphere/).
 Natępnie dodać wyszukiwanie lotnisk.
 
-JTZ opisał R. Bates w epizodzie #136 RailsCasts,
+*Wskazówki:*
+
+- Ideę JTZ (mniej więcej) opisał R. Bates w epizodzie #136 RailsCasts,
 [jQuery & Ajax (revised)](http://railscasts.com/episodes/136-jquery-ajax-revised?view=asciicast).
+- W pkt. 1. można użyć wtyczki do Leafletjs:
+[Leaflet.draw](https://github.com/Leaflet/Leaflet.draw)
+([demo](http://leaflet.github.io/Leaflet.draw/)) lub wtyczki
+[Leaflet Plotter](https://github.com/scripter-co/leaflet-plotter).
 
 
 ## Podsumowanie
