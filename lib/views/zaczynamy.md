@@ -562,19 +562,19 @@ Dlatego kod widoku:
     <%= link_to 'New Airport', new_airport_path %>
 
 zastąpimy mapką. Do generowania mapek użyjemy biblioteki
-[Leafletjs](http://leafletjs.com/).
+[Leaflet](http://leafletjs.com/).
 Przy okazji, warto wiedzieć, zobacz
 [Mapping geoJSON files on GitHub](https://help.github.com/articles/mapping-geojson-files-on-github),
-że mapki na GitHubie też korzystają z biblioteki Leafletjs oraz wtyczki do niej
+że mapki na GitHubie też korzystają z biblioteki Leaflet oraz wtyczki do niej
 o nazwie [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster).
 
 
-### Leafletjs maps from scratch
+### Leaflet maps from scratch
 
 * [Rails 3 and Leaflet Maps](http://rorandme.blogspot.com/)
 
 
-### Leafletjs maps via leaflet-rails gem
+### Leaflet maps via leaflet-rails gem
 
 * [source](https://github.com/axyjo/leaflet-rails)
 
@@ -590,7 +590,7 @@ Natępnie dodać wyszukiwanie lotnisk.
 
 - Ideę JTZ (mniej więcej) opisał R. Bates w epizodzie #136 RailsCasts,
 [jQuery & Ajax (revised)](http://railscasts.com/episodes/136-jquery-ajax-revised?view=asciicast).
-- W pkt. 1. można użyć wtyczki do Leafletjs:
+- W pkt. 1. można użyć wtyczki do Leaflet:
 [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw)
 ([demo](http://leaflet.github.io/Leaflet.draw/)) lub wtyczki
 [Leaflet Plotter](https://github.com/scripter-co/leaflet-plotter).
