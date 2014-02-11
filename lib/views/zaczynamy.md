@@ -302,7 +302,17 @@ W pliku *Gemfile* usuwamy gem *sass-rails* i dopisujemy gem Mongoid:
     # gem 'mongoid', '~> 3.1.6'
     gem 'mongoid', github: 'mongoid/mongoid'
 
-Na koniec generujemy plik konfiguracyjny dla MongoDB:
+Przy okazji dodamy pliki *.ruby-version*:
+
+    :::text .ruby-version
+    2.1.0
+
+oraz *.ruby-gemset*:
+
+    :::text .ruby-gemset
+    my_places
+
+Na koniec wygenerujemy plik konfiguracyjny dla MongoDB:
 
     rails g mongoid:config
       create  config/mongoid.yml
@@ -310,17 +320,19 @@ Na koniec generujemy plik konfiguracyjny dla MongoDB:
 
 ### Moje lotniska
 
+Tym razem zaczniemy od importu ciekawych miejsc do bazy MongoDB.
+
 Pobieramy plik *airports.csv* ze strony
 [Our Airports](http://www.ourairports.com/data/).
-Importujemy dane do MongoDB za pomocą programu
-*mongoimport*:
+Pobrane dane zapiszemy w bazie MongoDB w kolekcji *airports*.
+za pomocą programu *mongoimport*:
 
     mongoimport --collection airports  --headerline --type csv airports.csv
       connected to: 127.0.0.1
       2014-02-08T21:44:49.825+0100 check 9 45618
       2014-02-08T21:44:49.897+0100 imported 45617 objects
 
-Przykładowy rekord:
+Oto przykładowy rekord zapisany w kolekcji *airports*:
 
     :::json
     {
@@ -345,7 +357,9 @@ Przykładowy rekord:
       "keywords": ""
     }
 
-Przekształcimy dokumenty zapisane w bazie MongoDB na takie GeoJSON-y:
+W kolekcji *airports*, ciekawe dla mnie miejsca, to dokumenty
+z informacjami o lotniskach w Polsce.
+Dokumenty te przekształcimy na takie GeoJSON-y:
 
     :::json
     {
@@ -362,11 +376,12 @@ Przekształcimy dokumenty zapisane w bazie MongoDB na takie GeoJSON-y:
       }
     }
 
-Format zmienimy na konsoli *mongo*. Dokumenty
-w formacie GeoJSON zapiszemy w kolekcji *lotniska*
-(ograniczamy się do lotnisk w położonych Polsce):
+i w takim formacie zapiszemy je w kolekcji *lotniska*.
 
-    :::js
+Wszystkie te rzeczy wykonamy na konsoli *mongo*,
+korzystając z takiego kodu:
+
+    :::js mongo
     var cursor = db.airports.find({iso_country: "PL"})
     while (cursor.hasNext()) {
       var doc = cursor.next()
@@ -387,12 +402,26 @@ w formacie GeoJSON zapiszemy w kolekcji *lotniska*
       };
       db.lotniska.insert(spec);
     }
+    db.lotniska.count(); #-> 170
 
-Na koniec, dokumenty z kolekcji *lotniska* przekształcimy do bardziej przyjaznego
-formatu [simplestyle spec v1.1.0](https://github.com/mapbox/simplestyle-spec/tree/master/1.1.0).
-Pliki w takim formacie są renderowane w postaci mapek przez serwer GitHub.
+W markerach na mapkach (GitHub, Mapbox) wykorzystywany jest zestaw ikon
+[Maki](https://www.mapbox.com/maki/) z [Mapbox](https://www.mapbox.com/).
+W GeoJSON-ach powyżej użyjemy ikony o nazwie *airport*.
 
-Do zamiany formatu użyjemy programu [jq](http://stedolan.github.io/jq/):
+
+### Prosta wizualizacja danych
+
+Zanim zapiszemy dane o lotniskach w bazie i w kolekcji aplikacji
+MyPlaces przyjrzymy się im bliżej.
+
+W tym celu dokumenty z kolekcji *lotniska* zapiszemy
+w pliku w przyjaźniejszym formacie
+[simplestyle spec v1.1.0](https://github.com/mapbox/simplestyle-spec/tree/master/1.1.0).
+Pliki w tym formacie są renderowane w postaci mapek przez serwer
+GitHub.
+
+Do zmiany formatu użyjemy programów *mongoexport*
+i [jq](http://stedolan.github.io/jq/):
 
     mongoexport -c lotniska | \
     jq '{type, geometry, properties}' | \
@@ -408,38 +437,147 @@ można obejrzeć [tutaj](https://github.com/rails4/asi/blob/master/lotniska.geoj
 lub poniżej:
 
 <script src="https://embed.github.com/view/geojson/rails4/asi/master/lotniska.geojson?height=640&width=640"></script>
-
  
 
-Tak jak to opisano w artykule
-[Mapping geoJSON files on GitHub](https://help.github.com/articles/mapping-geojson-files-on-github)
-mapki na GitHubie korzystają z biblioteki [Leafletjs](http://leafletjs.com/).
-Markery na mapkach używają zestawu ikon o nazwie [Maki](https://www.mapbox.com/maki/)
-z [Mapbox](https://www.mapbox.com/).
-W powyższej mapce użyłem ikony o nazwie *airport*.
+
+### Mongoid
+
+* [Mongoid](http://railscasts.com/episodes/238-mongoid?view=asciicast) –
+  asciicast #238
+* [Mongoid + Rails](http://mongoid.org/en/mongoid/docs/rails.html)
+* [Mongoid + Documents](http://mongoid.org/en/mongoid/docs/documents.html) –
+  Custom field serialization
+
+Jeśli zajrzymy do pliku *config/mongoid.yml*:
+
+    :::yaml
+    development:
+      sessions:
+        default:
+          database: my_places_development
+          hosts:
+            - localhost:27017
+          options:
+            # Change the default write concern. (default = { w: 1 })
+            # write:
+            # w: 1
+      # Configure Mongoid specific options. (optional)
+      options:
+        # Includes the root model name in json serialization. (default: false)
+        # include_root_in_json: false
+        # Include the _type field in serializaion. (default: false)
+        # include_type_for_serialization: false
+
+to zobaczymy, że aplikacja MyPlaces oczekuje w trybie *development*,
+że dane zostaną zapisane w bazie o nazwie *my_places_development*.
+
+Wygenerujemy *entire resource* dla danych:
+
+    rails generate scaffold airport type:String geometry:Hash properties:Hash
+
+      invoke  mongoid
+      create    app/models/airport.rb
+      invoke  resource_route
+       route    resources :airports
+      invoke  scaffold_controller
+      create    app/controllers/airports_controller.rb
+      invoke    erb
+      create      app/views/airports
+      create      app/views/airports/index.html.erb
+      create      app/views/airports/edit.html.erb
+      create      app/views/airports/show.html.erb
+      create      app/views/airports/new.html.erb
+      create      app/views/airports/_form.html.erb
+      invoke    helper
+      create      app/helpers/airports_helper.rb
+      invoke    jbuilder
+      create      app/views/airports/index.json.jbuilder
+      create      app/views/airports/show.json.jbuilder
+      invoke  assets
+      invoke    coffee
+      create      app/assets/javascripts/airports.js.coffee
+      invoke    css
+      create      app/assets/stylesheets/airports.css
+      invoke  css
+      create    app/assets/stylesheets/scaffold.css
+
+Ponieważ nazwa *resource* to *airport*, dane
+zapisujemy w kolekcji o nazwie *airports*:
+
+    mongoexport -d test -c lotniska | \
+    mongoimport -d my_places_development -c airports --drop --type json
+
+Sprawdzamy na konsoli rails, czy stosujemy się do *convention over
+configuration* używanych w aplikacjach Rails.
+
+    :::ruby
+    rails console --sandbox
+    a = Airport.first
+      #<Airport _id: 52f92e405debff06c39ea6ee,
+       type: "Feature",
+       geometry: {"type"=>"Point",
+                  "coordinates"=>[22.5142993927002, 49.6575012207031]},
+       properties: {"title"=>"Arlamów Airport",
+                    "description"=>"small_airport",
+                    "marker-size"=>"medium", "marker-symbol"=>"airport"}>
+    a.type
+      # "Feature"
+    a.geometry["coordinates"].class
+      # Array
+    a.properties["description"] = "big_airport"
+    a.save
+
+OK.
 
 
-### Leafletjs
+### Mapka zamiast tabeli na stronie /airports
 
-Link do strony [Leafletjs](http://leafletjs.com/).
+Po wejściu na stronę */airports* renderowana jest tabelka.
+Tabelki nie specjalnie się nadają do prezentacji GeoJSON-ów.
 
-Użyteczne wtyczki:
+Dlatego kod widoku:
+
+    :::rhtml app/views/airports/index.html.erb
+    <h1>Listing airports</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Type <th>Geometry <th>Properties <th> <th> <th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @airports.each do |airport| %>
+          <tr>
+            <td><%= airport.type %></td>
+            <td><%= airport.geometry %></td>
+            <td><%= airport.properties %></td>
+            <td><%= link_to 'Show', airport %></td>
+            <td><%= link_to 'Edit', edit_airport_path(airport) %></td>
+            <td><%= link_to 'Destroy', airport, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <br>
+    <%= link_to 'New Airport', new_airport_path %>
+
+zastąpimy mapką. Do generowania mapek użyjemy biblioteki
+[Leafletjs](http://leafletjs.com/).
+
+Przy okazji, warto wiedzieć, zobacz
+[Mapping geoJSON files on GitHub](https://help.github.com/articles/mapping-geojson-files-on-github),
+że mapki na GitHubie też korzystają z biblioteki Leafletjs oraz wtyczki do niej
+o nazwie [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster).
+
+Inne użyteczne wtyczki:
 
 - [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw);
 [demo](http://leaflet.github.io/Leaflet.draw/)
 - [Leaflet Plotter](https://github.com/scripter-co/leaflet-plotter)
-- [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)
 
 
-### Rails – scaffolding + mongoid
-
-Za pomocą generatora *scaffold* wygenerujemy *entire resource*:
-
-    rails generate airport ...opcje mongoid...
-      ... pola takie jak w kolekcji lotniska ...
 
 
-**TODO:** Dodać do widoku indeks Leaflet.js.
 
 
 ### TODO
