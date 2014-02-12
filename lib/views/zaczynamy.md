@@ -445,8 +445,12 @@ lub poniżej:
 * [Mongoid](http://railscasts.com/episodes/238-mongoid?view=asciicast) –
   asciicast #238
 * [Mongoid + Rails](http://mongoid.org/en/mongoid/docs/rails.html)
-* [Mongoid + Documents](http://mongoid.org/en/mongoid/docs/documents.html) –
-  Custom field serialization
+* w [Mongoid + Documents](http://mongoid.org/en/mongoid/docs/documents.html)
+  przeczytać sekcję *Custom field serialization*:
+  „You can define custom types in Mongoid and determine how they are
+  serialized and deserialized. You simply need to provide 3 methods on
+  it for Mongoid to call to convert your object to and from MongoDB
+  friendly values”. Przyda się przy tworzeniu formularzy.
 
 Jeśli zajrzymy do pliku *config/mongoid.yml*:
 
@@ -471,35 +475,9 @@ Jeśli zajrzymy do pliku *config/mongoid.yml*:
 to zobaczymy, że aplikacja MyPlaces oczekuje w trybie *development*,
 że dane zostaną zapisane w bazie o nazwie *my_places_development*.
 
-Wygenerujemy *entire resource* dla danych:
+Teraz wygenerujemy *entire resource* dla danych:
 
     rails generate scaffold airport type:String geometry:Hash properties:Hash
-
-      invoke  mongoid
-      create    app/models/airport.rb
-      invoke  resource_route
-       route    resources :airports
-      invoke  scaffold_controller
-      create    app/controllers/airports_controller.rb
-      invoke    erb
-      create      app/views/airports
-      create      app/views/airports/index.html.erb
-      create      app/views/airports/edit.html.erb
-      create      app/views/airports/show.html.erb
-      create      app/views/airports/new.html.erb
-      create      app/views/airports/_form.html.erb
-      invoke    helper
-      create      app/helpers/airports_helper.rb
-      invoke    jbuilder
-      create      app/views/airports/index.json.jbuilder
-      create      app/views/airports/show.json.jbuilder
-      invoke  assets
-      invoke    coffee
-      create      app/assets/javascripts/airports.js.coffee
-      invoke    css
-      create      app/assets/stylesheets/airports.css
-      invoke  css
-      create    app/assets/stylesheets/scaffold.css
 
 Ponieważ nazwa *resource* to *airport*, dane
 zapisujemy w kolekcji o nazwie *airports*:
@@ -571,12 +549,54 @@ o nazwie [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markerclust
 
 ### Leaflet maps from scratch
 
-* [Rails 3 and Leaflet Maps](http://rorandme.blogspot.com/)
+Zanim się zabierzemy za dodawanie mapki do widoku
+*index.html.erb* przyjrzyjmy się tym przykładom:
+[index, overlays and layers, geojson](https://github.com/wbzyl/rails4-tutorial/tree/master/lib/doc/leafletjs).
+
+Podmieniamy kod widoku *index.html.erb* na:
+
+    <div id="map"></div>
+    <%= javascript_include_tag "airports", "data-turbolinks-track" => true %>
+
+Dodajemy plik *airports.js*:
+
+    :::js app/assets/javascripts/airports.js
+    // dane z OpenStreetMap
+    var osm = {
+      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> Contributors'
+    };
+
+    // tworzymy mapkę – współrzędne: [ szerokość, długość ]
+    var map = L.map('map').setView([52.05735, 19.19209], 6);  // center: Łęczyca, zoom: 6
+    var osmTileLayer = L.tileLayer(osm.url, {attribution: osm.attribution})
+    osmTileLayer.addTo(map);
+
+    // dodajemy markery do mapki
+    $.getJSON("/airports", function(data) {
+      console.log(data.length);
+
+      L.geoJson(data, {
+        pointToLayer: function (feature, latlng) {
+          return L.marker(latlng, { riseOnHover: true });
+        },
+        onEachFeature: function(feature, layer) {
+          layer.bindPopup(feature.properties.title + '<br>(' + feature.properties.description + ')');
+        }
+      }).addTo(map);
+    });
+
+Na koniec dodajemy bibliotekę Leaflet do layoutu aplikacji.
+
+Szablon aplikacji [MyPlaces](https://github.com/wbzyl/my_places)
+do pobrania z GitHuba.
 
 
 ### Leaflet maps via leaflet-rails gem
 
-* [source](https://github.com/axyjo/leaflet-rails)
+Czy warto skorzystać z jakiegoś gemu?
+
+* [leaflet-rails](https://github.com/axyjo/leaflet-rails)
 
 
 ### TODO
