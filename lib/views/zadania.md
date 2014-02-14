@@ -8,22 +8,32 @@
 <p class="author">— Rick Osborne</p>
 </blockquote>
 
-1\. Zapoznajemy się z językiem Ruby.
+1\. Rozgrzewka – Zapoznajemy się z językiem Ruby:
 
-2\. Projekt indywidualny:
+* Rozwiązać wszystkie zadania na [Ruby Monk](http://rubymonk.com/).
 
-* prosta aplikacja Rails (przykłady – Fortunka, Trekking)
-* prosta aplikacja korzystająca z nierelacyjnej bazy danych (przykładowo MongoDB lub Redis)
+2\. Aby otrzymać pozytywną ocenę z laboratorium należy:
 
-3\. Projekt zespołowy:
+1. Uruchomić dwie z trzech aplikacje omówionych na pierwszych
+  wykładach i opisanych [tutaj](http://wbzyl.inf.ug.edu.pl/rails4/zaczynamy).
+2. Wybrać jedną z tych aplikacji i wdrożyć ją na [ShellyCloud](https://shellycloud.com/).
+3. Dodać do wybranej aplikacji rzeczy opisane w sekcji ***TODO***.
+4. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
+  z linkiem do swojego repozytorium z kodem wdrożonej aplikacji.
+  Ostateczny termin wysłania pull request upływa **26.03.2014**.
 
-* Wybór tematu projektu, podział na grupy, założenie repozytoriów: 15.11.2012
-* Rozliczenie projektu zespołowego: 14.12.2012
-* Prezentacje gotowych projektów: styczeń 2013
+3\. Aby uzyskać pozytywną ocenę z egzaminu należy:
 
-Każdą aplikację należy uruchomić w trybie produkcyjnym
-na Sigmie, Heroku lub innym serwerze.
-Aplikacja powinna być dostępna **24/7**.
+1. Wdrożyć aplikację napisaną w Ruby on Rails z testami napisanymi w RSpec.
+  Kod aplikacji umieścić w repozytorium na Githubie.
+  Aplikację należy przygotowywać w trybie Agile (najpierw piszemy testy).
+2. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
+  z linkiem do repozytorium z kodem wdrożonej aplikacji
+  i linkiem do działającej aplikacji.
+  Ostateczny termin wysłania pull request upływa **21.03.2014**.
+
+Zalecane jest przygotowanie projektu w małym zespole (2–4 osobowym).
+
 
 <blockquote>
 {%= image_tag "/images/ralph-waldo-emerson.jpg", :alt => "[Ralph Waldo Emerson]" %}
@@ -35,11 +45,9 @@ Aplikacja powinna być dostępna **24/7**.
 <p class="author">— Ralph Waldo Emerson (1803–1882)</p>
 </blockquote>
 
+## rvm – Ruby Version Manager
 
-## Zapoznajemy się z językiem Ruby
-
-1\. Sprawdzamy instalację języka Ruby na Sigmie i instalujemy
-system Ruby na swoim komputerze.
+1\. Sprawdzamy instalację języka Ruby na Sigmie.
 
 Wykonujemy polecenie:
 
@@ -50,15 +58,16 @@ Wynik wykonania tego polecenia powinien być taki:
 
     rvm rubies
 
-       ruby-1.9.2-p320 [ x86_64 ]
-       ruby-1.9.2-p320-n32 [ i386 ]
-       ruby-1.9.3-head [ x86_64 ]
-       ruby-1.9.3-head-i32 [ i686 ]
-    =* ruby-1.9.3-p194 [ x86_64 ]
+    =* ruby-2.1.0 [ x86_64 ]
 
     # => - current
     # =* - current && default
     #  * - default
+
+Inne użyteczne polecenia:
+
+    rvm current
+    rvm env
 
 Wchodzimy na konsolę języka Ruby:
 
@@ -92,147 +101,8 @@ Dopiero teraz możemy zainstalować wersję Ruby
 z której będziemy korzystać na zajęciach:
 
     :::bash terminal
-    rvm install 1.9.3
+    rvm install 2.1.0
 
 Pozostałe szczegóły instalacji opisano {%= link_to "tutaj", "/konfiguracja" %}.
 
-2\. Rozwiązujemy wszystkie zadania na [Ruby Monk](http://rubymonk.com/).
-
-3\. *Z Pythona na Ruby.*
-Zadanie polega na przetłumaczeniu z języka Python na język Ruby
-[tego skryptu](http://code.google.com/intl/pl-PL/apis/maps/documentation/elevation/#CreatingElevationCharts).
-Linki przydatne do rozwiązania tego zadania:
-
-* [Elevation](http://code.google.com/intl/pl-PL/apis/maps/documentation/javascript/services.html#Elevation) –
-  dwa proste przykłady.
-* [The Google Elevation API](http://code.google.com/intl/pl-PL/apis/maps/documentation/elevation/).
-* [Google Maps API Family](http://code.google.com/intl/pl-PL/apis/maps/)
-* [Google Maps Javascript API V3 Reference](http://code.google.com/intl/pl-PL/apis/maps/documentation/javascript/reference.html)
-
-
-## Prosta aplikacja Rails
-
-Piszemy prostą aplikację Rails. Co oznacza „prosta aplikacja”
-jest wyjaśnione poniżej.
-
-
-### Fortunka
-
-1. Dodać paginację do widoku *index*.
-Skorzystać z gemu [kaminari](https://github.com/amatsuda/kaminari).
-Wystylizować linki do kolejnych „stron”.
-Jak to się robi opisał Vitaly Friedman,
-[Pagination Gallery: Examples And Good Practices](http://www.smashingmagazine.com/2007/11/16/pagination-gallery-examples-and-good-practices/) i Mislav Marohnić,
-[Samples of pagination styling for will_paginate](http://mislav.uniqpath.com/will_paginate/).
-2. Na stronie głównej użyć jednej z wtyczek jQuery:
-   - [DataTables](http://datatables.net/), zob. [RailsCast \#340](http://railscasts.com/episodes/340-datatables)
-   - [Masonry](http://masonry.desandro.com/) – dynamic layout plugin for jQuery
-   - [Isotope](http://isotope.metafizzy.co/) – jQuery plugin for magical layouts
-3. Dodać „AJAX rating” dla komentarzy.
-Skorzystać z jakiejś gotowej wtyczki lub gemu
-(wcześniej sprawdzić czy wybrana biblioteka działa z jQuery 1.6+ Rails 3.1+).
-4. Dodać autentykację. Zrobić to tak jak, to
-przedstawił R. Bates w screencaście
-[Simple OmniAuth](http://railscasts.com/episodes/241-simple-omniauth).
-5. Dodać komentarze.
-6. Skorzystać z bazy PostgreSQL i jednego z rozszerzeń.
-Tutaj [PostgreSQL most useful extensions](http://blog.railsware.com/2012/04/23/postgresql-most-useful-extensions/)
-jest krótka lista, tutaj –
-[Hstore](http://railscasts.com/episodes/345-hstore) przykład jak korzystać z takich rozszerzeń.
-7. Uprościć kod formularzy. Jak?
-Obejrzeć screencast R. Batesa [Simple Form](http://railscasts.com/episodes/234-simple-form).
-Następnie zamienić wygenerowane formularze na formularze korzystajęce
-z metod [tego gemu](http://github.com/plataformatec/simple_form).
-Skorzystać z jednego z gemów:
-   * [Chosen](http://harvesthq.github.com/chosen/) – plugin that makes long,
-   unwieldy select boxes much more user-friendly
-   * [jQuery Tokeninput](http://loopj.com/jquery-tokeninput/) – allows
-   your users to select multiple items from a predefined list, using
-   autocompletion as they type to find each item
-
-
-*Uwagi do Data Tables:*
-
-1\. Linki do dokumentacji gemów:
-
-* [jQuery UI Rails](https://github.com/joliss/jquery-ui-rails)
-* [jQuery DataTables for Rails](https://github.com/rweng/jquery-datatables-rails)
-
-2\. W pliku *application.js* inicjalizujemy DataTable dopiero po
-po zdarzeniu *DocumentReady*:
-
-    :::js
-    jQuery(function() {
-      $('#lists').dataTable({
-        "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
-        "sPaginationType": "bootstrap"
-      });
-    });
-
-i elementowi *table* dodajemy *id*:
-
-    :::rhtml index.html.erb
-    <table id="lists" class="table table-striped datatable">
-
-Resztę rzeczy robimy tak jak to opisano w pliku
-[README](https://github.com/rweng/jquery-datatables-rails)
-do *jquery-datatables-rails*.
-
-
-### Trekking
-
-{%= image_tag("/images/graniatatr-profilmale_mini.jpg", :alt => "[Granią Tatr]", :width => 1000) %}
-
-Źródło: [Bieg Granią Tatr]("http://www.graniatatr.pl/").
-[Mapka w większym formacie](http://www.graniatatr.pl/images/profilmale.JPG).
-
-O co może chodzić w aplikacji Trekking? Najprościej jest przekonać się
-samemu wchodząc na stronę
-[Google Maps JavaScript API v3 Example: Elevation](http://www.geocodezip.com/v3_elevation-profile_distance.html).
-
-Użyteczne linki:
-
-* [gmaps.js](http://hpneo.github.com/gmaps/) – the easiest way to use Google Maps
-  ([źródło + kod przykładów](https://github.com/HPNeo/gmaps))
-* [Geocoder Asciicast](http://railscasts.com/episodes/273-geocoder?view=asciicast)
-* [Cartographer](https://github.com/joshuamiller/cartographer)
-* [Map Icons Collection](http://mapicons.nicolasmollet.com/)
-
-
-### Geospatial Data With MongoDB
-
-* A. Jesse Jiryu Davis.
-  [Efficiently Paging Geospatial Data With MongoDB ](http://emptysqua.re/blog/paging-geo-mongodb/);
-  przykładowa aplikacja – [MongoDB Geospatial Paging Demo](http://emptysqua.re/geopaging)
-
-Skorzystać z gemu
-[Mongoid](http://mongoid.org/en/mongoid/index.html) lub
-[Mongo](http://api.mongodb.org/ruby/current/).
-
-
-# Różne fajne rzeczy
-
-1\. Rozszerzenia do przeglądarki Firefox:
-
-* [Firebug](http://getfirebug.com/)
-* [FireQuery](https://addons.mozilla.org/en-US/firefox/addon/firequery/)
-
-2\. Rozszerzenia do przeglądarki Chrome:
-
-* [PageSpeed](http://code.google.com/intl/pl-PL/speed/page-speed/docs/using_chrome.html)
-* [Yslow](http://developer.yahoo.com/yslow/)
-
-Sprawdzić jaką ocenę uzyska aplikacja od *YSlow* a jaką – od *PageSpeed*.
-Zacząć od [Page Speed Online](http://pagespeed.googlelabs.com/pagespeed/).
-*Ciekawy ekperyment:*
-Jaką ocenę uzyskuje strona [Instytutu Informatyki](http://inf.ug.edu.pl/)
-od [PageSpeed Online](http://pagespeed.googlelabs.com/pagespeed/)?
-
-3\. *Faye* — a subscription/publishing server which makes it easy to do
-push notifications within a Rails application:
-
-* Uruchomić aplikację przedstawioną na screencaście R. Batesa,
-  [Messaging with Faye](http://railscasts.com/episodes/260-messaging-with-faye).
-* Odać „nieco prywatności” do tej aplikacji.
-  W tym celu skorzystać z gemu [private_pub](https://github.com/ryanb/private_pub) –
-  *handle pub/sub messaging through private channels in Rails*.
+2\. Instalujemy RVM i Ruby w wersjach 2.0.0 i 2.1.0 na swoim komputerze.
