@@ -51,7 +51,7 @@ Zalecane jest przygotowanie projektu w małym zespole (2–4 osobowym).
 
 Wykonujemy polecenie:
 
-    :::bash terminal
+    :::bash
     rvm list
 
 Wynik wykonania tego polecenia powinien być taki:
