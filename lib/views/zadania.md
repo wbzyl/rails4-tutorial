@@ -17,8 +17,8 @@ rozwiązując wszystkie **٩(⊙_ʘ)۶** zadania na [Ruby Monk](http://rubymonk.
 wykładach i opisanych [tutaj](http://wbzyl.inf.ug.edu.pl/rails4/zaczynamy).
 2. Dodać do jednej z aplikacji rzeczy opisane w sekcji ***TODO***
 i uruchomić tę aplikację na Sigmie w trybie produkcyjnym.
-3. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
-z linkiem do działającej aplikacji.
+3. Wykonać pull request dopisując do pliku [README.md](https://github.com/rails4/asi)
+link do działającej na Sigmie aplikacji.
 
 Ostateczny termin wysłania pull request upływa **26.03.2014**.
 Na ocenę bdb, aplikację należy wdrożyć na [Heroku](https://www.heroku.com/).
@@ -32,9 +32,8 @@ z testami napisanymi w [RSpec](https://github.com/rspec/rspec-rails).
 2. Kod aplikacji umieścić w repozytorium na Githubie.
 Aplikację należy przygotowywać w trybie Agile
 (najpierw piszemy testy; będzie mozna to sprawdzić przeglądając logi).
-3. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
-z linkiem do repozytorium z kodem wdrożonej aplikacji
-i linkiem do działającej aplikacji.
+3. Wykonać pull request dopisując do pliku [README.md](https://github.com/rails4/asi)
+link do repozytorium z kodem wdrożonej aplikacji i link do działającej aplikacji.
 Ostateczny termin wysłania pull request upływa **21.05.2014**.
 
 Zalecane jest przygotowanie projektu w małym (2–4 osobowym) zespole.
