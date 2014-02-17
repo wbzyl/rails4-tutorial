@@ -30,13 +30,17 @@ lub [Shelly Cloud](https://shellycloud.com/)
 aplikację napisaną w [Ruby on Rails](http://rubyonrails.org/)
 z testami napisanymi w [RSpec](https://github.com/rspec/rspec-rails).
 2. Kod aplikacji umieścić w repozytorium na Githubie.
-Aplikację należy przygotowywać w trybie Agile (najpierw piszemy testy).
+Aplikację należy przygotowywać w trybie Agile
+(najpierw piszemy testy; będzie mozna to sprawdzić przeglądając logi).
 3. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
 z linkiem do repozytorium z kodem wdrożonej aplikacji
 i linkiem do działającej aplikacji.
 Ostateczny termin wysłania pull request upływa **21.05.2014**.
 
-Zalecane jest przygotowanie projektu w małym zespole (2–4 osobowym).
+Zalecane jest przygotowanie projektu w małym (2–4 osobowym) zespole.
+*Commit messages* należy pisać stsując się do wskazówek opisanych
+tutaj [Shiny new commit styles](https://github.com/blog/926-shiny-new-commit-styles)
+i tutaj [A Note About Git Commit Messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
 
 ## Wdrażanie aplikacji na *Shelly Cloud*
