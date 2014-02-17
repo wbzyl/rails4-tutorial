@@ -38,7 +38,7 @@ i linkiem do działającej aplikacji.
 Ostateczny termin wysłania pull request upływa **21.05.2014**.
 
 Zalecane jest przygotowanie projektu w małym (2–4 osobowym) zespole.
-*Commit messages* należy pisać stsując się do wskazówek opisanych
+*Commit messages* należy pisać stosując się do wskazówek opisanych
 tutaj [Shiny new commit styles](https://github.com/blog/926-shiny-new-commit-styles)
 i tutaj [A Note About Git Commit Messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
