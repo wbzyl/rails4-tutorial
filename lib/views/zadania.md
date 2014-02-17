@@ -21,7 +21,7 @@ i uruchomić tę aplikację na Sigmie w trybie produkcyjnym.
 link do działającej na Sigmie aplikacji.
 
 Ostateczny termin wysłania pull request upływa **26.03.2014**.
-Na ocenę bdb, aplikację należy wdrożyć na [Heroku](https://www.heroku.com/).
+Na ocenę bdb aplikację należy wdrożyć na [Heroku](https://www.heroku.com/).
 
 3\. Aby uzyskać pozytywną ocenę z egzaminu należy:
 
@@ -31,15 +31,17 @@ aplikację napisaną w [Ruby on Rails](http://rubyonrails.org/)
 z testami napisanymi w [RSpec](https://github.com/rspec/rspec-rails).
 2. Kod aplikacji umieścić w repozytorium na Githubie.
 Aplikację należy przygotowywać w trybie Agile
-(najpierw piszemy testy; będzie mozna to sprawdzić przeglądając logi).
+(najpierw piszemy testy; będzie można to sprawdzić przeglądając logi).
 3. Wykonać pull request dopisując do pliku [README.md](https://github.com/rails4/asi)
-link do repozytorium z kodem wdrożonej aplikacji i link do działającej aplikacji.
+link do repozytorium z kodem wdrożonej aplikacji i link do wdrożonej
+(i działającej) aplikacji.
+
 Ostateczny termin wysłania pull request upływa **21.05.2014**.
 
 Zalecane jest przygotowanie projektu w małym (2–4 osobowym) zespole.
 *Commit messages* należy pisać stosując się do wskazówek opisanych
-tutaj [Shiny new commit styles](https://github.com/blog/926-shiny-new-commit-styles)
-i tutaj [A Note About Git Commit Messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
+tutaj – [Shiny new commit styles](https://github.com/blog/926-shiny-new-commit-styles)
+i tutaj – [A Note About Git Commit Messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
 
 ## Wdrażanie aplikacji na *Shelly Cloud*
