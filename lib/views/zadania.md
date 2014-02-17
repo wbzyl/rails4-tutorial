@@ -65,12 +65,12 @@ TODO
 
 Wykonujemy polecenie:
 
-    :::bash terminal
+    :::bash
     rvm list
 
 Wynik wykonania tego polecenia powinien być taki:
 
-    :::bash terminal
+    :::bash
     rvm rubies
 
     =* ruby-2.1.0 [ x86_64 ]
