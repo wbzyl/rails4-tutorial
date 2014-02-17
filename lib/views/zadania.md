@@ -26,7 +26,7 @@ Na ocenę bdb, aplikację należy wdrożyć na [Heroku](https://www.heroku.com/)
 3\. Aby uzyskać pozytywną ocenę z egzaminu należy:
 
 1. Wdrożyć na [Heroku](https://www.heroku.com/)
-lub [ShellyCloud](https://shellycloud.com/)
+lub [Shelly Cloud](https://shellycloud.com/)
 aplikację napisaną w [Ruby on Rails](http://rubyonrails.org/)
 z testami napisanymi w [RSpec](https://github.com/rspec/rspec-rails).
 2. Kod aplikacji umieścić w repozytorium na Githubie.
