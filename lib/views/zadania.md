@@ -8,31 +8,40 @@
 <p class="author">— Rick Osborne</p>
 </blockquote>
 
-1\. Rozgrzewka – Zapoznajemy się z językiem Ruby:
-
-* Rozwiązać wszystkie zadania na [Ruby Monk](http://rubymonk.com/).
+1\. (Rozgrzewka) Zapoznać się z językiem Ruby, np.
+rozwiązując wszystkie **٩(⊙_ʘ)۶** zadania na [Ruby Monk](http://rubymonk.com/).
 
 2\. Aby otrzymać pozytywną ocenę z laboratorium należy:
 
-1. Uruchomić dwie z trzech aplikacje omówionych na pierwszych
-  wykładach i opisanych [tutaj](http://wbzyl.inf.ug.edu.pl/rails4/zaczynamy).
-2. Wybrać jedną z tych aplikacji i wdrożyć ją na [ShellyCloud](https://shellycloud.com/).
-3. Dodać do wybranej aplikacji rzeczy opisane w sekcji ***TODO***.
-4. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
-  z linkiem do swojego repozytorium z kodem wdrożonej aplikacji.
-  Ostateczny termin wysłania pull request upływa **26.03.2014**.
+1. Uruchomić dwie z trzech aplikacji omówionych na pierwszych
+wykładach i opisanych [tutaj](http://wbzyl.inf.ug.edu.pl/rails4/zaczynamy).
+2. Dodać do jednej z aplikacji rzeczy opisane w sekcji ***TODO***
+i uruchomić tę aplikację na Sigmie w trybie produkcyjnym.
+3. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
+z linkiem do działającej aplikacji.
+
+Ostateczny termin wysłania pull request upływa **26.03.2014**.
+Na ocenę bdb, aplikację należy wdrożyć na [Heroku](https://www.heroku.com/).
 
 3\. Aby uzyskać pozytywną ocenę z egzaminu należy:
 
-1. Wdrożyć aplikację napisaną w Ruby on Rails z testami napisanymi w RSpec.
-  Kod aplikacji umieścić w repozytorium na Githubie.
-  Aplikację należy przygotowywać w trybie Agile (najpierw piszemy testy).
-2. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
-  z linkiem do repozytorium z kodem wdrożonej aplikacji
-  i linkiem do działającej aplikacji.
-  Ostateczny termin wysłania pull request upływa **21.03.2014**.
+1. Wdrożyć na [Heroku](https://www.heroku.com/)
+lub [ShellyCloud](https://shellycloud.com/)
+aplikację napisaną w [Ruby on Rails](http://rubyonrails.org/)
+z testami napisanymi w [RSpec](https://github.com/rspec/rspec-rails).
+2. Kod aplikacji umieścić w repozytorium na Githubie.
+Aplikację należy przygotowywać w trybie Agile (najpierw piszemy testy).
+3. Wykonać pull request do [tego repozytorium](https://github.com/rails4/asi)
+z linkiem do repozytorium z kodem wdrożonej aplikacji
+i linkiem do działającej aplikacji.
+Ostateczny termin wysłania pull request upływa **21.05.2014**.
 
 Zalecane jest przygotowanie projektu w małym zespole (2–4 osobowym).
+
+
+## Wdrażanie aplikacji na *Shelly Cloud*
+
+TODO
 
 
 <blockquote>
