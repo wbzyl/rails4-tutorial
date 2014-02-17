@@ -65,11 +65,12 @@ TODO
 
 Wykonujemy polecenie:
 
-    :::bash
+    :::bash terminal
     rvm list
 
 Wynik wykonania tego polecenia powinien być taki:
 
+    :::bash terminal
     rvm rubies
 
     =* ruby-2.1.0 [ x86_64 ]
@@ -80,7 +81,9 @@ Wynik wykonania tego polecenia powinien być taki:
 
 Inne użyteczne polecenia:
 
+    :::bash terminal
     rvm current
+    rvm disk-usage total
     rvm env
 
 Wchodzimy na konsolę języka Ruby:
@@ -99,8 +102,9 @@ Rezultat wykonania tych poleceń:
     => 4
     => [2, 3, 4, 5]
 
-Wychodzimy z konsoli:
+Opuszczamy konsolę:
 
+    :::ruby
     exit
 
 Jeśli wszystko działa, to można spróbować instalacji
