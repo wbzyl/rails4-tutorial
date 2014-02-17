@@ -1,13 +1,5 @@
 #### {% title "Zadania" %}
 
-<blockquote>
-<p>
-  Always code as if the guy who ends up maintaining your code will be
-  a violent psychopath who knows where you live.
-</p>
-<p class="author">— Rick Osborne</p>
-</blockquote>
-
 1\. (Rozgrzewka) Zapoznać się z językiem Ruby, np.
 rozwiązując wszystkie **٩(⊙_ʘ)۶** zadania na [Ruby Monk](http://rubymonk.com/).
 
@@ -24,6 +16,14 @@ Ostateczny termin wysłania pull request upływa **26.03.2014**.
 Na ocenę bdb aplikację należy wdrożyć na [Heroku](https://www.heroku.com/).
 
 3\. Aby uzyskać pozytywną ocenę z egzaminu należy:
+
+<blockquote>
+<p>
+  Always code as if the guy who ends up maintaining your code will be
+  a violent psychopath who knows where you live.
+</p>
+<p class="author">— Rick Osborne</p>
+</blockquote>
 
 1. Wdrożyć na [Heroku](https://www.heroku.com/)
 lub [Shelly Cloud](https://shellycloud.com/)
