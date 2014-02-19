@@ -35,7 +35,7 @@ lub [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
 
-Aplikacje WWW będziemy pisać w **Ruby on Rails** w wersji **4.0.2**
+Aplikacje WWW będziemy pisać w **Ruby on Rails** w wersji **4.0.3**
 i w Ruby w wersji **2.1.0**.
 
 *Uwaga:* Przed utworzeniem pierwszego repozytorium Git
