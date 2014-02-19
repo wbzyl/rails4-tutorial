@@ -28,7 +28,7 @@ Na ocenę bdb aplikację należy wdrożyć na [Heroku](https://www.heroku.com/).
 1. Wdrożyć na [Heroku](https://www.heroku.com/)
 lub [Shelly Cloud](https://shellycloud.com/)
 aplikację napisaną w [Ruby on Rails](http://rubyonrails.org/)
-z testami napisanymi w [RSpec](https://github.com/rspec/rspec-rails).
+z testami napisanymi w [rspec-rails](https://github.com/rspec/rspec-rails).
 2. Kod aplikacji umieścić w repozytorium na Githubie.
 Aplikację należy przygotowywać w trybie Agile
 (najpierw piszemy testy; będzie można to sprawdzić przeglądając logi).

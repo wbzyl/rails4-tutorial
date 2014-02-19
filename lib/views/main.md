@@ -7,21 +7,22 @@
   <p class="author"><a href="http://www.codinghorror.com/blog/2009/08/all-programming-is-web-programming.html">Atwood’s Law (2007)</a></p>
 </blockquote>
 
-* [World Wide Web](http://www.w3.org/History/19921103-hypertext/hypertext/WWW/TheProject.html) –
-  tak wyglądała pierwsza strona WWW
+* [World Wide Web](http://info.cern.ch/) – zobacz jak wyglądała pierwsza strona WWW
 * CGI ↬ PHP
-* [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks) –
-  know-how budowania aplikacji WWW
+* [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks)
 * [Who is already on Rails?](http://rubyonrails.org/applications):
   - [GitHub](https://github.com/) – ok. 4 mln programistów
   - [Twitter](https://twitter.com/) – „hits half a billion tweets a day” (26.10.2012)
-* [Rails Rumble 2012](http://blog.railsrumble.com/) –
-  [check winners](http://railsrumble.com/entries/winners)
+* [Rails Rumble](http://blog.railsrumble.com/); [check winners](http://railsrumble.com/entries/winners)
 * Michael Hartl, [Ruby on Rails Tutorial](http://ruby.railstutorial.org/ruby-on-rails-tutorial-book?version=4.0) –
   *Learn Rails by Example*
+* [RSpec](http://rspec.info/) – a testing tool for the Ruby programming language;
+  [RSpec Rails](https://www.relishapp.com/rspec/rspec-rails/docs)
 * [Nitrous.io](https://www.nitrous.io/) – coding on remote boxes
 * Dave Kennedy,
   [Give Vagrant a Place in Your Workflow](http://rubysource.com/give-vagrant-a-place-in-your-workflow/)
+* [Docker](https://www.docker.io/) – an open source project to pack,
+  ship and run any application as a lightweight container
 
 
 ## Praktyczne rzeczy…
@@ -34,13 +35,12 @@ lub [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
 
-Aplikacje WWW będziemy pisać w **Rails** wersji co najmniej **4.0.0**.
-
-Wszystkie projekty przygotowywane na zajęciach powinny być
-udostępnione na serwerze Github.
+Aplikacje WWW będziemy pisać w **Ruby on Rails** w wersji **4.0.2**
+i w Ruby w wersji **2.1.0**.
 
 *Uwaga:* Przed utworzeniem pierwszego repozytorium Git
-należy podać Gitowi swoje dane. W tym celu wpisujemy na konsoli:
+na swoim komputerze należy podać Gitowi swoje dane.
+W tym celu wpisujemy na konsoli:
 
     git config --global user.name "Imię Nazwisko"
     git config --global user.email "twój aktualny email"
