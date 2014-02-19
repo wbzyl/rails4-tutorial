@@ -10,14 +10,18 @@
 * [World Wide Web](http://info.cern.ch/) – zobacz jak wyglądała pierwsza strona WWW
 * CGI ↬ PHP
 * [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks)
-* [Who is already on Rails?](http://rubyonrails.org/applications):
-  - [GitHub](https://github.com/) – ok. 4 mln programistów
-  - [Twitter](https://twitter.com/) – „hits half a billion tweets a day” (26.10.2012)
-* [Rails Rumble](http://blog.railsrumble.com/); [check winners](http://railsrumble.com/entries/winners)
-* Michael Hartl, [Ruby on Rails Tutorial](http://ruby.railstutorial.org/ruby-on-rails-tutorial-book?version=4.0) –
+* [Ruby on Rails](http://rubyonrails.org/download):
+  - [Rails Guides](http://edgeguides.rubyonrails.org/)
+  - Michael Hartl,
+  [Ruby on Rails Tutorial](http://ruby.railstutorial.org/ruby-on-rails-tutorial-book?version=4.0) –
   *Learn Rails by Example*
 * [RSpec](http://rspec.info/) – a testing tool for the Ruby programming language;
   [RSpec Rails](https://www.relishapp.com/rspec/rspec-rails/docs)
+* [Polskie forum Ruby on Rails](http://forum.rubyonrails.pl/)
+* [Rails Rumble](http://blog.railsrumble.com/); [check winners](http://railsrumble.com/entries/winners)
+* [Who is already on Rails?](http://rubyonrails.org/applications):
+  - [GitHub](https://github.com/) – ok. 4 mln programistów
+  - [Twitter](https://twitter.com/) – „hits half a billion tweets a day” (26.10.2012)
 * [Nitrous.io](https://www.nitrous.io/) – coding on remote boxes
 * Dave Kennedy,
   [Give Vagrant a Place in Your Workflow](http://rubysource.com/give-vagrant-a-place-in-your-workflow/)

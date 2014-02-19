@@ -437,7 +437,7 @@ można obejrzeć [tutaj](https://github.com/rails4/asi/blob/master/lotniska.geoj
 lub poniżej:
 
 <script src="https://embed.github.com/view/geojson/rails4/asi/master/lotniska.geojson?height=640&width=640"></script>
- 
+
 
 
 ### Mongoid
@@ -555,6 +555,7 @@ Zanim się zabierzemy za dodawanie mapki do widoku
 
 Podmieniamy kod widoku *index.html.erb* na:
 
+    :::rhtml
     <div id="map"></div>
     <%= javascript_include_tag "airports", "data-turbolinks-track" => true %>
 
@@ -589,7 +590,7 @@ Dodajemy plik *airports.js*:
 Na koniec dodajemy bibliotekę Leaflet do layoutu aplikacji.
 
 Szablon aplikacji [MyPlaces](https://github.com/wbzyl/my_places)
-do pobrania z GitHuba.
+do pobrania z GitHuba.
 
 
 ### Leaflet maps via leaflet-rails gem
