@@ -8,7 +8,7 @@
 </blockquote>
 
 * [World Wide Web](http://info.cern.ch/) – zobacz jak wyglądała pierwsza strona WWW
-* CGI ↬ PHP
+* Pierwsze aplikacje WWW – CGI ↬ PHP (≈ 2000 r.)
 * [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks)
 * [Ruby on Rails](http://rubyonrails.org/download):
   - [Rails Guides](http://edgeguides.rubyonrails.org/)
