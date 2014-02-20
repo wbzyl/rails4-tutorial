@@ -12,8 +12,8 @@
  </p>
 </blockquote>
 
-Po kilku szybkich przykładach przyszła pora na coś nieco bardziej
-skomplikowanego – aplikację korzystającą z kilku popularnych gemów
+Po kilku szybkich przykładach przyszła pora na kompletny
+przykład – aplikację korzystającą z kilku popularnych gemów
 implementującą CRUD, czyli:
 
 * ***C**reate* (*insert*) — dodanie nowych danych
@@ -40,6 +40,31 @@ Na przykład:
 
 * [Proverb Hunter](http://proverbhunter.com/)
 * …?
+
+**TODO:** Przykład bez szablony. Użyć gemu
+[less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap).
+
+Bootstrap:
+
+* [CSS](http://getbootstrap.com/css/) – Buttons, Grid
+
+    :::css
+    @background-color: hsl(90, 80%, 50%);
+
+    .body {
+      background: @background-color;
+    }
+
+    .quotation {
+      .make-md-column(7);
+      background: lighten(@background-color, 20%);
+    }
+
+    .source {
+      .make-md-column(2);
+      background: lighten(@background-color, 20%);
+    }
+
 
 1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
 katalogu z wygenerowanym rusztowaniem:
