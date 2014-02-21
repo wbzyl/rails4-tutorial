@@ -1,8 +1,10 @@
 # This code uses the Faker library.
-# Please, add the 'faker' gem to Gemfile.1
+# Please, add the 'faker' gem to Gemfile.
 
 # $ locate platitudes.u8
 #   /usr/share/games/fortune/platitudes.u8
+# Brakuje pliku platitudes.u8
+# $ sudo yum install fortune-mod  # Fedora
 
 platitudes = File.readlines('/usr/share/games/fortune/platitudes.u8', "\n%\n")
 platitudes.map do |p|

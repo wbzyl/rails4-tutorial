@@ -36,7 +36,8 @@ Pierwsza wersja tej aplikacji:
 
 była Fortunką. Teraz to „English Learning Resources”.
 
-Chrome dla dla naszej Fortunki przygotujemy korzystając z tych rzeczy:
+Chrome dla dla naszej Fortunki przygotujemy korzystając
+z dwóch frameworków i tych trzech gemów:
 
 * [Bootstrap](http://getbootstrap.com/), Rails:
   - [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
@@ -60,7 +61,9 @@ katalogu z wygenerowanym rusztowaniem:
     :::ruby Gemfile
     gem 'therubyracer', '~> 0.12.1'
     gem 'less-rails-bootstrap', '~> 3.1.1'
-    gem 'bootstrap_form', '~> 2.0.1'
+    # pobieramy ostatnią wersja z repo; dlaczego?
+    gem 'bootstrap_form', github: 'bootstrap-ruby/rails-bootstrap-forms'
+    gem 'faker', '~> 1.2.0'
     gem 'quiet_assets', '~> 1.0.2'
 
 i usuwamy z niego gem *sass-rails*.
@@ -82,59 +85,114 @@ linijki z *require* z plku README powyżej.
     rails generate scaffold fortune quotation:text source:string
     rake db:migrate
 
-4\. Zmieniamy wygenerowany layout na layout korzystający z frameworka
-Bootstrap.
-
-Skorzystamy z [szablonu](http://getbootstrap.com/getting-started/#examples)
+4\. Zmieniamy wygenerowany layout na layout korzystający
+z frameworka Bootstrap. Skorzystamy
+z [szablonu](http://getbootstrap.com/getting-started/#examples)
 o nazwie [starter template](http://getbootstrap.com/examples/starter-template/).
 
-
-Bootstrap, [CSS](http://getbootstrap.com/css/) – Buttons, Grid:
-
-    :::css
-    @background-color: hsl(90, 80%, 50%);
-
-    .body {
-      background: @background-color;
-    }
-
-    .quotation {
-      .make-md-column(7);
-      background: lighten(@background-color, 20%);
-    }
-
-    .source {
-      .make-md-column(2);
-      background: lighten(@background-color, 20%);
-    }
-
-Teraz możemy skorzystać z generatora *bootstrap:partial*
-(navbar, navbar-devise, carousel):
-
-    :::bash
-    rails generate bootstrap:partial navbar
-
-Wygenerowany szablon częściowy dopisujemy
-w elemencie *body* layoutu aplikacji:
+W szablonie aplikacji *application.html.erb* wymieniamy zawartość
+elementu *body* na:
 
     :::rhtml app/views/layouts/application.html.erb
     <%= render partial: 'shared/navbar' %>
+    <div class="container">
+      <div class="starter-template">
+        <%= yield %>
+      </div>
+    </div>
 
-Przy okazji ***poprawiamy wygenerowany layout***
-(można usunąć prawą kolumnę i wstawić swoje linki).
+Następnie tworzymy katalog *app/views/shared/* w którym
+tworzymy szablon częściowy *_navbar.html.erb* o zawartości:
 
-Generujemy rusztowanie (*scaffold*) dla fortunek:
+    :::rhtml app/views/shared/_navbar.html.erb
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle"
+              data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">
+            My Fortune <span class="glyphicon glyphicon-book"></span>
+          </a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="http://inf.ug.edu.pl">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-    :::bash
-    rails generate scaffold fortune quotation:text source:string
+Na koniec dopisujemy na końcu pliku *application.css* dwie reguły:
 
-Tworzymy bazę i generujemy w niej tabelkę *fortunes* –
-krótko mówiąc **migrujemy**:
+    :::css app/assets/stylesheets/application.css
+    body {
+      padding-top: 50px;
+    }
+    .starter-template {
+      padding: 40px 15px;
+    }
 
-    rake db:create
-    rake db:migrate
+5\. [Typografia](http://getbootstrap.com/css/#less-variables).
+Kilka poprawek, które zapisujemy w pliku *variables.less*:
 
-Zmieniamy routing i ustawiamy stronę startową aplikacji, dopisując
+    :::css app/assets/stylesheets/custom_bootstrap/variables.less
+    @text-color: black;
+    @font-family-sans-serif:  "DejaVu Sans", sans-serif;
+    @font-family-serif:       "DejaVu Serif", serif;
+    @font-family-monospace:   "DejaVu Sans Mono", monospace;
+    @font-family-base:        @font-family-serif;
+    @font-size-base:          18px;
+    @line-height-base:        1.44444; // 26/18
+
+6\. Poprawiamy widok *index.html.erb*. Dopisujemy klasę *table*
+do elementu *table*, klasy *btn* do odsyłaczy i ustalamy
+szerokości dwóch pierwszych kolumn tabeli:
+
+    :::rhtml
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-md-7">Quotation</th>
+          <th class="col-md-2">Source</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @fortunes.each do |fortune| %>
+        <tr>
+          <td><%= fortune.quotation %></td>
+          <td><%= fortune.source %></td>
+          <td><%= link_to 'Show', fortune, class: "btn btn-default btn-sm" %></td>
+          <td><%= link_to 'Edit', edit_fortune_path(fortune), class: "btn btn-default btn-sm"  %></td>
+          <td><%= link_to 'Destroy', fortune, method: :delete, data: { confirm: 'Are you sure?' },
+                  class: "btn btn-danger btn-sm" %></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <p><%= link_to 'New Fortune', new_fortune_path, class: "btn btn-primary btn-lg" %></p>
+
+8\. Zmieniamy widok częściowy *_form.html.erb*:
+
+    :::rhtml
+    <%= bootstrap_form_for(@fortune, style: :horizontal) do |f| %>
+      <%= f.text_area :quotation %>
+      <%= f.text_field :source %>
+      <%= f.form_group do %>
+        <%= f.submit 'New' %>
+      <% end %>
+    <% end %>
+
+9\. Zmieniamy routing. Ustawiamy stronę startową aplikacji, dopisując
 w pliku konfiguracyjnym *config/routes.rb*:
 
     :::ruby config/routes.rb
@@ -142,29 +200,7 @@ w pliku konfiguracyjnym *config/routes.rb*:
       resources :fortunes
       root to: 'fortunes#index'
 
-Powinniśmy jeszcze nadpisać wygenerowane szablony
-szablonami korzystającymi z Bootstrapa:
-
-    :::bash
-    rails generate bootstrap:themed fortunes
-
-*Uwaga:* Aby wykonać polecenie *rake* w trybie produkcyjnym
-*poprzedzamy je napisem RAILS_ENV=production*, przykładowo:
-
-    :::bash
-    RAILS_ENV=production rake db:migrate
-    RAILS_ENV=production rake db:seed
-
-Teraz już mozna sprawdzić jak to wszystko działa, uruchamiając serwer *thin*:
-
-    :::bash
-    rails server -p 3000
-
-i wchodząc na stronę:
-
-    http://localhost:3000
-
-2\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
+10\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
     :::ruby db/seeds.rb
     Fortune.create! quotation: 'I hear and I forget. I see and I remember. I do and I understand.'
@@ -177,6 +213,13 @@ Powyższe fortunki umieszczamy w bazie, wykonujac na konsoli polecenie:
     :::bash
     rake db:seed  # load the seed data from db/seeds.rb
 
+*Uwaga:* Aby wykonać polecenie *rake* w trybie produkcyjnym
+*poprzedzamy je napisem RAILS_ENV=production*, przykładowo:
+
+    :::bash
+    RAILS_ENV=production rake db:migrate
+    RAILS_ENV=production rake db:seed
+
 Powyższy kod „smells” (dlaczego?) i należy go poprawić.
 Na przykład tak jak to zrobiono tutaj
 {%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
@@ -185,82 +228,10 @@ Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
 *db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
 i ponownie uruchomić powyższe polecenie.
 
-3\. Aby poprawić nieco layout i wygląd aplikacji skorzystaliśmy
-z gemu *twitter-bootstrap-rails* ułatwiającego użycie
-frameworka [Twitter Bootstrap](http://twitter.github.com/bootstrap/)
-w aplikacjach Rails.
-
-Jak z niego korzystać opisano tutaj:
-
-* [Twitter Bootstrap for Rails 3.1 Asset Pipeline](https://github.com/seyhunak/twitter-bootstrap-rails)
-* [Twitter Bootstrap Basics](http://railscasts.com/episodes/328-twitter-bootstrap-basics?view=asciicast) –
-  screencast
-* [Customize Bootstrap](http://twitter.github.com/bootstrap/customize.html)
-* [FontAwesome](http://fortawesome.github.com/Font-Awesome/) –
-  the iconic font designed for use with Twitter Bootstrap
-
-Sam framework jest napisany w Less:
-
-* [{less}](http://lesscss.org/) – the dynamic stylesheet language
-
-Przykładowy {%= link_to "layout aplikacji", "/bootstrap/application.html.erb" %}
-korzystający z Twitter Bootstrap.
-
-4\. Kilka propozycji zmian domyślnych ustawień.
-
-Parametrów Bootstrapa:
-
-    :::css app/assets/stylesheets/bootstrap_and_overrides.css.less
-    @baseFontSize: 18px;
-    @baseLineHeight: 24px;
-
-    @navbarBackground: #8E001C;
-    @navbarBackgroundHighlight: #8E001C;
-    @navbarText: #FBF7E4;
-    @navbarLinkColor: #FBF7E4;
-
-    .navbar .brand { color: #E7E8D1; }
-
-Szablonu formularza *SimpleForm*:
-
-    :::rhtml _form.html.erb
-    <%= f.input :quotation, :input_html => { :rows => "4", :class => "span6" } %>
-    <%= f.input :source, :input_html => { :class => "span6" } %>
-
-Na pasku *navbar* umieścimy kilka ikonek z fontu *FontAwesome*:
-
-    :::rhtml app/views/shared/_navbar.html.erb
-    <div class="navbar">
-      <div class="navbar-inner">
-        <div class="container">
-          <%= link_to icon("quote-left", "Fortunes"), root_path, class: "brand" %>
-          <ul class="nav pull-right">
-            <li><%= link_to icon("home", "Tao"), "http://tao.inf.ug.edu.pl/" %></li>
-            <li><%= link_to icon("ambulance", "ASI"), "http://wbzyl.inf.ug.edu.pl/rails4/" %></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-Powyżej użyliśmy metody pomocniczej *icon*. Kod tej metody zapiszemy
-w pliku *application_helper.rb*:
-
-    :::ruby app/helpers/application_helper.rb
-    module ApplicationHelper
-      def icon(name, title="")
-        raw "<i class='icon-#{name}'></i>#{title}"
-      end
-    end
-
-Odstęp po ikonce ustawiamy w arkuszu *application.css*:
-
-    :::css
-    i[class^="icon-"] { padding-right: .5em; }
-
-I już! Wersja 0.0 Fortunki jest gotowa.
-
 
 ## I co dalej?
+
+Oczywiście należy poprawić pozostałe widoki.
 
 1\. **Walidacja**, czyli sprawdzanie poprawności (zatwierdzanie)
 danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
