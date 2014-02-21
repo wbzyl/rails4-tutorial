@@ -38,10 +38,10 @@ była Fortunką. Teraz to „English Learning Resources”.
 
 Chrome dla dla naszej Fortunki przygotujemy korzystając z tych rzeczy:
 
-* [Bootstrap](http://getbootstrap.com/) & Rails:
+* [Bootstrap](http://getbootstrap.com/), Rails:
   - [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
   - [rails-bootstrap-form](https://github.com/bootstrap-ruby/rails-bootstrap-forms)
-* [LessCSS](http://lesscss.org/) & Rails:
+* [LessCSS](http://lesscss.org/), Rails:
   - [less-rails](https://github.com/metaskills/less-rails)
 
 Zgodnie z tymi sugestiami
@@ -52,8 +52,42 @@ rozmiar fontu w akapitach zwiększymy do 18px.
 katalogu z wygenerowanym rusztowaniem:
 
     :::bash
-    rails new my_fortune --skip-bundle --
+    rails new my_fortune --skip-bundle --skip-test-unit
     cd my_fortune
+
+2\. Dopisujemy te gemy do pliku *Gemfile*:
+
+    :::ruby Gemfile
+    gem 'therubyracer', '~> 0.12.1'
+    gem 'less-rails-bootstrap', '~> 3.1.1'
+    gem 'bootstrap_form', '~> 2.0.1'
+    gem 'quiet_assets', '~> 1.0.2'
+
+i usuwamy z niego gem *sass-rails*.
+
+Instalujemy gemy i tak jak to opisano
+w [README](https://github.com/metaskills/less-rails-bootstrap) uruchamiamy
+generator *less_rails_bootstrap:custom_bootstrap*:
+
+    rails generate less_rails_bootstrap:custom_bootstrap
+      create  app/assets/stylesheets/custom_bootstrap/custom_bootstrap.less
+      create  app/assets/stylesheets/custom_bootstrap/variables.less
+      create  app/assets/stylesheets/custom_bootstrap/mixins.less
+
+i przeklikujemy do plików *application.css* i *application.css*
+linijki z *require* z plku README powyżej.
+
+3\. Dopiero teraz generujemy szablon aplikacji CRUD dla fortunek:
+
+    rails generate scaffold fortune quotation:text source:string
+    rake db:migrate
+
+4\. Zmieniamy wygenerowany layout na layout korzystający z frameworka
+Bootstrap.
+
+Skorzystamy z [szablonu](http://getbootstrap.com/getting-started/#examples)
+o nazwie [starter template](http://getbootstrap.com/examples/starter-template/).
+
 
 Bootstrap, [CSS](http://getbootstrap.com/css/) – Buttons, Grid:
 
