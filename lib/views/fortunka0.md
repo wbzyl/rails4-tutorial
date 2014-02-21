@@ -30,16 +30,19 @@ czyli krótkich cytatów.
 
 # Fortunka krok po kroku
 
-<!--
-[Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
--->
+Chrome dla Fortunki:
+
+* [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
+* [Bootstrap](http://getbootstrap.com/) & Rails:
+  - [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
+  - [rails-bootstrap-form](https://github.com/bootstrap-ruby/rails-bootstrap-forms)
+* [LessCSS](http://lesscss.org/) & Rails:
+  - [less-rails](https://github.com/metaskills/less-rails)
 
 Niektóre dane mówią, że aplikacje podobne do Fortunki
-stanowią zdecydowaną większość aplikacji WWW.
-Na przykład:
+stanowią zdecydowaną większość aplikacji WWW. Na przykład:
 
 * [Proverb Hunter](http://proverbhunter.com/)
-* …?
 
 **TODO:** Przykład bez szablony. Użyć gemu
 [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap).
