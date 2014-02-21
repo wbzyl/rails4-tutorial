@@ -11,6 +11,7 @@
 * Pierwsze aplikacje WWW – CGI ↬ PHP (≈ 2000 r.)
 * [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks)
 * [Ruby on Rails](http://rubyonrails.org/download):
+  - [API](http://api.rubyonrails.org/)
   - [Rails Guides](http://edgeguides.rubyonrails.org/)
   - Michael Hartl,
   [Ruby on Rails Tutorial](http://ruby.railstutorial.org/ruby-on-rails-tutorial-book?version=4.0) –

@@ -30,22 +30,30 @@ czyli krótkich cytatów.
 
 # Fortunka krok po kroku
 
-Chrome dla Fortunki:
+Pierwsza wersja tej aplikacji:
 
-* [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/) –
+* [Proverb Hunter](http://proverbhunter.com/)
+
+była Fortunką. Teraz to „English Learning Resources”.
+
+Chrome dla dla naszej Fortunki przygotujemy korzystając z tych rzeczy:
+
 * [Bootstrap](http://getbootstrap.com/) & Rails:
   - [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
   - [rails-bootstrap-form](https://github.com/bootstrap-ruby/rails-bootstrap-forms)
 * [LessCSS](http://lesscss.org/) & Rails:
   - [less-rails](https://github.com/metaskills/less-rails)
 
-Niektóre dane mówią, że aplikacje podobne do Fortunki
-stanowią zdecydowaną większość aplikacji WWW. Na przykład:
+Zgodnie z tymi sugestiami
+[Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/)
+rozmiar fontu w akapitach zwiększymy do 18px.
 
-* [Proverb Hunter](http://proverbhunter.com/)
+1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
+katalogu z wygenerowanym rusztowaniem:
 
-**TODO:** Przykład bez szablony. Użyć gemu
-[less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap).
+    :::bash
+    rails new my_fortune --skip-bundle --
+    cd my_fortune
 
 Bootstrap, [CSS](http://getbootstrap.com/css/) – Buttons, Grid:
 
@@ -65,17 +73,6 @@ Bootstrap, [CSS](http://getbootstrap.com/css/) – Buttons, Grid:
       .make-md-column(2);
       background: lighten(@background-color, 20%);
     }
-
-
-1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
-katalogu z wygenerowanym rusztowaniem:
-
-    :::bash
-    rails new my_fortune --template wbzyl-template-rails4.rb
-    cd my_fortune
-
-źródło {%= link_to "wbzyl-template-rails4.rb", "/doc/rails4/wbzyl-template-rails4.rb" %}
-({%= link_to "kod", "/app_templates/wbzyl-template-rails4.rb" %}).
 
 Teraz możemy skorzystać z generatora *bootstrap:partial*
 (navbar, navbar-devise, carousel):
