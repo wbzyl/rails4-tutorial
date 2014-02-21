@@ -44,9 +44,7 @@ Na przykład:
 **TODO:** Przykład bez szablony. Użyć gemu
 [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap).
 
-Bootstrap:
-
-* [CSS](http://getbootstrap.com/css/) – Buttons, Grid
+Bootstrap, [CSS](http://getbootstrap.com/css/) – Buttons, Grid:
 
     :::css
     @background-color: hsl(90, 80%, 50%);
