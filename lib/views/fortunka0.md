@@ -276,6 +276,9 @@ Zamieniamy we wszystkich widokach *price* na *price_pln*, przykładowo:
     :::rhtml _form.html.erb
     <%= f.input :price_pln %>
 
+i zamieniamy *price* na *price_pln* w definicji metody
+*book_params* w kontrolerze *books_controller.rb*.
+
 Walidacja wirtualnych atrybutów,
 zobacz [Virtual Attributes](http://railscasts.com/episodes/16-virtual-attributes-revised?view=asciicast).
 
