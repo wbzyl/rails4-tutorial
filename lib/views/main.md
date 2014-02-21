@@ -1,4 +1,4 @@
-# 15.02.2014 – zaczynamy !
+# 20.02.2014 – zaczynamy !
 
 <blockquote>
   {%= image_tag "/images/coding-horror.jpg", :alt => "[Rails for Zombies]", :width => "300" %}
