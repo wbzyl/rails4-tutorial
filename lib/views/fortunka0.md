@@ -244,7 +244,7 @@ danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
     validates :source, presence: true
 
 Zobacz też samouczek
-[Active Record Validations and Callbacks](http://edgeguides.rubyonrails.org/active_record_validations.html).
+[Active Record Validations](http://edgeguides.rubyonrails.org/active_record_validations.html).
 
 2\. **Wirtualne Atrybuty.**  Przykład: cenę książki pamiętamy
 w bazie w groszach, ale chcemy ją wypisywać i edytować w złotówkach.
