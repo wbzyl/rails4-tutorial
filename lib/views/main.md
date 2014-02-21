@@ -16,6 +16,7 @@
   - Michael Hartl,
   [Ruby on Rails Tutorial](http://ruby.railstutorial.org/ruby-on-rails-tutorial-book?version=4.0) –
   *Learn Rails by Example*
+* Potrzebne nam gemy wyszukujemy na [The Ruby Toolbox](https://www.ruby-toolbox.com/).
 * [RSpec](http://rspec.info/) – a testing tool for the Ruby programming language;
   [RSpec Rails](https://www.relishapp.com/rspec/rspec-rails/docs)
 * [Polskie forum Ruby on Rails](http://forum.rubyonrails.pl/)

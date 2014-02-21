@@ -282,10 +282,20 @@ i zamieniamy *price* na *price_pln* w definicji metody
 Walidacja wirtualnych atrybutów,
 zobacz [Virtual Attributes](http://railscasts.com/episodes/16-virtual-attributes-revised?view=asciicast).
 
-3\. Tagging (**implementacja działająca z Rails 4 ma być gotowa w maju 2013**)
+3\. Tagowanie książek.
 
 * Gem [acts-as-taggable-on](https://github.com/mbleigh/acts-as-taggable-on)
-* [Tagging](http://railscasts.com/episodes/382-tagging) – \#382 RailsCasts
+
+Instalujemy gem *acts-as-taggable-on* i instalujemy migracje:
+
+    rake acts_as_taggable_on_engine:install:migrations
+    rake db:migrate
+
+Dopisujemy do modelu *Book*:
+
+    :::ruby app/models/book.rb
+    class Book < ActiveRecord::Base
+      acts_as_taggable
 
 Przykład do przetestowania na konsoli:
 
@@ -293,9 +303,12 @@ Przykład do przetestowania na konsoli:
     book = Book.find 1
     book.tag_list
 
-    book.tag_list = "awesome, slick, hefty"
-    book.save
+    book.tag_list.add("awesome, slick, hefty")
+    book.tag_list.remove("awesome")
     book.tag_list
+    book.tag_list.add("awesomer, slicker", parse: true)
+
+    book.save
 
     Book.tagged_with "slick"
     Book.tagged_with ["slick", "hefty"]
@@ -305,17 +318,10 @@ Dodajemy listę tagów do formularza:
     :::rhtml _form.html.erb
     <%= f.input :tag_list, :label => "Tags (separated by spaces)" %>
 
-Dopisujemy w modelu:
-
-    :::ruby
-    acts_as_taggable_on :tags
-
 a na końcu pliku *application.rb* dopisujemy:
 
     :::ruby config/application.rb
     ActsAsTaggableOn.delimiter = ' ' # use space as delimiter
-
-Pozostałe rzeczy robimy tak jak to przedstawiono w screencaście.
 
 
 ## Zapisywanie przykładowych danych w bazie
