@@ -33,39 +33,38 @@ Tworzymy rusztowanie aplikacji korzystając z generatora *new*:
 
     rails new foo
 
-Podmieniamy plik *Gemfile* na taki:
+Dopisujemy grupę `:production` do *Gemfile*. Takie gemy,
+mniej więcej takie wersje, powinien zawierać plik *Gemfile*:
 
     :::ruby Gemfile
     source 'https://rubygems.org'
-    ruby '2.0.0'
 
-    gem 'rails', '4.0.0.beta1'
+    gem 'rails', '4.0.3'
 
-    gem 'jquery-rails', '2.2.1'
-    gem 'turbolinks', '1.1.0'
-    gem 'jbuilder', '1.0.2'
-
-    gem 'thin'
-
-    group :development, :test do
-      gem 'sqlite3', '1.3.7'
-      gem 'quiet_assets'
+    group :development do
+      gem 'sqlite3', '1.3.8'
     end
 
-    group :assets do
-      gem 'sass-rails',   '4.0.0.beta1'
-      gem 'coffee-rails', '4.0.0.beta1'
-      gem 'uglifier', '1.3.0'
+    gem 'sass-rails', '4.0.1'
+    gem 'uglifier', '2.1.1'
+    gem 'coffee-rails', '4.0.1'
+    gem 'jquery-rails', '3.0.4'
+    gem 'turbolinks', '1.1.1'
+    gem 'jbuilder', '1.0.2'
+
+    group :doc do
+      gem 'sdoc', '0.3.20', require: false
     end
 
     group :production do
-      gem 'pg', '0.14.1'
+      gem 'pg', '0.15.1'
+      gem 'rails_12factor', '0.0.2'
     end
 
 Dopisujemy swoje gemy i instalujemy wszystko za pomocą:
 
     :::bash
-    bundle install # --local
+    bundle install --without production # --local
 
 
 ## Wdrażanie aplikacji na Heroku
@@ -220,14 +219,14 @@ Heroku – production:
 Od razu poprawiamy w *.git/config*, to co zostało dopisane przez to polecenie:
 
     [remote "heroku"]
-	url = git@heroku.com:znajomi.git
-	fetch = +refs/heads/*:refs/remotes/heroku/*
+    url = git@heroku.com:znajomi.git
+    fetch = +refs/heads/*:refs/remotes/heroku/*
 
 na:
 
     [remote "production"]
-	url = git@heroku.com:znajomi.git
-	fetch = +refs/heads/*:refs/remotes/heroku/*
+    url = git@heroku.com:znajomi.git
+    fetch = +refs/heads/*:refs/remotes/heroku/*
 
 Wdrażamy gałąź production na *http://znajomi.heroku.com*:
 
