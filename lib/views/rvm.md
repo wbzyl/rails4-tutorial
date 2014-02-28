@@ -31,30 +31,6 @@ Podstawowe polecenia RVM:
 
     rvm docs generate           # generujemy dokumentację
 
-<!--
-
-    rvm docs generate-ri
-
-[Instalacja patchowanej wersji Ruby](http://astrails.com/blog/2012/11/13/rvm-install-patched-ruby-for-faster-rails-startup):
-
-    :::bash
-    rvm get head # uaktualnij RVM
-    ls $rvm_path/patches/ruby/1.9.3/p392
-      railsexpress
-    rvm install 1.9.3-p392 --patch railsexpress -n railsexpress
-
-Łata railsexpress przyśpiesza uruchamianie aplikacji Rails.
-Zobacz też
-[Making your ruby fly](http://alisnic.net/blog/making-your-ruby-fly/) na blogu Andrei Lisnica.
-Na przykład:
-
-    :::bash
-    time rake routes # 3.6s dla 1.9.3
-    time rake routes # 1.7s dla 1.9.3 + railsexpress
-    time rake routes # 1.9s dla 2.0.0
-
--->
-
 Podstawowe informacje o zainstalowanych wersjach:
 
     :::bash
@@ -84,13 +60,28 @@ Więcej szczegółów:
       Total Disk Usage: 3,2G
 
 
-## Zestawy gemów
+## Zestawy gemów – *gemsets*
 
 W trakcie instalacji dla każdej wersji Rubiego
 tworzone są dwa zestawy gemów (ang. *gemset*):
 
 * **default** (domyślny, bez nazwy)
 * **global**
+
+Instalacja gemów w zestawie gemów *global*:
+
+    :::bash
+    rvm @global do gem install rails sqlite3 quiet_assets rspec-rails
+
+a tak usuwamy zestaw gemów:
+
+    :::bash
+    rvm gemset delete my_places
+
+Lista zestawów gemów:
+
+    :::bash
+    rvm gemset list
 
 
 ## Rails & Bundler
