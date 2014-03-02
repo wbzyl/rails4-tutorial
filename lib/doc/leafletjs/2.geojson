@@ -1,0 +1,30 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { 
+      "type" : "Feature", 
+      "geometry" : { 
+        "type" : "Point", 
+        "coordinates" : [ 22.5142993927002, 49.6575012207031 ] 
+      }, 
+      "properties" : { 
+        "title" : "Arlamów Airport", 
+        "description" : "big_airport", 
+        "marker-size" : "medium", 
+        "marker-symbol" : "airport" 
+      } 
+    },
+    { "type" : "Feature", 
+      "geometry" : { 
+        "type" : "Point", 
+        "coordinates" : [ 19.0018997192383, 49.8050003051758 ] 
+      }, 
+      "properties" : { 
+        "title" : "Bielsko Biala Airport", 
+        "description" : "small_airport", 
+        "marker-size" : "medium", 
+        "marker-symbol" : "airport" 
+      } 
+    }
+  ]
+}
