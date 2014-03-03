@@ -606,6 +606,8 @@ Czy warto skorzystać z jakiegoś gemu?
 Do CREATE i DELETE użyć mapki.
 1. Utworzyć indeks [2dsphere](http://docs.mongodb.org/manual/core/2dsphere/).
 Natępnie dodać wyszukiwanie lotnisk.
+1. Użyć gemu [Geocoder](https://github.com/alexreisner/geocoder).
+
 
 *Wskazówki:*
 
