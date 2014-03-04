@@ -162,6 +162,7 @@ na przykład *_form.html.erb*.
 2. Zwiększyć rozmiar fontu do co najmniej 18px.
 3. W formularzu w szablonie częściowym *_form.html.erb*.
 zwiększyć wielkość elementu *textarea*.
+4. Zaimplementować [Infinite Scrolling](http://www.sitepoint.com/infinite-scrolling-rails-basics/).
 
 
 ## MyStaticPages
