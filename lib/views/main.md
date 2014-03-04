@@ -153,6 +153,8 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 
 * [The Ruby Toolbox](http://ruby-toolbox.com/) – know your options!
 * [GitHub Style Guides](https://github.com/styleguide/)
+* Greg Heileman.
+  [Web Application Architectures](https://www.coursera.org/course/webapplications)
 
 
 ## API
