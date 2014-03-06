@@ -144,10 +144,6 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 2. [Active Record Query Interface](http://guides.rubyonrails.org/active_record_querying.html).
 3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
 4. Kolejny *przewodnik* do przestudiowania wybieramy już według własnego uznania.
-5. Stefan Wintermeyer.
-   [Ruby on Rails 3.2](http://xyzpub.com/en/ruby-on-rails/3.2/) – a beginner’s guide.
-6. [Ruby on Rails for Developers](https://github.com/generalassembly/ga-ruby-on-rails-for-devs) –
-   this course teaches experienced developers Ruby and Ruby on Rails.
 
 
 ## Użyteczne linki
