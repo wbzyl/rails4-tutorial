@@ -89,10 +89,10 @@ Różne rzeczy:
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
 1. {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}.
 
-Programowanie aplikacji Rails wymaga odpowiedniego skonfigurowania
-edytora. Konfiguracja edytorów Emacs i Vi nie jest łatwa i
-zajmuje dużo czasu. Najłatwiej jest skonfigurować edytor
-{%= link_to "Sublime Text 2", "/sublime_text" %}.
+Programowanie aplikacji Ruby on Rails wymaga odpowiedniego skonfigurowania edytora.
+Konfiguracja edytora Emacs +v24.1 jest prosta: `M-x package-list-packages`,
+i z listy instalujemy pakiet [Rinari](http://rinari.rubyforge.org/Navigation.html).
+Równie prosto konfigurje się edytor {%= link_to "Sublime Text 2", "/sublime_text" %}.
 
 <!--
 
