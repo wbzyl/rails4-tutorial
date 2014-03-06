@@ -93,7 +93,7 @@ Programowanie aplikacji Ruby on Rails wymaga odpowiedniego skonfigurowania edyto
 Konfiguracja edytora Emacs w wersji co najmniej v24.1 jest prosta:
 `M-x package-list-packages` i z listy wybieramy i instalujemy pakiet
 [Rinari](http://rinari.rubyforge.org/Navigation.html).
-Równie prosto konfigurje się edytor {%= link_to "Sublime Text 2", "/sublime_text" %}.
+Równie prosto konfiguruje się edytor {%= link_to "Sublime Text 2", "/sublime_text" %}.
 
 <!--
 
