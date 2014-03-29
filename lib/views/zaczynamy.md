@@ -599,6 +599,7 @@ do pobrania z GitHuba.
 Czy warto skorzystać z jakiegoś gemu?
 
 * [leaflet-rails](https://github.com/axyjo/leaflet-rails)
+* [leaflet-providers preview](http://leaflet-extras.github.io/leaflet-providers/preview/)
 
 
 ### TODO
