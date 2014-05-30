@@ -162,6 +162,7 @@ na przykład *_form.html.erb*.
 2. Zwiększyć rozmiar fontu do co najmniej 18px.
 3. W formularzu w szablonie częściowym *_form.html.erb*.
 zwiększyć wielkość elementu *textarea*.
+4. Zaimplementować [Infinite Scrolling](http://www.sitepoint.com/infinite-scrolling-rails-basics/).
 
 
 ## MyStaticPages
@@ -598,6 +599,7 @@ do pobrania z GitHuba.
 Czy warto skorzystać z jakiegoś gemu?
 
 * [leaflet-rails](https://github.com/axyjo/leaflet-rails)
+* [leaflet-providers preview](http://leaflet-extras.github.io/leaflet-providers/preview/)
 
 
 ### TODO
@@ -606,6 +608,8 @@ Czy warto skorzystać z jakiegoś gemu?
 Do CREATE i DELETE użyć mapki.
 1. Utworzyć indeks [2dsphere](http://docs.mongodb.org/manual/core/2dsphere/).
 Natępnie dodać wyszukiwanie lotnisk.
+1. Użyć gemu [Geocoder](https://github.com/alexreisner/geocoder).
+
 
 *Wskazówki:*
 

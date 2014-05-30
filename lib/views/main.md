@@ -40,6 +40,8 @@ lub [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 
 Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
+Na Code School jest kilka fajnych darmowych samouczków, na przykład:
+[Shaping up with Angular.js](http://campus.codeschool.com/courses/shaping-up-with-angular-js/intro).
 
 Aplikacje WWW będziemy pisać w **Ruby on Rails** w wersji **4.0.3**
 i w Ruby w wersji **2.1.0**.
@@ -89,10 +91,11 @@ Różne rzeczy:
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
 1. {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}.
 
-Programowanie aplikacji Rails wymaga odpowiedniego skonfigurowania
-edytora. Konfiguracja edytorów Emacs i Vi nie jest łatwa i
-zajmuje dużo czasu. Najłatwiej jest skonfigurować edytor
-{%= link_to "Sublime Text 2", "/sublime_text" %}.
+Programowanie aplikacji Ruby on Rails wymaga odpowiedniego skonfigurowania edytora.
+Konfiguracja edytora Emacs w wersji co najmniej v24.1 jest prosta:
+`M-x package-list-packages` i z listy wybieramy i instalujemy pakiet
+[Rinari](http://rinari.rubyforge.org/Navigation.html).
+Równie prosto konfiguruje się edytor {%= link_to "Sublime Text 2", "/sublime_text" %}.
 
 <!--
 
@@ -143,16 +146,14 @@ Zaczynamy od [Rails Guides](http://guides.rails.info/):
 2. [Active Record Query Interface](http://guides.rubyonrails.org/active_record_querying.html).
 3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
 4. Kolejny *przewodnik* do przestudiowania wybieramy już według własnego uznania.
-5. Stefan Wintermeyer.
-   [Ruby on Rails 3.2](http://xyzpub.com/en/ruby-on-rails/3.2/) – a beginner’s guide.
-6. [Ruby on Rails for Developers](https://github.com/generalassembly/ga-ruby-on-rails-for-devs) –
-   this course teaches experienced developers Ruby and Ruby on Rails.
 
 
 ## Użyteczne linki
 
 * [The Ruby Toolbox](http://ruby-toolbox.com/) – know your options!
 * [GitHub Style Guides](https://github.com/styleguide/)
+* Greg Heileman.
+  [Web Application Architectures](https://www.coursera.org/course/webapplications)
 
 
 ## API

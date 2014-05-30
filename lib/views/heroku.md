@@ -7,12 +7,16 @@
  <p class="author">źródło: <a href="http://robots.thoughtbot.com/post/159805997/heroku-wearing-suspenders">Heroku handles headache</a></p>
 </blockquote>
 
+**Informacje z *Heroku Dev Center***:
+
+* [Rails 4 Asset Pipeline on Heroku](https://devcenter.heroku.com/articles/rails-4-asset-pipeline)
+* [Deploying Rails Applications With The Puma Web Server](https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server)
+
 [Heroku](http://heroku.com/) (pronounced her-OH-koo) is a cloud application platform for
 Ruby – a new way of building and deploying web apps.
 
 Swoje aplikacje Rails będziemy wdrażać na Heroku za pomocą programu *heroku*,
-który musimy najpierw zainstalować. W tym celu wchodzimy
-na stronę
+który musimy najpierw zainstalować. W tym celu wchodzimy na stronę
 
     https://toolbelt.heroku.com/
 

@@ -15,8 +15,6 @@ link do działającej na Sigmie aplikacji.
 Ostateczny termin wysłania pull request upływa **26.03.2014**.
 Na ocenę bdb aplikację należy wdrożyć na [Heroku](https://www.heroku.com/).
 
-3\. Aby uzyskać pozytywną ocenę z egzaminu należy:
-
 <blockquote>
 <p>
   Always code as if the guy who ends up maintaining your code will be
@@ -24,6 +22,13 @@ Na ocenę bdb aplikację należy wdrożyć na [Heroku](https://www.heroku.com/).
 </p>
 <p class="author">— Rick Osborne</p>
 </blockquote>
+
+3\. Wymagania dotyczące egzaminu opisane są w pliku
+*README.md* z repozytorium [ASI](https://github.com/rails4/asi).
+
+<!--
+
+3\. Aby uzyskać pozytywną ocenę z egzaminu należy:
 
 1. Wdrożyć na [Heroku](https://www.heroku.com/)
 lub [Shelly Cloud](https://shellycloud.com/)
@@ -37,6 +42,8 @@ link do repozytorium z kodem wdrożonej aplikacji i link do wdrożonej
 (i działającej) aplikacji.
 
 Ostateczny termin wysłania pull request upływa **21.05.2014**.
+
+-->
 
 Zalecane jest przygotowanie projektu w małym (2–4 osobowym) zespole.
 *Commit messages* należy pisać stosując się do wskazówek opisanych
