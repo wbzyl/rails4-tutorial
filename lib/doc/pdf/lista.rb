@@ -13,8 +13,9 @@ require "csv"
 require "pp"
 
 Prawn::Document.generate("lista.pdf") do
-  font "#{Prawn::BASEDIR}/data/fonts/DejaVuSans.ttf"
-  font_size 10
+  # font "#{Prawn::BASEDIR}/data/fonts/DejaVuSans.ttf"
+  font "/usr/share/fonts/dejavu/DejaVuSans.ttf"
+  font_size 11
 
   if ARGV.length == 0
     puts "Usage: ruby lista.rb NAME.CSV"
@@ -24,7 +25,7 @@ Prawn::Document.generate("lista.pdf") do
     csv_file = ARGV[0]
   end
 
-  font "#{Prawn::BASEDIR}/data/fonts/DejaVuSans.ttf"
+  # font "#{Prawn::BASEDIR}/data/fonts/DejaVuSans.ttf"
 
   csv_data = open(csv_file).readlines
   body = CSV.parse(csv_data.join)
