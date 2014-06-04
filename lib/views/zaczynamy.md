@@ -54,6 +54,18 @@ Więcej szczegółów na temat MVC:
   [Essence of MVC](http://www.essenceandartifact.com/2012/12/the-essence-of-mvc.html)
 
 
+## Rails Girls
+
+* [Rails Girls Warsaw Programme](http://dotclass.org/rails-girls-warsaw-programme/)
+
+Co dalej?
+
+* Skorzystać z jednego z API z tej listy
+  [gist](https://gist.github.com/wbzyl/9989677)
+  (przykład [My Movies](https://github.com/rails4/my_movies) –
+  pokazujący o co chodzi; niestety, nieco za skomplikowany).
+
+
 ## MyGists
 
 Zaczynamy od wygenerowania rusztowanie aplikacji:
