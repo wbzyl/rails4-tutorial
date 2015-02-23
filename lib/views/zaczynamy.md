@@ -71,7 +71,7 @@ Co dalej?
 Zaczynamy od wygenerowania rusztowanie aplikacji:
 
     :::bash
-    rails new my_gists --skip-bundle --skip-test-unit
+    rails new my_gists --skip-bundle
 
 Następnie przechodzimy do katalogu z wygenerowanym kodem:
 
@@ -85,11 +85,6 @@ korzystać:
     gem 'pygments.rb'
     gem 'redcarpet'
     gem 'quiet_assets'
-
-oraz usuwamy gemy z których nie będziemy korzystać:
-
-    :::ruby Gemfile
-    gem 'sass-rails', '~> 4.0.0'
 
 Gemy instalujemy za pomocą programu *bundle*:
 
