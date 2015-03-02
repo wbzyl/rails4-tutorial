@@ -260,8 +260,8 @@ W pliku *config/routes.rb* wygenerowany kod:
 wymieniamy na:
 
     :::ruby config/routes.rb
-    match "welcome", to: "pages#welcome", via: 'get'
-    match "about",   to: "pages#about",   via: 'get'
+    get "welcome", to: "pages#welcome"
+    get "about", to: "pages#about"
 
 Przy zmienionym routingu wykonanie polecenia `rake routes` daje:
 
