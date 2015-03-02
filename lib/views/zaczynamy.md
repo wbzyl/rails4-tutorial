@@ -614,21 +614,6 @@ Często używane opcje zapisujemy w pliku  *~/.railsrc*:
 
     :::bash ~/.railsrc
     --skip-bundle
-    --skip-test-unit
-
-Zamiast ręcznej edycji pliku *Gemfile* oraz modyfikacji plików
-konfiguracyjnych możemy użyć szablonu aplikacji Rails,
-który zrobi to za nas.
-Wystarczy podać nazwę szablonu w poleceniu *rails new*:
-
-    :::bash
-    rails new my_app --template wbzyl-template.rb
-
-**TODO:**
-Taki szablon łatwo napisać samemu, na przykład
-{%= link_to "wbzyl-template.rb", "/app_templates/wbzyl-template.rb" %}
-pokazuje jakie może to być proste.
-
 
 <blockquote>
  <p>
