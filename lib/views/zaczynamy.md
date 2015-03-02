@@ -163,15 +163,6 @@ Co to są *assets*? a *partial templates* (szablony częściowe),
 na przykład *_form.html.erb*.
 
 
-### TODO
-
-1. Poprawić pozostałe widoki. Zacząć od *index.html.erb*.
-2. Zwiększyć rozmiar fontu do co najmniej 18px.
-3. W formularzu w szablonie częściowym *_form.html.erb*.
-zwiększyć wielkość elementu *textarea*.
-4. Zaimplementować [Infinite Scrolling](http://www.sitepoint.com/infinite-scrolling-rails-basics/).
-
-
 ## MyStaticPages
 
 Jak wyżej, usuwamy niepotrzebne gemy z pliku *Gemfile*
