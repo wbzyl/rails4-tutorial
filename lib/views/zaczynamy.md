@@ -275,38 +275,27 @@ adresów */welcome* i */about*.
 
 ### TODO
 
-1. Dodać stronę *todo*. Skorzystać z wtyczki jQuery
-   [Isotope](http://isotope.metafizzy.co/) ([github](https://github.com/desandro/isotope))
-   do wyświetlania na stronie *index* karteczek z rzeczami do zrobienia.
-2. Użyć [ReStructuredText](http://en.wikipedia.org/wiki/ReStructuredText).
-   Zob. też [GitHub Markup](https://github.com/github/markup),
-   gem [RbST](https://github.com/alphabetum/rbst).
-3. Użyć gemu [Carrierwave](https://github.com/carrierwaveuploader/carrierwave)
-   do wstawiania obrazków.
+Wstawić kilka obrazków na stronach *welcome* i *about*.
+Skorzystać z metody pomocniczej [`image_tag`](http://api.rubyonrails.org/).
 
 
 ## MyPlaces
 
 Generujemy szablon aplikacji:
 
-    rails new my_places --skip-bundle --skip-test-unit --skip-active-record
+    rails new my_places --skip-bundle --skip-active-record
 
 Dopisałem opcję `--skip-active-record` ponieważ będziemy
 korzystać z bazy MongoDB i gemu (drivera)
 [Mongoid](http://mongoid.org/en/mongoid/index.html).
 
-W pliku *Gemfile* usuwamy gem *sass-rails* i dopisujemy gem Mongoid:
+W pliku *Gemfile* dopisujemy gem *Mongoid*:
 
     :::ruby Gemfile
-    # gem 'mongoid', '~> 3.1.6'
-    gem 'mongoid', github: 'mongoid/mongoid'
+    gem 'mongoid', '~> 4.0.2'
+    # gem 'mongoid', github: 'mongoid/mongoid'
 
-Przy okazji dodamy pliki *.ruby-version*:
-
-    :::text .ruby-version
-    2.1.0
-
-oraz *.ruby-gemset*:
+Przy okazji dodamy plik *.ruby-gemset*:
 
     :::text .ruby-gemset
     my_places
