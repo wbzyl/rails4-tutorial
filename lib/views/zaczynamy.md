@@ -171,7 +171,7 @@ dodajemy gemy z których będziemy korzystać.
 Następnie generujemy rusztowanie aplikacji:
 
     :::bash
-    rails new my_static_pages --skip-bundle --skip-test-unit
+    rails new my_static_pages --skip-bundle
     cd my_static_pages
     bundle install --local
 
