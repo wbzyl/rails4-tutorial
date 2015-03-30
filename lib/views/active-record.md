@@ -74,7 +74,7 @@ Następnie, na potrzeby przykładów z tego wykładu, utworzymy zestaw
 gemów o nazwie *active_record*:
 
     :::bash
-    rvm use --create ruby-2.0.0-p0@active_record
+    rvm use --create ruby-2.2.1@active_record
     rvm current
     gem update
     gem install rails --pre
@@ -96,7 +96,7 @@ Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.ruby
 Generujemy przykładową aplikację:
 
     :::bash
-    rvm use ruby-2.0.0-p0@active_record
+    rvm use ruby-2.2.1@active_record
     rvm current
 
     rails new why_associations --skip-bundle
