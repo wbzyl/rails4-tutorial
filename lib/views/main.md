@@ -122,12 +122,6 @@ TODO:
 1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
 -->
 
-
-## Laboratoria
-
-* {%= link_to "Zadania", "/zadania" %}
-
-
 <blockquote>
   <p>
     Jeden z wykładowców powiedział mi, że człowiek

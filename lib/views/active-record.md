@@ -74,7 +74,7 @@ Następnie, na potrzeby przykładów z tego wykładu, utworzymy zestaw
 gemów o nazwie *active_record*:
 
     :::bash
-    rvm use --create ruby-2.0.0-p0@active_record
+    rvm use --create ruby-2.2.1@active_record
     rvm current
     gem update
     gem install rails --pre
@@ -96,7 +96,7 @@ Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.ruby
 Generujemy przykładową aplikację:
 
     :::bash
-    rvm use ruby-2.0.0-p0@active_record
+    rvm use ruby-2.2.1@active_record
     rvm current
 
     rails new why_associations --skip-bundle
@@ -115,7 +115,7 @@ Skorzystamy z generatora do wygenerowania kodu dla dwóch modeli:
 * *Order* (zamówienie) – atrybuty: *order_date*, *order_number* …
 
 Każdy klient może mieć wiele zamówień. Każde zamówienie
-należy do jednego kilenta. Dlatego między kilentami i zamówieniami
+należy do jednego klienta. Dlatego między klientami i zamówieniami
 mamy powiązanie jeden do wielu. Oznacza to, że powinniśmy dodać
 jeszcze jeden atrybut (*foreign key*) do zamówień:
 
@@ -191,7 +191,7 @@ tworzenie nowych zamówień dla danego klienta jest łatwiejsze:
     @order = @customer.orders.create order_date: Time.now, order_number: '20111003/3'
     @order = @customer.orders.create order_date: Time.now, order_number: '20111003/4'
 
-Usunięcie kilenta wraz z wszystkimi jego zamówieniami jest też proste:
+Usunięcie klienta wraz z wszystkimi jego zamówieniami jest też proste:
 
     :::ruby
     @customer = Customer.first  # jakiś klient
@@ -655,7 +655,7 @@ Dwóch klientów jednocześnie kupuje po 8 laptopów Eee PC 1000:
     Cart.create name: 'Laptop Eee PC 1000', quantity: 8
     Cart.create name: 'Laptop Eee PC 1000', quantity: 8
 
-Oczywiście, po tym jak pierwszy kilent dodał 8 laptopów do swojego
+Oczywiście, po tym jak pierwszy klient dodał 8 laptopów do swojego
 koszyka, zabraknie 6 laptopów dla drugiego klienta.
 Dlatego, drugi klient powinien poczekać aż zostanie uaktualniony
 stan magazynu.

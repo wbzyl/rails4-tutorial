@@ -54,12 +54,24 @@ Więcej szczegółów na temat MVC:
   [Essence of MVC](http://www.essenceandartifact.com/2012/12/the-essence-of-mvc.html)
 
 
+## Rails Girls
+
+* [Rails Girls Warsaw Programme](http://dotclass.org/rails-girls-warsaw-programme/)
+
+Co dalej?
+
+* Skorzystać z jednego z API z tej listy
+  [gist](https://gist.github.com/wbzyl/9989677)
+  (przykład [My Movies](https://github.com/rails4/my_movies) –
+  pokazujący o co chodzi; niestety, nieco za skomplikowany).
+
+
 ## MyGists
 
 Zaczynamy od wygenerowania rusztowanie aplikacji:
 
     :::bash
-    rails new my_gists --skip-bundle --skip-test-unit
+    rails new my_gists --skip-bundle
 
 Następnie przechodzimy do katalogu z wygenerowanym kodem:
 
@@ -73,11 +85,6 @@ korzystać:
     gem 'pygments.rb'
     gem 'redcarpet'
     gem 'quiet_assets'
-
-oraz usuwamy gemy z których nie będziemy korzystać:
-
-    :::ruby Gemfile
-    gem 'sass-rails', '~> 4.0.0'
 
 Gemy instalujemy za pomocą programu *bundle*:
 
@@ -156,15 +163,6 @@ Co to są *assets*? a *partial templates* (szablony częściowe),
 na przykład *_form.html.erb*.
 
 
-### TODO
-
-1. Poprawić pozostałe widoki. Zacząć od *index.html.erb*.
-2. Zwiększyć rozmiar fontu do co najmniej 18px.
-3. W formularzu w szablonie częściowym *_form.html.erb*.
-zwiększyć wielkość elementu *textarea*.
-4. Zaimplementować [Infinite Scrolling](http://www.sitepoint.com/infinite-scrolling-rails-basics/).
-
-
 ## MyStaticPages
 
 Jak wyżej, usuwamy niepotrzebne gemy z pliku *Gemfile*
@@ -173,7 +171,7 @@ dodajemy gemy z których będziemy korzystać.
 Następnie generujemy rusztowanie aplikacji:
 
     :::bash
-    rails new my_static_pages --skip-bundle --skip-test-unit
+    rails new my_static_pages --skip-bundle
     cd my_static_pages
     bundle install --local
 
@@ -262,8 +260,8 @@ W pliku *config/routes.rb* wygenerowany kod:
 wymieniamy na:
 
     :::ruby config/routes.rb
-    match "welcome", to: "pages#welcome", via: 'get'
-    match "about",   to: "pages#about",   via: 'get'
+    get "welcome", to: "pages#welcome"
+    get "about", to: "pages#about"
 
 Przy zmienionym routingu wykonanie polecenia `rake routes` daje:
 
@@ -277,38 +275,27 @@ adresów */welcome* i */about*.
 
 ### TODO
 
-1. Dodać stronę *todo*. Skorzystać z wtyczki jQuery
-   [Isotope](http://isotope.metafizzy.co/) ([github](https://github.com/desandro/isotope))
-   do wyświetlania na stronie *index* karteczek z rzeczami do zrobienia.
-2. Użyć [ReStructuredText](http://en.wikipedia.org/wiki/ReStructuredText).
-   Zob. też [GitHub Markup](https://github.com/github/markup),
-   gem [RbST](https://github.com/alphabetum/rbst).
-3. Użyć gemu [Carrierwave](https://github.com/carrierwaveuploader/carrierwave)
-   do wstawiania obrazków.
+Wstawić kilka obrazków na stronach *welcome* i *about*.
+Skorzystać z metody pomocniczej [`image_tag`](http://api.rubyonrails.org/).
 
 
 ## MyPlaces
 
 Generujemy szablon aplikacji:
 
-    rails new my_places --skip-bundle --skip-test-unit --skip-active-record
+    rails new my_places --skip-bundle --skip-active-record
 
 Dopisałem opcję `--skip-active-record` ponieważ będziemy
 korzystać z bazy MongoDB i gemu (drivera)
 [Mongoid](http://mongoid.org/en/mongoid/index.html).
 
-W pliku *Gemfile* usuwamy gem *sass-rails* i dopisujemy gem Mongoid:
+W pliku *Gemfile* dopisujemy gem *Mongoid*:
 
     :::ruby Gemfile
-    # gem 'mongoid', '~> 3.1.6'
-    gem 'mongoid', github: 'mongoid/mongoid'
+    gem 'mongoid', '~> 4.0.2'
+    # gem 'mongoid', github: 'mongoid/mongoid'
 
-Przy okazji dodamy pliki *.ruby-version*:
-
-    :::text .ruby-version
-    2.1.0
-
-oraz *.ruby-gemset*:
+Przy okazji dodamy plik *.ruby-gemset*:
 
     :::text .ruby-gemset
     my_places
@@ -627,21 +614,6 @@ Często używane opcje zapisujemy w pliku  *~/.railsrc*:
 
     :::bash ~/.railsrc
     --skip-bundle
-    --skip-test-unit
-
-Zamiast ręcznej edycji pliku *Gemfile* oraz modyfikacji plików
-konfiguracyjnych możemy użyć szablonu aplikacji Rails,
-który zrobi to za nas.
-Wystarczy podać nazwę szablonu w poleceniu *rails new*:
-
-    :::bash
-    rails new my_app --template wbzyl-template.rb
-
-**TODO:**
-Taki szablon łatwo napisać samemu, na przykład
-{%= link_to "wbzyl-template.rb", "/app_templates/wbzyl-template.rb" %}
-pokazuje jakie może to być proste.
-
 
 <blockquote>
  <p>
