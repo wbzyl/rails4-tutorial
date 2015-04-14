@@ -30,6 +30,9 @@ Na przykład
     gem install bundler rails
     rvm use ruby-2.2.1
 
+lub to samo, ale krócej:
+
+    rvm @global do gem update
 
 ## Gemy & Bundler
 
