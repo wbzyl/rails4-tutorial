@@ -41,7 +41,7 @@ Prawn::Document.generate("lista.pdf") do
     row += [" ", " "]
   end
 
-  counted.unshift ["0", "Bzyl", "Włodzimierz", "wbzyl/trekking.git", ""]
+  # counted.unshift ["0", "Bzyl", "Włodzimierz", "wbzyl/trekking.git", ""]
   # pp counted
   counted.unshift ["", nazwisko, imie, repo_url, "uwagi"]
 
