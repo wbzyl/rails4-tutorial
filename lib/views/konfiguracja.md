@@ -15,105 +15,25 @@ konsolę języka Ruby (**irb**) oraz konsolę frameworka Ruby on Rails
 (**rails console**).
 
 
-# RVM – Ruby Version Manager
-
-Dlaczego [RVM] [rvm]?
-„RVM helps ensure that all aspects of ruby are completely contained
-within user space, strongly encouraging **non-root usage**.”
-
-Podstawowe polecenia RVM:
-
-    :::bash
-    rvm install 1.9.3-p327
-    rvm --default use 1.9.3-p327
-    rvm remove --archive --gems 1.9.3-p327  # usuń też zainstalowane gemy
-
-[Instalacja patchowanej wersji Ruby](http://astrails.com/blog/2012/11/13/rvm-install-patched-ruby-for-faster-rails-startup):
-
-    :::bash
-    rvm get head
-    rvm install 1.9.3-p286 --patch falcon -n falcon
-    ls $rvm_path/patches/ruby/1.9.3/*/*falcon* | sort
-
-Falcon przyśpiesza uruchamianie aplikacji Rails. Zobacz też:
-
-* [Safe CFLAGS](http://en.gentoo-wiki.com/wiki/Safe_Cflags) na Gentoo wiki
-* [Making your ruby fly](http://alisnic.net/blog/making-your-ruby-fly/) na blogu Andrei Lisnica
-
-Info:
-
-    rvm list
-    rvm use 1.9.3-falcon
-    rvm current
-
-Więcej szczegółów:
-
-    :::bash
-    rvm env
-    ruby -v
-    which ruby
-    rvm disk-usage all
-      Downloaded Archives Usage: 4,0K
-      Extracted Source Code Usage: 4,0K
-      Log Files Usage: 4,0K
-      Rubies Usage: 96M
-      Gemsets Usage: 306M
-      Total Disk Usage: 404M
-
-Na koniec ustawiamy domyślną wersję Ruby:
-
-    :::bash
-    rvm use 1.9.2 --default
-
-Po instalacji w ścieżce *PATH* powinny pojawić się katalogi:
-
-    echo $PATH
-    ...
-    HOME/.rvm/gems/ruby-1.9.2-p180/bin:
-    HOME/.rvm/gems/ruby-1.9.2-p180@global/bin:
-    HOME/.rvm/rubies/ruby-1.9.2-p180/bin:
-    HOME/.rvm/bin:
-    ...
-
-Dla każdego projektu rails powinniśmy w katalogu głównym aplikacji
-umieścić plik *.rvmrc*, na przykład:
-
-    rvm use ruby-1.9.2-p180
-
-Więcej o konfiguracji:
-
-* Ryan McGeary.
-  [“Vendor Everything” Still Applies](http://ryan.mcgeary.org/2011/02/09/vendor-everything-still-applies/)
-* Jérémy Lecour.
-  [„Advice on using Ruby, RVM, Passenger, Rails, Bundler, … in development”](http://jeremy.wordpress.com/2010/08/19/ruby-rvm-passenger-rails-bundler-in-development/).
-* Wayne E. Segui.
-  [RVM: Ruby Version Manager – rvmrc](http://rvm.beginrescueend.com/workflow/rvmrc/).
-* Balazs Nagy. [Vendoring gems with style](http://blog.js.hu/2011/05/18/vendoring-gems-with-style/) –
-  z bloga warto zapamiętać te polecenia:
-
-        bundle exec gem install bundler
-        bundle show bundler
-
-
 ## Zestawy gemów
 
-W trakcie instalacji dla każdej wersji Rubiego
-tworzone są dwa zestawy gemów (ang. *gemset*):
+W trakcie instalacji dla każdej wersji Rubiego tworzone są dwa zestawy gemów
+(ang. *gemset*):
 
 * **default** (domyślny, bez nazwy)
 * **global**
 
-Do zestawu **global** dodajemy gemy używane
-we wszystkich projektach. Na przykład
+Do zestawu **global** dodajemy gemy używane we wszystkich projektach.
+Na przykład
 
-    rvm use ruby-1.9.2-p180@global
+    rvm use ruby-2.2.1@global
     gem install bundler rails
-    rvm use ruby-1.9.2-p180
+    rvm use ruby-2.2.1
 
 
 ## Gemy & Bundler
 
-Gemy instalujemy w swoim katalogu domowym:
+Zazwyczaj gemy instalujemy w swoim katalogu domowym:
 
     :::bash
     bundle install --path=$HOME/.gems
@@ -126,56 +46,6 @@ albo dla każdej aplikacji osobno:
 Od tej chwili, polecenie *bundle* będzie instalować gemy w podanej lokalizacji.
 
 
-# „Multi-User install” RVM na Sigmie
-
-Po zastosowaniu powyższej konfiguracji do Sigmy
-obserwujemy, że wszystkie polecenia działają **bardzo, bardzo wolno**.
-Jaki jest tego powód łatwo stwierdzić, wykonując polecenia:
-
-    :::bash
-    strace rails new slow
-    cd slow
-    strace rails server
-
-Uruchomienie aplikacji Rails to wczytanie około 2000 plików.
-Ponieważ Ruby nie jest „demonem szybkości” ładowania plików,
-więc zajmuje to zwykle co najmniej kilkanaście sekund.
-
-Daltego postąpimy inaczej.
-Zaczyniemy od usunięcia pozostałości po „single-user installation”:
-
-    :::bash
-    rm -f $HOME/.rvm $HOME/.rvmrc
-
-Następnie wykonamy polecenie:
-
-    sudo bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
-
-Zostanie utworzona grupa *rvm*, oraz do plików startowych dodana jest
-ścieżka do programu katalogu */usr/local/rvm/bin*.
-
-Teraz instalujemy ostatnią stabilną wersję 1.9.2 programu *ruby** (wrzesień 2011):
-
-    rvm install ruby-1.9.2-p290
-
-*Uwaga:* dodajemy siebie do grupy *rvm*:
-
-    sudo gpasswd --add wbzyl rvm
-
-Podstawowe gemy instalujemy, korzystając ze skryptu *rvmsudo*:
-
-    rvm use ruby-1.9.2-p290 --default
-    rvm use ruby-1.9.2-p290@global
-    gem install rake bundler rails sqlite3 pg wirble hirb
-    rvm use ruby-1.9.2-p290
-
-*Uwaga:* szkielet aplikacji Rails tworzymy w następujący sposób:
-
-    rails new hello_rails --skip-bundle
-    cd hello_rails
-    bundle install $HOME/.gems
-
-
 # Konfiguracja konsoli
 
 Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
@@ -183,7 +53,6 @@ Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
     :::ruby ~/.irbrc
     require 'irb/completion'
     require 'irb/ext/save-history'
-
     IRB.conf[:SAVE_HISTORY] = 1000
     IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
     IRB.conf[:PROMPT_MODE] = :SIMPLE
@@ -191,19 +60,16 @@ Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
     # remove the SQL logging
     # ActiveRecord::Base.logger.level = 1 if defined? ActiveRecord::Base
 
-    # an easy way to display the YAML representation of objects
-    def y(obj)
-      puts obj.to_yaml
-    end
-
+    # DO NOT WORK
     # break out of the Bundler jail
     # from https://github.com/ConradIrwin/pry-debundle/blob/master/lib/pry-debundle.rb
-    if defined? Bundler
-      Gem.post_reset_hooks.reject! { |hook| hook.source_location.first =~ %r{/bundler/} }
-      Gem::Specification.reset
-      load 'rubygems/custom_require.rb'
-    end
+    # if defined? Bundler
+    #  Gem.post_reset_hooks.reject! { |hook| hook.source_location.first =~ %r{/bundler/} }
+    #  Gem::Specification.reset
+    #  load 'rubygems/custom_require.rb'
+    # end
 
+    # gem hirb musimy dopisać do pliku Gemfile
     if defined? Rails
       begin
         require 'hirb'
@@ -215,8 +81,7 @@ Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
 oraz gemów:
 
     :::ruby ~/.gemrc
-    ---
-    gem: --no-rdoc
+    gem: --no-rdoc --no-ri
     :verbose: true
     :benchmark: false
 
