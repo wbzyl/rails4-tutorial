@@ -63,16 +63,10 @@ Oto moja konfiguracja konsoli (dla Ruby i dla Rails):
     # remove the SQL logging
     # ActiveRecord::Base.logger.level = 1 if defined? ActiveRecord::Base
 
-    # DO NOT WORK
     # break out of the Bundler jail
     # from https://github.com/ConradIrwin/pry-debundle/blob/master/lib/pry-debundle.rb
-    # if defined? Bundler
-    #  Gem.post_reset_hooks.reject! { |hook| hook.source_location.first =~ %r{/bundler/} }
-    #  Gem::Specification.reset
-    #  load 'rubygems/custom_require.rb'
-    # end
 
-    # gem hirb musimy dopisać do pliku Gemfile
+    # add hirb gem to Gemfile
     if defined? Rails
       begin
         require 'hirb'
