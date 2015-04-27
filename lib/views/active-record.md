@@ -663,7 +663,7 @@ stan magazynu.
 Możemy to zaprogramować korzystając z transakcji i wyjątków:
 
     :::ruby
-    cart = Cart.create name: 'Laptop Eee PC 1000', quantity: -20
+    cart = Cart.create name: 'Laptop Eee PC 1000', quantity: 20
 
     begin
       # Cart.transaction do
