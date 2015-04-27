@@ -43,8 +43,8 @@ Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 Na Code School jest kilka fajnych darmowych samouczków, na przykład:
 [Shaping up with Angular.js](http://campus.codeschool.com/courses/shaping-up-with-angular-js/intro).
 
-Aplikacje WWW będziemy pisać w **Ruby on Rails** w wersji **4.0.3**
-i w Ruby w wersji **2.1.0**.
+Aplikacje WWW będziemy pisać w **Ruby on Rails** w wersji **4.2.1**
+i w Ruby w wersji **2.2.1**.
 
 *Uwaga:* Przed utworzeniem pierwszego repozytorium Git
 na swoim komputerze należy podać Gitowi swoje dane.
