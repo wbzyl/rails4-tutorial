@@ -373,8 +373,7 @@ Możemy też dodać na stronie *index.html.erb* link:
 
     :::rhtml
     <p>Pobierz:
-      <%= link_to "CSV", fortunes_path(format: "csv") %> |
-      <%= link_to "Excel", fortunes_path(format: "xls") %>
+      <%= link_to "Export to CSV", fortunes_path(format: "csv") %> |
     </p>
 
 i kliknąć go.
