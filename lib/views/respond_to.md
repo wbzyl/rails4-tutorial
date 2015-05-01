@@ -471,7 +471,7 @@ Teraz po usunięciu szablonu *show.html.erb*:
     :::bash
     rm app/views/fortunes/show.html.erb
 
-i utworzeniu szablonu *show.html.md*, na przykład:
+i utworzeniu szablonu *show.html.md*, na przykład takiego:
 
     :::rhtml app/views/fortunes/show.html.md
     <%- model_class = Fortune -%>
