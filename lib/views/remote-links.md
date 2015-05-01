@@ -112,24 +112,26 @@ Skąd się wzięła liczba `1`?
 
 ## ☢ Usuwanie rekordu via *format.json*
 
-Zmienimay kod linku w  pliku *index.html.erb* na:
+Zmieniamy kod linka w pliku *index.html.erb* na:
 
     :::rhtml
     <%= link_to 'Destroy', fortune,
-       confirm: 'Are you sure?',
-       method: :delete,
-       remote: true,
-       data: { type: :json } %>
+      method: :delete,
+      data: {
+        confirm: 'Are you sure?',
+        type: :json
+      },
+      remote: true %>
 
 Wygenerowany kod HTML:
 
     :::rhtml
     <a href="/fortunes/1"
-       data-confirm="Are you sure?"
-       data-method="delete"
-       data-remote="true"
-       data-type="json"
-       rel="nofollow">Destroy</a>
+      data-confirm="Are you sure?"
+      data-method="delete"
+      data-remote="true"
+      data-type="json"
+      rel="nofollow">Destroy</a>
 
 Jak to działa? Firefoks, Firebug, zakładka Sieć / XHR, gdzie sprawdzamy
 nagłówki zapytania i odpowiedzi.
