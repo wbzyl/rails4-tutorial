@@ -8,25 +8,28 @@
 <!-- * Przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links). -->
 
 Do eksperymentów z *remote links* użyjemy aplikacji
-[Fortunka](http://sharp-ocean-6085.herokuapp.com/) wdrożonej
-na Heroku na poprzednim wykładzie:
+[Fortunka v0.0](https://github.com/rails4/my_fortune0) wdrożonej
+na Heroku na jednym z poprzednich wykładów:
+
+https://github.com/rails4/my_fortune0
 
     :::bash
-    git clone git://github.com/wbzyl/my_fortunes_4.x.git
-    cd my_fortunes_4.x
+    git clone git@github.com:rails4/my_fortune0.git
+    cd my_fortune0
     rake db:create
-    rake db:migrate # aplikacja korzysta z bazy SQLite?
+    rake db:migrate # aplikacja korzysta z bazy SQLite
     rake db:seed
 
-Dodajemy *tracking branch*:
+Eksperymenty przeprowadzimy na osobnej gałęzi:
 
     :::bash
-    git checkout --track origin/remote-links
-    git pull
+    git checkout mime_types
+    git checkout remote_links
+    git push origin remote_links
 
 Eksperymenty na konsoli będą przyjemniejsze jeśli usuniemy
 zabezpieczenie CSRF. Można tego nie robić, ale wtedy zamiast jednego
-polecenia na konsoli trzeba bedzie ich wykonac kilka.
+polecenia na konsoli trzeba będzie ich wykonać kilka.
 
 ## ☯ program curl jest cool
 
