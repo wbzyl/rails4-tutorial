@@ -475,131 +475,20 @@ i utworzeniu szablonu *show.html.md*, na przykład:
 
     :::rhtml app/views/fortunes/show.html.md
     <%- model_class = Fortune -%>
-    # <%=t '.title', :default => model_class.model_name.human %>
+    <div id="notice" class="alert alert-success" role="alert"><%= notice %></div>
 
     <%= @fortune.quotation %>
 
     *<%= @fortune.source %>*
 
-    [<%=t '.back', :default => t("helpers.links.back") %>](<%= fortunes_path %>) |
-    [<%=t '.edit', :default => t("helpers.links.edit") %>](<%= edit_fortune_path(@fortune) %>) |
-    <%= link_to t('.destroy', default: t("helpers.links.destroy")), fortune_path(@fortune),
-      method: 'delete',
-      data: {
-        confirm: t('.confirm',
-        default: t("helpers.links.confirm",
-        default: 'Are you sure?'))
-      },
+    [Back](<%= fortunes_path %>) |
+    [Edit](<%= edit_fortune_path(@fortune) %>) |
+    <%= link_to 'Destroy', fortune_path(@fortune),
+      method: :delete, data: { confirm: 'Are you sure?' },
       class: 'btn btn-danger' %>
 
 zostanie on użyty zamiast usuniętego szablonu *.html.erb*.
 
-Zobacz też José Valim,
-[Multipart templates with Markerb](http://blog.plataformatec.com.br/2011/06/multipart-templates-with-markerb/).
+Zobacz też José Valim, [Multipart templates with Markerb](http://blog.plataformatec.com.br/2011/06/multipart-templates-with-markerb/).
 Nazwa gemu [markerb](https://github.com/plataformatec/markerb) to skrót na
 „multipart templates made easy with Markdown + ERb”.
-
-<!--
-
-Zobacz też {%= link_to "PDF Renderer", "/pdf-renderer" %}.
-
-### Migracje
-
-Aby utworzyć bazę danych o nazwie podanej w pliku
-*config/database.yml* oraz tabelę zdefiniowaną w pliku
-<i>db/migrate/2011*****_create_fortunes.rb</i>
-wykonujemy polecenie:
-
-    rake db:migrate
-
-Generator dopisał do pliku z routingiem *config/routes.rb*:
-
-    resources :fortunes
-
-Porównanie kodu kontrolera
-{%= link_to "users_controller.rb", "/rails31/scaffold/users_controller.rb" %}
-wygenerowanego za pomocą polecenia:
-
-    rails generate scaffold User login:string email:string
-
-z diagramem przedstawionym na poniższym obrazku
-([źródło](http://www.railstutorial.org/images/figures/mvc_detailed-full.png)):
-
-{%= image_tag "/images/mvc_detailed.png", :alt => "[MVC w Rails]" %}<br>
-
-pomaga „zobaczyć” jak RESTful router tłumaczy żądania na kod
-kontrolera.
-
-Zasoby REST mogą mieć różne reprezentacje, na przykład HTML, XML,
-JSON, CSV, PDF, itd.
-
-Wygenerowany kontroler obsługuje tylko dwie reprezentacje: HTML i JSON.
-Ale kiedy będziemy potrzebować dodatkowej reprezentacji danych,
-to możemy zacząć od modyfikacji powyższego kodu.
-
-Po modyfikacji otrzymamy kod który, niestety, nie będzie taki DRY jak mógłoby być.
-Prawdziwie DRY kod otrzymamy korzystając z generatorów
-*responders:install* oraz *responders_controller*
-(zawiera je gem *responders*).
-Dlaczego? Przyjrzymy się temu na wykładzie „Fortunka v1.0”.
-
-
-Jeśli nie będziemy korzystać z formatu JSON, to powinniśmy usunąć nieużywany kod
-z kontrolera. Tak będzie wyglądał odchudzony *UsersController*:
-
-    :::ruby
-    class UsersController < ApplicationController
-      # GET /users
-      def index
-        @users = User.all
-      end
-      # GET /users/1
-      def show
-        @user = User.find(params[:id])
-      end
-      # GET /users/new
-      def new
-        @user = User.new
-      end
-      # GET /users/1/edit
-      def edit
-        @user = User.find(params[:id])
-      end
-      # POST /users
-      def create
-        @user = User.new(params[:user])
-        if @user.save
-          redirect_to @user, notice: 'User was successfully created.'
-        else
-          render action: "new"
-        end
-      end
-      # PUT /users/1
-      def update
-        @user = User.find(params[:id])
-        if @user.update_attributes(params[:user])
-          redirect_to @user, notice: 'User was successfully updated.'
-        else
-          render action: "edit"
-        end
-      end
-      # DELETE /users/1
-      def destroy
-        @user = User.find(params[:id])
-        @user.destroy
-        redirect_to users_url
-      end
-    end
-
-Taka edytowanie kodu dla każdego wygenerowanego kontrolera
-byłoby męczące. Możemy tego uniknąć wstawiając do katalogu:
-
-    lib/templates/rails/scaffold_controller/
-
-swój szablon {%= link_to "controler.rb", "/rails31/scaffold/controller.erb" %}
-({%= link_to "źródło", "/doc/rails31/scaffold/controller.rb" %}).
-
-Ale zamiast edytować kod kontrolera, powinniśmy skorzystać
-z metod *respond_with* i *respond_to*.
-
--->
