@@ -36,17 +36,18 @@ Pierwsza wersja tej aplikacji:
 
 była Fortunką. Teraz to „English Learning Resources”.
 
-Chrome dla dla naszej Fortunki przygotujemy korzystając
-z dwóch frameworków i tych trzech gemów:
+Chrome dla dla naszej Fortunki przygotujemy korzystając z
+
+* [LessCSS](http://lesscss.org/), Rails:
+  - [less-rails](https://github.com/metaskills/less-rails)
+
+oraz z
 
 * [Bootstrap](http://getbootstrap.com/), Rails:
   - [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
   - [rails-bootstrap-form](https://github.com/bootstrap-ruby/rails-bootstrap-forms)
-* [LessCSS](http://lesscss.org/), Rails:
-  - [less-rails](https://github.com/metaskills/less-rails)
 
-Zgodnie z tymi sugestiami
-[Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/)
+Zgodnie z tymi sugestiami [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/)
 rozmiar fontu w akapitach zwiększymy do 18px.
 
 1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
@@ -152,7 +153,35 @@ Kilka poprawek, które zapisujemy w pliku *variables.less*:
     @font-size-base:          18px;
     @line-height-base:        1.44444; // 26/18
 
-6\. Poprawiamy widok *index.html.erb*. Dopisujemy klasę *table*
+6\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
+
+    :::ruby db/seeds.rb
+    Fortune.create! quotation: 'I hear and I forget. I see and I remember. I do and I understand.'
+    Fortune.create! quotation: 'Everything has its beauty but not everyone sees it.'
+    Fortune.create! quotation: 'It does not matter how slowly you go so long as you do not stop.'
+    Fortune.create! quotation: 'Study the past if you would define the future.'
+
+Powyższe fortunki umieszczamy w bazie, wykonujac na konsoli polecenie:
+
+    :::bash
+    rake db:seed  # load the seed data from db/seeds.rb
+
+*Uwaga:* Aby wykonać polecenie *rake* w trybie produkcyjnym
+*poprzedzamy je napisem RAILS_ENV=production*, przykładowo:
+
+    :::bash
+    RAILS_ENV=production rake db:migrate
+    RAILS_ENV=production rake db:seed
+
+Powyższy kod „smells” (dlaczego?) i należy go poprawić.
+Na przykład tak jak to zrobiono tutaj
+{%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
+
+Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
+*db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
+i ponownie uruchomić powyższe polecenie.
+
+7\. Poprawiamy widok *index.html.erb*. Dopisujemy klasę *table*
 do elementu *table*, klasy *btn* do odsyłaczy i ustalamy
 szerokości dwóch pierwszych kolumn tabeli:
 
@@ -201,36 +230,7 @@ w pliku konfiguracyjnym *config/routes.rb*:
       resources :fortunes
       root to: 'fortunes#index'
 
-10\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
-
-    :::ruby db/seeds.rb
-    Fortune.create! quotation: 'I hear and I forget. I see and I remember. I do and I understand.'
-    Fortune.create! quotation: 'Everything has its beauty but not everyone sees it.'
-    Fortune.create! quotation: 'It does not matter how slowly you go so long as you do not stop.'
-    Fortune.create! quotation: 'Study the past if you would define the future.'
-
-Powyższe fortunki umieszczamy w bazie, wykonujac na konsoli polecenie:
-
-    :::bash
-    rake db:seed  # load the seed data from db/seeds.rb
-
-*Uwaga:* Aby wykonać polecenie *rake* w trybie produkcyjnym
-*poprzedzamy je napisem RAILS_ENV=production*, przykładowo:
-
-    :::bash
-    RAILS_ENV=production rake db:migrate
-    RAILS_ENV=production rake db:seed
-
-Powyższy kod „smells” (dlaczego?) i należy go poprawić.
-Na przykład tak jak to zrobiono tutaj
-{%= link_to "seeds.rb", "/database_seed/seeds-fortunes.rb" %}.
-
-Jeśli kilka rekordów w bazie to za mało, to możemy do pliku
-*db/seeds.rb* wkleić {%= link_to "taki kod", "/database_seed/seeds.rb" %}
-i ponownie uruchomić powyższe polecenie.
-
-
-## I co dalej?
+## Co dalej?
 
 Oczywiście należy poprawić pozostałe widoki.
 
