@@ -251,7 +251,7 @@ Teraz poniższe polecenia powinny wykonać się bez błędów:
       localhost:3000/fortunes.json
     curl    -X POST \
       -H 'Content-Type: application/json' \
-      --data-urlencode 'fortune[quotation]:I hear and I forget.' \
+      --data-urlencode 'fortune[quotation]=I hear and I forget.' \
       --data-urlencode "fortune[source]=unknown" \
       localhost:3000/fortunes
 
