@@ -95,9 +95,8 @@ Wygenerowany przez scaffold link z *index.html.erb*:
 
     :::rhtml
     <%= link_to 'Destroy', fortune,
-       confirm: 'Are you sure?',
-       method: :delete %>
-
+      method: :delete,
+      data: { confirm: 'Are you sure?' } %>
 
 Przykład wygenerowanego kodu HTML:
 
