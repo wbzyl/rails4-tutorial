@@ -7,6 +7,8 @@
 # $ sudo yum install fortune-mod  # Fedora
 
 platitudes = File.readlines('/usr/share/games/fortune/platitudes.u8', "\n%\n")
+# platitudes = File.readlines(Rails.root.join('db', 'platitudes.u8'), "\n%\n")
+
 platitudes.map do |p|
   reg = /\t?(.+)\n\t\t--\s*(.*)\n%\n/m
   m = p.match(reg)

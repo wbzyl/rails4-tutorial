@@ -79,8 +79,14 @@ generator *less_rails_bootstrap:custom_bootstrap*:
       create  app/assets/stylesheets/custom_bootstrap/variables.less
       create  app/assets/stylesheets/custom_bootstrap/mixins.less
 
-i przeklikujemy do plików *application.css* i *application.css*
-linijki z *require* z plku README powyżej.
+i przeklikujemy do plików *application.css* i *application.js*
+linijki z *require* z plku README powyżej oraz
+z [README] gemu *bootstrap_form*. Przykładowo dla pliku CSS
+dopisujemy:
+
+    :::css
+    *= require custom_bootstrap/custom_bootstrap
+    *= require rails_bootstrap_forms
 
 3\. Dopiero teraz generujemy szablon aplikacji CRUD dla fortunek:
 
@@ -117,9 +123,7 @@ tworzymy szablon częściowy *_navbar.html.erb* o zawartości:
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">
-            My Fortune <span class="glyphicon glyphicon-book"></span>
-          </a>
+          <a class="navbar-brand" href="/">My Fortune</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -214,11 +218,11 @@ szerokości dwóch pierwszych kolumn tabeli:
 8\. Zmieniamy widok częściowy *_form.html.erb*:
 
     :::rhtml
-    <%= bootstrap_form_for(@fortune, style: :horizontal) do |f| %>
+    <%= bootstrap_form_for(@fortune, layout: :horizontal) do |f| %>
       <%= f.text_area :quotation %>
       <%= f.text_field :source %>
       <%= f.form_group do %>
-        <%= f.submit 'New' %>
+        <%= f.submit %>
       <% end %>
     <% end %>
 
@@ -240,7 +244,7 @@ danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
     :::ruby app/models/fortune.rb
     validates :quotation, length: {
       minimum: 8,
-      maximum: 128
+      maximum: 256
     }
     validates :source, presence: true
 
