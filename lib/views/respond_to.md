@@ -189,6 +189,8 @@ inny program, na przykład *curl*:
     :::bash
     curl -I -X GET -H 'Accept: application/json' \
         localhost:3000/fortunes/1
+    curl -H 'Accept: application/json' \
+        localhost:3000/fortunes/1
 
 
 ## Critical Ruby On Rails Security Issue
