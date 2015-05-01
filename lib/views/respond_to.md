@@ -258,6 +258,7 @@ Teraz poniższe polecenia powinny wykonać się bez błędów:
 W powyższych poleceniach zamiast `--data-urlencode`
 można użyć `--data`, lub `-d`:
 
+    :::bash
     curl -v -X POST \
       -d "fortune[quotation]=I hear and I forget" \
       -d "fortune[source]=unknown" \
