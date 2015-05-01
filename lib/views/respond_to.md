@@ -9,7 +9,7 @@
 <p class="author">— Y. Katz, R. A. Bigg</p>
 </blockquote>
 
-Poniższe polecenie, Rails 4.0.0.beta1:
+Poniższe polecenie:
 
     :::bash
     rails generate scaffold fortune \
