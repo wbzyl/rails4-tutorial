@@ -394,7 +394,7 @@ Chociaż przydałoby się dodać do powyższego kodu coś w stylu:
     end
 
 
-## I na koniec dwie uwagi
+## Na koniec dwie uwagi
 
 1\. Potrzebne nam gemy wyszukujemy na [The Ruby Toolbox](https://www.ruby-toolbox.com/).
 Tam też sprawdzamy, czy gem jest aktywnie rozwijany,
@@ -409,23 +409,12 @@ czy będzie działał z innymi gemami i wersjami Ruby, itp.
 
     IRB.conf[:SAVE_HISTORY] = 1000
     IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
-
     IRB.conf[:PROMPT_MODE] = :SIMPLE
 
     # remove the SQL logging
     # ActiveRecord::Base.logger.level = 1 if defined? ActiveRecord::Base
 
-    def y(obj)
-      puts obj.to_yaml
-    end
-
-    # break out of the Bundler jail
-    # from https://github.com/ConradIrwin/pry-debundle/blob/master/lib/pry-debundle.rb
-    if defined? Bundler
-      Gem.post_reset_hooks.reject! { |hook| hook.source_location.first =~ %r{/bundler/} }
-      Gem::Specification.reset
-    end
-
+    # add hirb gem to Gemfile
     if defined? Rails
       begin
         require 'hirb'
