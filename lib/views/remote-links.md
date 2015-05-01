@@ -126,12 +126,12 @@ Zmieniamy kod linka w pliku *index.html.erb* na:
 Wygenerowany kod HTML:
 
     :::rhtml
-    <a href="/fortunes/1"
-      data-confirm="Are you sure?"
-      data-method="delete"
-      data-remote="true"
+    <a data-confirm="Are you sure?"
       data-type="json"
-      rel="nofollow">Destroy</a>
+      data-remote="true"
+      rel="nofollow"
+      data-method="delete"
+      href="/fortunes/1">Destroy</a>
 
 Jak to działa? Firefoks, Firebug, zakładka Sieć / XHR, gdzie sprawdzamy
 nagłówki zapytania i odpowiedzi.
