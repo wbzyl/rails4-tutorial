@@ -1,6 +1,6 @@
 #### {% title "Odpowiedzi zależne od nagłówka MIME" %}
 
-blockquote>
+<blockquote>
 <p>
   While the scaffold generator is great for prototyping, it’s not so great for
   delivering simple code that is well-tested and works precisely the way we would
