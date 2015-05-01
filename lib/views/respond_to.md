@@ -417,7 +417,7 @@ będzie to oznaczać że kod zadziałał.
 Teraz podmieniamy zawartość pliku *index.csv.ruby* na:
 
     :::ruby
-    response.headers["Content-Disposition"] = 'attachment; filename="fortunes.csv"'
+    response.headers["Content-Disposition"] = "attachment; filename='fortunes-#{Date.today}.csv'"
 
     CSV.generate do |csv|
       csv << ["id", "quotation", "source"]
@@ -431,41 +431,6 @@ Teraz podmieniamy zawartość pliku *index.csv.ruby* na:
     end
 
 I jeszcze raz sprawdzamy czy to działa.
-
-*Uwaga:* W aplikacjach Rails 3 wymagana jest inicjalizacja:
-
-    :::ruby config/initializers/ruby_template_handler.rb
-    ActionView::Template.register_template_handler(:ruby, :source.to_proc)
-
-<!--
-
-W kodzie kontrolera w metodzie *index* w bloku *respond_to*:
-
-    :::ruby
-    respond_to do |format|
-      format.html
-      format.json
-      format.csv { send_data @fortunes.to_csv }
-    end
-
-    CSV.generate do |csv|
-      csv << ["nazwisko", "imię", "login", "repo", "link"]
-      @lists.each do |list|
-        login, name = list.repo.strip.sub(/^https:\/\/github.com\//, "").split("/", 2)
-        csv << [
-          list.last_name,
-          list.first_name,
-          login,
-          name
-          # list_url(list) # możemy użyć metody pomocniczej
-        ]
-      end
-    end
-
-Oczywiście w powyższym kodzie wpisujemy dane modelu z naszej aplikacji.
-Powyżej użyłem danych dla fikcyjnego modelu *List*.
-
--->
 
 
 ## Markdown via Ruby Template Handler
