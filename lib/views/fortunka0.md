@@ -59,12 +59,13 @@ katalogu z wygenerowanym rusztowaniem:
 2\. Dopisujemy te gemy do pliku *Gemfile*:
 
     :::ruby Gemfile
-    gem 'therubyracer', '~> 0.12.1'
-    gem 'less-rails-bootstrap', '~> 3.1.1'
-    # pobieramy ostatnią wersja z repo; dlaczego?
-    gem 'bootstrap_form', github: 'bootstrap-ruby/rails-bootstrap-forms'
-    gem 'faker', '~> 1.2.0'
-    gem 'quiet_assets', '~> 1.0.2'
+    gem 'therubyracer', '~> 0.12.2'
+    gem 'less-rails', '~> 2.7.0'
+    gem 'less-rails-bootstrap', '~> 3.3.4'
+    gem 'bootstrap_form', '~> 2.3.0'
+
+    gem 'faker', '~> 1.4.3'
+    gem 'quiet_assets', '~> 1.1.0'
 
 i usuwamy z niego gem *sass-rails*.
 
