@@ -11,8 +11,6 @@ Do eksperymentów z *remote links* użyjemy aplikacji
 [Fortunka v0.0](https://github.com/rails4/my_fortune0) wdrożonej
 na Heroku na jednym z poprzednich wykładów:
 
-https://github.com/rails4/my_fortune0
-
     :::bash
     git clone git@github.com:rails4/my_fortune0.git
     cd my_fortune0
@@ -33,8 +31,7 @@ polecenia na konsoli trzeba będzie ich wykonać kilka.
 
 ## ☯ program curl jest cool
 
-Po pomyślnej instalacji, dla rozruszania wykonujemy kilka poleceń
-z programem *curl*:
+Zaczniemy, dla przypomnienia, od wykonania tych poleceń:
 
     :::bash
     curl -v -X GET -H 'Accept: application/json' localhost:3000/fortunes/44
