@@ -330,7 +330,7 @@ W pliku *fortunes_controller.rb* podmieniamy kod metody
       @fortunes = Fortune.all
       respond_to do |format|
         format.html
-        format.csv { send_data Fortune.to_csv }
+        format.csv { send_data @fortunes.to_csv, filename: "fortunes-#{Date.today}.csv" }
       end
     end
 
