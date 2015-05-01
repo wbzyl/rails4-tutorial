@@ -1,6 +1,6 @@
 #### {% title "Odpowiedzi zależne od nagłówka MIME" %}
 
-<blockquote>
+blockquote>
 <p>
   While the scaffold generator is great for prototyping, it’s not so great for
   delivering simple code that is well-tested and works precisely the way we would
@@ -211,8 +211,13 @@ Oznacza, to że polecenia z *curl* i z jednym z powyższych VERB zwrócą błą
 Dlatego dla wygody,  w trakcie poniższych eksperymentów z programem *curl* (lub na
 konsoli przeglądarki) powinniśmy wykonać jedną z trzech rzeczy:
 
-1\. Usunąć zabezpieczenie CSRF z layoutu <br>
-**Niestety nie działa od 2013.04.**
+1\. Usunąć zabezpieczenie CSRF z layoutu.<br>
+**Uwaga:** Niestety to nie działa od 2013.04. Dostajemy komunikat:
+
+    curl -I -X DELETE localhost:3000/fortunes/1.json
+    HTTP/1.1 422 Unprocessable Entity
+
+Co to oznacza?
 
 2\. Dodać ten kod do kodu kontrolera
 [ApplicationController](http://edgeapi.rubyonrails.org/classes/ActionController/RequestForgeryProtection.html):
