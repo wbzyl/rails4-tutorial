@@ -101,10 +101,10 @@ Wygenerowany przez scaffold link z *index.html.erb*:
 Przykład wygenerowanego kodu HTML:
 
     :::rhtml
-    <a href="/fortunes/1"
-       data-confirm="Are you sure?"
-       data-method="delete"
-       rel="nofollow">Destroy</a>
+    <a data-confirm="Are you sure?"
+      rel="nofollow"
+      data-method="delete"
+      href="/posts/1">Destroy</a>
 
 Jak to działa? Co oznacza kod `rel="nofollow"`?
 Skąd się wzięła liczba `1`?
