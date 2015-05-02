@@ -296,7 +296,7 @@ Zobacz też dyskusję na *stack**overflow***,
 [Can Rails Routing Helpers (i.e. mymodel_path(model)) be Used in Models?](http://stackoverflow.com/questions/341143/can-rails-routing-helpers-i-e-mymodel-pathmodel-be-used-in-models).
 
 
-## Remote modal show/new/edit pages
+## TODO: Remote modal show/new/edit pages
 
 <!-- Cały przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links).-->
 
