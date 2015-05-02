@@ -159,8 +159,8 @@ Jeśli jest to, na przykład */fortunes/4*, to na konsoli wpisujemy:
     a = r.closest("tr")
     a.effect("explode")  // ew. a.effect("explode", "slow")
 
-Wybrana fortunka powinna zniknąć ze strony.
-
+Wybrana fortunka powinna zniknąć ze strony,
+ale z bazy nie zostanie usunięta.
 
 <blockquote>
   <h2>Ściąga ze zdarzeń</h2>
@@ -194,6 +194,8 @@ Ten sam efekt uzyskamy po wklejeniu poniższego kodu do pliku
          }
       );
     });
+
+Jednak tym razem kliknięta fortunka zostanie usunięta z bazy.
 
 <!--
   * opóźnienia i interwały
