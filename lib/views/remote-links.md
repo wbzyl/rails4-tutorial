@@ -178,7 +178,7 @@ Jeśli jest to, na przykład */fortunes/4*, to na konsoli wpisujemy:
 
     :::js
     r = $("a[href='/fortunes/4']")
-    a = r.closest("article")
+    a = r.closest("tr")
     a.effect("explode")  // ew. a.effect("explode", "slow")
 
 Wybrana fortunka powinna zniknąć ze strony.
