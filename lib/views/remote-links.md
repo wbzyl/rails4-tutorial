@@ -416,7 +416,7 @@ Oto szablon EJS dla *show*:
       </div>
     </article>
 
-Ścieżke do szablonu dopisujemy do pliku *application.js*:
+Ścieżkę do szablonu dopisujemy do pliku *application.js*:
 
     :::js app/assets/javascripts/application.js
     //= require jquery
