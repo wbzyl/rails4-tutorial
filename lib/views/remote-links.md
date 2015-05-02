@@ -223,7 +223,7 @@ Zamiast niego wstawiamy plik *fortunes.js.coffee* o zawartości:
 i nazwę tego pliku dopisujemy do *application.js*.
 
 
-## TODO: Usuwanie rekordu via *format.js*
+## Usuwanie rekordu via *format.js*
 
 Zmieniony link z *index.html.erb* (z usuniętym atrybutem *data-confirm*):
 
@@ -252,7 +252,7 @@ a w logach aplikacji znajdujemy:
     (Missing template fortunes/destroy, application/destroy with
        {:locale=>[:en], :formats=>[:js, :html], :handlers=>[:erb, :builder, :coffee]}.
     Searched in: * ".../sharp-ocean-6085/app/views"):
-    app/controllers/fortunes_controller.rb:78:in `destroy'
+    app/controllers/fortunes_controller.rb:78:in destroy
 
 Oznacza to, że w katalogu *app/views* brakuje szablonu *fortunes/destroy.js.erb*.
 Tworzymy taki szablon. Na razie, aby sprawdzić czy dobrze
@@ -267,7 +267,7 @@ Powinno się pojawić okienko alert.
 Jeśli wszystko działa, wymieniamy kod na taki:
 
     :::js app/views/fortunes/destroy.js.erb
-    $('a[href="<%= @fortune_path %>"]').closest('article').effect('explode');
+    $('a[href="<%= @fortune_path %>"]').closest('tr').effect('explode');
 
 gdzie zmienną *@fortune_path* zdefiniowaliśmy w kontrolerze:
 
@@ -301,7 +301,7 @@ Zobacz też dyskusję na *stack**overflow***,
 <!-- Cały przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links).-->
 
 Co to są *modals*? Opis i demo znajdziemy w dokumentacji
-[JavaScript plugins](http://twitter.github.com/bootstrap/javascript.html#modals).
+[JavaScript plugins](http://getbootstrap.com/javascript/#modals).
 
 Spróbujemy użyć *modal windows* do uproszczenia interfejsu — Show+New+Edit.
 
