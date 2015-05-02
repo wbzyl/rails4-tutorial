@@ -133,7 +133,11 @@ Wygenerowany kod HTML:
       data-method="delete"
       href="/fortunes/1">Destroy</a>
 
-Jak to działa? Firefoks, Firebug, zakładka Sieć / XHR, gdzie sprawdzamy
+**Uwaga:** Po dodaniu `remote: true` usuwanie rekordów
+za pomocą przycisku *Destroy* nie będzie działać.
+
+Dlaczego? Jak to działa?
+Podpowiedzi: Firefoks+Firebug, zakładka Sieć / XHR, gdzie sprawdzamy
 nagłówki zapytania i odpowiedzi.
 
 Po kliknięciu przycisku „Destroy” wysyłane jest żądanie *DELETE*
