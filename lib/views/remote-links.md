@@ -298,8 +298,6 @@ Zobacz też dyskusję na *stack**overflow***,
 
 ## TODO: Remote modal show/new/edit pages
 
-<!-- Cały przykład jest [tutaj](https://github.com/wbzyl/rails31-remote-links).-->
-
 Co to są *modals*? Opis i demo znajdziemy w dokumentacji
 [JavaScript plugins](http://getbootstrap.com/javascript/#modals).
 
@@ -313,51 +311,39 @@ Możemy to sprawdzić przeklikujac do przegladarki uri poniżej:
 Powinien się pojwić kod wtyczki.
 
 Zaczniemy od bliższego przyjrzenia się okienkom modalnym
-frameworka Bootstrap. Pobieramy archiwum zip ze strony
-[Bootstrap, from Twitter](http://twitter.github.com/bootstrap/).
-Rozpakowujemy archiwum. Do utworzonego katalogu *bootstrap*
-dodajemy plik *index.html* o poniższej zawartości:
+frameworka Bootstrap:
+
+    :::bash
+    rails g controller Modals index
+
+W pliku *index.html.erb* podmieniamy wygenerowany kod na:
 
     :::html
-    <!doctype html>
-    <html>
-      <head>
-        <meta charset=utf-8>
-        <link rel="stylesheet" href="/css/bootstrap.css">
-        <script src="http://code.jquery.com/jquery.min.js"></script>
-        <script src="/js/bootstrap.js"></script>
-        <title>Bootstrap Modal Windows</title>
-      </head>
-      <body>
-        <a data-toggle="modal" href="#myModal" class="btn btn-primary btn-large">Launch demo modal</a>
-        <article id="myModal" class="modal hide fade">
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+      Trigger Modal
+    </button>
+    <div id="myModal" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
           <div class="modal-header">
-            <a class="close" data-dismiss="modal" >&times;</a>
-            <h3>Modal Heading</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Modal title</h4>
           </div>
           <div class="modal-body">
-            <p>One fine body…
+            <p>One fine body…</p>
           </div>
           <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">Close</a>
-            <a href="#" class="btn btn-primary">Save changes</a>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
           </div>
-        </article>
-      </body>
-    </html>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
-W katalogu *bootstrap* uruchamiamy na konsoli jakiś serwer
-mini stron statycznych, na przykład *serve*:
+Zmieniamy nieco routing:
 
-    :::bash konsola
-    serve
-
-*Serve* jest serwerem napisanym w NodeJS. Jeśli
-mamy zainstalowane pakiety *node* oraz *npm*
-(*Node Package Manager*), to instalujemy go tak:
-
-    :::bash konsola
-    npm install -g serve
+    :::ruby
+    get "modals", to: "modals#index"
 
 Oknem modalnym możemy też manipulować z konsoli JavaScript,
 na przykład tak:
@@ -368,7 +354,7 @@ na przykład tak:
     $('#myModal').modal('toggle')
     $('#myModal').modal('toggle')
 
-Nieco bardziej skomplikowany przykład:
+TODO: Teraz pora na nieco bardziej skomplikowany przykład:
 
     :::js
     $(function() {
