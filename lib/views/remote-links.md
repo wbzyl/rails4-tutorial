@@ -140,32 +140,6 @@ Dlaczego? Jak to działa?
 Podpowiedzi: Firefoks+Firebug, zakładka Sieć / XHR, gdzie sprawdzamy
 nagłówki zapytania i odpowiedzi.
 
-Po kliknięciu przycisku „Destroy” wysyłane jest żądanie *DELETE*
-z id klikniętej fortunki. Oto niektóre nagłówki żądania (zapytania):
-
-              Accept	application/json, text/javascript, */*; q=0.01
-     Accept-Encoding	gzip, deflate
-     Accept-Language	pl,en-us;q=0.7,en;q=0.3
-          Connection	keep-alive
-              Cookie	__utma=1118…
-                 DNT	1
-                Host	localhost:3000
-             Referer	http://localhost:3000/
-          User-Agent	Mozilla/5.0…
-        X-CSRF-Token	WijggKCspDz0...Us=
-    X-Requested-With	XMLHttpRequest
-
-Fortunka ze wskazanym id zostaje usunięta z bazy.
-Następnie wysyłana jest odpowiedź:
-
-       Cache-Control	no-cache
-          Connection	close
-              Server	thin 1.3.1 codename Triple Espresso
-          Set-Cookie	_fortunka_session=Ah7B0...D4; path=/; HttpOnly
-        X-Request-Id	3719019c35c4674a7de1b9c25e6e3368
-           X-Runtime	0.587928
-     X-UA-Compatible	IE=Edge
-
 Ale my ciągle jesteśmy na tej samej, nie zmienionej, stronie.
 Usunięta przed chwilą fortunka nadal jest wyświetlana na stronie.
 Powinniśmy ją usunąć ze strony. Jak to zrobić?
@@ -216,7 +190,7 @@ Ten sam efekt uzyskamy po wklejeniu poniższego kodu do pliku
     $(function() {
       $('a[data-type=\"json\"]').on('ajax:success',
          function(event, data, status, xhr) {
-           $(this).closest('article').effect('explode', 1000);
+           $(this).closest('tr').effect('explode', 1000);
          }
       );
     });
@@ -242,12 +216,12 @@ Zamiast niego wstawiamy plik *fortunes.js.coffee* o zawartości:
     jQuery ->
       $('a[data-type="json"]').bind 'ajax:success',
         (event, data, status, xhr) ->
-          $(this).closest('article').effect('explode', 1000)
+          $(this).closest('tr').effect('explode', 1000)
 
 i nazwę tego pliku dopisujemy do *application.js*.
 
 
-## Usuwanie rekordu via *format.js*
+## TODO: Usuwanie rekordu via *format.js*
 
 Zmieniony link z *index.html.erb* (z usuniętym atrybutem *data-confirm*):
 
