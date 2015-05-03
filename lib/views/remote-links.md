@@ -354,7 +354,10 @@ na przykład tak:
     $('#myModal').modal('toggle')
     $('#myModal').modal('toggle')
 
-TODO: Teraz pora na nieco bardziej skomplikowany przykład:
+
+# TODO, 5.05.2015
+
+O co chodzi w tym przykładzie?
 
     :::js
     $(function() {
@@ -386,9 +389,12 @@ TODO: Teraz pora na nieco bardziej skomplikowany przykład:
 
 ## Remote Show
 
-Coś prostszego?
+**TODO:* Zamiast EJS użyć ES6 Template Strings:
 
-* [Show your objects baby!](http://blog.plataformatec.com.br/tag/show_for/)
+- [Getting Literal With ES6 Template Strings](http://updates.html5rocks.com/2015/01/ES6-Template-Strings)
+- [ES6 template strings compiled to ES5](https://github.com/esnext/es6-templates)
+
+----
 
 Skorzystamy z szablonów [EJS](https://github.com/sstephenson/ruby-ejs)
 do wygenerowania zawartości okna modalnego.
@@ -416,13 +422,16 @@ Oto szablon EJS dla *show*:
       </div>
     </article>
 
+*Uwaga:*
+Jak przekazywane są zmienne do szablony jest pokazane w jednym
+z przykładów poniżej.
+
 Ścieżkę do szablonu dopisujemy do pliku *application.js*:
 
     :::js app/assets/javascripts/application.js
     //= require jquery
     //= require jquery_ujs
     //= require twitter/bootstrap
-    //= require jquery-ui-1.8.18.custom.min
     //= require templates/show
 
 W oknie modalnym dla *Show* usunąłem przycisk *Back*.
@@ -490,12 +499,10 @@ Na razie to już koniec zabaw z „remote links”.
   <p>A little inaccuracy saves a world of explanation.</p>
 </blockquote>
 
-## TODO: Remote Edit
-
-To nie powinno być trudne.
-
 
 ## Sortable List w Rails 3.2
+
+Powinno działać w Rails 4.
 
 Nieco uproszczony przykład z [Sortable List in Ruby on Rails 3 – Unobtrusive jQuery](http://webtempest.com/sortable-list-in-ruby-on-rails-3-almost-unobtrusive-jquery/).
 
@@ -787,21 +794,6 @@ w wypadku *show*.
 * [CSS Cursors](http://www.w3schools.com/cssref/playit.asp?filename=playcss_cursor&preval=default)
 * [Humane JS](https://github.com/wavded/humane-js) –
   a simple, modern, browser notification system
-
-Embedded CoffeeScript templates:
-
-* [Eco](https://github.com/sstephenson/eco) –
-  embedded CoffeeScript templates
-* [Ruby Eco](https://github.com/sstephenson/ruby-eco) –
-  a bridge to the official Eco compiler for embedded CoffeeScript templates.
-
-Instalacja:
-
-    :::bash
-    gem install coffee-script execjs therubyracer # zależności
-    gem install --pre eco-source
-    gem install eco
-
 
 <!--
 
