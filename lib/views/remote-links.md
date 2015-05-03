@@ -389,7 +389,7 @@ O co chodzi w tym przykładzie?
 
 ## Remote Show
 
-**TODO:* Zamiast EJS użyć ES6 Template Strings:
+**TODO:** Zamiast EJS użyć ES6 Template Strings:
 
 - [Getting Literal With ES6 Template Strings](http://updates.html5rocks.com/2015/01/ES6-Template-Strings)
 - [ES6 template strings compiled to ES5](https://github.com/esnext/es6-templates)
