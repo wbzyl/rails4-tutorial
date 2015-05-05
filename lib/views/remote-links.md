@@ -332,7 +332,7 @@ W pliku *index.html.erb* podmieniamy wygenerowany kod na:
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-Zmieniamy nieco routing:
+Zmieniamy wygenerowany routing na:
 
     :::ruby
     get "modals", to: "modals#index"
@@ -346,12 +346,9 @@ na przykład tak:
     $('#myModal').modal('toggle')
     $('#myModal').modal('toggle')
 
+Możemy też do pokazywania/ukrywania okien modalnych użyć przycisków:
 
-# TODO, 5.05.2015
-
-O co chodzi w tym przykładzie?
-
-    :::js
+    :::js app/assets/javascripts/application.js
     $(function() {
       // wire up the buttons to dismiss the modal when shown
       $("#myModal").bind("show", function() {
