@@ -286,7 +286,7 @@ Zobacz też dyskusję na *stack**overflow***,
 [Can Rails Routing Helpers (i.e. mymodel_path(model)) be Used in Models?](http://stackoverflow.com/questions/341143/can-rails-routing-helpers-i-e-mymodel-pathmodel-be-used-in-models).
 
 
-## Remote modal for show page
+## Modal window for show method
 
 *Uwaga:* Analogicznie możemy przygotować strony dla metod *new* i *edit*.
 
