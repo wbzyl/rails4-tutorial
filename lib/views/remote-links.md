@@ -126,12 +126,12 @@ Zmieniamy argumenty wywołania `link_to` powyżej na:
 Po wyrenderowaniu otrzymujemy taki kod HTML:
 
     :::rhtml
-    <a data-method="delete"
+    <a href="/fortunes/1"
+       data-method="delete"
        data-confirm="Are you sure?"
        data-type="json"
        data-remote="true"
-       rel="nofollow"
-       href="/fortunes/1">Destroy</a>
+       rel="nofollow">Destroy</a>
 
 **Uwaga:** Po dodaniu `remote: true` usuwanie rekordów
 za pomocą przycisku *Destroy* nie będzie działać.
@@ -267,15 +267,13 @@ Powinno się pojawić okienko alert.
 Jeśli wszystko działa, wymieniamy kod na taki:
 
     :::js app/views/fortunes/destroy.js.erb
-    $('a[href="<%= @fortune_path %>"]').closest('tr').effect('explode');
+    $('a[href="<%= fortune_path(@fortune) %>"]').closest('tr').effect('explode');
 
 gdzie zmienną *@fortune_path* zdefiniowaliśmy w kontrolerze:
 
     :::ruby
     def destroy
-      @fortune = Fortune.find(params[:id])
-      @fortune_path = Rails.application.routes.url_helpers.fortune_path(@fortune)
-
+      # @fortune = Fortune.find(params[:id])
       @fortune.destroy
       respond_to do |format|
         format.html { redirect_to fortunes_url }
@@ -283,14 +281,6 @@ gdzie zmienną *@fortune_path* zdefiniowaliśmy w kontrolerze:
         format.js   # destroy.js.erb
       end
     end
-
-Dlaczego na taki kod, a nie na inny?
-Dlaczego w pliku *destroy.js.erb* nie wpisujemy:
-
-    :::rhtml
-    <%= fortune_path(@fortune) %>
-
-tylko wyliczamy ścieżkę *fortune_path(@fortune)* w kontrolerze?
 
 Zobacz też dyskusję na *stack**overflow***,
 [Can Rails Routing Helpers (i.e. mymodel_path(model)) be Used in Models?](http://stackoverflow.com/questions/341143/can-rails-routing-helpers-i-e-mymodel-pathmodel-be-used-in-models).
