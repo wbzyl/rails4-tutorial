@@ -374,7 +374,7 @@ dowolny kod JavaScript:
 
 ## Remote Show
 
-**TODO:** Zamiast EJS użyć webComponents lub ES6 Template Strings:
+**TODO:** Zamiast EJS użyć WebComponents lub ES6 Template Strings:
 
 - [WebComponents](http://webcomponents.org/):
   - [The template element](https://html.spec.whatwg.org/multipage/scripting.html#the-template-element)
