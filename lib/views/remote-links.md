@@ -346,17 +346,18 @@ na przykład tak:
     $('#myModal').modal('toggle')
     $('#myModal').modal('toggle')
 
-Możemy też do pokazywania/ukrywania okien modalnych użyć przycisków:
+Możemy też przy okazji wykonywania show/hide/toggle wykonać
+dowolny kod JavaScript:
 
     :::js app/assets/javascripts/application.js
     $(function() {
       // wire up the buttons to dismiss the modal when shown
       $("#myModal").bind("show", function() {
-        $("#myModal a.btn").click(function(e) {
-          // do something based on which button was clicked
-          // we just log the contents of the link element for demo purposes
-          console.log("button pressed: " + $(this).html());
-          // hide the dialog box
+        $("#myModal button.btn-default").click(function(e) {
+          // do something whenever one of the buttons is clicked
+          // for demo purposes write to console the content of h4 element
+          console.log("h4: " + $(this).html());
+          // and hide the modal window
           $("#myModal").modal('hide');
         });
       });
