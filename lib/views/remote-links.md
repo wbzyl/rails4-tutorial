@@ -137,7 +137,7 @@ za pomocą przycisku *Destroy* nie będzie działać.
 Dlaczego? Podpowiedzi szukamy w zakładce Sieć / XHR
 rozszerzenia firebug dla przegladarki Firefoks.
 
-Po kliknieciu w przycisk **Destroy** powinniśmy być ciągle na tej samej,
+Po kliknięciu w przycisk **Destroy** powinniśmy być ciągle na tej samej,
 stronie (*index.html.erb*), a usunięta przed chwilą fortunka
 nadal powinna być wyświetlana.
 
