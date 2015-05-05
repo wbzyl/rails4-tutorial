@@ -384,11 +384,13 @@ dowolny kod JavaScript:
 Skorzystamy z szablonów [EJS](https://github.com/sstephenson/ruby-ejs)
 do wygenerowania zawartości okna modalnego.
 
-Do *Gemfile* dopisujemy i instalujemy ten gem:
+Instalujemy gem *ejs*:
 
     :::ruby Gemfile
-    gem 'sprockets','~> 2.0'
-    gem 'ejs', '~> 1.0.0'
+    gem 'sprockets','~> 3.0.3'
+    gem 'ejs', '~> 1.1.1'
+
+**TODO: uaktualnić wartości atrybutów w szablonie poniżej.**
 
 Oto szablon EJS dla *show*:
 
