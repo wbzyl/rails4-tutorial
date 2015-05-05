@@ -408,7 +408,7 @@ Oto szablon EJS dla *show*:
     </article>
 
 *Uwaga:*
-Jak przekazywane są zmienne do szablony jest pokazane w jednym
+Jak przekazywane są zmienne do szablonu jest pokazane w jednym
 z przykładów poniżej.
 
 Ścieżkę do szablonu dopisujemy do pliku *application.js*:
