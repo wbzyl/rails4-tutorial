@@ -126,17 +126,17 @@ Zmieniamy argumenty wywołania `link_to` powyżej na:
 Po wyrenderowaniu otrzymujemy taki kod HTML:
 
     :::rhtml
-    <a data-confirm="Are you sure?"
-      data-type="json"
-      data-remote="true"
-      rel="nofollow"
-      data-method="delete"
-      href="/fortunes/1">Destroy</a>
+    <a data-method="delete"
+       data-confirm="Are you sure?"
+       data-type="json"
+       data-remote="true"
+       rel="nofollow"
+       href="/fortunes/1">Destroy</a>
 
 **Uwaga:** Po dodaniu `remote: true` usuwanie rekordów
 za pomocą przycisku *Destroy* nie będzie działać.
 Dlaczego? Podpowiedzi szukamy w zakładce Sieć / XHR
-rozszerzenia firebug dla przegladarki Firefoks.
+rozszerzenia Firebug dla przegladarki Firefoks.
 
 Po kliknięciu w przycisk **Destroy** powinniśmy być ciągle na tej samej,
 stronie (*index.html.erb*), a usunięta przed chwilą fortunka
