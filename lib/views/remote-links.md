@@ -112,7 +112,7 @@ I skąd się wzięła liczba `1`?
 
 ## ☢ Usuwanie rekordu via *format.json*
 
-Zmieniamy kod linka w pliku *index.html.erb* na:
+Zmieniamy argumenty wywołania `link_to` powyżej na:
 
     :::rhtml
     <%= link_to 'Destroy', fortune,
@@ -123,7 +123,7 @@ Zmieniamy kod linka w pliku *index.html.erb* na:
       },
       remote: true %>
 
-Wygenerowany kod HTML:
+Po wyrenderowaniu otrzymujemy taki kod HTML:
 
     :::rhtml
     <a data-confirm="Are you sure?"
