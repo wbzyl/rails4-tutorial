@@ -61,7 +61,8 @@ Instalacja jQuery UI na skróty:
 
 ## ☢ Obsługa przycisku *Destroy*
 
-Na początek zmienimy nieco kod metody *destroy*:
+Zaczniemy od dopisania do kodu metody *destroy* kodu obsługującego format
+JavaScript:
 
     :::ruby
     # DELETE /fortunes/1
@@ -78,12 +79,13 @@ Na początek zmienimy nieco kod metody *destroy*:
       end
     end
 
-Po usunięciu fortunki, wykonywana jest
-jedna linijka kodu w bloku *respond*:
+Kiedy usuwamy fortunkę, wykonywana jest jedna linijka kodu w bloku *respond*:
 
 * *format.html*
 * *format.json*
 * *format.js*
+
+Która jest to linijka kodu? Zależy to od nagłówków żądania.
 
 
 ## ☢ Usuwanie rekordu via *format.html*
@@ -132,20 +134,20 @@ Wygenerowany kod HTML:
 
 **Uwaga:** Po dodaniu `remote: true` usuwanie rekordów
 za pomocą przycisku *Destroy* nie będzie działać.
+Dlaczego? Podpowiedzi szukamy zakładce Sieć / XHR
+rozszerzenia firebug dla przegladarki Firefoks.
 
-Dlaczego? Jak to działa?
-Podpowiedzi: Firefoks+Firebug, zakładka Sieć / XHR, gdzie sprawdzamy
-nagłówki zapytania i odpowiedzi.
+Po kliknieciu w przycisk **Destroy** powinniśmy być ciągle na tej samej,
+stronie (*index.html.erb*), a usunięta przed chwilą fortunka
+nadal powinna być wyświetlana.
 
-Ale my ciągle jesteśmy na tej samej, nie zmienionej, stronie.
-Usunięta przed chwilą fortunka nadal jest wyświetlana na stronie.
-Powinniśmy ją usunąć ze strony. Jak to zrobić?
-Do usunięcia fortunki ze strony użyjemy efektu *explode*.
+Oczywiście, powinniśmy ją usunąć ze strony. Ale jak to zrobić?
 
 
 ## Ręczna symulacja efektów na konsoli
 
-Wchodzimy na stronę główną aplikacji, gdzie otwieramy okno z konsolą
+Do usunięcia fortunki ze strony użyjemy efektu *explode*.
+W tym celu wchodzimy na stronę główną aplikacji, gdzie otwieramy okno z konsolą
 JavaScript (Chrome – Shift+Ctrl+J, Firefox+Firebug – F12).
 
 Podglądamy id pierwszej na stronie fortunki.
