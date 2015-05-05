@@ -374,12 +374,15 @@ dowolny kod JavaScript:
 
 ## Remote Show
 
-**TODO:** Zamiast EJS użyć ES6 Template Strings:
+**TODO:** Zamiast EJS użyć webComponents lub ES6 Template Strings:
 
+- [WebComponents](http://webcomponents.org/):
+  - [The template element](https://html.spec.whatwg.org/multipage/scripting.html#the-template-element)
 - [Getting Literal With ES6 Template Strings](http://updates.html5rocks.com/2015/01/ES6-Template-Strings)
 - [ES6 template strings compiled to ES5](https://github.com/esnext/es6-templates)
 
-----
+*Uwaga:* Aktualna wersja gemu *sprockets* to 3.0.3.
+Nie będzie ona działać z EJS.
 
 Skorzystamy z szablonów [EJS](https://github.com/sstephenson/ruby-ejs)
 do wygenerowania zawartości okna modalnego.
