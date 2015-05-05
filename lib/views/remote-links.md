@@ -51,15 +51,12 @@ Zaczniemy, dla przypomnienia, od wykonania tych poleceń:
 
 Eksperymenty z *remote links* będą ciekawsze jeśli
 użyjemy biblioteki [jQuery UI](http://jqueryui.com/).
-
 W przykładach poniżej skorzystamy z efektów
 [„explode”, „fade” i „highlight”](http://jqueryui.com/demos/effect/).
 
-Instalacja na skróty:
+Instalacja jQuery UI na skróty:
 
 * [jquery-ui-rails](https://github.com/joliss/jquery-ui-rails)
-
-Na razie, dostępna jest tylko jedna szara skórka – *Smoothness*.
 
 
 ## ☢ Obsługa przycisku *Destroy*
