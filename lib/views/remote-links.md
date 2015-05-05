@@ -85,7 +85,8 @@ Kiedy usuwamy fortunkę, wykonywana jest jedna linijka kodu w bloku *respond*:
 * *format.json*
 * *format.js*
 
-Która jest to linijka kodu? Zależy to od nagłówków żądania.
+Która jest to linijka kodu? Zależy to od nagłówków żądania, bądź od zapytania
+(zob. `rake routes`).
 
 
 ## ☢ Usuwanie rekordu via *format.html*
