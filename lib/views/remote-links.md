@@ -91,14 +91,14 @@ Która jest to linijka kodu? Zależy to od nagłówków żądania, bądź od zap
 
 ## ☢ Usuwanie rekordu via *format.html*
 
-Wygenerowany przez scaffold link z *index.html.erb*:
+Wygenerowany przez scaffold link z pliku *index.html.erb*:
 
     :::rhtml
     <%= link_to 'Destroy', fortune,
       method: :delete,
       data: { confirm: 'Are you sure?' } %>
 
-Przykład wygenerowanego kodu HTML:
+i wyrenderowany z niego kod HTML:
 
     :::rhtml
     <a data-confirm="Are you sure?"
