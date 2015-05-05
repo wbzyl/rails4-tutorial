@@ -134,7 +134,7 @@ Wygenerowany kod HTML:
 
 **Uwaga:** Po dodaniu `remote: true` usuwanie rekordów
 za pomocą przycisku *Destroy* nie będzie działać.
-Dlaczego? Podpowiedzi szukamy zakładce Sieć / XHR
+Dlaczego? Podpowiedzi szukamy w zakładce Sieć / XHR
 rozszerzenia firebug dla przegladarki Firefoks.
 
 Po kliknieciu w przycisk **Destroy** powinniśmy być ciągle na tej samej,
