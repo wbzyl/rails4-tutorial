@@ -61,7 +61,7 @@ Instalacja jQuery UI na skróty:
 
 ## ☢ Obsługa przycisku *Destroy*
 
-Zaczniemy od dopisania do kodu metody *destroy* kodu obsługującego format
+Zaczniemy od dopisania do metody *destroy* kodu obsługującego format
 JavaScript:
 
     :::ruby
@@ -74,8 +74,8 @@ JavaScript:
 
       respond_to do |format|
         format.html { redirect_to fortunes_url }
-        format.json { head :no_content }         #=? { render json: @fortune }
-        format.js   # destroy.js.erb
+        format.json { head :no_content }
+        format.js   # use the default template: destroy.js.erb
       end
     end
 
