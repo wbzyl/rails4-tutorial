@@ -106,8 +106,8 @@ i wyrenderowany z niego kod HTML:
       data-method="delete"
       href="/posts/1">Destroy</a>
 
-Jak to działa? Co oznacza kod `rel="nofollow"`?
-Skąd się wzięła liczba `1`?
+Jak to działa? Co oznacza `rel="nofollow"`?
+I skąd się wzięła liczba `1`?
 
 
 ## ☢ Usuwanie rekordu via *format.json*
