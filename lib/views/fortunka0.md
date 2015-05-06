@@ -28,7 +28,7 @@ czyli krótkich cytatów:
 # Fortunka krok po kroku
 
 Pierwsza wersja takiej aplikacji to [Proverb Hunter](http://proverbhunter.com/).
-Teraz aplikacja rozrosła się do „English Learning Resources”.
+Teraz ta aplikacja rozrosła się do „English Learning Resources”.
 
 Chrome, czyli wygląd, naszej Fortunki przygotujemy korzystając z
 [LessCSS](http://lesscss.org/),gemu
