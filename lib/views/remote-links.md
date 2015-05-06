@@ -482,7 +482,7 @@ Jeśli powyższy kod działa, to możemy zabrać się za podłączanie okna moda
 Remarks:
 
 - *HTE* to mój skrót na *HTML Template Element*.
-- To sanitize HTML use the ES6 Template Strings:
+- To sanitize fortunes input by users use the ES6 Template Strings:
   - [Getting Literal With ES6 Template Strings](http://updates.html5rocks.com/2015/01/ES6-Template-Strings)
   - [ES6 template strings compiled to ES5](https://github.com/esnext/es6-templates)
 
