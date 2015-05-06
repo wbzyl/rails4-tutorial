@@ -429,7 +429,10 @@ Dlatego dodamy do atrybutu *class*: **btn-show**:
     <%= link_to 'Show', fortune,
           remote: true,
           data: { type: :json },
-          class: "btn btn-default btn-sm" %>
+          class: "show btn btn-default btn-sm" %>
+
+Dopisujemy do listy *class* `show`, tak aby odróżnić przycisk *Show*
+od pozostałych przycisków, np. *Edit*.  
 
 Sprawdzamy jak działa takie remote. W tym celu wklejamy
 do *application.js* poniższy kod
@@ -437,34 +440,36 @@ do *application.js* poniższy kod
 
     :::js app/assets/javascripts/application.js
     $(function() {
-      $('a[class^=btn-default]').bind('ajax:success',
+      $('a[class^=show]').bind('ajax:success',
             function(event, data, status, xhr) {
         console.log('show button clicked');
         console.log(data);
       });
     });
 
-To działa!
+Czy ten kod działa sprawdzamy na konsoli przeglądarki.
+Po kliknięciu w przycisk *Show* powinniśmy zobaczyć wypisany JSON
+z wpisaną klikniętą fortunką.
 
-Reszta kodu:
+Jeśli powyższy kod działa, to możemy zabrać się za podłączanie okna modalnego:
 
     :::js app/assets/javascripts/application.js
     $(function() {
-      $('a[class^=btn-show]').bind('ajax:success', function(event, data, status, xhr) {
+      $('a[class^=show]').bind('ajax:success', function(event, data, status, xhr) {
         $('body').append(JST["templates/show"]({
           modal: 'fortune-modal',  // jakiś unikalny identyfikator
           id: data.id,
           quotation: data.quotation,
           source: data.source }));
-        $('#fortune-modal').on('hidden', function() {
-          $('.modal').remove();  // usuń wszystkie modals z DOM
+        $('#fortune-modal').on('hidden.bs.modal', function() {
+          $('.modal').remove();  // remove modal window from DOM
         });
-        $('#fortune-modal').modal({backdrop: "static", keyboard: true, show: true});
+        $('#fortune-modal').modal('show');
       });
 
-      $('a[class^=btn-danger]').bind('ajax:success', function(event, data, status, xhr) {
-        $(this).closest('article').effect('explode');
-      });
+      // $('a[class^=destroy]').bind('ajax:success', function(event, data, status, xhr) {
+      //   $(this).closest('article').effect('explode');
+      // });
     });
 
 
