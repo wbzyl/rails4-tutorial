@@ -383,25 +383,26 @@ napisanego w języku Ruby przez Sama Stephenson.
 Kompilator instalujemy dopisując gem *ejs* do pliku *Gemfile*
 
     :::ruby
-    gem 'sprockets','~> 3.0.3'
     gem 'ejs', '~> 1.1.1'
-
-**TODO: uaktualnić wartości atrybutów w szablonie poniżej.**
 
 Oto szablon EJS dla *show*:
 
     :::rhtml app/assets/javascripts/templates/show.jst.ejs
     <article id="<%= modal %>" class="modal hide fade">
-      <div class="modal-header">
-        <a class="close" data-dismiss="modal" >&times;</a>
-        <h3>Fortune #<%= id %></h3>
-      </div>
-      <div class="modal-body">
-        <p><%= quotation %></p>
-        <p class="source"><%= source %></p>
-      </div>
-      <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">Close</a>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h3 class="modal-title">Fortune #<%= id %></h3>
+          </div>
+          <div class="modal-body">
+            <p><%= quotation %></p>
+            <p class="source"><%= source %></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
       </div>
     </article>
 
@@ -426,17 +427,9 @@ Dlatego dodamy do atrybutu *class*: **btn-show**:
 
     :::rhtml app/views/fortunes/index.html.erb
     <%= link_to 'Show', fortune,
-      method: :get,
-      remote: true,
-      data: { type: :json },
-      class: 'btn-show btn btn-mini' %>
-    <%= link_to 'Destroy', fortune,
-      method: :delete,
-      remote: true,
-      data: { type: :json },
-      class: 'btn-danger btn btn-mini' %>
-
-**Uwaga:** wracamy do JSON-ów.
+          remote: true,
+          data: { type: :json },
+          class: "btn btn-default btn-sm" %>
 
 Sprawdzamy jak działa takie remote. W tym celu wklejamy
 do *application.js* poniższy kod
@@ -447,9 +440,6 @@ do *application.js* poniższy kod
       $('a[class^=btn-show]').bind('ajax:success', function(event, data, status, xhr) {
         console.log('show btn clicked');
         console.log(data);
-      });
-      $('a[class^=btn-danger]').bind('ajax:success', function(event, data, status, xhr) {
-        console.log('destroy btn clicked');
       });
     });
 
