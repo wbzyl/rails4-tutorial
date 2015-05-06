@@ -67,9 +67,10 @@ generator *less_rails_bootstrap:custom_bootstrap*:
       create  app/assets/stylesheets/custom_bootstrap/mixins.less
 
 i przeklikujemy do plików *application.css* i *application.js*
-linijki z *require* z plku README powyżej oraz
-z [README] gemu *bootstrap_form*. Przykładowo dla pliku CSS
-dopisujemy:
+linijki z *require* z pliku *README* powyżej oraz
+pliku *README* z gemu *bootstrap_form*.
+
+Przykładowo do pliku *application.css* dopisujemy:
 
     :::css
     *= require custom_bootstrap/custom_bootstrap
