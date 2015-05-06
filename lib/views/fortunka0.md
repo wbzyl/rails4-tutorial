@@ -18,10 +18,10 @@ w której zaimplementujemy interfejs CRUD dla
 [fortunek](http://en.wikipedia.org/wiki/Fortune_(Unix\)),
 czyli krótkich cytatów:
 
-- * **C**reate* (*insert*) — dodanie nowych danych
-- ***R**ead* (*select*) – wyświetlenie istniejących danych
-- ***U**pdate* – edycję istniejących danych
-- ***D**elete* — usuwanie istniejących danych.
+- **Create** (*insert*) — dodawanie
+- **Read** (*select*) – wyświetlanie
+- **Update** – edycja
+- **Delete** — usuwanie
 
 {%= image_tag "/images/dilbert-agile-programming.png", :alt => "[Agile Programming]" %}
 
