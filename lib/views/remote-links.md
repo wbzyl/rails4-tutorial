@@ -375,11 +375,10 @@ dowolny kod JavaScript:
 ## Remote Show + EJS
 
 *EJS* to skrót od [Embedded JavaScript Template](http://www.embeddedjs.com).
-Skorzystamy z szablonów [EJS](https://github.com/sstephenson/ruby-ejs)
-do wygenerowania zawartości okna modalnego.
-Szablony są kompilowane do kodu JavaScript przez kompilator
+Szablony EJS kompilowane są do kodu JavaScript.
+W naszej aplikacji użyjemy kompilatora
 [EJS](https://github.com/sstephenson/ruby-ejs)
-napisany w języku Ruby przez Sama Stephenson.
+napisanego w języku Ruby przez Sama Stephenson.
 
 Kompilator instalujemy dopisując gem *ejs* do pliku *Gemfile*
 
