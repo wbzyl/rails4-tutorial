@@ -229,6 +229,9 @@ w pliku konfiguracyjnym *config/routes.rb*:
 
 Oczywiście należy poprawić pozostałe widoki.
 
+
+# Różne rzeczy
+
 1\. **Walidacja**, czyli sprawdzanie poprawności (zatwierdzanie)
 danych wpisanych w formularzach. Przykład, dopisujemy w modelu:
 
