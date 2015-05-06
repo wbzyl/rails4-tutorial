@@ -393,7 +393,7 @@ Chociaż przydałoby się dodać do powyższego kodu coś w stylu:
     end
 
 
-## Na koniec dwie uwagi
+## I jeszcze dwie uwagi
 
 1\. Potrzebne nam gemy wyszukujemy na [The Ruby Toolbox](https://www.ruby-toolbox.com/).
 Tam też sprawdzamy, czy gem jest aktywnie rozwijany,
