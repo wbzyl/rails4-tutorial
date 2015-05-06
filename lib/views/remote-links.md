@@ -477,7 +477,7 @@ Jeśli powyższy kod działa, to możemy zabrać się za podłączanie okna moda
   <p>A little inaccuracy saves a world of explanation.</p>
 </blockquote>
 
-## Remote show + HTML Template Element
+## Remote show + HTE
 
 Remarks:
 
