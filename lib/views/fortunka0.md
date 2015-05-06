@@ -12,40 +12,30 @@
  </p>
 </blockquote>
 
-Po kilku szybkich przykładach przyszła pora na kompletny
-przykład – aplikację korzystającą z kilku popularnych gemów
-implementującą CRUD, czyli:
+Napisanie za pomocą Ruby on Rails prostej aplikacji CRUD jest proste.
+Poniżej zademonstruję to na przykładzie aplikacji *Fortunka*,
+w której zaimplementujemy interfejs CRUD dla
+[fortunek](http://en.wikipedia.org/wiki/Fortune_(Unix\)),
+czyli krótkich cytatów:
 
-* ***C**reate* (*insert*) — dodanie nowych danych
-* ***R**ead* (*select*) – wyświetlenie istniejących danych
-* ***U**pdate* – edycję istniejących danych
-* ***D**elete* — usuwanie istniejących danych.
-
-Tą aplikacją będzie *Fortunka* w której zaimplementujemy
-interfejs CRUD dla [fortunek](http://en.wikipedia.org/wiki/Fortune_(Unix\)),
-czyli krótkich cytatów.
-
+- * **C**reate* (*insert*) — dodanie nowych danych
+- ***R**ead* (*select*) – wyświetlenie istniejących danych
+- ***U**pdate* – edycję istniejących danych
+- ***D**elete* — usuwanie istniejących danych.
 
 {%= image_tag "/images/dilbert-agile-programming.png", :alt => "[Agile Programming]" %}
 
 # Fortunka krok po kroku
 
-Pierwsza wersja tej aplikacji:
+Pierwsza wersja takiej aplikacji to [Proverb Hunter](http://proverbhunter.com/).
+Teraz aplikacja rozrosła się do „English Learning Resources”.
 
-* [Proverb Hunter](http://proverbhunter.com/)
-
-była Fortunką. Teraz to „English Learning Resources”.
-
-Chrome dla dla naszej Fortunki przygotujemy korzystając z
-
-* [LessCSS](http://lesscss.org/), Rails:
-  - [less-rails](https://github.com/metaskills/less-rails)
-
-oraz z
-
-* [Bootstrap](http://getbootstrap.com/), Rails:
-  - [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap)
-  - [rails-bootstrap-form](https://github.com/bootstrap-ruby/rails-bootstrap-forms)
+Chrome, czyli wygląd, naszej Fortunki przygotujemy korzystając z
+[LessCSS](http://lesscss.org/),gemu
+[less-rails](https://github.com/metaskills/less-rails),
+frameworka [Bootstrap](http://getbootstrap.com/),
+[less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap) oraz
+[rails-bootstrap-form](https://github.com/bootstrap-ruby/rails-bootstrap-forms).
 
 Zgodnie z tymi sugestiami [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/)
 rozmiar fontu w akapitach zwiększymy do 18px.
