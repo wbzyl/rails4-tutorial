@@ -437,7 +437,8 @@ do *application.js* poniższy kod
 
     :::js app/assets/javascripts/application.js
     $(function() {
-      $('a[class^=btn-default]').bind('ajax:success', function(event, data, status, xhr) {
+      $('a[class^=btn-default]').bind('ajax:success',
+            function(event, data, status, xhr) {
         console.log('show button clicked');
         console.log(data);
       });
