@@ -145,8 +145,8 @@ Kilka poprawek, które zapisujemy w pliku *variables.less*:
     @font-size-base:          18px;
     @line-height-base:        1.44444; // 26/18
 
-gdzie powyżej zwiększamy rozmiar fontu w akapitach, zgodnie z sugestią,
-że [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/).
+gdzie powyżej zwiększamy rozmiar fontu w akapitach aż do 18px,
+zgodnie z sugestią, że [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/).
 
 6\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
