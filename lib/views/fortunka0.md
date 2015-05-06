@@ -37,7 +37,7 @@ frameworka [Bootstrap](http://getbootstrap.com/),
 [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap) oraz
 [rails-bootstrap-form](https://github.com/bootstrap-ruby/rails-bootstrap-forms).
 
-Zgodnie z tymi sugestiami [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/)
+Zgodnie z sugestią, że [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/)
 rozmiar fontu w akapitach zwiększymy do 18px.
 
 1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
