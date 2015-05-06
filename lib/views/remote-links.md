@@ -479,16 +479,20 @@ Jeśli powyższy kod działa, to możemy zabrać się za podłączanie okna moda
 
 ## Remote show + HTML Template Element
 
-*TODO:* To sanitize HTML use ES6 Template Strings:
+Remarks:
 
-- [Getting Literal With ES6 Template Strings](http://updates.html5rocks.com/2015/01/ES6-Template-Strings)
-- [ES6 template strings compiled to ES5](https://github.com/esnext/es6-templates)
-
+- *HTE* to mój skrót na *HTML Template Element*.
+- To sanitize HTML use the ES6 Template Strings:
+  - [Getting Literal With ES6 Template Strings](http://updates.html5rocks.com/2015/01/ES6-Template-Strings)
+  - [ES6 template strings compiled to ES5](https://github.com/esnext/es6-templates)
 
 Template Element to jedna z czterech technologii składających się na
 [WebComponents](http://webcomponents.org/):
 
 - [The template element](https://html.spec.whatwg.org/multipage/scripting.html#the-template-element)
+
+
+TODO.
 
 
 ## Sortable List w Rails 3.2
