@@ -37,9 +37,6 @@ frameworka [Bootstrap](http://getbootstrap.com/),
 [less-rails-bootstrap](https://github.com/metaskills/less-rails-bootstrap) oraz
 [rails-bootstrap-form](https://github.com/bootstrap-ruby/rails-bootstrap-forms).
 
-Zgodnie z sugestią, że [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/)
-rozmiar fontu w akapitach zwiększymy do 18px.
-
 1\. Zaczynamy od wygenerowania rusztowania aplikacji i przejścia do
 katalogu z wygenerowanym rusztowaniem:
 
@@ -100,7 +97,7 @@ elementu *body* na:
     </div>
 
 Następnie tworzymy katalog *app/views/shared/* w którym
-tworzymy szablon częściowy *_navbar.html.erb* o zawartości:
+tworzymy szablon częściowy o zawartości:
 
     :::rhtml app/views/shared/_navbar.html.erb
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -146,6 +143,9 @@ Kilka poprawek, które zapisujemy w pliku *variables.less*:
     @font-family-base:        @font-family-serif;
     @font-size-base:          18px;
     @line-height-base:        1.44444; // 26/18
+
+gdzie powyżej zwiększamy rozmiar fontu w akapitach, zgodnie z sugestią,
+że [Anything less than 16px is a costly mistake](http://www.smashingmagazine.com/2011/10/07/16-pixels-body-copy-anything-less-costly-mistake/).
 
 6\. Zapełniamy bazę jakimiś danymi, dopisując do pliku *db/seeds.rb*:
 
