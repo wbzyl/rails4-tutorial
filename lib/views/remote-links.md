@@ -574,6 +574,11 @@ i podpinamy do niego zdarzenie *ajax:success*:
         var p = clone.querySelectorAll('p');
         p[0].textContent = data.quotation;
         p[1].textContent = data.source;
+
+        // destructured assignments; introduces p0, p1 into global context
+        [p0, p1] = clone.querySelectorAll('p');
+        [p0.textContent, p1.textContent] = [data.quotation, data.source];
+
         var h3 = clone.querySelector('h3');
         h3.textContent = 'Fortune ' + data.id;
 
