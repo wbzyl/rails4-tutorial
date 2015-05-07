@@ -536,7 +536,7 @@ Ręcznie wstawiamy zawartość *template* na stronę:
 
     // populate document fragment at runtime
     clone.querySelector('article').id = 'fortune-modal';
-    // is it possible to use object+array destructuring from ES6
+    // is it possible to use below the object+array destructuring from ES6
     // see https://leanpub.com/understandinges6/read
     var p = clone.querySelectorAll('p');
     p[0].textContent = 'A day without sunshine is like night.';
