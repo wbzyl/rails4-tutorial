@@ -551,7 +551,7 @@ Ręcznie wstawiamy zawartość *template* na stronę:
 
     $('#fortune-modal').modal('show');
 
-Jeśli wszystko działa, to dalej postępujemy podobnie do przykładu z EJS.
+Jeśli wszystko działa, to dalej postępujemy podobnie jak w przykładzie z EJS.
 Przycisk *Show* zamieniamy na *remote*:
 
     :::ruby app/views/fortunes/index.html.erb
