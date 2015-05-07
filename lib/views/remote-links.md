@@ -568,20 +568,22 @@ i podpinamy do niego zdarzenie *ajax:success*:
         var template = document.querySelector('#modal-show');
         var clone = template.content.cloneNode(true); // get document fragment
 
-        clone.querySelector('article').id = 'fortune-modal';
-
-        // populate the document fragment at runtime
+        // populate document fragment at runtime
         var p = clone.querySelectorAll('p');
         p[0].textContent = data.quotation;
         p[1].textContent = data.source;
         var h3 = clone.querySelector('h3');
         h3.textContent = 'Fortune ' + data.id;
 
+        var modal_id = 'fortune-modal';
+
+        clone.querySelector('article').id = modal_id;
+
         // activate the template
         $('body').prepend(clone);
 
         // clicking Close removes modal window from DOM
-        $('#fortune-modal').on('hidden.bs.modal', function() {
+        $('#' + modal_id).on('hidden.bs.modal', function() {
           $('.modal').remove();
         });
         $('#fortune-modal').modal('show');
