@@ -491,8 +491,64 @@ Template Element to jedna z czterech technologii składających się na
 
 - [The template element](https://html.spec.whatwg.org/multipage/scripting.html#the-template-element)
 
+Do pliku *index.html.erb* wklejamy taki element *template*:
 
-TODO.
+    :::html
+    <template id="modal-show">
+      <article id="" class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h3 class="modal-title">Fortune #<span></span></h3>
+            </div>
+            <div class="modal-body">
+              <p></p>
+              <p class="source"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </template>
+
+Teraz sprawdzimy, na konsoli naszej przeglądarki,
+jak działa taki element.
+
+Zaczniemy od wpisania i uruchomienia tego kodu:
+
+    :::js
+    'content' in document.createElement('template')
+
+Jeśli wynikiem jest `true`, to nasza przglądarka obsługuje element *template*.
+W przeciwnym wypadku powinniśmy zmienić przeglądarkę 9-).
+Ewentualnie możemy użyć jakiegoś polyfilla.
+
+Teraz wstawimy zawartość tego elementu na stronę:
+
+    :::js
+    var template = document.querySelector('#modal-show');
+    var clone = template.content.cloneNode(true);
+
+    // wpisujemy do „szablonu” id
+    clone.querySelector('article').id = 'fortune-modal';
+
+    // oraz treść fortunki
+    var p = clone.querySelectorAll('p');
+    p[0].textContent = 'A day without sunshine is like night.';
+    p[1].textContent = 'Anonymous';
+    var h3 = clone.querySelector('h3');
+    h3.textContent = 'Fortune #44';
+
+    // jQuery (JavaScript w Bootstrap wymaga tej biblioteki)
+
+    $('body').prepend(clone);
+    $('#fortune-modal').modal('show');
+
+TODO: Jeśli wszystko działa, to aby zakończyć, musimy ściągnąć (AJAX/JSON) dane
+konkretnej fortunki i wstawić je do elementu *article*.
 
 
 ## Sortable List w Rails 3.2
