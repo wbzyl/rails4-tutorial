@@ -560,7 +560,7 @@ Przycisk *Show* zamieniamy na *remote*:
           data: { type: :json },
           class: "show btn btn-default btn-sm" %>
 
-i podpinamy do niego zdarzenie 'ajax:success':
+i podpinamy do niego zdarzenie *ajax:success*:
 
     :::js
     $(function() {
