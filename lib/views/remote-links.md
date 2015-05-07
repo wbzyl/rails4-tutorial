@@ -530,21 +530,25 @@ Teraz wstawimy zawartość tego elementu na stronę:
 
     :::js
     var template = document.querySelector('#modal-show');
+
+    // get document fragment with article element
     var clone = template.content.cloneNode(true);
 
-    // wpisujemy do „szablonu” id
+    // populate document fragment at runtime
     clone.querySelector('article').id = 'fortune-modal';
-
-    // oraz treść fortunki
+    // is it possible to use object+array destructuring from ES6
+    // see https://leanpub.com/understandinges6/read
     var p = clone.querySelectorAll('p');
     p[0].textContent = 'A day without sunshine is like night.';
     p[1].textContent = 'Anonymous';
     var h3 = clone.querySelector('h3');
     h3.textContent = 'Fortune #44';
 
-    // jQuery (JavaScript w Bootstrap wymaga tej biblioteki)
+    // Bootstrap depends on jQuery, so we can use it
 
+    // activate the template
     $('body').prepend(clone);
+
     $('#fortune-modal').modal('show');
 
 TODO: Jeśli wszystko działa, to aby zakończyć, musimy ściągnąć (AJAX/JSON) dane
