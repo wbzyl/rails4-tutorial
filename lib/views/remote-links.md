@@ -522,11 +522,11 @@ Zaczniemy od wpisania i uruchomienia tego kodu:
     :::js
     'content' in document.createElement('template')
 
-Jeśli wynikiem jest `true`, to nasza przglądarka obsługuje element *template*.
+Jeśli wynikiem jest `true`, to nasza przeglądarka obsługuje element *template*.
 W przeciwnym wypadku powinniśmy zmienić przeglądarkę 9-).
 Ewentualnie możemy użyć jakiegoś polyfilla.
 
-Teraz wstawimy zawartość tego elementu na stronę:
+Ręcznie wstawiamy zawartość *template* na stronę:
 
     :::js
     var template = document.querySelector('#modal-show');
