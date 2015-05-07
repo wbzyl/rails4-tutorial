@@ -423,7 +423,7 @@ W tym kontekście nie ma on sensu. Dlaczego?
 
 Jeśli dodamy tylko *remote* do przycisku z *Show*, to kod nie
 będzie rozróżniał przycisków *Show* i *Destroy*.
-Dlatego dodamy do atrybutu *class*: **btn-show**:
+Dlatego do listy wartości atrybutu *class* dopiszemy **show**:
 
     :::rhtml app/views/fortunes/index.html.erb
     <%= link_to 'Show', fortune,
