@@ -557,7 +557,7 @@ konkretnej fortunki i wstawić je do elementu *article*.
 
 ## Sortable List w Rails 3.2
 
-Sortable lists powinny też działać w Rails 4.
+*TODO:* Sortable lists powinny też działać w Rails 4. Sprawdzić to!
 
 Nieco uproszczony przykład z [Sortable List in Ruby on Rails 3 – Unobtrusive jQuery](http://webtempest.com/sortable-list-in-ruby-on-rails-3-almost-unobtrusive-jquery/).
 
