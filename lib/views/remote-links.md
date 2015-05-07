@@ -566,7 +566,7 @@ i podpinamy do niego zdarzenie *ajax:success*:
     $(function() {
       $('a[class^=show]').bind('ajax:success', function(event, data, status, xhr) {
         var template = document.querySelector('#modal-show');
-        var clone = template.content.cloneNode(true);
+        var clone = template.content.cloneNode(true); // get document fragment
 
         clone.querySelector('article').id = 'fortune-modal';
 
