@@ -551,8 +551,42 @@ Ręcznie wstawiamy zawartość *template* na stronę:
 
     $('#fortune-modal').modal('show');
 
-TODO: Jeśli wszystko działa, to aby zakończyć, musimy ściągnąć (AJAX/JSON) dane
-konkretnej fortunki i wstawić je do elementu *article*.
+Jeśli wszystko działa, to dalej postępujemy podobnie do przykładu z EJS.
+Przycisk *Show* zamieniamy na *remote*:
+
+    :::ruby app/views/fortunes/index.html.erb
+    <%= link_to 'Show', fortune,
+          remote: true,
+          data: { type: :json },
+          class: "show btn btn-default btn-sm" %>
+
+i podpinamy do niego zdarzenie 'ajax:success':
+
+    :::js
+    $(function() {
+      $('a[class^=show]').bind('ajax:success', function(event, data, status, xhr) {
+        var template = document.querySelector('#modal-show');
+        var clone = template.content.cloneNode(true);
+
+        clone.querySelector('article').id = 'fortune-modal';
+
+        // populate the document fragment at runtime
+        var p = clone.querySelectorAll('p');
+        p[0].textContent = data.quotation;
+        p[1].textContent = data.source;
+        var h3 = clone.querySelector('h3');
+        h3.textContent = 'Fortune ' + data.id;
+
+        // activate the template
+        $('body').prepend(clone);
+
+        // clicking Close removes modal window from DOM
+        $('#fortune-modal').on('hidden.bs.modal', function() {
+          $('.modal').remove();
+        });
+        $('#fortune-modal').modal('show');
+      });
+    });
 
 
 ## Sortable List w Rails 3.2
