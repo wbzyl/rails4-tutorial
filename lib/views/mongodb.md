@@ -5,7 +5,10 @@
 1. Zamiast google gauges użyć
   [d3.js style gauges](http://tomerdoron.blogspot.com/2011/12/google-style-gauges-using-d3js.html)
   albo (prostsze) [Donut Multiples](http://bl.ocks.org/mbostock/3888852).
-
+1. Jeszcze lepsze rozwiązanie, to skorzystać z
+  [Material Design Lite Components in HTML/CSS/JS](https://github.com/google/material-design-lite);
+  zob. strona [Get MDL](http://www.getmdl.io) – szablon
+  [Dashboard](http://www.getmdl.io/templates/dashboard/index.html).
 
 ☸ Mongo links:
 
