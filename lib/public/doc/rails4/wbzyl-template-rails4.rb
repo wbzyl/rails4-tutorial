@@ -1,1 +1,0 @@
-../../../doc/app_templates/wbzyl-template-rails4.rb

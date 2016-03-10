@@ -1,4 +1,4 @@
-# 20.02.2014 – zaczynamy !
+# 18.02.2016 – zaczynamy !
 
 <blockquote>
   {%= image_tag "/images/coding-horror.jpg", :alt => "[Rails for Zombies]", :width => "300" %}
@@ -10,25 +10,12 @@
 * [World Wide Web](http://info.cern.ch/) – zobacz jak wyglądała pierwsza strona WWW
 * Pierwsze aplikacje WWW – CGI ↬ PHP (≈ 2000 r.)
 * [Comparison of web application frameworks](http://en.wikipedia.org/wiki/Comparison_of_web_application_frameworks)
-* [Ruby on Rails](http://rubyonrails.org/download):
-  - [API](http://api.rubyonrails.org/)
-  - [Rails Guides](http://edgeguides.rubyonrails.org/)
-  - Michael Hartl,
-  [Ruby on Rails Tutorial](http://ruby.railstutorial.org/ruby-on-rails-tutorial-book?version=4.0) –
-  *Learn Rails by Example*
-* Potrzebne nam gemy wyszukujemy na [The Ruby Toolbox](https://www.ruby-toolbox.com/).
-* [RSpec](http://rspec.info/) – a testing tool for the Ruby programming language;
-  [RSpec Rails](https://www.relishapp.com/rspec/rspec-rails/docs)
+* Potrzebne nam gemy można wyszukać na [The Ruby Toolbox](https://www.ruby-toolbox.com/).
 * [Polskie forum Ruby on Rails](http://forum.rubyonrails.pl/)
 * [Rails Rumble](http://blog.railsrumble.com/); [check winners](http://railsrumble.com/entries/winners)
 * [Who is already on Rails?](http://rubyonrails.org/applications):
   - [GitHub](https://github.com/) – ok. 4 mln programistów
   - [Twitter](https://twitter.com/) – „hits half a billion tweets a day” (26.10.2012)
-* [Nitrous.io](https://www.nitrous.io/) – coding on remote boxes
-* Dave Kennedy,
-  [Give Vagrant a Place in Your Workflow](http://rubysource.com/give-vagrant-a-place-in-your-workflow/)
-* [Docker](https://www.docker.io/) – an open source project to pack,
-  ship and run any application as a lightweight container
 
 
 ## Praktyczne rzeczy…
@@ -40,11 +27,9 @@ lub [Learn to Program](http://pine.fm/LearnToProgram/) (Chris Pine).
 
 Nigdy nie używałeś frameworka MVC. Zacznij od kursu
 [Rails for Zombies](http://www.codeschool.com/courses/rails-for-zombies-redux).
-Na Code School jest kilka fajnych darmowych samouczków, na przykład:
-[Shaping up with Angular.js](http://campus.codeschool.com/courses/shaping-up-with-angular-js/intro).
 
-Aplikacje WWW będziemy pisać w **Ruby on Rails** w wersji **4.2.1**
-i w Ruby w wersji **2.2.1**.
+Aplikacje WWW będziemy pisać w **Ruby on Rails** w wersji **5.0+**
+i w Ruby w wersji **2.3.0**.
 
 *Uwaga:* Przed utworzeniem pierwszego repozytorium Git
 na swoim komputerze należy podać Gitowi swoje dane.
@@ -69,7 +54,6 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
 # Rozpiska wykładów
 
-1. {%= link_to "Zapoznajemy się z językiem Ruby", "/ruby20" %}
 1. {%= link_to "RVM - zarządzanie wersjami Rails i Ruby", "/rvm" %}
 1. {%= link_to "Kilka prostych przykładów", "/zaczynamy" %}
 1. {%= link_to "„Fortunka” v0.0", "/fortunka0" %}
@@ -87,6 +71,7 @@ oszczędzi nam wiele żmudnego wpisywania z klawiatury.
 
 Różne rzeczy:
 
+1. {%= link_to "Zapoznajemy się z językiem Ruby", "/ruby20" %}
 1. {%= link_to "Wysyłanie poczty", "/mail" %}
 1. {%= link_to "FormBuilder v. gem simple_form", "/form-builder" %}
 1. {%= link_to "Konfiguracja środowiska dla Rails", "/konfiguracja" %}.
@@ -97,83 +82,15 @@ Konfiguracja edytora Emacs w wersji co najmniej v24.1 jest prosta:
 [Rinari](http://rinari.rubyforge.org/Navigation.html).
 Równie prosto konfiguruje się edytor {%= link_to "Sublime Text 2", "/sublime_text" %}.
 
-<!--
-
-TODO:
-
-1. {%= link_to "TDD, BDD…", "/testowanie" %}
-1. {%= link_to "Aplikacja „Leniwiec” (klon pastie)", "/pastie" %}
-1. {%= link_to "Aplikacja „Todo”", "/todo" %}
-1. {%= link_to "Aplikacja „Blog”", "/blog" %}
-1. {%= link_to "Aplikacja „Store”", "/store" %}
-1. {%= link_to "Aplikacja „Ale kino”", "/ale-kino" %}
-1. {%= link_to "Wyszukiwanie", "/searching" %}
-1. {%= link_to "Bezpieczeństwo", "/security" %}
-1. {%= link_to "Caching", "/caching" %}
-1. {%= link_to "Walidacja", "/walidacja" %}
-1. {%= link_to "Autentykacja z Authlogic", "/authlogic" %}
-1. {%= link_to "Ajax & jQuery", "/ajax-jquery" %}
-1. {%= link_to "„Blog” na dwóch modelach", "/2models" %}
--->
-
-<!--
-1. {%= link_to "Mobile apps", "/mobile" %}
-1. {%= link_to "Autoryzacja I", "/authorization" %}
-1. {%= link_to "Autoryzacja II", "/declarative-authorization" %}
--->
 
 <blockquote>
   <p>
     Jeden z wykładowców powiedział mi, że człowiek
-    zaczyna używać dopiero rozumu, kiedu kończą mu się
-    wszystkie możliwości. Wcześniej korzysta tylko
-    z procedur.
+    zaczyna używać dopiero rozumu, kiedy kończą mu się
+    wszystkie możliwości. Wcześniej korzysta tylko z procedur.
   </p>
   <p class="author">— Robert Krool</p>
 </blockquote>
-
-# Dokumentacja
-
-Zaczynamy od [Rails Guides](http://guides.rails.info/):
-
-1. [Getting Started with Rails](http://guides.rubyonrails.org/getting_started.html).
-2. [Active Record Query Interface](http://guides.rubyonrails.org/active_record_querying.html).
-3. [Rails Form helpers](http://guides.rubyonrails.org/form_helpers.html).
-4. Kolejny *przewodnik* do przestudiowania wybieramy już według własnego uznania.
-
-
-## Użyteczne linki
-
-* [The Ruby Toolbox](http://ruby-toolbox.com/) – know your options!
-* [GitHub Style Guides](https://github.com/styleguide/)
-* Greg Heileman.
-  [Web Application Architectures](https://www.coursera.org/course/webapplications)
-
-
-## API
-
-* [Rails Searchable API Doc](http://railsapi.com/)
-* [Edge API](http://edgeapi.rubyonrails.org/)
-* [API dock](http://apidock.com/) – Ruby on Rails, RSpec, Ruby
-
-
-<blockquote>
-  {%= image_tag "/images/samuel-coleridge.jpg", :alt => "[_Why]" %}
-  <p>
-    [O komputerze Babbage’a]
-    nowa poezja musi stworzyć nowy gust,
-    zgodnie z którym zostanie doceniona.
-  </p>
-  <p class="author">— Samuel Coleridge (1772–1834)</p>
-</blockquote>
-
-## Screencasty
-
-* Ryan Bates. [Railscasts](http://railscasts.com/)
-* [Rails Performance Resources](http://railslab.newrelic.com/) —
-  Expert advice on tuning and optimizing your Rails app
-* Michael Hartl.
-  [Using Sublime Text 2 with Ruby on Rails](http://www.youtube.com/watch?v=05x1Jk4rT1A)
 
 
 ## Misz masz…
