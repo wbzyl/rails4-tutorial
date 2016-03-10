@@ -96,7 +96,7 @@ Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.ruby
 Generujemy przykładową aplikację:
 
     :::bash
-    rvm use ruby-2.2.1@active_record
+    rvm use ruby-2.3.0@active_record
     rvm current
 
     rails new why_associations --skip-bundle
