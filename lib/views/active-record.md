@@ -74,7 +74,7 @@ Następnie, na potrzeby przykładów z tego wykładu, utworzymy zestaw
 gemów o nazwie *active_record*:
 
     :::bash
-    rvm use --create ruby-2.2.1@active_record
+    rvm use --create ruby-2.3.0@active_record
     rvm current
     gem update
     gem install rails --pre
@@ -101,13 +101,18 @@ Generujemy przykładową aplikację:
 
     rails new why_associations --skip-bundle
     cd why_associations
-    bundle install --path=.bundle/gems
+    bundle install --path=vendor/bundle
 
-Przy okazji ułatwimy sobie śledzenie kolejności
+Przy okazji: (i) instalujemy
+gem [awesome_print](https://github.com/michaeldv/awesome_print) –
+_which prints Ruby objects in full color exposing their internal structure with proper indentation_
+(ii) ułatwimy sobie śledzenie kolejności
 migracji dopisując do pliku *config/application.rb*:
 
     :::ruby
     config.active_record.timestamped_migrations = false
+
+❖
 
 Skorzystamy z generatora do wygenerowania kodu dla dwóch modeli:
 
