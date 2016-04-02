@@ -10,6 +10,11 @@
 Jednym ze sprawdzonych sposobów kontynuacji projektu jest rozpoczęcie
 go od nowa.
 
+* [Fortunka v1.0 dla Rails v5.0](https://github.com/rails4/my_fortunes5.beta3)
+
+
+## TODO
+
 Tym razem nie użyjemy generatora „scaffold”. Skorzystamy z generatora
 *responders_controller* z gemu *responders*.
 
