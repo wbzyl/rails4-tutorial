@@ -466,24 +466,6 @@ nawet jak nic nie wyszukujemy. Prześledzić działanie *search*? Jak?
 Co oznacza *scoped*?
 
 
-## Nowe idee w wyszukiwaniu
-
-Florian R. Hanke, [Picky](https://github.com/floere/picky) –
-easy to use and fast Ruby semantic search engine.
-
-Przykłady użycia:
-
-* [The Phonebook of Switzerland](http://tel.local.ch/en),
-* [gemsearch](http://gemsearch.heroku.com/)
-
-
-Tagujemy tę wersję:
-
-    :::bash
-    git tag v0.5
-
-
-
 # Komentarze do fortunek
 
 <blockquote>
@@ -623,6 +605,8 @@ do której zostały dodane.
 Dlatego dodamy je do widoku *fortunes/show*:
 
     :::rhtml app/views/fortunes/show.html.erb
+    <%- model_class = Comment -%>
+
     <% if @fortune.comments.any? %>
       <h2>Comments</h2>
       <% @fortune.comments.each do |comment| %>
@@ -782,7 +766,7 @@ W widoku, zamiast usuniętego kodu wpisujemy:
     # PUT /fortunes/:fortune_id/comments/:id
     def update
       @comment = @fortune.comments.find(params[:id])
-      @comment.update_attributes(params[:comment])
+      @comment.update(comment_params)
       respond_with(@fortune, @comment, location: @fortune)
     end
 
