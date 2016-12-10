@@ -104,7 +104,7 @@ Zobacz też [ActiveRecord::ConnectionAdapters::TableDefinition](http://api.ruby
 Generujemy przykładową aplikację:
 
     :::bash
-    rvm use ruby-2.3.0@active_record
+    rvm use ruby-2.3.3@active_record
     rvm current
 
     rails new why_associations --skip-bundle
@@ -294,6 +294,9 @@ Przejść na konsolę. Zapisać w tabelkach następujące artykuły (książki):
 Wypróbować na konsoli poniższe powiązania:
 
     :::ruby
+    Author.first
+    Author.take(4).last
+
     author = Author.find 1
     article = Article.find 1
     author.articles
