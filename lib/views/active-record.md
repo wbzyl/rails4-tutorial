@@ -52,12 +52,20 @@ Metody pomocnicze:
 
     :::ruby
     helper.number_to_currency(9.99)
-    4.days.ago
-    4.years.ago
+
+Czas:
+
+    :::ruby
+    Time.now + 10.minutes
     Time.now + 7.days
-    1.week.from_now
+
+Czas ze strefą czasową:
+
+    4.hours.ago
+    4.years.ago
+    8.week.from_now
     Time.zone.now
-    Time.zone.parse("2012-11-22 12:30:24")
+    Time.zone.parse("2022-12-24 16:30:00")
 
 Więcej na temat sztuczek konsolowych:
 
