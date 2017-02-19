@@ -1,4 +1,4 @@
-# 18.02.2016 – zaczynamy !
+# Zaczynamy  – luty 2017!
 
 <blockquote>
   {%= image_tag "/images/coding-horror.jpg", :alt => "[Rails for Zombies]", :width => "300" %}
