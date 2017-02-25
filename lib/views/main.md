@@ -16,6 +16,8 @@
 * [Who is already on Rails?](http://rubyonrails.org/applications):
   - [GitHub](https://github.com/) – ok. 4 mln programistów
   - [Twitter](https://twitter.com/) – „hits half a billion tweets a day” (26.10.2012)
+* [Try Elixir](https://www.codeschool.com/courses/try-elixir/) and
+  [Phoenix](http://www.phoenixframework.org) – alternatywa?
 
 
 ## Praktyczne rzeczy…
