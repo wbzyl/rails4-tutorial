@@ -364,7 +364,7 @@ A teraz najważniejsze przydzielamy zadania:
       a.task = "Models & Controllers"
       a.save!
     end
-    Assignment.find_or_initialize_by(programmer: mbonczkowska, project_id: karbon).tap do |a|
+    Assignment.find_or_initialize_by(programmer: mbonczkowska, project: karbon).tap do |a|
       a.task = "Views & Tests"
       a.save!
     end
@@ -382,11 +382,11 @@ A teraz najważniejsze przydzielamy zadania:
 Przykładowe zapytania:
 
     :::ruby
-    Project.find(karbon).programmers
-    Programmer.find(wbzyl).projects
-    Programmer.find(wbzyl).assignments
-    Assignment.find(tsott).programmer
-    Assignment.find(tsott).project.due_date
+    Project.find(karbon.id).programmers
+    Programmer.find(wbzyl.id).projects
+    Programmer.find(wbzyl.id).assignments
+    Assignment.find(tsott.id).programmer
+    Assignment.find(tsott.id).project.due_date
 
     Programmer.find_by_login("lorddraw").assignments[0].task
     Programmer.find_by_login("lorddraw").projects[0].due_date
@@ -440,7 +440,7 @@ Dopisujemy zależności do modeli:
     end
 
     class PhoneNumber < ActiveRecord::Base
-      belongs_to :callable, polymorphic: true  #<= dopisujemy polymorphic…
+      belongs_to :callable, polymorphic: true
     end
 
 Poprawiamy migrację wygenerowaną dla *phone_numbers*:
